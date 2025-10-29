@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/client-app/screens/restaurant_suggestion_page.dart';
 
 class SharingScreen extends StatelessWidget {
   final VoidCallback onShareLocation;
@@ -14,10 +15,10 @@ class SharingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold( 
+    return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child: SingleChildScrollView( 
+        child: SingleChildScrollView(
           child: Container(
             margin: const EdgeInsets.all(30),
             padding: const EdgeInsets.all(30),
@@ -51,7 +52,8 @@ class SharingScreen extends StatelessWidget {
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
                           color: Colors.grey[200],
-                          child: const Icon(Icons.map, size: 60, color: Colors.grey),
+                          child: const Icon(Icons.map,
+                              size: 60, color: Colors.grey),
                         );
                       },
                     ),
@@ -78,13 +80,14 @@ class SharingScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 25),
-
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
                     onPressed: () {
-                      FocusScope.of(context).unfocus();
-                      onShareLocation();
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                            builder: (context) => RestaurantSuggestionPage()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF006C4A),
@@ -103,9 +106,7 @@ class SharingScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 10),
-
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(

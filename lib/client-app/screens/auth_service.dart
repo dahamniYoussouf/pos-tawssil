@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:frontend/client-app/screens/sms_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -21,40 +24,80 @@ class AuthService {
   static const String _verificationCodeKey = 'verification_code';
 
   /// Send a verification code to the user's phone number using the correct API
-  Future<Map<String, dynamic>> sendVerificationCode(String phoneNumber) async {
-    try {
-      print('📞 Sending verification code to: $phoneNumber');
-
-      final response = await http.post(
-        Uri.parse('https://tawssilbackyou.onrender.com/auth/otp/request'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({"phone_number": phoneNumber}),
-      );
-      print('📥 Response status: ${response.statusCode}');
-      print('📥 Response body: ${response.body}');
-      final result = json.decode(response.body);
-      if (response.statusCode == 200) {
-        return {
-          'success': true,
-          'message': result['message'] ?? 'Code de vérification envoyé',
-          'verificationId': result['dev_otp'] ?? '',
-        };
-      } else {
-        print('❌ Error in response: ${result['message']}');
-        return {
-          'success': false,
-          'message': result['message'] ?? 'Erreur lors de l\'envoi du code',
-        };
-      }
-    } catch (e) {
-      print('❌ Exception caught in sendVerificationCode: $e');
-      return {
-        'success': false,
-        'message': 'Erreur lors de l\'envoi du code',
-      };
-    }
+Future<Map<String, dynamic>> sendVerificationCode(String phoneNumber) async {
+  print('🟢 sendVerificationCode function started');
+  print('📞 Sending verification code to: $phoneNumber');
+  
+  if (phoneNumber.isEmpty) {
+    print('❌ Phone number is empty!');
+    return {
+      'success': false,
+      'message': 'Numéro de téléphone invalide',
+    };
   }
 
+  try {
+    final url = 'https://tawssilbackyou.onrender.com/auth/otp/request';
+    print('🌐 Calling URL: $url');
+    
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({"phone_number": phoneNumber}),
+    ).timeout(
+      Duration(seconds: 30),
+      onTimeout: () {
+        throw TimeoutException('La requête a expiré');
+      },
+    );
+
+    print('📥 Response status: ${response.statusCode}');
+    print('📥 Response body: ${response.body}');
+
+    final result = json.decode(response.body);
+    
+    if (response.statusCode == 200) {
+      return {
+        'success': true,
+        'message': result['message'] ?? 'Code de vérification envoyé',
+        'verificationId': result['dev_otp'] ?? '',
+        'isNewUser': result['is_new_user'] ?? false,
+      };
+    } else {
+      print('❌ Error in response: ${result['message']}');
+      return {
+        'success': false,
+        'message': result['message'] ?? 'Erreur lors de l\'envoi du code',
+      };
+    }
+  } on TimeoutException catch (e) {
+    print('❌ Timeout: $e');
+    return {
+      'success': false,
+      'message': 'La connexion a expiré. Veuillez réessayer.',
+    };
+  } on SocketException catch (e) {
+    print('❌ SocketException: ${e.message}');
+    return {
+      'success': false,
+      'message': 'Pas de connexion Internet',
+    };
+  } on FormatException catch (e) {
+    print('❌ FormatException: $e');
+    return {
+      'success': false,
+      'message': 'Erreur de format de réponse',
+    };
+  } catch (e) {
+    print('❌ Exception caught: $e');
+    print('❌ Exception type: ${e.runtimeType}');
+    return {
+      'success': false,
+      'message': 'Erreur lors de l\'envoi du code',
+      'error': e.toString(),
+    };
+  }
+}
   /// Send phone number and request verification code
   /// This calls the API to send OTP via SMS
   Future<Map<String, dynamic>> sendPhoneNumber(String phoneNumber) async {
@@ -113,7 +156,8 @@ class AuthService {
       // Treat 200 as success, regardless of 'success' field
       if (response.statusCode == 200) {
         // Check for message and tokens
-        if (result['message'] == 'Connexion réussie' && result['access_token'] != null) {
+        if (result['message'] == 'Connexion réussie' &&
+            result['access_token'] != null) {
           return {
             'success': true,
             'message': result['message'],
@@ -126,7 +170,8 @@ class AuthService {
           // If message is not 'Connexion réussie', treat as error
           return {
             'success': false,
-            'message': result['message'] ?? 'Code incorrect. Veuillez réessayer.',
+            'message':
+                result['message'] ?? 'Code incorrect. Veuillez réessayer.',
           };
         }
       } else {

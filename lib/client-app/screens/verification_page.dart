@@ -30,10 +30,12 @@ class _VerificationPageState extends State<VerificationPage> {
     6,
     (index) => FocusNode(),
   );
+  String? _verificationId;
 
   @override
   void initState() {
     super.initState();
+    _verificationId = widget.verificationId;
 
     // Auto-focus first field
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -68,7 +70,8 @@ class _VerificationPageState extends State<VerificationPage> {
     String formattedPhone =
         (widget.countryCode + widget.phoneNumber).replaceAll('+', '');
     try {
-      debugPrint('[OTP] Vérifier button pressed. Phone: $formattedPhone, Code: $code');
+      debugPrint(
+          '[OTP] Vérifier button pressed. Phone: $formattedPhone, Code: $code');
       await context.read<AuthCubit>().verifyCode(formattedPhone, code);
     } catch (e) {
       debugPrint('[OTP] Exception in _verifyCode: $e');
@@ -109,6 +112,34 @@ class _VerificationPageState extends State<VerificationPage> {
   Widget build(BuildContext context) {
     return BlocConsumer<AuthCubit, AuthState>(
       listener: (context, state) {
+        if (state is AuthCodeSent) {
+          // Update dev OTP in state and show dev OTP
+          if (state.verificationId.isNotEmpty) {
+            setState(() {
+              _verificationId = state.verificationId;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Row(
+                  children: [
+                    const Icon(Icons.lock, color: Color(0xFF006C4A)),
+                    const SizedBox(width: 8),
+                    Expanded(
+                        child: Text('Code OTP (dev): ${state.verificationId}',
+                            style:
+                                const TextStyle(fontWeight: FontWeight.bold))),
+                  ],
+                ),
+                backgroundColor: Colors.white,
+                behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                margin: const EdgeInsets.all(16),
+                duration: const Duration(seconds: 8),
+              ),
+            );
+          }
+        }
         if (state is AuthSuccess) {
           debugPrint('[OTP] AuthSuccess received. UserId: \\${state.userId}');
           ScaffoldMessenger.of(context).showSnackBar(
@@ -149,6 +180,7 @@ class _VerificationPageState extends State<VerificationPage> {
         final isLoading = state is AuthVerificationLoading;
         final errorMessage = state is AuthError ? state.message : '';
 
+        String? devOtp = _verificationId;
         return Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
@@ -159,7 +191,7 @@ class _VerificationPageState extends State<VerificationPage> {
               onPressed: () => Navigator.pop(context),
             ),
             title: const Text(
-              'Vérification',
+              'Verification',
               style: TextStyle(
                 color: Colors.black,
                 fontSize: 18,
@@ -178,7 +210,7 @@ class _VerificationPageState extends State<VerificationPage> {
 
                   // Title
                   const Text(
-                    'Entrez le code de\nvérification',
+                    'Enter the verification code',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -197,7 +229,7 @@ class _VerificationPageState extends State<VerificationPage> {
                         color: Colors.grey[600],
                       ),
                       children: [
-                        const TextSpan(text: 'Nous avons envoyé un code à '),
+                        const TextSpan(text: 'We sent a code to '),
                         TextSpan(
                           text: '${widget.countryCode} ${widget.phoneNumber}',
                           style: const TextStyle(
@@ -208,6 +240,34 @@ class _VerificationPageState extends State<VerificationPage> {
                       ],
                     ),
                   ),
+
+                  if (devOtp != null && devOtp.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Color(0xFFE3FCEC),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Color(0xFFB2F5EA)),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.lock, color: Color(0xFF006C4A)),
+                          SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              'Test OTP: $devOtp',
+                              style: const TextStyle(
+                                color: Color(0xFF006C4A),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
 
                   const SizedBox(height: 40),
 

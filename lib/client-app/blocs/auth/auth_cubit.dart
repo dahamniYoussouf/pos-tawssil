@@ -130,10 +130,10 @@ class AuthCubit extends Cubit<AuthState> {
         // Optionally store tokens and user info here
         // e.g. SharedPreferences, or pass to next screen
         // debugPrint tokens for now
-  print('[OTP] Access Token: ${result['access_token']}');
-  print('[OTP] Refresh Token: ${result['refresh_token']}');
-  print('[OTP] User: ${result['user']}');
-  print('[OTP] Profile: ${result['profile']}');
+        print('[OTP] Access Token: ${result['access_token']}');
+        print('[OTP] Refresh Token: ${result['refresh_token']}');
+        print('[OTP] User: ${result['user']}');
+        print('[OTP] Profile: ${result['profile']}');
         emit(AuthSuccess(userId: result['user']?['id'] ?? ''));
       } else {
         emit(AuthError(
