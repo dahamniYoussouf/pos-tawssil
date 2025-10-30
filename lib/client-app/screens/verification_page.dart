@@ -156,7 +156,7 @@ class _VerificationPageState extends State<VerificationPage> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const LocationScreen(),
+                  builder: (context) => LocationScreen(),
                 ),
               );
             }

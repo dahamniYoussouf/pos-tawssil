@@ -7,7 +7,15 @@ import '../models/menu_item.dart';
 import '../../config/api_config.dart';
 import 'user_service.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
+Future<String?> getAccessToken() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('access_token');
+}
+
 Future<List<Category>> getRestaurantCategories(String restaurantId) async {
+  final accessToken = await getAccessToken();
   try {
     final response = await http.get(
       Uri.parse(
@@ -15,6 +23,7 @@ Future<List<Category>> getRestaurantCategories(String restaurantId) async {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        if (accessToken != null) 'Authorization': 'Bearer $accessToken',
       },
     ).timeout(Duration(seconds: 15));
 
@@ -36,12 +45,14 @@ Future<List<Category>> getRestaurantCategories(String restaurantId) async {
 
 /// Fetch menu items for a specific restaurant
 Future<List<MenuItem>> getRestaurantMenuItems(String restaurantId) async {
+  final accessToken = await getAccessToken();
   try {
     final response = await http.get(
       Uri.parse('${ApiConfig.baseUrl}/menuitem/byrestaurant/$restaurantId'),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        if (accessToken != null) 'Authorization': 'Bearer $accessToken',
       },
     ).timeout(Duration(seconds: 15));
 
@@ -64,6 +75,7 @@ Future<List<MenuItem>> getRestaurantMenuItems(String restaurantId) async {
 class RestaurantService {
   /// Fetch categories for a specific restaurant
   Future<List<Category>> getRestaurantCategories(String restaurantId) async {
+    final accessToken = await getAccessToken();
     try {
       final response = await http.get(
         Uri.parse(
@@ -71,6 +83,7 @@ class RestaurantService {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          if (accessToken != null) 'Authorization': 'Bearer $accessToken',
         },
       ).timeout(Duration(seconds: 15));
 
@@ -92,12 +105,14 @@ class RestaurantService {
 
   /// Fetch menu items for a specific restaurant
   Future<List<MenuItem>> getRestaurantMenuItems(String restaurantId) async {
+    final accessToken = await getAccessToken();
     try {
       final response = await http.get(
         Uri.parse('${ApiConfig.baseUrl}/menuitem/byrestaurant/$restaurantId'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          if (accessToken != null) 'Authorization': 'Bearer $accessToken',
         },
       ).timeout(Duration(seconds: 15));
 
@@ -124,6 +139,7 @@ class RestaurantService {
   /// falls back to fetching all restaurants.
   Future<List<Restaurant>> getNearbyRestaurantsFromStoredLocation(
       {int radius = 2000}) async {
+    final accessToken = await getAccessToken();
     try {
       final coords = await _userService.getCurrentCoordinates();
       if (coords != null) {
@@ -133,7 +149,6 @@ class RestaurantService {
           radius: radius,
         );
       }
-
       print('⚠️ No stored coordinates found, falling back to getRestaurants()');
       return await getRestaurants();
     } catch (e, st) {
@@ -144,16 +159,15 @@ class RestaurantService {
   }
 
   Future<List<Restaurant>> getRestaurants() async {
+    final accessToken = await getAccessToken();
     try {
       print('📄 Fetching restaurants from: ${ApiConfig.restaurantsUrl}');
-
-      // This method returns ALL restaurants (no location filtering).
-      // Use the /getall endpoint defined in ApiConfig.restaurantsUrl
       final response = await http.get(
         Uri.parse(ApiConfig.restaurantsUrl),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          if (accessToken != null) 'Authorization': 'Bearer $accessToken',
         },
       ).timeout(Duration(seconds: 15));
 
@@ -220,6 +234,7 @@ class RestaurantService {
     required double lng,
     int radius = 2000,
   }) async {
+    final accessToken = await getAccessToken();
     try {
       final uri = Uri.parse(ApiConfig.nearbyRestaurantsUrl);
       print('📄 POSTing to nearby restaurants endpoint: $uri');
@@ -230,6 +245,7 @@ class RestaurantService {
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
+              if (accessToken != null) 'Authorization': 'Bearer $accessToken',
             },
             body: json.encode({
               'lat': lat,
@@ -287,15 +303,20 @@ class RestaurantService {
   }
 
   Future<List<Category>> getCategories() async {
+    final accessToken = await getAccessToken();
     try {
       print(
-          '📄 Fetching categories from: ${ApiConfig.baseUrl}/restaurantcategory/getall');
+          '📄 Fetching categories from: ${ApiConfig.baseUrl}/restaurant/getall');
+
+      final prefs = await SharedPreferences.getInstance();
+      final accessToken = prefs.getString('access_token');
 
       final response = await http.get(
-        Uri.parse('${ApiConfig.baseUrl}/restaurantcategory/getall'),
+        Uri.parse('${ApiConfig.baseUrl}/restaurant/getall'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          if (accessToken != null) 'Authorization': 'Bearer $accessToken',
         },
       ).timeout(Duration(seconds: 15));
 
@@ -323,11 +344,11 @@ class RestaurantService {
               try {
                 final categoryData = categoriesList[i] as Map<String, dynamic>;
                 final category = Category(
-                  id: categoryData['id'],
-                  name: categoryData['nom'],
+                  id: categoryData['id'] ?? '',
+                  name: categoryData['nom'] ?? categoryData['name'] ?? '',
                   iconPath: categoryData['icone_url'] ??
                       'assets/icons/restaurant.png',
-                  description: categoryData['description'],
+                  description: categoryData['description'] ?? '',
                 );
                 parsedCategories.add(category);
                 print('✓ Parsed: ${category.name}');
@@ -405,16 +426,18 @@ class RestaurantService {
       String categoryId, String userAddress, // Only address parameter now
       {int page = 1,
       int pageSize = 20}) async {
+    final accessToken = await getAccessToken();
     try {
       print('Fetching restaurants by category ID: $categoryId');
       print('Using address: $userAddress');
-
       final response = await http
           .post(
-            Uri.parse('${ApiConfig.baseUrl}/restaurant/nearbyfilter'),
+            Uri.parse(
+                'https://tawssilbackyou.onrender.com/restaurant/nearbyfilter'),
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
+              if (accessToken != null) 'Authorization': 'Bearer $accessToken',
             },
             body: json.encode({
               'category': categoryId,
@@ -474,11 +497,14 @@ class RestaurantService {
   }
 
   Future<Restaurant> getRestaurantById(String id) async {
+    final accessToken = await getAccessToken();
     try {
       final response = await http.get(
         Uri.parse('${ApiConfig.baseUrl}/restaurant/$id'),
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          if (accessToken != null) 'Authorization': 'Bearer $accessToken',
         },
       );
 
@@ -504,29 +530,26 @@ class RestaurantService {
 
   Future<List<MenuItem>> getMenuItems(
       {required String restaurantId, String? categoryId}) async {
+    final accessToken = await getAccessToken();
     try {
-      // Use POST to /menuitem/filter endpoint with body
       final uri = Uri.parse('${ApiConfig.baseUrl}/menuitem/filter');
-
       print('📄 Fetching menu items from: $uri');
       print(
           '📥 Body: { restaurant_id: $restaurantId, category_id: $categoryId }');
-
       final body = <String, dynamic>{
         'is_available': true,
       };
-      // Include restaurant_id so backend can filter items server-side
       body['restaurant_id'] = restaurantId;
       if (categoryId != null) {
         body['category_id'] = categoryId;
       }
-
       final response = await http
           .post(
             uri,
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
+              if (accessToken != null) 'Authorization': 'Bearer $accessToken',
             },
             body: json.encode(body),
           )

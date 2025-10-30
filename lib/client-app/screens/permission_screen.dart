@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/client-app/screens/restaurant_suggestion_page.dart';
-import 'package:frontend/client-app/screens/sharing_screen.dart';
-import 'package:frontend/client-app/screens/first_page.dart';
 
 class PermissionScreen extends StatelessWidget {
   final VoidCallback onAuthorized;
@@ -63,22 +60,9 @@ class PermissionScreen extends StatelessWidget {
                   const SizedBox(height: 25),
                   Column(
                     children: [
-                      _buildPermissionButton(context, 'Autoriser une fois', () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => SharingScreen(
-                              onShareLocation: () {},
-                              onAddAddress: () {},
-                              onGpsDisabled: () {},
-                            ),
-                          ),
-                        );
-                      }),
-                      _buildPermissionButton(context,
-                          'Autoriser lorsque l\'app est active', onAuthorized),
-                      _buildPermissionButton(
-                          context, 'Ne pas autoriser', onDenied,
-                          isLast: true),
+                      _buildPermissionButton('Autoriser une fois', onAuthorized),
+                      _buildPermissionButton('Autoriser lorsque l\'app est active', onAuthorized),
+                      _buildPermissionButton('Ne pas autoriser', onDenied, isLast: true),
                     ],
                   ),
                 ],
@@ -90,39 +74,18 @@ class PermissionScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildPermissionButton(
-      BuildContext context, String text, VoidCallback onPressed,
+  Widget _buildPermissionButton(String text, VoidCallback onPressed,
       {bool isLast = false}) {
     return Container(
       margin: EdgeInsets.only(bottom: isLast ? 0 : 1),
       child: ElevatedButton(
-        onPressed: () {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (context) => SharingScreen(onShareLocation: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                      builder: (context) => RestaurantSuggestionPage()),
-                );
-              }, onAddAddress: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                      builder: (context) => RestaurantSuggestionPage()),
-                );
-              }, onGpsDisabled: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                      builder: (context) => RestaurantSuggestionPage()),
-                );
-              }),
-            ),
-          );
-        },
+        onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.transparent,
-            shadowColor: Colors.transparent,
-            elevation: 0,
-            padding: EdgeInsets.only(left: 10)),
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          elevation: 0,
+          padding: EdgeInsets.only(left: 10)
+        ),
         child: Text(
           text,
           style: const TextStyle(

@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../screens/auth_service.dart';
+import '../../screens/user_service.dart';
 
 // Auth States
 abstract class AuthState extends Equatable {
@@ -127,6 +129,9 @@ class AuthCubit extends Cubit<AuthState> {
       final result = await _authService.verifyCode(phoneNumber, code);
 
       if (result['success'] == true) {
+        // Store access token in UserService
+        await UserService().setAccessToken(result['access_token']);
+
         // Optionally store tokens and user info here
         // e.g. SharedPreferences, or pass to next screen
         // debugPrint tokens for now
@@ -148,5 +153,17 @@ class AuthCubit extends Cubit<AuthState> {
     if (state is AuthError) {
       emit(AuthInitial());
     }
+  }
+}
+
+class UserService {
+  Future<void> setAccessToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('access_token', token);
+  }
+
+  Future<String?> getAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('access_token');
   }
 }

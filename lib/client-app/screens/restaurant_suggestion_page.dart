@@ -1,107 +1,132 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/client-app/screens/restuarant_details.dart';
-import '../models/restaurant.dart';  
+import '../models/restaurant.dart';
 import '../models/category.dart';
-import '../blocs/restaurant/restaurant_cubit.dart';
+import '../services/restaurant_service.dart';
 import '../services/user_service.dart';
 import '../widgets/custom_bottom_navigation_bar.dart';
 import 'restaurant_search_screen.dart';
 import 'resturant_category_page.dart';
 
 class RestaurantSuggestionPage extends StatefulWidget {
-  const RestaurantSuggestionPage({Key? key}) : super(key: key);
-
   @override
-  State<RestaurantSuggestionPage> createState() => _RestaurantSuggestionPageState();
+  _RestaurantSuggestionPageState createState() =>
+      _RestaurantSuggestionPageState();
 }
 
 class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
+  final RestaurantService _restaurantService = RestaurantService();
   final UserService _userService = UserService();
+  String selectedCategory = '';
+  List<Restaurant> restaurants = [];
+  List<Category> categories = [];
+  bool isLoading = true;
   String? username;
   UserLocation? userLocation;
 
   @override
   void initState() {
     super.initState();
-    _loadUserData();
-    // Load restaurants and categories using BLoC
-    context.read<RestaurantCubit>().loadNearbyRestaurants();
+    _loadData();
   }
 
-  Future<void> _loadUserData() async {
+  Future<void> _loadData() async {
+    setState(() => isLoading = true);
     try {
+      final loadedCategories = await _restaurantService.getCategories();
+      // Try to load nearby restaurants from stored coordinates; falls back to all restaurants
+      final coords = await _userService.getCurrentCoordinates();
+      print('ℹ️ Stored coordinates before fetching restaurants: $coords');
+      List<Restaurant> loadedRestaurants = await _restaurantService
+          .getNearbyRestaurantsFromStoredLocation(radius: 5000);
+
       final currentUsername = await _userService.getCurrentUsername();
       final currentLocation = await _userService.getCurrentLocation();
-      
+
       setState(() {
+        categories = loadedCategories;
+        restaurants = loadedRestaurants;
         username = currentUsername;
         userLocation = currentLocation;
+        isLoading = false;
       });
+
+      print(
+          '✅ Loaded: ${restaurants.length} restaurants, ${categories.length} categories');
     } catch (e) {
-      print('❌ Error loading user data: $e');
+      print('❌ Error loading data: $e');
+      setState(() {
+        isLoading = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Erreur de chargement: $e'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 5),
+          ),
+        );
+      }
     }
   }
 
-  Future<void> _refreshData() async {
-    await _loadUserData();
-    context.read<RestaurantCubit>().loadNearbyRestaurants();
+  Widget _buildCategoryChip(Category category) {
+    bool isSelected = selectedCategory == category.name;
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RestaurantListPage(
+              category: category,
+              allRestaurants: restaurants, // Pass the fetched restaurants
+            ),
+          ),
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.only(right: 12),
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? Color(0xFF006C4A) : Colors.white,
+          border: Border.all(
+            color: Color(0xFF006C4A),
+            width: 1,
+          ),
+          borderRadius: BorderRadius.circular(25),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: Image.asset(
+                category.iconPath,
+                width: 28,
+                height: 28,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(Icons.restaurant, size: 28, color: Colors.grey);
+                },
+              ),
+            ),
+            SizedBox(width: 8),
+            Text(
+              category.name,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.grey[800],
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
-    Widget _buildCategoryChip(Category category, List<Restaurant> restaurants) {
-  return GestureDetector(
-    onTap: () {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => RestaurantListPage(
-            category: category,
-            allRestaurants: restaurants,
-          ),
-        ),
-      );
-    },
-    child: Container(
-      margin: EdgeInsets.only(right: 12),
-      padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(
-          color: Color(0xFF006C4A),
-          width: 1,
-        ),
-        borderRadius: BorderRadius.circular(25),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(20),
-            child: Image.asset(
-              category.iconPath, 
-              width: 28,
-              height: 28,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Icon(Icons.restaurant, size: 28, color: Colors.grey);
-              },
-            ),
-          ),
-          SizedBox(width: 8),
-          Text(
-            category.name,
-            style: TextStyle(
-              color: Colors.grey[800],
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
-Widget _buildRestaurantCard(Restaurant restaurant) {
+  Widget _buildRestaurantCard(Restaurant restaurant) {
     return Container(
       margin: EdgeInsets.all(4),
       decoration: BoxDecoration(
@@ -204,7 +229,8 @@ Widget _buildRestaurantCard(Restaurant restaurant) {
                     ),
                   ),
               ],
-            ),),
+            ),
+          ),
           Expanded(
             flex: 2,
             child: Padding(
@@ -234,7 +260,8 @@ Widget _buildRestaurantCard(Restaurant restaurant) {
                           if (restaurant.isPremium)
                             Container(
                               margin: EdgeInsets.only(left: 4),
-                              child: Icon(Icons.verified, size: 14, color: Color(0xFFFFD700)),
+                              child: Icon(Icons.verified,
+                                  size: 14, color: Color(0xFFFFD700)),
                             ),
                         ],
                       ),
@@ -264,7 +291,8 @@ Widget _buildRestaurantCard(Restaurant restaurant) {
                         ),
                       ),
                       SizedBox(width: 8),
-                      Icon(Icons.delivery_dining, size: 12, color: Colors.grey[600]),
+                      Icon(Icons.delivery_dining,
+                          size: 12, color: Colors.grey[600]),
                       SizedBox(width: 2),
                       Text(
                         '${restaurant.deliveryMin}-${restaurant.deliveryMax} min',
@@ -286,20 +314,8 @@ Widget _buildRestaurantCard(Restaurant restaurant) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: BlocConsumer<RestaurantCubit, RestaurantState>(
-          listener: (context, state) {
-            if (state is RestaurantError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.message),
-                  backgroundColor: Colors.red,
-                ),
-              );
-            }
-          },
-          builder: (context, state) {
-            if (state is RestaurantLoading) {
-              return Center(
+        child: isLoading
+            ? Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -308,20 +324,15 @@ Widget _buildRestaurantCard(Restaurant restaurant) {
                     Text('Chargement des restaurants...'),
                   ],
                 ),
-              );
-            }
-
-            final restaurants = state is RestaurantLoaded ? state.restaurants : <Restaurant>[];
-            final categories = state is RestaurantLoaded ? state.categories : <Category>[];
-
-            return RefreshIndicator(
-              color: Color(0xFF006C4A),
-              backgroundColor: Colors.white,
-              strokeWidth: 3.0,
-              displacement: 40.0,
-              edgeOffset: 0.0,
-              triggerMode: RefreshIndicatorTriggerMode.onEdge,
-              onRefresh: _refreshData,
+              )
+            : RefreshIndicator(
+                color: Color(0xFF006C4A),
+                backgroundColor: Colors.white,
+                strokeWidth: 3.0,
+                displacement: 40.0,
+                edgeOffset: 0.0,
+                triggerMode: RefreshIndicatorTriggerMode.onEdge,
+                onRefresh: _loadData,
                 child: SingleChildScrollView(
                   physics: AlwaysScrollableScrollPhysics(),
                   child: Column(
@@ -359,233 +370,248 @@ Widget _buildRestaurantCard(Restaurant restaurant) {
                                       ),
                                   ],
                                 ),
-                            Row(
-                              children: [
-                                // Notification icon with circular border
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Colors.black,
-                                      width: 1.5,
+                                Row(
+                                  children: [
+                                    // Notification icon with circular border
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.black,
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Icon(
+                                          Icons.notifications,
+                                          size: 22,
+                                          color: Colors.black,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.notifications,
-                                      size: 22,
-                                      color: Colors.black,
+                                    SizedBox(width: 12),
+                                    // Cart icon with circular border
+                                    Container(
+                                      width: 40,
+                                      height: 40,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: Colors.black,
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Icon(
+                                          Icons.message,
+                                          size: 22,
+                                          color: Colors.black,
+                                        ),
+                                      ),
                                     ),
-                                  ),
-                                ),
-                                SizedBox(width: 12),
-                                // Cart icon with circular border
-                                Container(
-                                  width: 40,
-                                  height: 40,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Colors.black,
-                                      width: 1.5,
-                                    ),
-                                  ),
-                                  child: Center(
-                                    child: Icon(
-                                      Icons.message,
-                                      size: 22,
-                                      color: Colors.black,
-                                    ),
-                                  ),
+                                  ],
                                 ),
                               ],
+                            ),
+                            SizedBox(
+                                height:
+                                    18), // Search Bar - Navigate to Search Page
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        RestaurantSearchPage(),
+                                  ),
+                                );
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[50],
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: Color(0xFF006C4A),
+                                    width: 1.5,
+                                  ),
+                                ),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 12),
+                                child: Row(
+                                  children: [
+                                    Icon(Icons.search,
+                                        color: Colors.black, size: 26),
+                                    SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        'Rechercher des restaurants, des aliments...',
+                                        style: TextStyle(
+                                          color: Colors.grey[500],
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ],
                         ),
-                        SizedBox(height: 18),// Search Bar - Navigate to Search Page
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RestaurantSearchPage(),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.grey[50],
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: Color(0xFF006C4A),
-                                width: 1.5,
-                              ),
-                            ),
-                            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                            child: Row(
-                              children: [
-                                Icon(Icons.search, color: Colors.black, size: 26),
-                                SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(
-                                    'Rechercher des restaurants, des aliments...',
-                                    style: TextStyle(
-                                      color: Colors.grey[500],
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w400,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                      ),
+
+                      // Promo banner
+                      Container(
+                        margin:
+                            EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Color(0xFF006C4A),
+                          borderRadius: BorderRadius.circular(16),
                         ),
-                      ],
-                    ),
-                  ),
-
-                  // Promo banner
-                  Container(
-                            margin: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                            padding: EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: Color(0xFF006C4A),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Livraison Gratuite à votre 3ème Commande !',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 15,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      SizedBox(height: 8),
-                                      Text(
-                                        'après deux commandes, la livraison de votre troisième commande est offerte.',
-                                        style: TextStyle(
-                                          color: Colors.white.withOpacity(0.95),
-                                          fontSize: 12,
-                                          height: 1.4,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                Image.asset("assets/icons/pizza.png", 
-                                  width: 90,
-                                  height: 90,
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // Categories
-                          if (categories.isNotEmpty)
-                            Container(
-                              padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          children: [
+                            Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'Catégories',
+                                    'Livraison Gratuite à votre 3ème Commande !',
                                     style: TextStyle(
+                                      color: Colors.white,
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.black,
                                     ),
                                   ),
-                                  SizedBox(height: 15),
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Row(
-                                      children: categories.map((category) => 
-                                        _buildCategoryChip(category, restaurants)
-                                      ).toList(),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'après deux commandes, la livraison de votre troisième commande est offerte.',
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.95),
+                                      fontSize: 12,
+                                      height: 1.4,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
+                            Image.asset(
+                              "assets/icons/pizza.png",
+                              width: 90,
+                              height: 90,
+                            ),
+                          ],
+                        ),
+                      ),
 
-                          SizedBox(height: 20),
-
-                          // Restaurants Grid
-                          Container(
-                            padding: EdgeInsets.symmetric(horizontal: 20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Nouveautés à découvrir (${restaurants.length})',
-                                  style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
+                      // Categories
+                      if (categories.isNotEmpty)
+                        Container(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Catégories',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
                                 ),
-                                SizedBox(height: 16),
-                                if (restaurants.isEmpty)
-                                  Center(
-                                    child: Column(
-                                      children: [
-                                        Icon(Icons.restaurant, size: 48, color: Colors.grey),
-                                        SizedBox(height: 16),
-                                        Text('Aucun restaurant trouvé', style: TextStyle(color: Colors.grey[600])),
-                                        ElevatedButton(
-                                          onPressed: () => context.read<RestaurantCubit>().loadNearbyRestaurants(),
-                                          child: Text('Recharger'),
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Color(0xFF006C4A),
-                                            foregroundColor: Colors.white,
-                                          ),
+                              ),
+                              SizedBox(height: 15),
+                              SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: categories
+                                      .map((category) =>
+                                          _buildCategoryChip(category))
+                                      .toList(),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                      SizedBox(height: 20),
+
+                      // Restaurants Grid
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Nouveautés à découvrir (${restaurants.length})',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            SizedBox(height: 16),
+                            if (restaurants.isEmpty)
+                              Center(
+                                child: Column(
+                                  children: [
+                                    Icon(Icons.restaurant,
+                                        size: 48, color: Colors.grey),
+                                    SizedBox(height: 16),
+                                    Text('Aucun restaurant trouvé',
+                                        style:
+                                            TextStyle(color: Colors.grey[600])),
+                                    ElevatedButton(
+                                      onPressed: _loadData,
+                                      child: Text('Recharger'),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Color(0xFF006C4A),
+                                        foregroundColor: Colors.white,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              )
+                            else
+                              GridView.builder(
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),
+                                gridDelegate:
+                                    SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  childAspectRatio: 0.8,
+                                  crossAxisSpacing: 10,
+                                  mainAxisSpacing: 12,
+                                ),
+                                itemCount: restaurants.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              RestaurantDetailsPage(
+                                                  restaurant:
+                                                      restaurants[index]),
                                         ),
-                                      ],
-                                    ),
-                                  )
-                                else
-                                  GridView.builder(
-                                    shrinkWrap: true,
-                                    physics: NeverScrollableScrollPhysics(),
-                                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      childAspectRatio: 0.8,
-                                      crossAxisSpacing: 10,mainAxisSpacing: 12,
-                                    ),
-                                    itemCount: restaurants.length,
-                                    itemBuilder: (context, index) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => RestaurantDetailsPage(restaurant: restaurants[index]),
-                                            ),
-                                          );
-                                        },
-                                        child: _buildRestaurantCard(restaurants[index]),
                                       );
                                     },
-                                  ),
-                                SizedBox(height: 32),
-                              ],
-                            ),
-                          ),
-                        ],
+                                    child: _buildRestaurantCard(
+                                        restaurants[index]),
+                                  );
+                                },
+                              ),
+                            SizedBox(height: 32),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              );
-          },
-        ),
+              ),
       ),
       bottomNavigationBar: CustomBottomNavigationBar(),
     );

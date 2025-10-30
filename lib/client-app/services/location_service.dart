@@ -5,6 +5,7 @@ import '../../config/api_config.dart';
 import 'dart:convert';
 import 'package:geocoding/geocoding.dart' as geocoding;
 import 'user_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LocationService {
   // Vérifier si le GPS est activé
@@ -20,6 +21,8 @@ class LocationService {
   static Future<LocationPermission> requestLocationPermission() async {
     return await Geolocator.requestPermission();
   }
+
+  static const String _locationFullAddressKey = 'location_full_address';
 
   // Récupérer la position actuelle
   static Future<Position?> getCurrentLocation() async {
@@ -107,7 +110,7 @@ class LocationService {
     try {
       print("Début de l'envoi POST GPS vers le serveur...");
 
-    final Uri url = Uri.parse(ApiConfig.searchRestaurantsUrl);
+      final Uri url = Uri.parse(ApiConfig.searchRestaurantsUrl);
 
       // Pour GPS: envoyer seulement les coordonnées
       final Map<String, dynamic> body = {
@@ -117,12 +120,22 @@ class LocationService {
 
       print("JSON GPS envoyé: ${json.encode(body)}");
 
+      // Get token from storage
+      final token = await UserService().getAccessToken();
+      if (token == null) {
+        print("⚠️ Aucun token d'accès trouvé, envoi non autorisé.");
+        return false;
+      } else {
+        print("✅ Token d'accès récupéré: $token");
+      }
+
       final response = await http
           .post(
             url,
             headers: {
               'Content-Type': 'application/json',
               'Accept': 'application/json',
+              if (token != null) 'Authorization': 'Bearer $token',
             },
             body: json.encode(body),
           )
@@ -168,7 +181,7 @@ class LocationService {
     try {
       print("Envoi GPS avec coordonnées vers le serveur...");
 
-    final Uri url = Uri.parse(ApiConfig.searchRestaurantsUrl);
+      final Uri url = Uri.parse(ApiConfig.searchRestaurantsUrl);
 
       final Map<String, dynamic> body = {
         'lat': latitude,
@@ -177,11 +190,15 @@ class LocationService {
 
       print("JSON envoyé (GPS): ${json.encode(body)}");
 
+      // Get token from storage
+      final token = await UserService().getAccessToken();
+
       final response = await http.post(
         url,
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          if (token != null) 'Authorization': 'Bearer $token',
         },
         body: json.encode(body),
       );
@@ -220,7 +237,7 @@ class LocationService {
       }
 
       // Si le géocodage échoue, essayer d'envoyer quand même l'adresse seule
-    final Uri url = Uri.parse(ApiConfig.searchRestaurantsUrl);
+      final Uri url = Uri.parse(ApiConfig.searchRestaurantsUrl);
 
       final Map<String, dynamic> body = {
         'address': address,
@@ -315,5 +332,75 @@ class LocationService {
   static String formatCoordinates(Position position) {
     return 'Latitude: ${position.latitude.toStringAsFixed(6)}\n'
         'Longitude: ${position.longitude.toStringAsFixed(6)}';
+  }
+}
+
+class UserService {
+  // ...existing code...
+
+  Future<void> setAccessToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('access_token', token);
+  }
+
+  Future<String?> getAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('access_token');
+  }
+
+  Future<void> setCurrentLocationLatitude(String latitude) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('current_location_latitude', latitude);
+  }
+
+  Future<void> setCurrentLocationLongitude(String longitude) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('current_location_longitude', longitude);
+  }
+
+  Future<void> setCurrentLocation(
+      {required String latitude, required String longitude}) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('current_location_latitude', latitude);
+    await prefs.setString('current_location_longitude', longitude);
+  }
+
+  Future<void> setCurrentLocationAreaCity(
+      {required String area, required String city}) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('current_location_area', area);
+    await prefs.setString('current_location_city', city);
+  }
+
+  Future<String?> getCurrentLocationLatitude() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('current_location_latitude');
+  }
+
+  Future<String?> getCurrentLocationLongitude() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('current_location_longitude');
+  }
+
+  Future<String?> getCurrentLocationArea() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('current_location_area');
+  }
+
+  Future<String?> getCurrentLocationCity() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('current_location_city');
+  }
+
+  static const String _locationFullAddressKey = 'location_full_address';
+
+  Future<bool> setFullAddress(String address) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return await prefs.setString(_locationFullAddressKey, address);
+    } catch (e) {
+      print('Error saving full address: $e');
+      return false;
+    }
   }
 }

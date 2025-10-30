@@ -9,11 +9,11 @@ class UserLocation {
 
 class UserService {
   static final UserService _instance = UserService._internal();
-  
+
   factory UserService() {
     return _instance;
   }
-  
+
   UserService._internal();
 
   static const String _usernameKey = 'username';
@@ -32,11 +32,16 @@ class UserService {
     }
   }
 
+  Future<String?> getAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('access_token');
+  }
+
   // Get current username
   Future<String> getCurrentUsername() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      return prefs.getString(_usernameKey) ?? 'khouloud'; 
+      return prefs.getString(_usernameKey) ?? 'khouloud';
     } catch (e) {
       print('Error getting username: $e');
       return 'khouloud'; // Fallback on error
@@ -61,18 +66,20 @@ class UserService {
       final area = prefs.getString(_locationAreaKey);
       final city = prefs.getString(_locationCityKey);
 
-      if (area != null && city != null) {
-        return UserLocation(area: area, city: city);
+      // Try to get location from device if not set in prefs
+      if (area == null || city == null) {
+        print('Location not found in prefs, using default: Bararij, Sidi Moussa');
+        return UserLocation(
+          area: 'Bararij',
+          city: 'Sidi Moussa',
+        );
       }
-      
-      // Fallback to default location if not set
-      return UserLocation(
-        area: 'Bararij',
-        city: 'Sidi Moussa',
-      );
+      print('Location from prefs: area=$area, city=$city');
+      return UserLocation(area: area, city: city);
     } catch (e) {
       print('Error getting location: $e');
       // Return default location on error
+      print('Using default location: Bararij, Sidi Moussa');
       return UserLocation(
         area: 'Bararij',
         city: 'Sidi Moussa',
@@ -86,7 +93,7 @@ class UserService {
       final prefs = await SharedPreferences.getInstance();
       final areaSuccess = await prefs.setString(_locationAreaKey, area);
       final citySuccess = await prefs.setString(_locationCityKey, city);
-      
+
       print('Location saved: $area, $city');
       return areaSuccess && citySuccess;
     } catch (e) {
@@ -111,7 +118,8 @@ class UserService {
   Future<bool> setCurrentLocationLongitude(String longitude) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final lngSuccess = await prefs.setString(_locationLongitudeKey, longitude);
+      final lngSuccess =
+          await prefs.setString(_locationLongitudeKey, longitude);
       print('Longitude saved: $longitude');
       return lngSuccess;
     } catch (e) {
@@ -166,7 +174,6 @@ class UserService {
       return null;
     }
   }
-
 
   // Clear location
   Future<bool> clearLocation() async {

@@ -2,8 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart' as geocoding;
-import '../../services/location_service.dart';
-import '../../services/user_service.dart';
+import '../../services/location_service.dart' as location_service;
+import '../../services/user_service.dart' as user_service;
 
 // Location States
 abstract class LocationState extends Equatable {
@@ -60,10 +60,10 @@ class LocationError extends LocationState {
 
 // Location Cubit
 class LocationCubit extends Cubit<LocationState> {
-  final UserService _userService;
+  final user_service.UserService _userService;
 
-  LocationCubit({UserService? userService})
-      : _userService = userService ?? UserService(),
+  LocationCubit({user_service.UserService? userService})
+      : _userService = userService ?? user_service.UserService(),
         super(LocationInitial());
 
   Future<void> requestLocationPermission() async {
@@ -101,14 +101,14 @@ class LocationCubit extends Cubit<LocationState> {
     
     try {
       // Check if GPS is enabled
-      bool gpsEnabled = await LocationService.isLocationServiceEnabled();
+      bool gpsEnabled = await location_service.LocationService.isLocationServiceEnabled();
       if (!gpsEnabled) {
         emit(LocationGpsDisabled());
         return;
       }
 
       // Get current position
-      Position? position = await LocationService.getCurrentLocation();
+      Position? position = await location_service.LocationService.getCurrentLocation();
       if (position == null) {
         emit(const LocationError(message: 'Impossible de récupérer la localisation GPS.'));
         return;
@@ -229,7 +229,7 @@ class LocationCubit extends Cubit<LocationState> {
   Future<bool> _sendLocationToServer(String address, double latitude, double longitude) async {
     for (int attempt = 1; attempt <= 3; attempt++) {
       try {
-        bool success = await LocationService.sendLocationWithCoordinates(address, latitude, longitude)
+        bool success = await location_service.LocationService.sendLocationWithCoordinates(address, latitude, longitude)
             .timeout(const Duration(seconds: 10));
         if (success) return true;
       } catch (e) {
@@ -244,7 +244,7 @@ class LocationCubit extends Cubit<LocationState> {
   Future<bool> _sendAddressToServer(String address) async {
     for (int attempt = 1; attempt <= 3; attempt++) {
       try {
-        bool success = await LocationService.sendAddressOnly(address)
+        bool success = await location_service.LocationService.sendAddressOnly(address)
             .timeout(const Duration(seconds: 10));
         if (success) return true;
       } catch (e) {
