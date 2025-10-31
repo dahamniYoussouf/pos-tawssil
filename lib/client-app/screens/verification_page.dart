@@ -182,252 +182,258 @@ class _VerificationPageState extends State<VerificationPage> {
 
         String? devOtp = _verificationId;
         return Scaffold(
-          backgroundColor: Colors.white,
-          appBar: AppBar(
             backgroundColor: Colors.white,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.black),
-              onPressed: () => Navigator.pop(context),
-            ),
-            title: const Text(
-              'Verification',
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              elevation: 0,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.black),
+                onPressed: () => Navigator.pop(context),
               ),
+              title: const Text(
+                'Verification',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              centerTitle: true,
             ),
-            centerTitle: true,
-          ),
-          body: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 20),
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 20),
 
-                  // Title
-                  const Text(
-                    'Enter the verification code',
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      height: 1.2,
-                    ),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Subtitle with phone number
-                  RichText(
-                    text: TextSpan(
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[600],
+                      // Title
+                      const Text(
+                        'Enter the verification code',
+                        style: TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          height: 1.2,
+                        ),
                       ),
-                      children: [
-                        const TextSpan(text: 'We sent a code to '),
-                        TextSpan(
-                          text: '${widget.countryCode} ${widget.phoneNumber}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
+
+                      const SizedBox(height: 12),
+
+                      // Subtitle with phone number
+                      RichText(
+                        text: TextSpan(
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                          children: [
+                            const TextSpan(text: 'We sent a code to '),
+                            TextSpan(
+                              text:
+                                  '${widget.countryCode} ${widget.phoneNumber}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      if (devOtp != null && devOtp.isNotEmpty) ...[
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Color(0xFFE3FCEC),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Color(0xFFB2F5EA)),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.lock, color: Color(0xFF006C4A)),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Test OTP: $devOtp',
+                                  style: const TextStyle(
+                                    color: Color(0xFF006C4A),
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
-                    ),
-                  ),
 
-                  if (devOtp != null && devOtp.isNotEmpty) ...[
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Color(0xFFE3FCEC),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Color(0xFFB2F5EA)),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.lock, color: Color(0xFF006C4A)),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              'Test OTP: $devOtp',
+                      const SizedBox(height: 40),
+
+                      // OTP input fields
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: List.generate(6, (index) {
+                          return SizedBox(
+                            width: 45,
+                            height: 55,
+                            child: TextField(
+                              controller: _controllers[index],
+                              focusNode: _focusNodes[index],
+                              textAlign: TextAlign.center,
+                              keyboardType: TextInputType.number,
+                              maxLength: 1,
                               style: const TextStyle(
-                                color: Color(0xFF006C4A),
+                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 16,
                               ),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              decoration: InputDecoration(
+                                counterText: '',
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide:
+                                      BorderSide(color: Colors.grey[300]!),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide:
+                                      BorderSide(color: Colors.grey[300]!),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: const BorderSide(
+                                      color: Color(0xFF006C4A), width: 2),
+                                ),
+                                filled: true,
+                                fillColor: Colors.grey[50],
+                              ),
+                              onChanged: (value) =>
+                                  _onCodeChanged(index, value),
+                              onSubmitted: (value) {
+                                if (index == 5) {
+                                  _verifyCode();
+                                }
+                              },
                             ),
-                          ),
-                        ],
+                          );
+                        }),
                       ),
-                    ),
-                  ],
 
-                  const SizedBox(height: 40),
+                      const SizedBox(height: 24),
 
-                  // OTP input fields
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: List.generate(6, (index) {
-                      return SizedBox(
-                        width: 45,
-                        height: 55,
-                        child: TextField(
-                          controller: _controllers[index],
-                          focusNode: _focusNodes[index],
-                          textAlign: TextAlign.center,
-                          keyboardType: TextInputType.number,
-                          maxLength: 1,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                      // Error message
+                      if (errorMessage.isNotEmpty) ...[
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.red[50],
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.red[200]!),
                           ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.digitsOnly,
-                          ],
-                          decoration: InputDecoration(
-                            counterText: '',
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.grey[300]!),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.grey[300]!),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                  color: Color(0xFF006C4A), width: 2),
-                            ),
-                            filled: true,
-                            fillColor: Colors.grey[50],
+                          child: Row(
+                            children: [
+                              Icon(Icons.error_outline,
+                                  color: Colors.red[600], size: 20),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  errorMessage,
+                                  style: TextStyle(
+                                    color: Colors.red[600],
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                          onChanged: (value) => _onCodeChanged(index, value),
-                          onSubmitted: (value) {
-                            if (index == 5) {
-                              _verifyCode();
-                            }
+                        ),
+                        const SizedBox(height: 16),
+                      ],
+
+                      // Resend code button
+                      Center(
+                        child: TextButton(
+                          onPressed: () {
+                            context.read<AuthCubit>().sendVerificationCode(
+                                widget.phoneNumber, widget.countryCode);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Code renvoyé'),
+                                backgroundColor: Color(0xFF006C4A),
+                              ),
+                            );
                           },
-                        ),
-                      );
-                    }),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Error message
-                  if (errorMessage.isNotEmpty) ...[
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: Colors.red[50],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.red[200]!),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(Icons.error_outline,
-                              color: Colors.red[600], size: 20),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              errorMessage,
+                          child: RichText(
+                            text: TextSpan(
                               style: TextStyle(
-                                color: Colors.red[600],
                                 fontSize: 14,
+                                color: Colors.grey[600],
                               ),
+                              children: const [
+                                TextSpan(
+                                    text: 'Vous n\'avez pas reçu le code ? '),
+                                TextSpan(
+                                  text: 'Renvoyer',
+                                  style: TextStyle(
+                                    color: Color(0xFF006C4A),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-
-                  // Resend code button
-                  Center(
-                    child: TextButton(
-                      onPressed: () {
-                        context.read<AuthCubit>().sendVerificationCode(
-                            widget.phoneNumber, widget.countryCode);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Code renvoyé'),
-                            backgroundColor: Color(0xFF006C4A),
-                          ),
-                        );
-                      },
-                      child: RichText(
-                        text: TextSpan(
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[600],
-                          ),
-                          children: const [
-                            TextSpan(text: 'Vous n\'avez pas reçu le code ? '),
-                            TextSpan(
-                              text: 'Renvoyer',
-                              style: TextStyle(
-                                color: Color(0xFF006C4A),
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
                         ),
                       ),
-                    ),
-                  ),
 
-                  const Spacer(),
+                      const SizedBox(height: 32),
 
-                  // Verify button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: isLoading ? null : _verifyCode,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF006C4A),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        disabledBackgroundColor: Colors.grey[300],
-                      ),
-                      child: isLoading
-                          ? const SizedBox(
-                              width: 24,
-                              height: 24,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor:
-                                    AlwaysStoppedAnimation<Color>(Colors.white),
-                              ),
-                            )
-                          : const Text(
-                              'Vérifier',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
-                              ),
+                      // Verify buttons
+                      SizedBox(
+                        width: double.infinity,
+                        height: 56,
+                        child: ElevatedButton(
+                          onPressed: isLoading ? null : _verifyCode,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF006C4A),
+                            foregroundColor: Colors.white,
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
                             ),
-                    ),
-                  ),
+                            disabledBackgroundColor: Colors.grey[300],
+                          ),
+                          child: isLoading
+                              ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white),
+                                  ),
+                                )
+                              : const Text(
+                                  'Vérifier',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                        ),
+                      ),
 
-                  const SizedBox(height: 20),
-                ],
+                      const SizedBox(height: 20),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
-        );
+            ));
       },
     );
   }

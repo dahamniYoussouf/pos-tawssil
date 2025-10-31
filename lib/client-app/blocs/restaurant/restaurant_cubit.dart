@@ -193,9 +193,11 @@ class RestaurantCubit extends Cubit<RestaurantState> {
     final currentState = state;
     if (currentState is RestaurantLoaded) {
       try {
-        // You need to pass both categoryId and userAddress (dummy address for now)
-        final restaurants = await _restaurantService.getRestaurantsByCategory(
-            categoryName, "user address");
+        // Use static example coordinates for testing
+        final double latitude = 36.7309787;
+        final double longitude = 3.1670409;
+        final restaurants = await _restaurantService
+            .getRestaurantsByCategory([categoryName], latitude, longitude);
         emit(currentState.copyWith(
           restaurants: restaurants,
           selectedCategory: categoryName,

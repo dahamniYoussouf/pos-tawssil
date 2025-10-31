@@ -1,4 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 class UserLocation {
   final String area;
@@ -68,25 +70,56 @@ class UserService {
 
       // Try to get location from device if not set in prefs
       if (area == null || city == null) {
-        print('Location not found in prefs, using default: Bararij, Sidi Moussa');
-        return UserLocation(
-          area: 'Bararij',
-          city: 'Sidi Moussa',
-        );
+        print('Location not found in prefs, trying to get from device...');
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+        }
+        if (permission == LocationPermission.deniedForever ||
+            permission == LocationPermission.denied) {
+          print(
+              'Location permission denied, using default: Bararij, Sidi Moussa');
+          return UserLocation(area: 'Bararij', city: 'Sidi Moussa');
+        }
+        Position position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high);
+        print(
+            'Device location: lat=${position.latitude}, lng=${position.longitude}');
+        try {
+          List<Placemark> placemarks = await placemarkFromCoordinates(
+            position.latitude,
+            position.longitude,
+          );
+          if (placemarks.isNotEmpty) {
+            final place = placemarks.first;
+            final areaName =
+                place.locality ?? place.subLocality ?? 'Unknown area';
+            final cityName = place.administrativeArea ?? 'Unknown city';
+            print('📍 Place name: $areaName, $cityName');
+            return UserLocation(area: areaName, city: cityName);
+          } else {
+            print('⚠️ No placemark found');
+            return UserLocation(
+              area: position.latitude.toString(),
+              city: position.longitude.toString(),
+            );
+          }
+        } catch (e) {
+          print('❌ Error getting placemark: $e');
+          return UserLocation(
+            area: position.latitude.toString(),
+            city: position.longitude.toString(),
+          );
+        }
       }
       print('Location from prefs: area=$area, city=$city');
       return UserLocation(area: area, city: city);
     } catch (e) {
       print('Error getting location: $e');
-      // Return default location on error
       print('Using default location: Bararij, Sidi Moussa');
-      return UserLocation(
-        area: 'Bararij',
-        city: 'Sidi Moussa',
-      );
+      return UserLocation(area: 'Bararij', city: 'Sidi Moussa');
     }
   }
-
   // Set current location
   Future<bool> setCurrentLocation(String area, String city) async {
     try {

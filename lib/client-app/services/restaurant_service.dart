@@ -1,4 +1,5 @@
 /// Fetch categories for a specific restaurant
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/restaurant.dart';
@@ -232,13 +233,28 @@ class RestaurantService {
   Future<List<Restaurant>> getNearbyRestaurants({
     required double lat,
     required double lng,
-    int radius = 2000,
+    int radius = 5000,
+    List<String>? categories,
+    int page = 1,
+    int pageSize = 20,
   }) async {
     final accessToken = await getAccessToken();
     try {
-      final uri = Uri.parse(ApiConfig.nearbyRestaurantsUrl);
+      final uri = Uri.parse(
+          'https://tawssilbackyou.onrender.com/restaurant/nearbyfilter');
       print('📄 POSTing to nearby restaurants endpoint: $uri');
-      print('📥 Body: { lat: $lat, lng: $lng, radius: $radius }');
+
+      final Map<String, dynamic> body = {
+        "lat": lat.toString(),
+        "lng": lng.toString(),
+        "radius": radius,
+        "categories": categories ?? ["pizza", "burger", "tacos", "sandwish"],
+        "page": page,
+        "pageSize": pageSize
+      };
+
+      print('📦 Request body of the nearby restaurants: $body');
+
       final response = await http
           .post(
             uri,
@@ -247,54 +263,44 @@ class RestaurantService {
               'Accept': 'application/json',
               if (accessToken != null) 'Authorization': 'Bearer $accessToken',
             },
-            body: json.encode({
-              'lat': lat,
-              'lng': lng,
-              'radius': radius,
-            }),
+            body: json.encode(body),
           )
-          .timeout(Duration(seconds: 15));
+          .timeout(const Duration(seconds: 15));
 
       print('📡 Response status: ${response.statusCode}');
       print('📦 Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        final dynamic responseData = json.decode(response.body);
+        final responseData = json.decode(response.body);
 
-        if (responseData is Map<String, dynamic>) {
-          if (responseData['success'] == true &&
-              responseData.containsKey('data')) {
-            final List<dynamic> restaurantsList = responseData['data'];
-            if (restaurantsList.isEmpty) return [];
+        if (responseData is Map<String, dynamic> &&
+            responseData.containsKey('data')) {
+          final List<dynamic> restaurantsList = responseData['data'];
+          if (restaurantsList.isEmpty) return [];
 
-            List<Restaurant> parsedRestaurants = [];
-            for (int i = 0; i < restaurantsList.length; i++) {
-              try {
-                final restaurantData =
-                    restaurantsList[i] as Map<String, dynamic>;
-                final restaurant = Restaurant.fromJson(restaurantData);
-                parsedRestaurants.add(restaurant);
-              } catch (e) {
-                print('❌ Error parsing nearby restaurant $i: $e');
-                print('   Data: ${restaurantsList[i]}');
-              }
-            }
-
-            return parsedRestaurants;
-          } else {
-            print('⚠️ nearby restaurants response invalid or success=false');
-            print('   Response: $responseData');
-            return [];
-          }
+          return restaurantsList
+              .map((e) {
+                try {
+                  return Restaurant.fromJson(e as Map<String, dynamic>);
+                } catch (e) {
+                  print('❌ Error parsing restaurant: $e');
+                  return null;
+                }
+              })
+              .whereType<Restaurant>()
+              .toList();
+        } else {
+          print('⚠️ Invalid response structure: $responseData');
+          return [];
         }
-
-        print('⚠️ nearby restaurants response is not a Map');
-        return [];
       } else {
         print('❌ HTTP Error ${response.statusCode}');
         print('   Body: ${response.body}');
         return [];
       }
+    } on TimeoutException {
+      print('⏰ Request timed out');
+      return [];
     } catch (e, stackTrace) {
       print('❌ Exception fetching nearby restaurants: $e');
       print('   Stack: $stackTrace');
@@ -423,13 +429,12 @@ class RestaurantService {
   }
 
   Future<List<Restaurant>> getRestaurantsByCategory(
-      String categoryId, String userAddress, // Only address parameter now
-      {int page = 1,
-      int pageSize = 20}) async {
+      List<String> categories, double lat, double lng,
+      {int radius = 50000, int page = 1, int pageSize = 20}) async {
     final accessToken = await getAccessToken();
     try {
-      print('Fetching restaurants by category ID: $categoryId');
-      print('Using address: $userAddress');
+      print('Fetching restaurants by categories: $categories');
+      print('Using lat: $lat, lng: $lng, radius: $radius');
       final response = await http
           .post(
             Uri.parse(
@@ -440,9 +445,10 @@ class RestaurantService {
               if (accessToken != null) 'Authorization': 'Bearer $accessToken',
             },
             body: json.encode({
-              'category': categoryId,
-              'address': userAddress, // Only address
-              'q': 'new',
+              'lat': lat.toString(),
+              'lng': lng.toString(),
+              'radius': radius,
+              'categories': categories,
               'page': page,
               'pageSize': pageSize,
             }),

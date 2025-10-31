@@ -184,8 +184,8 @@ class LocationService {
       final Uri url = Uri.parse(ApiConfig.searchRestaurantsUrl);
 
       final Map<String, dynamic> body = {
-        'lat': latitude,
-        'lng': longitude,
+        'lat': '36.7309787',
+        'lng': '3.1670409',
       };
 
       print("JSON envoyé (GPS): ${json.encode(body)}");

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class SharingScreen extends StatelessWidget {
+class SharingScreen extends StatefulWidget {
   final VoidCallback onShareLocation;
   final VoidCallback onAddAddress;
   final VoidCallback onGpsDisabled;
@@ -13,11 +13,18 @@ class SharingScreen extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<SharingScreen> createState() => _SharingScreenState();
+}
+
+class _SharingScreenState extends State<SharingScreen> {
+  bool isLoading = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold( 
+    return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child: SingleChildScrollView( 
+        child: SingleChildScrollView(
           child: Container(
             margin: const EdgeInsets.all(30),
             padding: const EdgeInsets.all(30),
@@ -51,7 +58,8 @@ class SharingScreen extends StatelessWidget {
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
                           color: Colors.grey[200],
-                          child: const Icon(Icons.map, size: 60, color: Colors.grey),
+                          child: const Icon(Icons.map,
+                              size: 60, color: Colors.grey),
                         );
                       },
                     ),
@@ -78,14 +86,21 @@ class SharingScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 25),
-
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      FocusScope.of(context).unfocus();
-                      onShareLocation();
-                    },
+                    onPressed: isLoading
+                        ? null
+                        : () {
+                            FocusScope.of(context).unfocus();
+                            setState(() {
+                              isLoading = true;
+                            });
+                            widget.onShareLocation();
+                            setState(() {
+                              isLoading = false;
+                            });
+                          },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF006C4A),
                       padding: const EdgeInsets.symmetric(vertical: 15),
@@ -93,25 +108,32 @@ class SharingScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text(
-                      'Partagez votre localisation',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
+                    child: isLoading
+                        ? const SizedBox(
+                            height: 22,
+                            width: 22,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2.5,
+                            ),
+                          )
+                        : const Text(
+                            'Partagez votre localisation',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
                   ),
                 ),
-
                 const SizedBox(height: 10),
-
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
                     onPressed: () {
                       FocusScope.of(context).unfocus();
-                      onAddAddress();
+                      widget.onAddAddress();
                     },
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: Colors.grey[400]!),
@@ -135,5 +157,5 @@ class SharingScreen extends StatelessWidget {
         ),
       ),
     );
-  } 
+  }
 }
