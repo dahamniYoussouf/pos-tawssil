@@ -1,6 +1,6 @@
 name: frontend
 description: Tawsil delivery platform frontend
-publish_to: 'none'
+publish_to: "none"
 version: 1.0.0+1
 
 environment:
@@ -12,7 +12,7 @@ dependencies:
   geolocator: ^10.1.0
   permission_handler: ^11.1.0
   geocoding: ^2.1.1
-  http: ^1.5.0  
+  http: ^1.5.0
   google_fonts: ^4.0.4
   app_settings: ^5.1.1
   flutter_bloc: ^9.1.1
@@ -22,6 +22,8 @@ dependencies:
   geocoding_platform_interface: ^3.2.0
   google_maps_flutter: ^2.5.0
   flutter_polyline_points: ^2.0.0
+  flutter_localizations:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
@@ -29,6 +31,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  generate: true
   assets:
     - assets/map_background.png
     - assets/permission_map.png

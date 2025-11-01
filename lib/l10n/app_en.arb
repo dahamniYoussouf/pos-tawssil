@@ -1,0 +1,481 @@
+{
+  "@@locale": "en",
+  "appTitle": "Tawsil",
+  "@appTitle": {
+    "description": "Application title"
+  },
+  "addPhoneNumber": "Add your phone number",
+  "@addPhoneNumber": {
+    "description": "Phone number page title"
+  },
+  "phoneNumberSubtitle": "To log in or sign up, enter your phone number.",
+  "@phoneNumberSubtitle": {
+    "description": "Phone number page subtitle"
+  },
+  "phoneNumberHint": "Phone number",
+  "@phoneNumberHint": {
+    "description": "Phone number input hint"
+  },
+  "connect": "Connect",
+  "@connect": {
+    "description": "Connect button text"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "Home navigation label"
+  },
+  "favorites": "Favorites",
+  "@favorites": {
+    "description": "Favorites navigation label"
+  },
+  "history": "History",
+  "@history": {
+    "description": "History navigation label"
+  },
+  "cart": "Cart",
+  "@cart": {
+    "description": "Cart navigation label"
+  },
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile navigation label"
+  },
+  "cartTitle": "Cart",
+  "@cartTitle": {
+    "description": "Cart page title"
+  },
+  "deliveryAddress": "Delivery address",
+  "@deliveryAddress": {
+    "description": "Delivery address label"
+  },
+  "products": "{count, plural, =0{Products} =1{Product} other{Products}}",
+  "@products": {
+    "description": "Products label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "deliveryFee": "Delivery fee",
+  "@deliveryFee": {
+    "description": "Delivery fee label"
+  },
+  "estimatedTime": "Estimated time",
+  "@estimatedTime": {
+    "description": "Estimated time label"
+  },
+  "orderDetails": "Order details",
+  "@orderDetails": {
+    "description": "Order details section title"
+  },
+  "subtotal": "Subtotal",
+  "@subtotal": {
+    "description": "Subtotal label"
+  },
+  "platformFee": "Platform fee",
+  "@platformFee": {
+    "description": "Platform fee label"
+  },
+  "total": "Total",
+  "@total": {
+    "description": "Total label"
+  },
+  "paymentMethod": "Payment method",
+  "@paymentMethod": {
+    "description": "Payment method section title"
+  },
+  "cash": "Cash",
+  "@cash": {
+    "description": "Cash payment method"
+  },
+  "baridiMob": "Baridi Mob",
+  "@baridiMob": {
+    "description": "Baridi Mob payment method"
+  },
+  "bankTransfer": "Bank transfer",
+  "@bankTransfer": {
+    "description": "Bank transfer payment method"
+  },
+  "deliveryOption": "Delivery option",
+  "@deliveryOption": {
+    "description": "Delivery option section title"
+  },
+  "pickup": "Pickup (no delivery)",
+  "@pickup": {
+    "description": "Pickup option"
+  },
+  "delivery": "Delivery",
+  "@delivery": {
+    "description": "Delivery option"
+  },
+  "verifyAndFinalize": "Verify and Finalize",
+  "@verifyAndFinalize": {
+    "description": "Verify order button"
+  },
+  "emptyCart": "Your cart is empty",
+  "@emptyCart": {
+    "description": "Empty cart message"
+  },
+  "addProductsToContinue": "Add products to continue",
+  "@addProductsToContinue": {
+    "description": "Empty cart subtitle"
+  },
+  "removeProduct": "Remove product",
+  "@removeProduct": {
+    "description": "Remove product dialog title"
+  },
+  "removeProductConfirmation": "Do you want to remove \"{productName}\" from the cart?",
+  "@removeProductConfirmation": {
+    "description": "Remove product confirmation message",
+    "placeholders": {
+      "productName": {
+        "type": "String"
+      }
+    }
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button"
+  },
+  "remove": "Remove",
+  "@remove": {
+    "description": "Remove button"
+  },
+  "note": "Note",
+  "@note": {
+    "description": "Note label"
+  },
+  "enterAddress": "Enter an address",
+  "@enterAddress": {
+    "description": "Enter address dialog title"
+  },
+  "addressHint": "Ex: 123 Republic Street, Algiers",
+  "@addressHint": {
+    "description": "Address input hint"
+  },
+  "confirm": "Confirm",
+  "@confirm": {
+    "description": "Confirm button"
+  },
+  "permissionDenied": "You have denied permission. Enable location in settings.",
+  "@permissionDenied": {
+    "description": "Permission denied message"
+  },
+  "gpsTimeout": "Unable to retrieve GPS location (timeout).",
+  "@gpsTimeout": {
+    "description": "GPS timeout error"
+  },
+  "gpsError": "Unable to retrieve GPS location.",
+  "@gpsError": {
+    "description": "GPS error message"
+  },
+  "locationSendError": "Error sending location. Check your connection.",
+  "@locationSendError": {
+    "description": "Location send error"
+  },
+  "addressSendError": "Error sending address. Check your connection.",
+  "@addressSendError": {
+    "description": "Address send error"
+  },
+  "error": "Error",
+  "@error": {
+    "description": "Generic error label"
+  },
+  "loadingError": "Loading error",
+  "@loadingError": {
+    "description": "Loading error message"
+  },
+  "gpsDisabled": "Location services disabled",
+  "@gpsDisabled": {
+    "description": "GPS disabled popup title"
+  },
+  "gpsDisabledMessage": "Please enable GPS to share your location with us.",
+  "@gpsDisabledMessage": {
+    "description": "GPS disabled popup message"
+  },
+  "enableGPS": "Enable GPS",
+  "@enableGPS": {
+    "description": "Enable GPS button"
+  },
+  "retry": "Retry",
+  "@retry": {
+    "description": "Retry button"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language label"
+  },
+  "selectLanguage": "Select Language",
+  "@selectLanguage": {
+    "description": "Select language dialog title"
+  },
+  "arabic": "Arabic",
+  "@arabic": {
+    "description": "Arabic language name"
+  },
+  "french": "French",
+  "@french": {
+    "description": "French language name"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language name"
+  },
+  "shareLocationTitle": "Share your location with us",
+  "@shareLocationTitle": {
+    "description": "Share location screen title"
+  },
+  "shareLocationDescription": "Tawsil uses your location to find establishments near you and deliver precisely to your address",
+  "@shareLocationDescription": {
+    "description": "Share location screen description"
+  },
+  "shareLocationButton": "Share your location",
+  "@shareLocationButton": {
+    "description": "Share location button text"
+  },
+  "addAddressButton": "Add an address",
+  "@addAddressButton": {
+    "description": "Add address button text"
+  },
+  "validateOrder": "Valider la commande",
+  "@validateOrder": {
+    "description": "Validate order page title"
+  },
+  "pickupPoint": "Point de récupération",
+  "@pickupPoint": {
+    "description": "Pickup point label"
+  },
+  "restaurant": "Restaurant",
+  "@restaurant": {
+    "description": "Restaurant label"
+  },
+  "destination": "Destination",
+  "@destination": {
+    "description": "Destination label"
+  },
+  "deliveryAddressLabel": "Adresse de livraison",
+  "@deliveryAddressLabel": {
+    "description": "Delivery address label"
+  },
+  "deliveryTime": "Temps de livraison",
+  "@deliveryTime": {
+    "description": "Delivery time label"
+  },
+  "orderNumber": "Numéro de commande",
+  "@orderNumber": {
+    "description": "Order number label"
+  },
+  "totalLabel": "Total",
+  "@totalLabel": {
+    "description": "Total label"
+  },
+  "totalValue": "{total} DA",
+  "@totalValue": {
+    "description": "Total value with currency",
+    "placeholders": {
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentMethodLabel": "Méthode de paiement",
+  "@paymentMethodLabel": {
+    "description": "Payment method label"
+  },
+  "orderDetailsLabel": "Détails de la commande",
+  "@orderDetailsLabel": {
+    "description": "Order details label"
+  },
+  "validate": "Valider",
+  "@validate": {
+    "description": "Validate button text"
+  },
+  "confirmOrder": "Confirmer la commande",
+  "@confirmOrder": {
+    "description": "Confirm order dialog title"
+  },
+  "confirmOrderMessage": "Voulez-vous confirmer cette commande ?",
+  "@confirmOrderMessage": {
+    "description": "Confirm order message"
+  },
+  "payment": "Paiement",
+  "@payment": {
+    "description": "Payment label"
+  },
+  "orderValidatedSuccessfully": "Commande validée avec succès!",
+  "@orderValidatedSuccessfully": {
+    "description": "Order validated successfully message"
+  },
+  "verificationError": "Erreur:",
+  "@verificationError": {
+    "description": "Verification error prefix"
+  },
+  "addToCart": "Ajouter au panier",
+  "@addToCart": {
+    "description": "Add to cart button"
+  },
+  "noteForKitchen": "Note pour la cuisine",
+  "@noteForKitchen": {
+    "description": "Note for kitchen label"
+  },
+  "verification": "Verification",
+  "@verification": {
+    "description": "Verification page title"
+  },
+  "enterVerificationCode": "Enter the verification code",
+  "@enterVerificationCode": {
+    "description": "Enter verification code title"
+  },
+  "weSentCode": "We sent a code to",
+  "@weSentCode": {
+    "description": "We sent a code message"
+  },
+  "codeComplete": "Veuillez entrer le code complet (6 chiffres).",
+  "@codeComplete": {
+    "description": "Complete code message"
+  },
+  "verificationErrorMsg": "Erreur lors de la vérification:",
+  "@verificationErrorMsg": {
+    "description": "Verification error message"
+  },
+  "devOtp": "Test OTP:",
+  "@devOtp": {
+    "description": "Dev OTP label"
+  },
+  "codeRenvoye": "Code renvoyé",
+  "@codeRenvoye": {
+    "description": "Code resent message"
+  },
+  "notReceived": "Vous n'avez pas reçu le code ?",
+  "@notReceived": {
+    "description": "Not received code message"
+  },
+  "resend": "Renvoyer",
+  "@resend": {
+    "description": "Resend button text"
+  },
+  "verify": "Vérifier",
+  "@verify": {
+    "description": "Verify button text"
+  },
+  "verificationSuccessful": "Vérification réussie!",
+  "@verificationSuccessful": {
+    "description": "Verification successful message"
+  },
+  "cartEmptyMessage": "Votre panier est vide",
+  "@cartEmptyMessage": {
+    "description": "Cart empty message"
+  },
+  "viewCart": "Consulter le panier",
+  "@viewCart": {
+    "description": "View cart button text"
+  },
+  "quantityInCart": "{count} dans le panier",
+  "@quantityInCart": {
+    "description": "Quantity in cart message",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "notAvailable": "Non disponible",
+  "@notAvailable": {
+    "description": "Not available label"
+  },
+  "deliveryFeeLabel": "Frais de livraison",
+  "@deliveryFeeLabel": {
+    "description": "Delivery fee label"
+  },
+  "deliveryTimeLabel": "Temps de livraison",
+  "@deliveryTimeLabel": {
+    "description": "Delivery time label"
+  },
+  "switchToPremium": "Passez en mode",
+  "@switchToPremium": {
+    "description": "Switch to premium label"
+  },
+  "premium": "Premium",
+  "@premium": {
+    "description": "Premium label"
+  },
+  "moreServices": "plus de services, plus d'avantages",
+  "@moreServices": {
+    "description": "More services advantages"
+  },
+  "addToFavorites": "Ajouté aux favoris",
+  "@addToFavorites": {
+    "description": "Added to favorites message"
+  },
+  "premiumLabel": "PREMIUM",
+  "@premiumLabel": {
+    "description": "Premium badge"
+  },
+  "loadingRestaurants": "Chargement des restaurants...",
+  "@loadingRestaurants": {
+    "description": "Loading restaurants message"
+  },
+  "categories": "Catégories",
+  "@categories": {
+    "description": "Categories title"
+  },
+  "newToDiscover": "Nouveautés à découvrir ({count})",
+  "@newToDiscover": {
+    "description": "New to discover title",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "noRestaurantFound": "Aucun restaurant trouvé",
+  "@noRestaurantFound": {
+    "description": "No restaurant found message"
+  },
+  "reload": "Recharger",
+  "@reload": {
+    "description": "Reload button text"
+  },
+  "searchRestaurantPlaceholder": "Rechercher des restaurants, des aliments...",
+  "@searchRestaurantPlaceholder": {
+    "description": "Search restaurant placeholder"
+  },
+  "navigationToCart": "Navigation vers le panier",
+  "@navigationToCart": {
+    "description": "Navigation to cart message"
+  },
+  "noRestaurantNear": "Aucun restaurant trouvé près de vous.",
+  "@noRestaurantNear": {
+    "description": "No restaurant near message"
+  },
+  "tryAgain": "Réessayer",
+  "@tryAgain": {
+    "description": "Try again button"
+  },
+  "retryAction": "Retry",
+  "@retryAction": {
+    "description": "Retry action button"
+  },
+  "allowLocation": "Autoriser « tawsil » à utiliser votre position ?",
+  "@allowLocation": {
+    "description": "Allow location question"
+  },
+  "locationPurpose": "Afin de détecter les partenaires autour de vous, nous devons utiliser votre localisation",
+  "@locationPurpose": {
+    "description": "Location purpose explanation"
+  },
+  "allowOnce": "Autoriser une fois",
+  "@allowOnce": {
+    "description": "Allow once option"
+  },
+  "allowWhenActive": "Autoriser lorsque l'app est active",
+  "@allowWhenActive": {
+    "description": "Allow when app is active"
+  },
+  "doNotAllow": "Ne pas autoriser",
+  "@doNotAllow": {
+    "description": "Do not allow option"
+  }
+}
+
