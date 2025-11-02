@@ -27,7 +27,6 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_svg: ^2.0.9
-  flutter_native_splash: ^2.4.7
   pretty_dio_logger: ^1.4.0
   get_it: ^8.0.3
 
@@ -63,16 +62,10 @@ flutter:
     - assets/images/
     - assets/images/svg/app_icon.svg
     - assets/images/splash_screen_icon.png
-
-flutter_native_splash:
-  color: "#006C4A"
-  image: assets/images/splash_screen_icon.png
-  android: true
-  ios: true
-  web: false
+    - assets/images/app_icon.png
 
 flutter_launcher_icons:
   android: true
   ios: true
   remove_alpha_ios: true
-  image_path: "assets/icons/tawwsil.png"
+  image_path: "assets/images/app_icon.png"
