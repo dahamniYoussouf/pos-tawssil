@@ -1,15 +1,52 @@
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import '../services/auth_service.dart';
 import 'auth_state.dart';
+import 'package:frontend/src/core/services/token_storage_service.dart';
+import 'package:frontend/src/core/utils/dependency_injection.dart';
 
 // Auth Cubit
-class AuthCubit extends Cubit<AuthState> {
+class AuthCubit extends HydratedCubit<AuthState> {
   final AuthService _authService;
+  final TokenStorageService _tokenStorageService;
 
-  AuthCubit({AuthService? authService})
-      : _authService = authService ?? AuthService(),
-        super(AuthInitial());
+  AuthCubit({
+    AuthService? authService,
+    TokenStorageService? tokenStorageService,
+  })  : _authService = authService ?? AuthService(),
+        _tokenStorageService = tokenStorageService ?? locator<TokenStorageService>(),
+        super(const AuthInitial());
+
+  @override
+  AuthState? fromJson(Map<String, dynamic> json) {
+    try {
+      final type = json['type'] as String;
+      switch (type) {
+        case 'AuthInitial':
+          return const AuthInitial();
+        case 'AuthLoading':
+          return const AuthLoading();
+        case 'AuthPhoneNumberEntered':
+          return AuthPhoneNumberEntered.fromJson(json);
+        case 'AuthCodeSent':
+          return AuthCodeSent.fromJson(json);
+        case 'AuthVerificationLoading':
+          return const AuthVerificationLoading();
+        case 'AuthSuccess':
+          return AuthSuccess.fromJson(json);
+        case 'AuthError':
+          return AuthError.fromJson(json);
+        default:
+          return const AuthInitial();
+      }
+    } catch (e) {
+      return const AuthInitial();
+    }
+  }
+
+  @override
+  Map<String, dynamic>? toJson(AuthState state) {
+    return state.toJson();
+  }
 
   void resetAuth() {
     emit(AuthInitial());
@@ -54,7 +91,6 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> verifyCode(String phoneNumber, String code) async {
     try {
-      print('vlivked the buttom');
       emit(AuthVerificationLoading());
 
       if (code.length != 6) {
@@ -65,12 +101,20 @@ class AuthCubit extends Cubit<AuthState> {
       final result = await _authService.verifyCode(phoneNumber, code);
 
       if (result['success'] == true) {
-        // Store access token in UserService
-        await UserService().setAccessToken(result['access_token']);
+        final accessToken = result['access_token'] as String?;
+        final refreshToken = result['refresh_token'] as String?;
 
-        // Optionally store tokens and user info here
-        // e.g. SharedPreferences, or pass to next screen
-        // debugPrint tokens for now
+        if (accessToken != null) {
+          if (refreshToken != null) {
+            await _tokenStorageService.setTokens(
+              accessToken: accessToken,
+              refreshToken: refreshToken,
+            );
+          } else {
+            await _tokenStorageService.setAccessToken(accessToken);
+          }
+        }
+
         print('[OTP] Access Token: ${result['access_token']}');
         print('[OTP] Refresh Token: ${result['refresh_token']}');
         print('[OTP] User: ${result['user']}');
@@ -88,17 +132,5 @@ class AuthCubit extends Cubit<AuthState> {
     if (state is AuthError) {
       emit(AuthInitial());
     }
-  }
-}
-
-class UserService {
-  Future<void> setAccessToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('access_token', token);
-  }
-
-  Future<String?> getAccessToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('access_token');
   }
 }

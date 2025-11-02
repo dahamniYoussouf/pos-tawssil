@@ -1,3 +1,4 @@
+import 'package:frontend/src/core/services/token_storage_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:http/http.dart' as http;
@@ -5,6 +6,7 @@ import '../../../core/config/api_config.dart';
 import 'dart:convert';
 import 'package:geocoding/geocoding.dart' as geocoding;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:frontend/src/core/utils/dependency_injection.dart';
 
 class LocationService {
   // Vérifier si le GPS est activé
@@ -116,7 +118,7 @@ class LocationService {
       print("JSON GPS envoyé: ${json.encode(body)}");
 
       // Get token from storage
-      final token = await UserService().getAccessToken();
+      final token = await locator<TokenStorageService>().getAccessToken();
       if (token == null) {
         print("⚠️ Aucun token d'accès trouvé, envoi non autorisé.");
         return false;
@@ -185,7 +187,7 @@ class LocationService {
       print("JSON envoyé (GPS): ${json.encode(body)}");
 
       // Get token from storage
-      final token = await UserService().getAccessToken();
+      final token = await locator<TokenStorageService>().getAccessToken();
 
       final response = await http.post(
         url,
@@ -324,18 +326,6 @@ class LocationService {
 }
 
 class UserService {
-  // ...existing code...
-
-  Future<void> setAccessToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('access_token', token);
-  }
-
-  Future<String?> getAccessToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('access_token');
-  }
-
   Future<void> setCurrentLocationLatitude(String latitude) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('current_location_latitude', latitude);

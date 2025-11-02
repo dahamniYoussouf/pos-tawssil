@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:frontend/src/core/utils/dependency_injection.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 
 // BLoC Imports
 import 'src/features/auth/cubit/auth_cubit.dart';
+import 'src/features/auth/cubit/auth_state.dart';
 import 'src/features/locations/cubit/location_cubit.dart';
 import 'src/features/cart/cubit/cart_cubit.dart';
 import 'src/features/restaurant/cubit/restaurant_cubit.dart';
@@ -13,14 +18,26 @@ import 'src/core/localization/locale_cubit.dart';
 
 // Screen Imports
 import 'src/features/auth/pages/phone_number_page.dart';
+import 'src/features/restaurant/pages/restaurant_suggestion_page.dart';
 
 // Service Imports
 import 'src/features/auth/services/auth_service.dart';
 import 'src/features/cart/services/cart_service.dart';
 import 'src/features/restaurant/services/restaurant_service.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await _init();
+  final storageDirectory = await getApplicationDocumentsDirectory();
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: HydratedStorageDirectory(storageDirectory.path),
+  );
   runApp(MyApp());
+}
+
+Future<void> _init() async {
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  setupLocator();
 }
 
 class MyApp extends StatelessWidget {
@@ -67,10 +84,27 @@ class MyApp extends StatelessWidget {
                 Theme.of(context).textTheme,
               ),
             ),
-            home: PhoneNumberPage(),
+            home: AuthWrapper(),
           );
         },
       ),
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<AuthCubit, AuthState>(
+      builder: (context, state) {
+        if (state is AuthSuccess) {
+          return RestaurantSuggestionPage();
+        } else {
+          return const PhoneNumberPage();
+        }
+      },
     );
   }
 }
