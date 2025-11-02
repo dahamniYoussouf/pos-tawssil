@@ -1,3 +1,4 @@
+import 'package:frontend/src/features/auth/models/profile_model.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import '../services/auth_service.dart';
 import 'auth_state.dart';
@@ -31,6 +32,8 @@ class AuthCubit extends HydratedCubit<AuthState> {
           return AuthCodeSent.fromJson(json);
         case 'AuthVerificationLoading':
           return const AuthVerificationLoading();
+        case 'AuthUpdatingProfile':
+          return const AuthUpdatingProfile();
         case 'AuthSuccess':
           return AuthSuccess.fromJson(json);
         case 'AuthError':
@@ -115,11 +118,11 @@ class AuthCubit extends HydratedCubit<AuthState> {
           }
         }
 
-        print('[OTP] Access Token: ${result['access_token']}');
-        print('[OTP] Refresh Token: ${result['refresh_token']}');
-        print('[OTP] User: ${result['user']}');
-        print('[OTP] Profile: ${result['profile']}');
-        emit(AuthSuccess(userId: result['user']?['id'] ?? ''));
+        final ProfileModel profile = ProfileModel.fromJson(result['profile'] as Map<String, dynamic>);
+        emit(AuthSuccess(
+          userId: profile.userId,
+          isNewUser: profile.firstName.isEmpty && profile.lastName.isEmpty,
+        ));
       } else {
         emit(AuthError(message: result['message'] ?? 'Code de vérification invalide'));
       }
@@ -131,6 +134,41 @@ class AuthCubit extends HydratedCubit<AuthState> {
   void clearError() {
     if (state is AuthError) {
       emit(AuthInitial());
+    }
+  }
+
+  Future<void> updateUserInfo({
+    required String firstName,
+    required String lastName,
+    required String userId,
+  }) async {
+    try {
+      emit(AuthUpdatingProfile());
+
+      // Validate inputs
+      if (firstName.trim().isEmpty) {
+        emit(const AuthError(message: 'Veuillez entrer votre prénom'));
+        return;
+      }
+
+      if (lastName.trim().isEmpty) {
+        emit(const AuthError(message: 'Veuillez entrer votre nom de famille'));
+        return;
+      }
+
+      final result = await _authService.updateUserInfo(
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        userId: userId,
+      );
+
+      if (result['success'] == true) {
+        emit(AuthSuccess(userId: userId, isNewUser: false));
+      } else {
+        emit(AuthError(message: result['message'] ?? 'Erreur lors de la mise à jour du profil'));
+      }
+    } catch (e) {
+      emit(AuthError(message: 'Erreur lors de la mise à jour du profil: ${e.toString()}'));
     }
   }
 }

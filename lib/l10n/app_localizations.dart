@@ -777,6 +777,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ne pas autoriser'**
   String get doNotAllow;
+
+  /// User info page title
+  ///
+  /// In en, this message translates to:
+  /// **'Complete your profile'**
+  String get addUserInfo;
+
+  /// User info page subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your first and last name to complete your profile.'**
+  String get userInfoSubtitle;
+
+  /// First name field label
+  ///
+  /// In en, this message translates to:
+  /// **'First Name'**
+  String get firstName;
+
+  /// First name input hint
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your first name'**
+  String get firstNameHint;
+
+  /// Last name field label
+  ///
+  /// In en, this message translates to:
+  /// **'Last Name'**
+  String get lastName;
+
+  /// Last name input hint
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your last name'**
+  String get lastNameHint;
+
+  /// Save button text
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// Profile updated success message
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully!'**
+  String get profileUpdatedSuccessfully;
 }
 
 class _AppLocalizationsDelegate

@@ -112,6 +112,14 @@
   "locationPurpose": "Afin de détecter les partenaires autour de vous, nous devons utiliser votre localisation",
   "allowOnce": "Autoriser une fois",
   "allowWhenActive": "Autoriser lorsque l'app est active",
-  "doNotAllow": "Ne pas autoriser"
+  "doNotAllow": "Ne pas autoriser",
+  "addUserInfo": "Complétez votre profil",
+  "userInfoSubtitle": "Veuillez entrer votre prénom et votre nom de famille pour compléter votre profil.",
+  "firstName": "Prénom",
+  "firstNameHint": "Entrez votre prénom",
+  "lastName": "Nom de famille",
+  "lastNameHint": "Entrez votre nom de famille",
+  "save": "Enregistrer",
+  "profileUpdatedSuccessfully": "Profil mis à jour avec succès!"
 }
 

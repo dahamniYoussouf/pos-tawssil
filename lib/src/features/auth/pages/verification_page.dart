@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/src/features/auth/cubit/auth_state.dart';
 import '../cubit/auth_cubit.dart';
-import '../../locations/pages/location_page.dart';
 
 /// Verification Page for OTP code entry
 class VerificationPage extends StatefulWidget {
@@ -137,7 +136,7 @@ class _VerificationPageState extends State<VerificationPage> {
           }
         }
         if (state is AuthSuccess) {
-          debugPrint('[OTP] AuthSuccess received. UserId: \\${state.userId}');
+          debugPrint('[OTP] AuthSuccess received. UserId: \\${state.userId}, IsNewUser: \\${state.isNewUser}');
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context)!.verificationSuccessful),
@@ -146,17 +145,10 @@ class _VerificationPageState extends State<VerificationPage> {
             ),
           );
 
-          // Navigate to location screen
-          Future.delayed(const Duration(milliseconds: 1500), () {
-            if (mounted) {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => LocationPage(),
-                ),
-              );
-            }
-          });
+          // Pop this page and let AuthWrapper handle navigation based on state
+          if (mounted) {
+            Navigator.of(context).pop();
+          }
         } else if (state is AuthError) {
           debugPrint('[OTP] AuthError: \\${state.message}');
           // Clear all fields on error

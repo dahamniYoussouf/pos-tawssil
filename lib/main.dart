@@ -18,6 +18,7 @@ import 'src/core/localization/locale_cubit.dart';
 
 // Screen Imports
 import 'src/features/auth/pages/phone_number_page.dart';
+import 'src/features/auth/pages/user_info_page.dart';
 import 'src/features/restaurant/pages/restaurant_suggestion_page.dart';
 
 // Service Imports
@@ -100,7 +101,11 @@ class AuthWrapper extends StatelessWidget {
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
         if (state is AuthSuccess) {
-          return RestaurantSuggestionPage();
+          if (state.isNewUser) {
+            return UserInfoPage(userId: state.userId);
+          } else {
+            return RestaurantSuggestionPage();
+          }
         } else {
           return const PhoneNumberPage();
         }

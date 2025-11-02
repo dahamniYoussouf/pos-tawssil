@@ -476,6 +476,38 @@
   "doNotAllow": "Ne pas autoriser",
   "@doNotAllow": {
     "description": "Do not allow option"
+  },
+  "addUserInfo": "Complete your profile",
+  "@addUserInfo": {
+    "description": "User info page title"
+  },
+  "userInfoSubtitle": "Please enter your first and last name to complete your profile.",
+  "@userInfoSubtitle": {
+    "description": "User info page subtitle"
+  },
+  "firstName": "First Name",
+  "@firstName": {
+    "description": "First name field label"
+  },
+  "firstNameHint": "Enter your first name",
+  "@firstNameHint": {
+    "description": "First name input hint"
+  },
+  "lastName": "Last Name",
+  "@lastName": {
+    "description": "Last name field label"
+  },
+  "lastNameHint": "Enter your last name",
+  "@lastNameHint": {
+    "description": "Last name input hint"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save button text"
+  },
+  "profileUpdatedSuccessfully": "Profile updated successfully!",
+  "@profileUpdatedSuccessfully": {
+    "description": "Profile updated success message"
   }
 }
 

@@ -366,4 +366,29 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get doNotAllow => 'عدم السماح';
+
+  @override
+  String get addUserInfo => 'أكمل ملفك الشخصي';
+
+  @override
+  String get userInfoSubtitle =>
+      'يرجى إدخال اسمك الأول والأخير لإكمال ملفك الشخصي.';
+
+  @override
+  String get firstName => 'الاسم الأول';
+
+  @override
+  String get firstNameHint => 'أدخل اسمك الأول';
+
+  @override
+  String get lastName => 'الاسم الأخير';
+
+  @override
+  String get lastNameHint => 'أدخل اسمك الأخير';
+
+  @override
+  String get save => 'حفظ';
+
+  @override
+  String get profileUpdatedSuccessfully => 'تم تحديث الملف الشخصي بنجاح!';
 }

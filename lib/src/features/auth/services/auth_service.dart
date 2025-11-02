@@ -6,10 +6,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../../core/config/api_config.dart';
+import '../../../core/services/token_storage_service.dart';
+import '../../../core/utils/dependency_injection.dart';
 
 class AuthService {
   static final AuthService _instance = AuthService._internal();
   final SmsService _smsService = SmsService();
+  final TokenStorageService _tokenStorageService = locator<TokenStorageService>();
 
   factory AuthService() {
     return _instance;
@@ -158,13 +161,18 @@ class AuthService {
       if (response.statusCode == 200) {
         // Check for message and tokens
         if (result['message'] == 'Connexion réussie' && result['access_token'] != null) {
+          // Check if this is a new user by checking if profile is missing or has default values
+          final profile = result['profile'];
+          final isNewUser = profile == null || profile['first_name'] == null || profile['first_name'].toString().toLowerCase() == 'user';
+
           return {
             'success': true,
             'message': result['message'],
             'access_token': result['access_token'],
             'refresh_token': result['refresh_token'],
             'user': result['user'],
-            'profile': result['profile'],
+            'profile': profile,
+            'isNewUser': isNewUser,
           };
         } else {
           // If message is not 'Connexion réussie', treat as error
@@ -413,6 +421,84 @@ class AuthService {
     } catch (e) {
       print('Error getting user name: $e');
       return null;
+    }
+  }
+
+  /// Update user profile with first name and last name
+  Future<Map<String, dynamic>> updateUserInfo({
+    required String firstName,
+    required String lastName,
+    required String userId,
+  }) async {
+    try {
+      print('🔄 Updating user info: $firstName $lastName for user $userId');
+
+      // Get access token
+      final accessToken = await _tokenStorageService.getAccessToken();
+
+      if (accessToken == null) {
+        print('❌ No access token available');
+        return {
+          'success': false,
+          'message': 'Non authentifié. Veuillez vous reconnecter.',
+        };
+      }
+
+      // Call backend API to update user profile
+      final updateUrl = '${ApiConfig.baseUrl}/client/update/$userId';
+      print('📡 PUT: $updateUrl');
+
+      final response = await http
+          .put(
+            Uri.parse(updateUrl),
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $accessToken',
+            },
+            body: json.encode({
+              'first_name': firstName,
+              'last_name': lastName,
+            }),
+          )
+          .timeout(const Duration(seconds: 30));
+
+      print('📥 Response status: ${response.statusCode}');
+      print('📥 Response body: ${response.body}');
+
+      final result = json.decode(response.body);
+
+      if (response.statusCode == 200 && result['success'] == true) {
+        print('✅ User profile updated successfully');
+        return {
+          'success': true,
+          'message': 'Profil mis à jour avec succès',
+          'user': result['data'],
+        };
+      } else {
+        print('❌ Error updating profile: ${result['message']}');
+        return {
+          'success': false,
+          'message': result['message'] ?? 'Erreur lors de la mise à jour du profil',
+        };
+      }
+    } on TimeoutException catch (e) {
+      print('❌ Timeout: $e');
+      return {
+        'success': false,
+        'message': 'La connexion a expiré. Veuillez réessayer.',
+      };
+    } on SocketException catch (e) {
+      print('❌ SocketException: ${e.message}');
+      return {
+        'success': false,
+        'message': 'Pas de connexion Internet',
+      };
+    } catch (e) {
+      print('❌ Error updating user info: $e');
+      return {
+        'success': false,
+        'message': 'Erreur lors de la mise à jour du profil',
+      };
     }
   }
 

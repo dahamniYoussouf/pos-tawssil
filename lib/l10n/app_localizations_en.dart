@@ -372,4 +372,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get doNotAllow => 'Ne pas autoriser';
+
+  @override
+  String get addUserInfo => 'Complete your profile';
+
+  @override
+  String get userInfoSubtitle =>
+      'Please enter your first and last name to complete your profile.';
+
+  @override
+  String get firstName => 'First Name';
+
+  @override
+  String get firstNameHint => 'Enter your first name';
+
+  @override
+  String get lastName => 'Last Name';
+
+  @override
+  String get lastNameHint => 'Enter your last name';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get profileUpdatedSuccessfully => 'Profile updated successfully!';
 }

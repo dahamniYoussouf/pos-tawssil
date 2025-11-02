@@ -107,17 +107,35 @@ class AuthVerificationLoading extends AuthState {
   }
 }
 
-class AuthSuccess extends AuthState {
-  final String userId;
+class AuthUpdatingProfile extends AuthState {
+  const AuthUpdatingProfile();
 
-  const AuthSuccess({required this.userId});
+  factory AuthUpdatingProfile.fromJson(Map<String, dynamic> json) {
+    return const AuthUpdatingProfile();
+  }
 
   @override
-  List<Object?> get props => [userId];
+  Map<String, dynamic> toJson() {
+    return {'type': 'AuthUpdatingProfile'};
+  }
+}
+
+class AuthSuccess extends AuthState {
+  final String userId;
+  final bool isNewUser;
+
+  const AuthSuccess({
+    required this.userId,
+    this.isNewUser = false,
+  });
+
+  @override
+  List<Object?> get props => [userId, isNewUser];
 
   factory AuthSuccess.fromJson(Map<String, dynamic> json) {
     return AuthSuccess(
       userId: json['userId'] as String,
+      isNewUser: json['isNewUser'] as bool? ?? false,
     );
   }
 
@@ -126,6 +144,7 @@ class AuthSuccess extends AuthState {
     return {
       'type': 'AuthSuccess',
       'userId': userId,
+      'isNewUser': isNewUser,
     };
   }
 }

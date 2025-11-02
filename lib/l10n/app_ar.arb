@@ -112,6 +112,14 @@
   "locationPurpose": "من أجل الكشف عن الشركاء من حولك، نحتاج إلى استخدام موقعك",
   "allowOnce": "السماح مرة واحدة",
   "allowWhenActive": "السماح عندما يكون التطبيق نشطًا",
-  "doNotAllow": "عدم السماح"
+  "doNotAllow": "عدم السماح",
+  "addUserInfo": "أكمل ملفك الشخصي",
+  "userInfoSubtitle": "يرجى إدخال اسمك الأول والأخير لإكمال ملفك الشخصي.",
+  "firstName": "الاسم الأول",
+  "firstNameHint": "أدخل اسمك الأول",
+  "lastName": "الاسم الأخير",
+  "lastNameHint": "أدخل اسمك الأخير",
+  "save": "حفظ",
+  "profileUpdatedSuccessfully": "تم تحديث الملف الشخصي بنجاح!"
 }
 

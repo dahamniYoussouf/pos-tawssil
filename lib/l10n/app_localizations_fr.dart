@@ -373,4 +373,29 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get doNotAllow => 'Ne pas autoriser';
+
+  @override
+  String get addUserInfo => 'Complétez votre profil';
+
+  @override
+  String get userInfoSubtitle =>
+      'Veuillez entrer votre prénom et votre nom de famille pour compléter votre profil.';
+
+  @override
+  String get firstName => 'Prénom';
+
+  @override
+  String get firstNameHint => 'Entrez votre prénom';
+
+  @override
+  String get lastName => 'Nom de famille';
+
+  @override
+  String get lastNameHint => 'Entrez votre nom de famille';
+
+  @override
+  String get save => 'Enregistrer';
+
+  @override
+  String get profileUpdatedSuccessfully => 'Profil mis à jour avec succès!';
 }
