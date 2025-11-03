@@ -36,7 +36,6 @@ Future<List<CategoryModel>> getRestaurantCategories(String restaurantId) async {
     }
     return [];
   } catch (e) {
-    print('❌ Exception fetching restaurant categories: $e');
     return [];
   }
 }
@@ -63,7 +62,6 @@ Future<List<MenuModel>> getRestaurantMenuItems(String restaurantId) async {
     }
     return [];
   } catch (e) {
-    print('❌ Exception fetching restaurant menu items: $e');
     return [];
   }
 }
@@ -91,7 +89,6 @@ class RestaurantService {
       }
       return [];
     } catch (e) {
-      print('❌ Exception fetching restaurant categories: $e');
       return [];
     }
   }
@@ -118,7 +115,6 @@ class RestaurantService {
       }
       return [];
     } catch (e) {
-      print('❌ Exception fetching restaurant menu items: $e');
       return [];
     }
   }
@@ -139,11 +135,8 @@ class RestaurantService {
           radius: radius,
         );
       }
-      print('⚠️ No stored coordinates found, falling back to getRestaurants()');
       return await getRestaurants();
     } catch (e, st) {
-      print('❌ Exception in getNearbyRestaurantsFromStoredLocation: $e');
-      print(st);
       return [];
     }
   }
@@ -151,7 +144,6 @@ class RestaurantService {
   Future<List<RestaurantModel>> getRestaurants() async {
     final accessToken = await getAccessToken();
     try {
-      print('📄 Fetching restaurants from: ${ApiConfig.restaurantsUrl}');
       final response = await http.get(
         Uri.parse(ApiConfig.restaurantsUrl),
         headers: {
@@ -161,19 +153,14 @@ class RestaurantService {
         },
       ).timeout(Duration(seconds: 15));
 
-      print('📡 Response status: ${response.statusCode}');
-      print('📦 Response body: ${response.body}');
-
       if (response.statusCode == 200) {
         final dynamic responseData = json.decode(response.body);
 
         if (responseData is Map<String, dynamic>) {
           if (responseData['success'] == true && responseData.containsKey('data')) {
             final List<dynamic> restaurantsList = responseData['data'];
-            print('✅ Found ${restaurantsList.length} restaurants');
 
             if (restaurantsList.isEmpty) {
-              print('⚠️ No restaurants in response');
               return [];
             }
 
@@ -184,32 +171,22 @@ class RestaurantService {
                 final restaurantData = restaurantsList[i] as Map<String, dynamic>;
                 final restaurant = RestaurantModel.fromJson(restaurantData);
                 parsedRestaurants.add(restaurant);
-                print('✓ Parsed: ${restaurant.name}');
               } catch (e) {
-                print('❌ Error parsing restaurant $i: $e');
-                print('   Data: ${restaurantsList[i]}');
+                // Error parsing restaurant
               }
             }
 
-            print('✅ Successfully loaded ${parsedRestaurants.length} restaurants');
             return parsedRestaurants;
           } else {
-            print('⚠️ Response format invalid or success=false');
-            print('   Response: $responseData');
             return [];
           }
         } else {
-          print('⚠️ Response is not a Map');
           return [];
         }
       } else {
-        print('❌ HTTP Error ${response.statusCode}');
-        print('   Body: ${response.body}');
         return [];
       }
     } catch (e, stackTrace) {
-      print('❌ Exception fetching restaurants: $e');
-      print('   Stack: $stackTrace');
       return [];
     }
   }
@@ -227,7 +204,6 @@ class RestaurantService {
     final accessToken = await getAccessToken();
     try {
       final uri = Uri.parse('https://tawssilbackyou.onrender.com/restaurant/nearbyfilter');
-      print('📄 POSTing to nearby restaurants endpoint: $uri');
 
       final Map<String, dynamic> body = {
         "lat": lat.toString(),
@@ -237,8 +213,6 @@ class RestaurantService {
         "page": page,
         "pageSize": pageSize
       };
-
-      print('📦 Request body of the nearby restaurants: $body');
 
       final response = await http
           .post(
@@ -252,9 +226,6 @@ class RestaurantService {
           )
           .timeout(const Duration(seconds: 15));
 
-      print('📡 Response status: ${response.statusCode}');
-      print('📦 Response body: ${response.body}');
-
       if (response.statusCode == 200) {
         final responseData = json.decode(response.body);
 
@@ -267,27 +238,20 @@ class RestaurantService {
                 try {
                   return RestaurantModel.fromJson(e as Map<String, dynamic>);
                 } catch (e) {
-                  print('❌ Error parsing restaurant: $e');
                   return null;
                 }
               })
               .whereType<RestaurantModel>()
               .toList();
         } else {
-          print('⚠️ Invalid response structure: $responseData');
           return [];
         }
       } else {
-        print('❌ HTTP Error ${response.statusCode}');
-        print('   Body: ${response.body}');
         return [];
       }
     } on TimeoutException {
-      print('⏰ Request timed out');
       return [];
     } catch (e, stackTrace) {
-      print('❌ Exception fetching nearby restaurants: $e');
-      print('   Stack: $stackTrace');
       return [];
     }
   }
@@ -295,8 +259,6 @@ class RestaurantService {
   Future<List<CategoryModel>> getCategories() async {
     final accessToken = await getAccessToken();
     try {
-      print('📄 Fetching categories from: ${ApiConfig.baseUrl}/restaurant/getall');
-
       final prefs = await SharedPreferences.getInstance();
       final accessToken = prefs.getString('access_token');
 
@@ -309,19 +271,14 @@ class RestaurantService {
         },
       ).timeout(Duration(seconds: 15));
 
-      print('📡 Categories response status: ${response.statusCode}');
-      print('📦 Categories response body: ${response.body}');
-
       if (response.statusCode == 200) {
         final dynamic responseData = json.decode(response.body);
 
         if (responseData is Map<String, dynamic>) {
           if (responseData['success'] == true && responseData.containsKey('data')) {
             final List<dynamic> categoriesList = responseData['data'];
-            print('✅ Found ${categoriesList.length} categories');
 
             if (categoriesList.isEmpty) {
-              print('⚠️ No categories in response, falling back to static categories');
               return _getStaticCategories();
             }
 
@@ -337,31 +294,21 @@ class RestaurantService {
                   description: categoryData['description'] ?? '',
                 );
                 parsedCategories.add(category);
-                print('✓ Parsed: ${category.name}');
               } catch (e) {
-                print('❌ Error parsing category $i: $e');
-                print('   Data: ${categoriesList[i]}');
+                // Error parsing category
               }
             }
-            print('✅ Successfully loaded ${parsedCategories.length} categories');
             return parsedCategories;
           } else {
-            print('⚠️ Response format invalid or success=false');
-            print('   Response: $responseData');
             return _getStaticCategories();
           }
         } else {
-          print('⚠️ Response is not a Map');
           return _getStaticCategories();
         }
       } else {
-        print('❌ HTTP Error ${response.statusCode}');
-        print('   Body: ${response.body}');
         return _getStaticCategories();
       }
     } catch (e, stackTrace) {
-      print('❌ Exception fetching categories: $e');
-      print('   Stack: $stackTrace');
       return _getStaticCategories();
     }
   }
@@ -395,7 +342,6 @@ class RestaurantService {
           .take(maxResults)
           .toList();
     } catch (e) {
-      print('❌ Exception in searchRestaurants: $e');
       return [];
     }
   }
@@ -403,8 +349,6 @@ class RestaurantService {
   Future<List<RestaurantModel>> getRestaurantsByCategory(List<String> categories, double lat, double lng, {int radius = 50000, int page = 1, int pageSize = 20}) async {
     final accessToken = await getAccessToken();
     try {
-      print('Fetching restaurants by categories: $categories');
-      print('Using lat: $lat, lng: $lng, radius: $radius');
       final response = await http
           .post(
             Uri.parse('https://tawssilbackyou.onrender.com/restaurant/nearbyfilter'),
@@ -424,15 +368,12 @@ class RestaurantService {
           )
           .timeout(Duration(seconds: 15));
 
-      print('Response status: ${response.statusCode}');
-
       if (response.statusCode == 200) {
         final dynamic responseData = json.decode(response.body);
 
         if (responseData is Map<String, dynamic>) {
           if (responseData['success'] == true && responseData.containsKey('data')) {
             final List<dynamic> restaurantsList = responseData['data'];
-            print('Found ${restaurantsList.length} restaurants');
 
             if (restaurantsList.isEmpty) {
               return [];
@@ -446,7 +387,7 @@ class RestaurantService {
                 final restaurant = RestaurantModel.fromJson(restaurantData);
                 parsedRestaurants.add(restaurant);
               } catch (e) {
-                print('Error parsing restaurant $i: $e');
+                // Error parsing restaurant
               }
             }
 
@@ -460,11 +401,9 @@ class RestaurantService {
         }
         return [];
       } else {
-        print('HTTP Error ${response.statusCode}');
         return [];
       }
     } catch (e) {
-      print('Exception: $e');
       return [];
     }
   }
@@ -494,7 +433,6 @@ class RestaurantService {
         throw Exception('Failed to load restaurant');
       }
     } catch (e) {
-      print('❌ Error fetching restaurant by ID: $e');
       rethrow;
     }
   }
@@ -503,8 +441,6 @@ class RestaurantService {
     final accessToken = await getAccessToken();
     try {
       final uri = Uri.parse('${ApiConfig.baseUrl}/menuitem/filter');
-      print('📄 Fetching menu items from: $uri');
-      print('📥 Body: { restaurant_id: $restaurantId, category_id: $categoryId }');
       final body = <String, dynamic>{
         'is_available': true,
       };
@@ -524,19 +460,14 @@ class RestaurantService {
           )
           .timeout(Duration(seconds: 15));
 
-      print('📡 Menu items response status: ${response.statusCode}');
-
       if (response.statusCode == 200) {
         final dynamic responseData = json.decode(response.body);
 
         if (responseData is Map<String, dynamic> && responseData['success'] == true) {
           final List<dynamic>? itemsList = (responseData['data'] as List?) ?? (responseData['items'] as List?);
           if (itemsList == null) {
-            print('⚠️ Menu items response missing "data" or "items" keys. Response: ${response.body}');
             return [];
           }
-
-          print('✅ Found ${itemsList.length} menu items (before filtering)');
 
           List<MenuModel> parsedItems = [];
 
@@ -548,32 +479,22 @@ class RestaurantService {
               // If backend didn't populate restaurant_id, assume items belong to requested restaurant
               if (menuItem.restaurantId.isEmpty) {
                 parsedItems.add(menuItem);
-                print('✓ Parsed menu item (no restaurant_id): ${menuItem.nom}');
               } else if (menuItem.restaurantId == restaurantId) {
                 parsedItems.add(menuItem);
-                print('✓ Parsed menu item: ${menuItem.nom}');
-              } else {
-                print('• Skipping menu item ${menuItem.nom} (belongs to ${menuItem.restaurantId})');
               }
             } catch (e) {
-              print('❌ Error parsing menu item $i: $e');
-              print('   Data: ${itemsList[i]}');
+              // Error parsing menu item
             }
           }
 
-          print('✅ Successfully loaded ${parsedItems.length} menu items for restaurant $restaurantId');
           return parsedItems;
         }
 
-        print('⚠️ Invalid response format for menu items: ${response.body}');
         return [];
       }
 
-      print('❌ HTTP Error ${response.statusCode}');
       return [];
     } catch (e, st) {
-      print('❌ Exception fetching menu items: $e');
-      print(st);
       return [];
     }
   }
@@ -593,7 +514,6 @@ class RestaurantService {
 
       return categoriesMap.values.toList();
     } catch (e) {
-      print('❌ Error fetching menu categories: $e');
       return [];
     }
   }

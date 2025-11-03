@@ -43,7 +43,6 @@ class _UserInfoViewState extends State<UserInfoView> {
   }
 
   void _handleSave() {
-    print('Save button pressed');
     final firstName = _firstNameController.text.trim();
     final lastName = _lastNameController.text.trim();
     context.read<AuthCubit>().updateUserInfo(

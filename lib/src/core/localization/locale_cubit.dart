@@ -28,7 +28,7 @@ class LocaleCubit extends Cubit<LocaleState> {
         emit(LocaleState(locale));
       }
     } catch (e) {
-      print('Error loading locale: $e');
+      // Error loading locale
     }
   }
 
@@ -38,7 +38,7 @@ class LocaleCubit extends Cubit<LocaleState> {
       await prefs.setString(_localeKey, '${locale.languageCode}_${locale.countryCode}');
       emit(LocaleState(locale));
     } catch (e) {
-      print('Error saving locale: $e');
+      // Error saving locale
     }
   }
 

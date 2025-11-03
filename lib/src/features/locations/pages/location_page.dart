@@ -29,10 +29,8 @@ class _LocationPageState extends State<LocationPage> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final lngSuccess = await prefs.setString(_locationLongitudeKey, longitude);
-      print('Longitude saved: $longitude');
       return lngSuccess;
     } catch (e) {
-      print('Error setting longitude: $e');
       return false;
     }
   }
@@ -42,7 +40,6 @@ class _LocationPageState extends State<LocationPage> {
       final prefs = await SharedPreferences.getInstance();
       return await prefs.setString('location_full_address', address);
     } catch (e) {
-      print('Error saving full address: $e');
       return false;
     }
   }
@@ -52,7 +49,6 @@ class _LocationPageState extends State<LocationPage> {
       final prefs = await SharedPreferences.getInstance();
       return prefs.getString(_locationFullAddressKey);
     } catch (e) {
-      print('Error getting full address: $e');
       return null;
     }
   }
@@ -67,7 +63,6 @@ class _LocationPageState extends State<LocationPage> {
       await prefs.remove(_locationFullAddressKey);
       return true;
     } catch (e) {
-      print('Error clearing location: $e');
       return false;
     }
   }
@@ -275,9 +270,7 @@ class _LocationPageState extends State<LocationPage> {
   }
 
   Future<void> handleShareGpsLocation(BuildContext context) async {
-    print('🚀 === GPS LOCATION HANDLER STARTED ===');
     if (_isProcessing) {
-      print('⏳ Already processing location, please wait...');
       return;
     }
     setState(() {
@@ -286,10 +279,8 @@ class _LocationPageState extends State<LocationPage> {
     FocusScope.of(context).unfocus();
 
     try {
-      print('🔍 Checking GPS service...');
       bool gpsOn = await LocationService.isLocationServiceEnabled();
       if (!gpsOn) {
-        print('❌ GPS is disabled');
         setState(() {
           _isProcessing = false;
         });
@@ -297,12 +288,10 @@ class _LocationPageState extends State<LocationPage> {
         return;
       }
 
-      print('📍 Getting current GPS position (with timeout)...');
       Position? pos;
       try {
         pos = await LocationService.getCurrentLocation();
       } catch (e) {
-        print('⚠️ GPS position retrieval error/timeout: $e');
         setState(() {
           _isProcessing = false;
         });
@@ -318,7 +307,6 @@ class _LocationPageState extends State<LocationPage> {
       }
 
       if (pos == null) {
-        print('❌ Failed to get GPS position (null)');
         setState(() {
           _isProcessing = false;
         });
@@ -333,13 +321,10 @@ class _LocationPageState extends State<LocationPage> {
         return;
       }
 
-      print('✅ GPS Coordinates obtained: ${pos.latitude}, ${pos.longitude}');
-
       String area = '';
       String city = '';
       String fullAddress = '';
       try {
-        print('🗺️ Starting reverse geocoding (with timeout)...');
         List<geocoding.Placemark> placemarks = await geocoding.placemarkFromCoordinates(pos.latitude, pos.longitude);
         if (placemarks.isNotEmpty) {
           final place = placemarks.first;
@@ -350,39 +335,28 @@ class _LocationPageState extends State<LocationPage> {
           if (fullAddress.isEmpty) {
             fullAddress = 'Lat: ${pos.latitude.toStringAsFixed(6)}, Lng: ${pos.longitude.toStringAsFixed(6)}';
           }
-          print('📍 Geocoding result: Area=$area, City=$city, FullAddress=$fullAddress');
         } else {
           fullAddress = 'Lat: ${pos.latitude.toStringAsFixed(6)}, Lng: ${pos.longitude.toStringAsFixed(6)}';
           area = fullAddress;
           city = '';
-          print('⚠️ No placemarks found, using coordinates as fallback');
         }
       } catch (e) {
-        print('⚠️ Geocoding error or timeout: $e — using coordinates as fallback');
         fullAddress = 'Lat: ${pos.latitude.toStringAsFixed(6)}, Lng: ${pos.longitude.toStringAsFixed(6)}';
         area = fullAddress;
         city = '';
       }
 
-      print('💾 Saving numeric coordinates to preferences...');
       await _userService.setCurrentLocationLatitude(pos.latitude.toString());
       await _userService.setCurrentLocationLongitude(pos.longitude.toString());
       await _userService.setCurrentLocationAreaCity(area: area, city: city);
-      bool savedFull = await _userService.setFullAddress(fullAddress);
-      print('💾 Latitude and Longitude saved');
-      print('💾 Area/City saved, FullAddress saved: $savedFull');
-
-      print('🌐 Sending GPS coordinates to server...');
-      print('📤 Data being sent: lat=${pos.latitude}, lng=${pos.longitude}, addressFallback=$fullAddress');
+      await _userService.setFullAddress(fullAddress);
 
       bool success = false;
       for (int attempt = 1; attempt <= 3; attempt++) {
         try {
-          success = await LocationService.sendLocationWithCoordinates('', pos.latitude, pos.longitude).timeout(const Duration(seconds: 10));
-          print('📤 Attempt $attempt: server response success=$success');
+          success = await LocationService().sendLocationWithCoordinates('', pos.latitude, pos.longitude).timeout(const Duration(seconds: 10));
           if (success) break;
         } catch (e) {
-          print('⚠️ Attempt $attempt send error: $e');
           if (attempt < 3) {
             await Future.delayed(Duration(seconds: 2 * attempt));
           }
@@ -394,17 +368,14 @@ class _LocationPageState extends State<LocationPage> {
       });
 
       if (success) {
-        print('✅ GPS location sent successfully!');
         if (mounted) {
           await Future.delayed(const Duration(milliseconds: 100));
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => RestaurantSuggestionPage()),
             (route) => false,
           );
-          print('🎉 GPS navigation completed!');
         }
       } else {
-        print('❌ GPS location send failed after retries');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -418,19 +389,16 @@ class _LocationPageState extends State<LocationPage> {
       setState(() {
         _isProcessing = false;
       });
-      print('❌ CRITICAL Error in handleShareGpsLocation: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${AppLocalizations.of(context)!.error}: ${e.toString()}'), backgroundColor: Colors.red),
         );
       }
     }
-    print('🏁 === GPS LOCATION HANDLER ENDED ===');
   }
 
   Future<void> _sendManualAddressToServer(String address) async {
     if (_isProcessing) {
-      print('⏳ Already processing, please wait...');
       return;
     }
     setState(() {
@@ -438,41 +406,31 @@ class _LocationPageState extends State<LocationPage> {
     });
 
     try {
-      print('📝 Manual address entered: $address');
-
       List<String> addressParts = address.split(',').map((e) => e.trim()).toList();
       String area = addressParts.isNotEmpty ? addressParts[0] : address;
       String city = addressParts.length > 1 ? addressParts[1] : address;
-      print('📍 Manual location: Area=$area, City=$city');
 
       // Try to geocode the manual address to obtain coordinates and save them
       try {
-        print('🔍 Attempting to geocode manual address...');
         List<geocoding.Location> locations = await geocoding.locationFromAddress(address);
         if (locations.isNotEmpty) {
           final loc = locations.first;
-          print('📍 Geocoding successful for manual address: ${loc.latitude}, ${loc.longitude}');
-          final latSaved = await _userService.setCurrentLocationLatitude(loc.latitude.toString());
-          final lngSaved = await _userService.setCurrentLocationLongitude(loc.longitude.toString());
-        } else {
-          print('⚠️ Geocoding returned no locations for manual address');
+          await _userService.setCurrentLocationLatitude(loc.latitude.toString());
+          await _userService.setCurrentLocationLongitude(loc.longitude.toString());
         }
       } catch (e) {
-        print('⚠️ Geocoding failed for manual address: $e');
+        // Geocoding failed for manual address
       }
 
       // Save area/city using the correct method
       await _userService.setCurrentLocationAreaCity(area: area, city: city);
-      print('💾 Location saved to preferences (area/city)');
 
       bool success = false;
       for (int attempt = 1; attempt <= 3; attempt++) {
         try {
-          success = await LocationService.sendAddressOnly(address).timeout(const Duration(seconds: 10));
-          print('📤 sendAddressOnly attempt $attempt => success=$success');
+          success = await LocationService().sendAddressOnly(address).timeout(const Duration(seconds: 10));
           if (success) break;
         } catch (e) {
-          print('⚠️ sendAddressOnly attempt $attempt error: $e');
           if (attempt < 3) {
             await Future.delayed(Duration(seconds: 2 * attempt));
           }
@@ -484,17 +442,14 @@ class _LocationPageState extends State<LocationPage> {
       });
 
       if (success) {
-        print('✅ Manual address sent successfully!');
         if (mounted) {
           await Future.delayed(const Duration(milliseconds: 100));
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (context) => RestaurantSuggestionPage()),
             (route) => false,
           );
-          print('🎉 Manual address navigation completed!');
         }
       } else {
-        print('❌ Manual address failed after retries');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -508,7 +463,6 @@ class _LocationPageState extends State<LocationPage> {
       setState(() {
         _isProcessing = false;
       });
-      print('❌ Error in _sendManualAddressToServer: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${AppLocalizations.of(context)!.error}: ${e.toString()}'), backgroundColor: Colors.red),
@@ -529,8 +483,6 @@ class _LocationPageState extends State<LocationPage> {
           if (gpsOn) {
             Navigator.of(context).pop();
             handleShareGpsLocation(context);
-          } else {
-            print('GPS toujours désactivé');
           }
         },
       ),

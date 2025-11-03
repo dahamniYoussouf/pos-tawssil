@@ -36,7 +36,6 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
       final loadedCategories = await _restaurantService.getCategories();
       // Try to load nearby restaurants from stored coordinates; falls back to all restaurants
       final coords = await _userService.getCurrentCoordinates();
-      print('ℹ️ Stored coordinates before fetching restaurants: $coords');
       List<RestaurantModel> loadedRestaurants = await _restaurantService.getNearbyRestaurantsFromStoredLocation(radius: 5000);
 
       final currentUsername = await _userService.getCurrentUsername();
@@ -49,10 +48,7 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
         userLocation = currentLocation;
         isLoading = false;
       });
-
-      print('✅ Loaded: ${restaurants.length} restaurants, ${categories.length} categories');
     } catch (e) {
-      print('❌ Error loading data: $e');
       setState(() {
         isLoading = false;
       });

@@ -163,7 +163,7 @@ class LocationCubit extends Cubit<LocationState> {
   Future<bool> _sendLocationToServer(String address, double latitude, double longitude) async {
     for (int attempt = 1; attempt <= 3; attempt++) {
       try {
-        bool success = await location_service.LocationService.sendLocationWithCoordinates(address, latitude, longitude).timeout(const Duration(seconds: 10));
+        bool success = await location_service.LocationService().sendLocationWithCoordinates(address, latitude, longitude).timeout(const Duration(seconds: 10));
         if (success) return true;
       } catch (e) {
         if (attempt < 3) {
@@ -177,7 +177,7 @@ class LocationCubit extends Cubit<LocationState> {
   Future<bool> _sendAddressToServer(String address) async {
     for (int attempt = 1; attempt <= 3; attempt++) {
       try {
-        bool success = await location_service.LocationService.sendAddressOnly(address).timeout(const Duration(seconds: 10));
+        bool success = await location_service.LocationService().sendAddressOnly(address).timeout(const Duration(seconds: 10));
         if (success) return true;
       } catch (e) {
         if (attempt < 3) {

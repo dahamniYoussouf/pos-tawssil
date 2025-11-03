@@ -1,15 +1,15 @@
-import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../../core/config/api_config.dart';
+import '../../../core/services/base_api_service.dart';
 
-class SmsService {
+class SmsService extends BaseApiService {
   static final SmsService _instance = SmsService._internal();
 
   factory SmsService() {
     return _instance;
   }
 
-  SmsService._internal();
+  SmsService._internal() : super();
 
   /// Send OTP SMS using the login_check endpoint
   /// Returns true if SMS was sent successfully, false otherwise
@@ -18,42 +18,29 @@ class SmsService {
     required String otpCode,
   }) async {
     try {
-      print('📤 Sending OTP SMS to: $phoneNumber');
+      dio.options.headers = {
+        'Content-Type': 'application/json',
+      };
 
-      final url = '${ApiConfig.smsBaseUrl}/login_check';
-      print('📡 POST: $url');
-
-      final response = await http
-          .post(
-            Uri.parse(url),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: json.encode({
-              'phone_number': phoneNumber,
-            }),
-          )
-          .timeout(const Duration(seconds: 15));
-
-      print('📥 Response status: ${response.statusCode}');
-      print('📥 Response body: ${response.body}');
+      final response = await dio.post(
+        '${ApiConfig.smsBaseUrl}/login_check',
+        data: {
+          'phone_number': phoneNumber,
+        },
+      );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = response.data is Map ? response.data : jsonDecode(response.data);
 
         if (data['message'] != null && data['message'].toString().contains('OTP envoyé')) {
-          print('✅ SMS sent successfully via API');
           return true;
         } else {
-          print('⚠️ API response indicates SMS not sent: ${data['message']}');
           return false;
         }
       } else {
-        print('❌ Failed to send SMS. Status: ${response.statusCode}');
         return false;
       }
     } catch (e) {
-      print('❌ Error sending SMS: $e');
       return false;
     }
   }
@@ -62,28 +49,19 @@ class SmsService {
   /// This method calls the login_check endpoint and returns the API response
   Future<Map<String, dynamic>> requestOtpCode(String phoneNumber) async {
     try {
-      print('📞 Requesting OTP for phone: $phoneNumber');
+      dio.options.headers = {
+        'Content-Type': 'application/json',
+      };
 
-      final url = '${ApiConfig.smsBaseUrl}/login_check';
-      print('📡 POST: $url');
-
-      final response = await http
-          .post(
-            Uri.parse(url),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: json.encode({
-              'phone_number': phoneNumber,
-            }),
-          )
-          .timeout(const Duration(seconds: 15));
-
-      print('📥 Response status: ${response.statusCode}');
-      print('📥 Response body: ${response.body}');
+      final response = await dio.post(
+        '${ApiConfig.smsBaseUrl}/login_check',
+        data: {
+          'phone_number': phoneNumber,
+        },
+      );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = response.data is Map ? response.data : jsonDecode(response.data);
 
         return {
           'success': true,
@@ -100,7 +78,6 @@ class SmsService {
         };
       }
     } catch (e) {
-      print('❌ Error requesting OTP: $e');
       return {
         'success': false,
         'message': 'Erreur de connexion. Veuillez réessayer.',
@@ -116,29 +93,20 @@ class SmsService {
     required String otpCode,
   }) async {
     try {
-      print('🔐 Verifying OTP: $otpCode for phone: $phoneNumber');
+      dio.options.headers = {
+        'Content-Type': 'application/json',
+      };
 
-      final url = '${ApiConfig.smsBaseUrl}/auth/otp/verify';
-      print('📡 POST: $url');
-
-      final response = await http
-          .post(
-            Uri.parse(url),
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: json.encode({
-              'phone_number': phoneNumber,
-              'otp': otpCode,
-            }),
-          )
-          .timeout(const Duration(seconds: 15));
-
-      print('📥 Response status: ${response.statusCode}');
-      print('📥 Response body: ${response.body}');
+      final response = await dio.post(
+        '${ApiConfig.smsBaseUrl}/auth/otp/verify',
+        data: {
+          'phone_number': phoneNumber,
+          'otp': otpCode,
+        },
+      );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = response.data is Map ? response.data : jsonDecode(response.data);
 
         return {
           'success': true,
@@ -147,7 +115,7 @@ class SmsService {
           'is_verified': true,
         };
       } else if (response.statusCode == 400) {
-        final data = json.decode(response.body);
+        final data = response.data is Map ? response.data : jsonDecode(response.data);
         return {
           'success': false,
           'message': data['message'] ?? 'Code OTP incorrect',
@@ -162,7 +130,6 @@ class SmsService {
         };
       }
     } catch (e) {
-      print('❌ Error verifying OTP: $e');
       return {
         'success': false,
         'message': 'Erreur de connexion. Veuillez réessayer.',
@@ -175,19 +142,17 @@ class SmsService {
   /// Test method to check API connectivity
   Future<bool> testApiConnection() async {
     try {
-      final url = '${ApiConfig.smsBaseUrl}/login_check';
-      final response = await http
-          .post(
-            Uri.parse(url),
-            headers: {'Content-Type': 'application/json'},
-            body: json.encode({'phone_number': 'test'}),
-          )
-          .timeout(const Duration(seconds: 10));
+      dio.options.headers = {
+        'Content-Type': 'application/json',
+      };
 
-      print('🔍 API Test - Status: ${response.statusCode}');
+      final response = await dio.post(
+        '${ApiConfig.smsBaseUrl}/login_check',
+        data: {'phone_number': 'test'},
+      );
+
       return response.statusCode != 404; // Any response except 404 means API is reachable
     } catch (e) {
-      print('❌ API Test failed: $e');
       return false;
     }
   }

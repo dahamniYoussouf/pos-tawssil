@@ -47,11 +47,7 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
     });
 
     try {
-      print('📄 Loading menu items for restaurant: ${widget.restaurant.id}');
-
       final items = await _service.getMenuItems(restaurantId: widget.restaurant.id);
-
-      print('✅ Loaded ${items.length} menu items');
 
       setState(() {
         _menuItems = items;
@@ -94,11 +90,8 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
         if (_categories.isNotEmpty) {
           _selectedCategoryId = _categories.first.id;
         }
-
-        print('✅ Found ${_categories.length} categories');
       });
     } catch (e) {
-      print('❌ Error loading menu items: $e');
       setState(() {
         _error = 'Failed to load menu items. Please try again.';
       });

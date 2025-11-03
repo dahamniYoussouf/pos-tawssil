@@ -53,7 +53,7 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
         });
       }
     } catch (e) {
-      print('❌ Error loading user data: $e');
+      // Error loading user data
     }
   }
 

@@ -40,7 +40,6 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
   }
 
   void _handleConnect() {
-    print('Connect button pressed');
     final phone = _phoneController.text.trim();
     context.read<AuthCubit>().sendVerificationCode(phone, _countryCode);
   }

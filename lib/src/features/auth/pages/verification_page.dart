@@ -70,13 +70,11 @@ class _VerificationPageState extends State<VerificationPage> {
     // Pass the phone number (with country code, formatted as sent to backend)
     String formattedPhone = (widget.countryCode + widget.phoneNumber).replaceAll('+', '');
     try {
-      debugPrint('[OTP] Vérifier button pressed. Phone: $formattedPhone, Code: $code');
       await context.read<AuthCubit>().verifyCode(formattedPhone, code);
     } catch (e) {
-      debugPrint('[OTP] Exception in _verifyCode: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${AppLocalizations.of(context)!.verificationErrorMsg} $e'),
+          content: Text('${AppLocalizations.of(context)!.verificationErrorMsg}'),
           backgroundColor: Colors.red,
         ),
       );
@@ -136,7 +134,6 @@ class _VerificationPageState extends State<VerificationPage> {
           }
         }
         if (state is AuthSuccess) {
-          debugPrint('[OTP] AuthSuccess received. UserId: \\${state.userId}, IsNewUser: \\${state.isNewUser}');
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(AppLocalizations.of(context)!.verificationSuccessful),
@@ -150,7 +147,6 @@ class _VerificationPageState extends State<VerificationPage> {
             Navigator.of(context).pop();
           }
         } else if (state is AuthError) {
-          debugPrint('[OTP] AuthError: \\${state.message}');
           // Clear all fields on error
           for (var controller in _controllers) {
             controller.clear();

@@ -75,7 +75,7 @@ class _RestaurantAutocompletePageState extends State<RestaurantAutocompletePage>
           final q = query.toLowerCase().trim();
           results = nearbyRestaurants.where((r) => r.name.toLowerCase().contains(q) || r.description.toLowerCase().contains(q)).toList();
         } catch (e) {
-          print('Nearby search failed, trying all restaurants: $e');
+          // Nearby search failed, trying all restaurants
         }
       }
 
