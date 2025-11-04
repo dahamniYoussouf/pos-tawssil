@@ -14,6 +14,7 @@ import 'src/features/auth/cubit/auth_state.dart';
 import 'src/features/locations/cubit/location_cubit.dart';
 import 'src/features/cart/cubit/cart_cubit.dart';
 import 'src/features/restaurant/cubit/restaurant_cubit.dart';
+import 'src/features/restaurant/cubit/category_cubit.dart';
 import 'src/core/localization/locale_cubit.dart';
 
 // Screen Imports
@@ -60,6 +61,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<RestaurantCubit>(
           create: (context) => RestaurantCubit(restaurantService: RestaurantService()),
+        ),
+        BlocProvider<CategoryCubit>(
+          create: (context) => CategoryCubit(restaurantService: RestaurantService()),
         ),
       ],
       child: BlocBuilder<LocaleCubit, LocaleState>(

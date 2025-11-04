@@ -1,131 +1,74 @@
-/// Fetch categories for a specific restaurant
 import 'dart:async';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import '../models/restaurant_model.dart';
 import '../models/category_model.dart';
 import '../models/menu_model.dart';
 import '../../../core/config/api_config.dart';
+import '../../../core/services/base_api_service.dart';
+import '../../../core/services/token_storage_service.dart';
+import '../../../core/utils/dependency_injection.dart';
 import '../../auth/services/user_service.dart';
+import 'dart:developer' as dev;
 
-import 'package:shared_preferences/shared_preferences.dart';
+class RestaurantService extends BaseApiService {
+  final UserService _userService = UserService();
+  final TokenStorageService _tokenStorageService = locator<TokenStorageService>();
 
-Future<String?> getAccessToken() async {
-  final prefs = await SharedPreferences.getInstance();
-  return prefs.getString('access_token');
-}
-
-Future<List<CategoryModel>> getRestaurantCategories(String restaurantId) async {
-  final accessToken = await getAccessToken();
-  try {
-    final response = await http.get(
-      Uri.parse('${ApiConfig.baseUrl}/restaurantcategory/byrestaurant/$restaurantId'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        if (accessToken != null) 'Authorization': 'Bearer $accessToken',
-      },
-    ).timeout(Duration(seconds: 15));
-
-    if (response.statusCode == 200) {
-      final dynamic responseData = json.decode(response.body);
-      if (responseData is Map<String, dynamic> && responseData['success'] == true && responseData.containsKey('data')) {
-        final List<dynamic> categoriesList = responseData['data'];
-        return categoriesList.map((json) => CategoryModel.fromJson(json)).toList();
-      }
-    }
-    return [];
-  } catch (e) {
-    return [];
-  }
-}
-
-/// Fetch menu items for a specific restaurant
-Future<List<MenuModel>> getRestaurantMenuItems(String restaurantId) async {
-  final accessToken = await getAccessToken();
-  try {
-    final response = await http.get(
-      Uri.parse('${ApiConfig.baseUrl}/menuitem/byrestaurant/$restaurantId'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        if (accessToken != null) 'Authorization': 'Bearer $accessToken',
-      },
-    ).timeout(Duration(seconds: 15));
-
-    if (response.statusCode == 200) {
-      final dynamic responseData = json.decode(response.body);
-      if (responseData is Map<String, dynamic> && responseData['success'] == true && responseData.containsKey('data')) {
-        final List<dynamic> itemsList = responseData['data'];
-        return itemsList.map((json) => MenuModel.fromJson(json)).toList();
-      }
-    }
-    return [];
-  } catch (e) {
-    return [];
-  }
-}
-
-class RestaurantService {
   /// Fetch categories for a specific restaurant
   Future<List<CategoryModel>> getRestaurantCategories(String restaurantId) async {
-    final accessToken = await getAccessToken();
     try {
-      final response = await http.get(
-        Uri.parse('${ApiConfig.baseUrl}/restaurantcategory/byrestaurant/$restaurantId'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          if (accessToken != null) 'Authorization': 'Bearer $accessToken',
-        },
-      ).timeout(Duration(seconds: 15));
-
-      if (response.statusCode == 200) {
-        final dynamic responseData = json.decode(response.body);
-        if (responseData is Map<String, dynamic> && responseData['success'] == true && responseData.containsKey('data')) {
-          final List<dynamic> categoriesList = responseData['data'];
-          return categoriesList.map((json) => CategoryModel.fromJson(json)).toList();
-        }
+      final accessToken = await _tokenStorageService.getAccessToken();
+      dio.options.headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        if (accessToken != null) 'Authorization': 'Bearer $accessToken',
+      };
+      final response = await dio.get(
+        '${ApiConfig.baseUrl}/restaurantcategory/byrestaurant/$restaurantId',
+      );
+      final result = response.data is Map ? response.data : jsonDecode(response.data);
+      if (response.statusCode == 200 && result['success'] == true && result.containsKey('data')) {
+        final List<dynamic> categoriesList = result['data'];
+        return categoriesList.map((json) => CategoryModel.fromJson(json)).toList();
       }
       return [];
-    } catch (e) {
+    } on DioException {
+      return [];
+    } catch (_) {
       return [];
     }
   }
 
   /// Fetch menu items for a specific restaurant
   Future<List<MenuModel>> getRestaurantMenuItems(String restaurantId) async {
-    final accessToken = await getAccessToken();
     try {
-      final response = await http.get(
-        Uri.parse('${ApiConfig.baseUrl}/menuitem/byrestaurant/$restaurantId'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          if (accessToken != null) 'Authorization': 'Bearer $accessToken',
-        },
-      ).timeout(Duration(seconds: 15));
-
-      if (response.statusCode == 200) {
-        final dynamic responseData = json.decode(response.body);
-        if (responseData is Map<String, dynamic> && responseData['success'] == true && responseData.containsKey('data')) {
-          final List<dynamic> itemsList = responseData['data'];
-          return itemsList.map((json) => MenuModel.fromJson(json)).toList();
-        }
+      final accessToken = await _tokenStorageService.getAccessToken();
+      dio.options.headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        if (accessToken != null) 'Authorization': 'Bearer $accessToken',
+      };
+      final response = await dio.get(
+        '${ApiConfig.baseUrl}/menuitem/byrestaurant/$restaurantId',
+      );
+      final result = response.data is Map ? response.data : jsonDecode(response.data);
+      if (response.statusCode == 200 && result['success'] == true && result.containsKey('data')) {
+        final List<dynamic> itemsList = result['data'];
+        return itemsList.map((json) => MenuModel.fromJson(json)).toList();
       }
       return [];
-    } catch (e) {
+    } on DioException {
+      return [];
+    } catch (_) {
       return [];
     }
   }
-
-  final UserService _userService = UserService();
 
   /// Tries to read stored coordinates from SharedPreferences (via UserService)
   /// and fetch nearby restaurants. If no stored coordinates are available,
   /// falls back to fetching all restaurants.
   Future<List<RestaurantModel>> getNearbyRestaurantsFromStoredLocation({int radius = 2000}) async {
-    final accessToken = await getAccessToken();
     try {
       final coords = await _userService.getCurrentCoordinates();
       if (coords != null) {
@@ -136,57 +79,42 @@ class RestaurantService {
         );
       }
       return await getRestaurants();
-    } catch (e, st) {
+    } catch (_) {
       return [];
     }
   }
 
   Future<List<RestaurantModel>> getRestaurants() async {
-    final accessToken = await getAccessToken();
     try {
-      final response = await http.get(
-        Uri.parse(ApiConfig.restaurantsUrl),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          if (accessToken != null) 'Authorization': 'Bearer $accessToken',
-        },
-      ).timeout(Duration(seconds: 15));
-
-      if (response.statusCode == 200) {
-        final dynamic responseData = json.decode(response.body);
-
-        if (responseData is Map<String, dynamic>) {
-          if (responseData['success'] == true && responseData.containsKey('data')) {
-            final List<dynamic> restaurantsList = responseData['data'];
-
-            if (restaurantsList.isEmpty) {
-              return [];
-            }
-
-            List<RestaurantModel> parsedRestaurants = [];
-
-            for (int i = 0; i < restaurantsList.length; i++) {
-              try {
-                final restaurantData = restaurantsList[i] as Map<String, dynamic>;
-                final restaurant = RestaurantModel.fromJson(restaurantData);
-                parsedRestaurants.add(restaurant);
-              } catch (e) {
-                // Error parsing restaurant
-              }
-            }
-
-            return parsedRestaurants;
-          } else {
-            return [];
-          }
-        } else {
+      final accessToken = await _tokenStorageService.getAccessToken();
+      dio.options.headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        if (accessToken != null) 'Authorization': 'Bearer $accessToken',
+      };
+      final response = await dio.get(ApiConfig.restaurantsUrl);
+      final result = response.data is Map ? response.data : jsonDecode(response.data);
+      if (response.statusCode == 200 && result['success'] == true && result.containsKey('data')) {
+        final List<dynamic> restaurantsList = result['data'];
+        if (restaurantsList.isEmpty) {
           return [];
         }
-      } else {
-        return [];
+        List<RestaurantModel> parsedRestaurants = [];
+        for (int i = 0; i < restaurantsList.length; i++) {
+          try {
+            final restaurantData = restaurantsList[i] as Map<String, dynamic>;
+            final restaurant = RestaurantModel.fromJson(restaurantData);
+            parsedRestaurants.add(restaurant);
+          } catch (e) {
+            // Error parsing restaurant
+          }
+        }
+        return parsedRestaurants;
       }
-    } catch (e, stackTrace) {
+      return [];
+    } on DioException {
+      return [];
+    } catch (_) {
       return [];
     }
   }
@@ -201,10 +129,13 @@ class RestaurantService {
     int page = 1,
     int pageSize = 20,
   }) async {
-    final accessToken = await getAccessToken();
     try {
-      final uri = Uri.parse('https://tawssilbackyou.onrender.com/restaurant/nearbyfilter');
-
+      final accessToken = await _tokenStorageService.getAccessToken();
+      dio.options.headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        if (accessToken != null) 'Authorization': 'Bearer $accessToken',
+      };
       final Map<String, dynamic> body = {
         "lat": lat.toString(),
         "lng": lng.toString(),
@@ -213,102 +144,72 @@ class RestaurantService {
         "page": page,
         "pageSize": pageSize
       };
-
-      final response = await http
-          .post(
-            uri,
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              if (accessToken != null) 'Authorization': 'Bearer $accessToken',
-            },
-            body: json.encode(body),
-          )
-          .timeout(const Duration(seconds: 15));
-
-      if (response.statusCode == 200) {
-        final responseData = json.decode(response.body);
-
-        if (responseData is Map<String, dynamic> && responseData.containsKey('data')) {
-          final List<dynamic> restaurantsList = responseData['data'];
-          if (restaurantsList.isEmpty) return [];
-
-          return restaurantsList
-              .map((e) {
-                try {
-                  return RestaurantModel.fromJson(e as Map<String, dynamic>);
-                } catch (e) {
-                  return null;
-                }
-              })
-              .whereType<RestaurantModel>()
-              .toList();
-        } else {
-          return [];
-        }
-      } else {
-        return [];
+      final response = await dio.post(
+        'https://tawssilbackyou.onrender.com/restaurant/nearbyfilter',
+        data: body,
+      );
+      final result = response.data is Map ? response.data : jsonDecode(response.data);
+      if (response.statusCode == 200 && result.containsKey('data')) {
+        final List<dynamic> restaurantsList = result['data'];
+        if (restaurantsList.isEmpty) return [];
+        return restaurantsList
+            .map((e) {
+              try {
+                return RestaurantModel.fromJson(e as Map<String, dynamic>);
+              } catch (e) {
+                return null;
+              }
+            })
+            .whereType<RestaurantModel>()
+            .toList();
       }
+      return [];
+    } on DioException {
+      return [];
     } on TimeoutException {
       return [];
-    } catch (e, stackTrace) {
+    } catch (_) {
       return [];
     }
   }
 
   Future<List<CategoryModel>> getCategories() async {
-    final accessToken = await getAccessToken();
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final accessToken = prefs.getString('access_token');
-
-      final response = await http.get(
-        Uri.parse('${ApiConfig.baseUrl}/restaurant/getall'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          if (accessToken != null) 'Authorization': 'Bearer $accessToken',
-        },
-      ).timeout(Duration(seconds: 15));
-
-      if (response.statusCode == 200) {
-        final dynamic responseData = json.decode(response.body);
-
-        if (responseData is Map<String, dynamic>) {
-          if (responseData['success'] == true && responseData.containsKey('data')) {
-            final List<dynamic> categoriesList = responseData['data'];
-
-            if (categoriesList.isEmpty) {
-              return _getStaticCategories();
-            }
-
-            List<CategoryModel> parsedCategories = [];
-
-            for (int i = 0; i < categoriesList.length; i++) {
-              try {
-                final categoryData = categoriesList[i] as Map<String, dynamic>;
-                final category = CategoryModel(
-                  id: categoryData['id'] ?? '',
-                  name: categoryData['nom'] ?? categoryData['name'] ?? '',
-                  iconPath: categoryData['icone_url'] ?? 'assets/icons/restaurant.png',
-                  description: categoryData['description'] ?? '',
-                );
-                parsedCategories.add(category);
-              } catch (e) {
-                // Error parsing category
-              }
-            }
-            return parsedCategories;
-          } else {
-            return _getStaticCategories();
-          }
-        } else {
+      final accessToken = await _tokenStorageService.getAccessToken();
+      dio.options.headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        if (accessToken != null) 'Authorization': 'Bearer $accessToken',
+      };
+      final response = await dio.get('${ApiConfig.baseUrl}/restaurant/getall');
+      final result = response.data is Map ? response.data : jsonDecode(response.data);
+      dev.log("fouad : result: $result");
+      if (response.statusCode == 200 && result['success'] == true && result.containsKey('data')) {
+        final List<dynamic> categoriesList = result['data'];
+        if (categoriesList.isEmpty) {
           return _getStaticCategories();
         }
-      } else {
-        return _getStaticCategories();
+        List<CategoryModel> parsedCategories = [];
+        for (int i = 0; i < categoriesList.length; i++) {
+          try {
+            final categoryData = categoriesList[i] as Map<String, dynamic>;
+            final category = CategoryModel(
+              id: categoryData['id'] ?? '',
+              name: categoryData['nom'] ?? categoryData['name'] ?? '',
+              iconPath: categoryData['icone_url'] ?? 'assets/icons/restaurant.png',
+              description: categoryData['description'] ?? '',
+            );
+            parsedCategories.add(category);
+          } catch (e) {
+            // Error parsing category
+          }
+        }
+        return parsedCategories;
       }
-    } catch (e, stackTrace) {
+      return _getStaticCategories();
+    } on DioException {
+      return _getStaticCategories();
+    } catch (_) {
       return _getStaticCategories();
     }
   }
@@ -326,13 +227,10 @@ class RestaurantService {
   Future<List<RestaurantModel>> searchRestaurants({required String query, int maxResults = 50}) async {
     try {
       final allRestaurants = await getRestaurants();
-
       if (query.isEmpty) {
         return allRestaurants.take(maxResults).toList();
       }
-
       final queryLower = query.toLowerCase();
-
       return allRestaurants
           .where((restaurant) {
             final nameLower = restaurant.name.toLowerCase();
@@ -347,154 +245,124 @@ class RestaurantService {
   }
 
   Future<List<RestaurantModel>> getRestaurantsByCategory(List<String> categories, double lat, double lng, {int radius = 50000, int page = 1, int pageSize = 20}) async {
-    final accessToken = await getAccessToken();
     try {
-      final response = await http
-          .post(
-            Uri.parse('https://tawssilbackyou.onrender.com/restaurant/nearbyfilter'),
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              if (accessToken != null) 'Authorization': 'Bearer $accessToken',
-            },
-            body: json.encode({
-              'lat': lat.toString(),
-              'lng': lng.toString(),
-              'radius': radius,
-              'categories': categories,
-              'page': page,
-              'pageSize': pageSize,
-            }),
-          )
-          .timeout(Duration(seconds: 15));
-
-      if (response.statusCode == 200) {
-        final dynamic responseData = json.decode(response.body);
-
-        if (responseData is Map<String, dynamic>) {
-          if (responseData['success'] == true && responseData.containsKey('data')) {
-            final List<dynamic> restaurantsList = responseData['data'];
-
-            if (restaurantsList.isEmpty) {
-              return [];
-            }
-
-            List<RestaurantModel> parsedRestaurants = [];
-
-            for (int i = 0; i < restaurantsList.length; i++) {
-              try {
-                final restaurantData = restaurantsList[i] as Map<String, dynamic>;
-                final restaurant = RestaurantModel.fromJson(restaurantData);
-                parsedRestaurants.add(restaurant);
-              } catch (e) {
-                // Error parsing restaurant
-              }
-            }
-
-            parsedRestaurants.sort((a, b) {
-              if (a.isPremium && !b.isPremium) return -1;
-              if (!a.isPremium && b.isPremium) return 1;
-              return b.rating.compareTo(a.rating);
-            });
-            return parsedRestaurants;
+      final accessToken = await _tokenStorageService.getAccessToken();
+      dio.options.headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        if (accessToken != null) 'Authorization': 'Bearer $accessToken',
+      };
+      final response = await dio.post(
+        'https://tawssilbackyou.onrender.com/restaurant/nearbyfilter',
+        data: {
+          'lat': lat.toString(),
+          'lng': lng.toString(),
+          'radius': radius,
+          'categories': categories,
+          'page': page,
+          'pageSize': pageSize,
+        },
+      );
+      final result = response.data is Map ? response.data : jsonDecode(response.data);
+      if (response.statusCode == 200 && result['success'] == true && result.containsKey('data')) {
+        final List<dynamic> restaurantsList = result['data'];
+        if (restaurantsList.isEmpty) {
+          return [];
+        }
+        List<RestaurantModel> parsedRestaurants = [];
+        for (int i = 0; i < restaurantsList.length; i++) {
+          try {
+            final restaurantData = restaurantsList[i] as Map<String, dynamic>;
+            final restaurant = RestaurantModel.fromJson(restaurantData);
+            parsedRestaurants.add(restaurant);
+          } catch (e) {
+            // Error parsing restaurant
           }
         }
-        return [];
-      } else {
-        return [];
+        parsedRestaurants.sort((a, b) {
+          if (a.isPremium && !b.isPremium) return -1;
+          if (!a.isPremium && b.isPremium) return 1;
+          return b.rating.compareTo(a.rating);
+        });
+        return parsedRestaurants;
       }
-    } catch (e) {
+      return [];
+    } on DioException {
+      return [];
+    } catch (_) {
       return [];
     }
   }
 
   Future<RestaurantModel> getRestaurantById(String id) async {
-    final accessToken = await getAccessToken();
     try {
-      final response = await http.get(
-        Uri.parse('${ApiConfig.baseUrl}/restaurant/$id'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          if (accessToken != null) 'Authorization': 'Bearer $accessToken',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final dynamic responseData = json.decode(response.body);
-
-        if (responseData is Map<String, dynamic> && responseData['success'] == true && responseData.containsKey('data')) {
-          final restaurantData = responseData['data'] as Map<String, dynamic>;
-          return RestaurantModel.fromJson(restaurantData);
-        } else {
-          throw Exception('Invalid response format');
-        }
+      final accessToken = await _tokenStorageService.getAccessToken();
+      dio.options.headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        if (accessToken != null) 'Authorization': 'Bearer $accessToken',
+      };
+      final response = await dio.get('${ApiConfig.baseUrl}/restaurant/$id');
+      final result = response.data is Map ? response.data : jsonDecode(response.data);
+      if (response.statusCode == 200 && result['success'] == true && result.containsKey('data')) {
+        final restaurantData = result['data'] as Map<String, dynamic>;
+        return RestaurantModel.fromJson(restaurantData);
       } else {
-        throw Exception('Failed to load restaurant');
+        throw Exception('Invalid response format');
       }
-    } catch (e) {
+    } on DioException {
+      throw Exception('Failed to load restaurant');
+    } catch (_) {
       rethrow;
     }
   }
 
   Future<List<MenuModel>> getMenuItems({required String restaurantId, String? categoryId}) async {
-    final accessToken = await getAccessToken();
     try {
-      final uri = Uri.parse('${ApiConfig.baseUrl}/menuitem/filter');
+      final accessToken = await _tokenStorageService.getAccessToken();
+      dio.options.headers = {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        if (accessToken != null) 'Authorization': 'Bearer $accessToken',
+      };
       final body = <String, dynamic>{
         'is_available': true,
+        'restaurant_id': restaurantId,
       };
-      body['restaurant_id'] = restaurantId;
       if (categoryId != null) {
         body['category_id'] = categoryId;
       }
-      final response = await http
-          .post(
-            uri,
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              if (accessToken != null) 'Authorization': 'Bearer $accessToken',
-            },
-            body: json.encode(body),
-          )
-          .timeout(Duration(seconds: 15));
-
-      if (response.statusCode == 200) {
-        final dynamic responseData = json.decode(response.body);
-
-        if (responseData is Map<String, dynamic> && responseData['success'] == true) {
-          final List<dynamic>? itemsList = (responseData['data'] as List?) ?? (responseData['items'] as List?);
-          if (itemsList == null) {
-            return [];
-          }
-
-          List<MenuModel> parsedItems = [];
-
-          for (int i = 0; i < itemsList.length; i++) {
-            try {
-              final itemData = itemsList[i] as Map<String, dynamic>;
-              final menuItem = MenuModel.fromJson(itemData);
-
-              // If backend didn't populate restaurant_id, assume items belong to requested restaurant
-              if (menuItem.restaurantId.isEmpty) {
-                parsedItems.add(menuItem);
-              } else if (menuItem.restaurantId == restaurantId) {
-                parsedItems.add(menuItem);
-              }
-            } catch (e) {
-              // Error parsing menu item
-            }
-          }
-
-          return parsedItems;
+      final response = await dio.post(
+        '${ApiConfig.baseUrl}/menuitem/filter',
+        data: body,
+      );
+      final result = response.data is Map ? response.data : jsonDecode(response.data);
+      if (response.statusCode == 200 && result['success'] == true) {
+        final List<dynamic>? itemsList = (result['data'] as List?) ?? (result['items'] as List?);
+        if (itemsList == null) {
+          return [];
         }
-
-        return [];
+        List<MenuModel> parsedItems = [];
+        for (int i = 0; i < itemsList.length; i++) {
+          try {
+            final itemData = itemsList[i] as Map<String, dynamic>;
+            final menuItem = MenuModel.fromJson(itemData);
+            // If backend didn't populate restaurant_id, assume items belong to requested restaurant
+            if (menuItem.restaurantId.isEmpty) {
+              parsedItems.add(menuItem);
+            } else if (menuItem.restaurantId == restaurantId) {
+              parsedItems.add(menuItem);
+            }
+          } catch (e) {
+            // Error parsing menu item
+          }
+        }
+        return parsedItems;
       }
-
       return [];
-    } catch (e, st) {
+    } on DioException {
+      return [];
+    } catch (_) {
       return [];
     }
   }
@@ -502,16 +370,13 @@ class RestaurantService {
   Future<List<MenuItemCategory>> getMenuCategories({required String restaurantId}) async {
     try {
       final menuItems = await getMenuItems(restaurantId: restaurantId);
-
       // Extract unique categories from menu items
       final Map<String, MenuItemCategory> categoriesMap = {};
-
       for (var item in menuItems) {
         if (item.category != null) {
           categoriesMap[item.category!.id] = item.category!;
         }
       }
-
       return categoriesMap.values.toList();
     } catch (e) {
       return [];

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class RestaurantSearchBar extends StatefulWidget {
   final Function(String)? onSearch;
   final VoidCallback? onTap;
   final bool readOnly;
-  final String hintText;
+  final String? hintText;
   final TextEditingController? controller;
 
   const RestaurantSearchBar({
@@ -12,7 +13,7 @@ class RestaurantSearchBar extends StatefulWidget {
     this.onSearch,
     this.onTap,
     this.readOnly = false,
-    this.hintText = 'Rechercher des restaurant...',
+    this.hintText,
     this.controller,
   }) : super(key: key);
 
@@ -22,16 +23,14 @@ class RestaurantSearchBar extends StatefulWidget {
 
 class _RestaurantSearchBarState extends State<RestaurantSearchBar> {
   late final TextEditingController _controller = widget.controller ?? TextEditingController();
-  
+
   @override
   void initState() {
     super.initState();
     _controller.addListener(() {
-      setState(() {
-      });
+      setState(() {});
     });
   }
-  
 
   @override
   void dispose() {
@@ -78,7 +77,7 @@ class _RestaurantSearchBarState extends State<RestaurantSearchBar> {
                 color: Colors.black87,
               ),
               decoration: InputDecoration(
-                hintText: widget.hintText,
+                hintText: widget.hintText ?? AppLocalizations.of(context)?.searchRestaurantPlaceholder ?? 'Rechercher des restaurant...',
                 hintStyle: TextStyle(
                   color: Colors.grey[500],
                   fontSize: 14,

@@ -25,28 +25,36 @@ class RestaurantLoaded extends RestaurantState {
   final List<CategoryModel> categories;
   final String? searchQuery;
   final String? selectedCategory;
+  final String? username;
+  final UserLocation? userLocation;
 
   const RestaurantLoaded({
     required this.restaurants,
     required this.categories,
     this.searchQuery,
     this.selectedCategory,
+    this.username,
+    this.userLocation,
   });
 
   @override
-  List<Object?> get props => [restaurants, categories, searchQuery, selectedCategory];
+  List<Object?> get props => [restaurants, categories, searchQuery, selectedCategory, username, userLocation];
 
   RestaurantLoaded copyWith({
     List<RestaurantModel>? restaurants,
     List<CategoryModel>? categories,
     String? searchQuery,
     String? selectedCategory,
+    String? username,
+    UserLocation? userLocation,
   }) {
     return RestaurantLoaded(
       restaurants: restaurants ?? this.restaurants,
       categories: categories ?? this.categories,
       searchQuery: searchQuery ?? this.searchQuery,
       selectedCategory: selectedCategory ?? this.selectedCategory,
+      username: username ?? this.username,
+      userLocation: userLocation ?? this.userLocation,
     );
   }
 }
@@ -102,18 +110,20 @@ class RestaurantCubit extends Cubit<RestaurantState> {
         _userService = userService ?? UserService(),
         super(RestaurantInitial());
 
-  Future<void> loadNearbyRestaurants({int radius = 2000}) async {
+  Future<void> loadNearbyRestaurants({int radius = 5000}) async {
     try {
       emit(RestaurantLoading());
-
       final restaurants = await _restaurantService.getNearbyRestaurantsFromStoredLocation(
         radius: radius,
       );
       final categories = await _restaurantService.getCategories();
-
+      final username = await _userService.getCurrentUsername();
+      final userLocation = await _userService.getCurrentLocation();
       emit(RestaurantLoaded(
         restaurants: restaurants,
         categories: categories,
+        username: username,
+        userLocation: userLocation,
       ));
     } catch (e) {
       emit(RestaurantError(message: 'Erreur lors du chargement des restaurants: ${e.toString()}'));
@@ -123,13 +133,15 @@ class RestaurantCubit extends Cubit<RestaurantState> {
   Future<void> loadAllRestaurants() async {
     try {
       emit(RestaurantLoading());
-
       final restaurants = await _restaurantService.getRestaurants();
       final categories = await _restaurantService.getCategories();
-
+      final username = await _userService.getCurrentUsername();
+      final userLocation = await _userService.getCurrentLocation();
       emit(RestaurantLoaded(
         restaurants: restaurants,
         categories: categories,
+        username: username,
+        userLocation: userLocation,
       ));
     } catch (e) {
       emit(RestaurantError(message: 'Erreur lors du chargement des restaurants: ${e.toString()}'));
