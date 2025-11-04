@@ -508,6 +508,69 @@
   "profileUpdatedSuccessfully": "Profile updated successfully!",
   "@profileUpdatedSuccessfully": {
     "description": "Profile updated success message"
+  },
+  "errorPhoneNumberRequired": "Please enter your phone number",
+  "@errorPhoneNumberRequired": {
+    "description": "Phone number required error"
+  },
+  "errorPhoneNumberInvalid": "Invalid phone number",
+  "@errorPhoneNumberInvalid": {
+    "description": "Invalid phone number error"
+  },
+  "errorPhoneNumberMinLength": "Phone number must contain at least 8 digits",
+  "@errorPhoneNumberMinLength": {
+    "description": "Phone number minimum length error"
+  },
+  "errorCodeSendFailed": "Error sending verification code",
+  "@errorCodeSendFailed": {
+    "description": "Code send error"
+  },
+  "errorConnection": "Connection error: {error}",
+  "@errorConnection": {
+    "description": "Connection error with details",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorCodeLength": "Code must contain 6 digits",
+  "@errorCodeLength": {
+    "description": "Verification code length error"
+  },
+  "errorCodeInvalid": "Invalid verification code",
+  "@errorCodeInvalid": {
+    "description": "Invalid verification code error"
+  },
+  "errorVerification": "Verification error: {error}",
+  "@errorVerification": {
+    "description": "Verification error with details",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFirstNameRequired": "Please enter your first name",
+  "@errorFirstNameRequired": {
+    "description": "First name required error"
+  },
+  "errorLastNameRequired": "Please enter your last name",
+  "@errorLastNameRequired": {
+    "description": "Last name required error"
+  },
+  "errorProfileUpdateFailed": "Error updating profile",
+  "@errorProfileUpdateFailed": {
+    "description": "Profile update error"
+  },
+  "errorProfileUpdate": "Error updating profile: {error}",
+  "@errorProfileUpdate": {
+    "description": "Profile update error with details",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   }
 }
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/l10n/app_localizations.dart';
+import 'package:frontend/src/core/extensions/app_localizations_extension.dart';
 import 'package:frontend/src/features/auth/cubit/auth_state.dart';
 import '../cubit/auth_cubit.dart';
 import 'verification_page.dart';
@@ -63,7 +64,8 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
       },
       builder: (context, state) {
         final isLoading = state is AuthLoading;
-        final errorMessage = state is AuthError ? state.message : '';
+        final errorMessageRaw = state is AuthError ? state.message : '';
+        final errorMessage = errorMessageRaw.isNotEmpty ? AppLocalizations.of(context)!.translateErrorMessage(errorMessageRaw) : '';
 
         return Scaffold(
           backgroundColor: const Color(0xFF006C4A), // Tawsil green
@@ -254,7 +256,7 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
                               onPressed: isLoading ? null : _handleConnect,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: const Color(0xFF006C4A),
-                                disabledBackgroundColor: const Color(0xFF006C4A).withOpacity(0.6),
+                                disabledBackgroundColor: const Color(0xFF006C4A).withValues(alpha: 0.6),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),

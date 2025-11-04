@@ -123,19 +123,22 @@ class AuthUpdatingProfile extends AuthState {
 class AuthSuccess extends AuthState {
   final String userId;
   final bool isNewUser;
+  final bool needsLocation;
 
   const AuthSuccess({
     required this.userId,
     this.isNewUser = false,
+    this.needsLocation = false,
   });
 
   @override
-  List<Object?> get props => [userId, isNewUser];
+  List<Object?> get props => [userId, isNewUser, needsLocation];
 
   factory AuthSuccess.fromJson(Map<String, dynamic> json) {
     return AuthSuccess(
       userId: json['userId'] as String,
       isNewUser: json['isNewUser'] as bool? ?? false,
+      needsLocation: json['needsLocation'] as bool? ?? false,
     );
   }
 
@@ -145,6 +148,7 @@ class AuthSuccess extends AuthState {
       'type': 'AuthSuccess',
       'userId': userId,
       'isNewUser': isNewUser,
+      'needsLocation': needsLocation,
     };
   }
 }

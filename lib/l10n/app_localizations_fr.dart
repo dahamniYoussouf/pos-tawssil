@@ -398,4 +398,49 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get profileUpdatedSuccessfully => 'Profil mis à jour avec succès!';
+
+  @override
+  String get errorPhoneNumberRequired =>
+      'Veuillez entrer votre numéro de téléphone';
+
+  @override
+  String get errorPhoneNumberInvalid => 'Numéro de téléphone invalide';
+
+  @override
+  String get errorPhoneNumberMinLength =>
+      'Le numéro de téléphone doit contenir au moins 8 chiffres';
+
+  @override
+  String get errorCodeSendFailed => 'Erreur lors de l\'envoi du code';
+
+  @override
+  String errorConnection(String error) {
+    return 'Erreur de connexion: $error';
+  }
+
+  @override
+  String get errorCodeLength => 'Le code doit contenir 6 chiffres';
+
+  @override
+  String get errorCodeInvalid => 'Code de vérification invalide';
+
+  @override
+  String errorVerification(String error) {
+    return 'Erreur de vérification: $error';
+  }
+
+  @override
+  String get errorFirstNameRequired => 'Veuillez entrer votre prénom';
+
+  @override
+  String get errorLastNameRequired => 'Veuillez entrer votre nom de famille';
+
+  @override
+  String get errorProfileUpdateFailed =>
+      'Erreur lors de la mise à jour du profil';
+
+  @override
+  String errorProfileUpdate(String error) {
+    return 'Erreur lors de la mise à jour du profil: $error';
+  }
 }

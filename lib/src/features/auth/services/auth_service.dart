@@ -120,10 +120,11 @@ class AuthService extends BaseApiService {
       );
 
       final result = response.data is Map ? response.data : jsonDecode(response.data);
+
       // Treat 200 as success, regardless of 'success' field
       if (response.statusCode == 200) {
         // Check for message and tokens
-        if (result['message'] == 'Connexion réussie' && result['access_token'] != null) {
+        if (result['message'] == 'Login successful' && result['access_token'] != null) {
           // Check if this is a new user by checking if profile is missing or has default values
           final profile = result['profile'];
           final isNewUser = profile == null || profile['first_name'] == null || profile['first_name'].toString().toLowerCase() == 'user';
@@ -291,6 +292,18 @@ class AuthService extends BaseApiService {
     }
   }
 
+  /// Save user ID
+  Future<bool> saveUserId(String userId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_userIdKey, userId);
+      await prefs.setBool(_isLoggedInKey, true);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   /// Update user profile with first name and last name
   Future<Map<String, dynamic>> updateUserInfo({
     required String firstName,
@@ -316,7 +329,7 @@ class AuthService extends BaseApiService {
       };
 
       final response = await dio.put(
-        "${ApiConfig.baseUrl}/client/update/$userId",
+        "${ApiConfig.baseUrl}/client/profile",
         data: {
           'first_name': firstName,
           'last_name': lastName,
@@ -350,6 +363,46 @@ class AuthService extends BaseApiService {
     }
   }
 
+  /// Get user profile
+  Future<Map<String, dynamic>> getProfile() async {
+    try {
+      final accessToken = await _tokenStorageService.getAccessToken();
+      if (accessToken == null) {
+        return {
+          'success': false,
+          'message': 'Non authentifié. Veuillez vous reconnecter.',
+        };
+      }
+      dio.options.headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $accessToken',
+      };
+      final response = await dio.get('${ApiConfig.baseUrl}/client/profile/me');
+      final result = response.data is Map ? response.data : jsonDecode(response.data);
+      if (response.statusCode == 200 && result['success'] == true) {
+        return {
+          'success': true,
+          'profile': result['data'],
+        };
+      } else {
+        return {
+          'success': false,
+          'message': result['message'] ?? 'Erreur lors de la récupération du profil',
+        };
+      }
+    } on DioException catch (e) {
+      return {
+        'success': false,
+        'message': 'Erreur de connexion. Veuillez réessayer.',
+      };
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Erreur lors de la récupération du profil',
+      };
+    }
+  }
+
   /// Logout user
   Future<bool> logout() async {
     try {
@@ -359,6 +412,7 @@ class AuthService extends BaseApiService {
       await prefs.remove(_userNameKey);
       await prefs.remove(_phoneKey);
       await prefs.remove(_verificationCodeKey);
+      await _tokenStorageService.clearAllTokens();
       return true;
     } catch (e) {
       return false;

@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/l10n/app_localizations.dart';
+import 'package:frontend/src/core/extensions/app_localizations_extension.dart';
 import 'package:frontend/src/features/auth/cubit/auth_state.dart';
 import '../cubit/auth_cubit.dart';
+import 'user_info_page.dart';
+import '../../locations/pages/location_page.dart';
+import '../../restaurant/pages/restaurant_suggestion_page.dart';
 
 /// Verification Page for OTP code entry
 class VerificationPage extends StatefulWidget {
@@ -141,10 +145,27 @@ class _VerificationPageState extends State<VerificationPage> {
               duration: const Duration(seconds: 2),
             ),
           );
-
-          // Pop this page and let AuthWrapper handle navigation based on state
           if (mounted) {
-            Navigator.of(context).pop();
+            if (state.isNewUser) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => UserInfoPage(userId: state.userId),
+                ),
+              );
+            } else if (state.needsLocation) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (context) => LocationPage(),
+                ),
+              );
+            } else {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(
+                  builder: (context) => RestaurantSuggestionPage(),
+                ),
+                (route) => false,
+              );
+            }
           }
         } else if (state is AuthError) {
           // Clear all fields on error
@@ -154,7 +175,7 @@ class _VerificationPageState extends State<VerificationPage> {
           _focusNodes[0].requestFocus();
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.message),
+              content: Text(AppLocalizations.of(context)!.translateErrorMessage(state.message)),
               backgroundColor: Colors.red,
             ),
           );
@@ -162,7 +183,8 @@ class _VerificationPageState extends State<VerificationPage> {
       },
       builder: (context, state) {
         final isLoading = state is AuthVerificationLoading;
-        final errorMessage = state is AuthError ? state.message : '';
+        final errorMessageRaw = state is AuthError ? state.message : '';
+        final errorMessage = errorMessageRaw.isNotEmpty ? AppLocalizations.of(context)!.translateErrorMessage(errorMessageRaw) : '';
 
         String? devOtp = _verificationId;
         return Scaffold(

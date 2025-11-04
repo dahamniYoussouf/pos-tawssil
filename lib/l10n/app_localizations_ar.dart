@@ -391,4 +391,47 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get profileUpdatedSuccessfully => 'تم تحديث الملف الشخصي بنجاح!';
+
+  @override
+  String get errorPhoneNumberRequired => 'يرجى إدخال رقم هاتفك';
+
+  @override
+  String get errorPhoneNumberInvalid => 'رقم هاتف غير صالح';
+
+  @override
+  String get errorPhoneNumberMinLength =>
+      'يجب أن يحتوي رقم الهاتف على 8 أرقام على الأقل';
+
+  @override
+  String get errorCodeSendFailed => 'خطأ في إرسال رمز التحقق';
+
+  @override
+  String errorConnection(String error) {
+    return 'خطأ في الاتصال: $error';
+  }
+
+  @override
+  String get errorCodeLength => 'يجب أن يحتوي الرمز على 6 أرقام';
+
+  @override
+  String get errorCodeInvalid => 'رمز التحقق غير صالح';
+
+  @override
+  String errorVerification(String error) {
+    return 'خطأ في التحقق: $error';
+  }
+
+  @override
+  String get errorFirstNameRequired => 'يرجى إدخال اسمك الأول';
+
+  @override
+  String get errorLastNameRequired => 'يرجى إدخال اسمك الأخير';
+
+  @override
+  String get errorProfileUpdateFailed => 'خطأ في تحديث الملف الشخصي';
+
+  @override
+  String errorProfileUpdate(String error) {
+    return 'خطأ في تحديث الملف الشخصي: $error';
+  }
 }

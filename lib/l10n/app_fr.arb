@@ -120,6 +120,18 @@
   "lastName": "Nom de famille",
   "lastNameHint": "Entrez votre nom de famille",
   "save": "Enregistrer",
-  "profileUpdatedSuccessfully": "Profil mis à jour avec succès!"
+  "profileUpdatedSuccessfully": "Profil mis à jour avec succès!",
+  "errorPhoneNumberRequired": "Veuillez entrer votre numéro de téléphone",
+  "errorPhoneNumberInvalid": "Numéro de téléphone invalide",
+  "errorPhoneNumberMinLength": "Le numéro de téléphone doit contenir au moins 8 chiffres",
+  "errorCodeSendFailed": "Erreur lors de l'envoi du code",
+  "errorConnection": "Erreur de connexion: {error}",
+  "errorCodeLength": "Le code doit contenir 6 chiffres",
+  "errorCodeInvalid": "Code de vérification invalide",
+  "errorVerification": "Erreur de vérification: {error}",
+  "errorFirstNameRequired": "Veuillez entrer votre prénom",
+  "errorLastNameRequired": "Veuillez entrer votre nom de famille",
+  "errorProfileUpdateFailed": "Erreur lors de la mise à jour du profil",
+  "errorProfileUpdate": "Erreur lors de la mise à jour du profil: {error}"
 }
 

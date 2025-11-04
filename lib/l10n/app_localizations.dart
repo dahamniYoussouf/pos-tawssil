@@ -825,6 +825,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Profile updated successfully!'**
   String get profileUpdatedSuccessfully;
+
+  /// Phone number required error
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your phone number'**
+  String get errorPhoneNumberRequired;
+
+  /// Invalid phone number error
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid phone number'**
+  String get errorPhoneNumberInvalid;
+
+  /// Phone number minimum length error
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number must contain at least 8 digits'**
+  String get errorPhoneNumberMinLength;
+
+  /// Code send error
+  ///
+  /// In en, this message translates to:
+  /// **'Error sending verification code'**
+  String get errorCodeSendFailed;
+
+  /// Connection error with details
+  ///
+  /// In en, this message translates to:
+  /// **'Connection error: {error}'**
+  String errorConnection(String error);
+
+  /// Verification code length error
+  ///
+  /// In en, this message translates to:
+  /// **'Code must contain 6 digits'**
+  String get errorCodeLength;
+
+  /// Invalid verification code error
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid verification code'**
+  String get errorCodeInvalid;
+
+  /// Verification error with details
+  ///
+  /// In en, this message translates to:
+  /// **'Verification error: {error}'**
+  String errorVerification(String error);
+
+  /// First name required error
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your first name'**
+  String get errorFirstNameRequired;
+
+  /// Last name required error
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter your last name'**
+  String get errorLastNameRequired;
+
+  /// Profile update error
+  ///
+  /// In en, this message translates to:
+  /// **'Error updating profile'**
+  String get errorProfileUpdateFailed;
+
+  /// Profile update error with details
+  ///
+  /// In en, this message translates to:
+  /// **'Error updating profile: {error}'**
+  String errorProfileUpdate(String error);
 }
 
 class _AppLocalizationsDelegate

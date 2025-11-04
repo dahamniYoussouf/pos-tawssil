@@ -120,6 +120,18 @@
   "lastName": "الاسم الأخير",
   "lastNameHint": "أدخل اسمك الأخير",
   "save": "حفظ",
-  "profileUpdatedSuccessfully": "تم تحديث الملف الشخصي بنجاح!"
+  "profileUpdatedSuccessfully": "تم تحديث الملف الشخصي بنجاح!",
+  "errorPhoneNumberRequired": "يرجى إدخال رقم هاتفك",
+  "errorPhoneNumberInvalid": "رقم هاتف غير صالح",
+  "errorPhoneNumberMinLength": "يجب أن يحتوي رقم الهاتف على 8 أرقام على الأقل",
+  "errorCodeSendFailed": "خطأ في إرسال رمز التحقق",
+  "errorConnection": "خطأ في الاتصال: {error}",
+  "errorCodeLength": "يجب أن يحتوي الرمز على 6 أرقام",
+  "errorCodeInvalid": "رمز التحقق غير صالح",
+  "errorVerification": "خطأ في التحقق: {error}",
+  "errorFirstNameRequired": "يرجى إدخال اسمك الأول",
+  "errorLastNameRequired": "يرجى إدخال اسمك الأخير",
+  "errorProfileUpdateFailed": "خطأ في تحديث الملف الشخصي",
+  "errorProfileUpdate": "خطأ في تحديث الملف الشخصي: {error}"
 }
 

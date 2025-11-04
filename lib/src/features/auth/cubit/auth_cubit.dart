@@ -4,6 +4,7 @@ import '../services/auth_service.dart';
 import 'auth_state.dart';
 import 'package:frontend/src/core/services/token_storage_service.dart';
 import 'package:frontend/src/core/utils/dependency_injection.dart';
+import '../services/user_service.dart';
 
 // Auth Cubit
 class AuthCubit extends HydratedCubit<AuthState> {
@@ -52,7 +53,47 @@ class AuthCubit extends HydratedCubit<AuthState> {
   }
 
   void resetAuth() {
-    emit(AuthInitial());
+    emit(const AuthInitial());
+  }
+
+  Future<void> checkAuthenticationStatus() async {
+    try {
+      final hasToken = await _tokenStorageService.hasAccessToken();
+      if (!hasToken) {
+        emit(const AuthInitial());
+        return;
+      }
+      final userId = await _authService.getUserId();
+      if (userId == null || userId.isEmpty) {
+        emit(const AuthInitial());
+        return;
+      }
+      final result = await _authService.getProfile();
+      if (result['success'] == true) {
+        final profile = ProfileModel.fromJson(result['profile'] as Map<String, dynamic>);
+        final needsUserInfo = profile.firstName.trim().isEmpty || profile.lastName.trim().isEmpty;
+        final needsLocation = await _checkLocationStatus();
+        emit(AuthSuccess(
+          userId: profile.id,
+          isNewUser: needsUserInfo,
+          needsLocation: needsLocation,
+        ));
+      } else {
+        emit(const AuthInitial());
+      }
+    } catch (e) {
+      emit(const AuthInitial());
+    }
+  }
+
+  Future<bool> _checkLocationStatus() async {
+    try {
+      final userService = UserService();
+      final coordinates = await userService.getCurrentCoordinates();
+      return coordinates == null;
+    } catch (e) {
+      return true;
+    }
   }
 
   Future<void> sendVerificationCode(String phoneNumber, String countryCode) async {
@@ -61,17 +102,17 @@ class AuthCubit extends HydratedCubit<AuthState> {
 
       // Validate phone number
       if (phoneNumber.isEmpty) {
-        emit(const AuthError(message: 'Veuillez entrer votre numéro de téléphone'));
+        emit(const AuthError(message: 'errorPhoneNumberRequired'));
         return;
       }
 
       if (!RegExp(r'^[0-9]+$').hasMatch(phoneNumber)) {
-        emit(const AuthError(message: 'Numéro de téléphone invalide'));
+        emit(const AuthError(message: 'errorPhoneNumberInvalid'));
         return;
       }
 
       if (phoneNumber.length < 8) {
-        emit(const AuthError(message: 'Le numéro de téléphone doit contenir au moins 8 chiffres'));
+        emit(const AuthError(message: 'errorPhoneNumberMinLength'));
         return;
       }
 
@@ -85,10 +126,10 @@ class AuthCubit extends HydratedCubit<AuthState> {
           verificationId: result['verificationId'] ?? '',
         ));
       } else {
-        emit(AuthError(message: result['message'] ?? 'Erreur lors de l\'envoi du code'));
+        emit(AuthError(message: result['message'] ?? 'errorCodeSendFailed'));
       }
     } catch (e) {
-      emit(AuthError(message: 'Erreur de connexion: ${e.toString()}'));
+      emit(AuthError(message: 'errorConnection|${e.toString()}'));
     }
   }
 
@@ -97,12 +138,11 @@ class AuthCubit extends HydratedCubit<AuthState> {
       emit(AuthVerificationLoading());
 
       if (code.length != 6) {
-        emit(const AuthError(message: 'Le code doit contenir 6 chiffres'));
+        emit(const AuthError(message: 'errorCodeLength'));
         return;
       }
 
       final result = await _authService.verifyCode(phoneNumber, code);
-
       if (result['success'] == true) {
         final accessToken = result['access_token'] as String?;
         final refreshToken = result['refresh_token'] as String?;
@@ -119,15 +159,19 @@ class AuthCubit extends HydratedCubit<AuthState> {
         }
 
         final ProfileModel profile = ProfileModel.fromJson(result['profile'] as Map<String, dynamic>);
+        await _authService.saveUserId(profile.id);
+        final needsUserInfo = profile.firstName.trim().isEmpty || profile.lastName.trim().isEmpty;
+        final needsLocation = await _checkLocationStatus();
         emit(AuthSuccess(
-          userId: profile.userId,
-          isNewUser: profile.firstName.isEmpty && profile.lastName.isEmpty,
+          userId: profile.id,
+          isNewUser: needsUserInfo,
+          needsLocation: needsLocation,
         ));
       } else {
-        emit(AuthError(message: result['message'] ?? 'Code de vérification invalide'));
+        emit(AuthError(message: result['message'] ?? 'errorCodeInvalid'));
       }
     } catch (e) {
-      emit(AuthError(message: 'Erreur de vérification: ${e.toString()}'));
+      emit(AuthError(message: 'errorVerification|${e.toString()}'));
     }
   }
 
@@ -147,12 +191,12 @@ class AuthCubit extends HydratedCubit<AuthState> {
 
       // Validate inputs
       if (firstName.trim().isEmpty) {
-        emit(const AuthError(message: 'Veuillez entrer votre prénom'));
+        emit(const AuthError(message: 'errorFirstNameRequired'));
         return;
       }
 
       if (lastName.trim().isEmpty) {
-        emit(const AuthError(message: 'Veuillez entrer votre nom de famille'));
+        emit(const AuthError(message: 'errorLastNameRequired'));
         return;
       }
 
@@ -163,12 +207,13 @@ class AuthCubit extends HydratedCubit<AuthState> {
       );
 
       if (result['success'] == true) {
-        emit(AuthSuccess(userId: userId, isNewUser: false));
+        final needsLocation = await _checkLocationStatus();
+        emit(AuthSuccess(userId: userId, isNewUser: false, needsLocation: needsLocation));
       } else {
-        emit(AuthError(message: result['message'] ?? 'Erreur lors de la mise à jour du profil'));
+        emit(AuthError(message: result['message'] ?? 'errorProfileUpdateFailed'));
       }
     } catch (e) {
-      emit(AuthError(message: 'Erreur lors de la mise à jour du profil: ${e.toString()}'));
+      emit(AuthError(message: 'errorProfileUpdate|${e.toString()}'));
     }
   }
 }
