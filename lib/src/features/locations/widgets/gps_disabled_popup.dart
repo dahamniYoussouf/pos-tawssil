@@ -12,6 +12,7 @@ class GpsDisabledPopup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       backgroundColor: Colors.transparent,
       insetPadding: const EdgeInsets.all(30),
@@ -38,7 +39,7 @@ class GpsDisabledPopup extends StatelessWidget {
             ),
             const SizedBox(height: 25),
             Text(
-              AppLocalizations.of(context)!.gpsDisabled,
+              l10n.gpsDisabled,
               style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -48,7 +49,7 @@ class GpsDisabledPopup extends StatelessWidget {
             ),
             const SizedBox(height: 15),
             Text(
-              AppLocalizations.of(context)!.gpsDisabledMessage,
+              l10n.gpsDisabledMessage,
               style: const TextStyle(
                 fontSize: 14,
                 color: Colors.grey,
@@ -62,18 +63,10 @@ class GpsDisabledPopup extends StatelessWidget {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () async {
-                      // Close dialog first
                       Navigator.of(context).pop();
-                      // Clear any focus to prevent text underline issues
                       FocusScope.of(context).unfocus();
-
-                      // Open GPS settings
                       await LocationService.openGpsSettings();
-
-                      // Wait a moment for settings to potentially change
                       await Future.delayed(const Duration(milliseconds: 500));
-
-                      // Call retry callback
                       onRetry();
                     },
                     style: ElevatedButton.styleFrom(
@@ -84,7 +77,7 @@ class GpsDisabledPopup extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      AppLocalizations.of(context)!.enableGPS,
+                      l10n.enableGPS,
                       style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -97,7 +90,6 @@ class GpsDisabledPopup extends StatelessWidget {
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () {
-                      // Clear focus and close dialog properly
                       FocusScope.of(context).unfocus();
                       Navigator.of(context).pop();
                     },
@@ -109,7 +101,7 @@ class GpsDisabledPopup extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      AppLocalizations.of(context)!.cancel,
+                      l10n.cancel,
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey[700],

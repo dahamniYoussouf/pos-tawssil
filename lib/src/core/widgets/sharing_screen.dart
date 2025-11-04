@@ -1,24 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 
-class SharingScreen extends StatefulWidget {
+class SharingScreen extends StatelessWidget {
   final VoidCallback onShareLocation;
   final VoidCallback onAddAddress;
-  final VoidCallback onGpsDisabled;
+  final bool isLoading;
 
   const SharingScreen({
     Key? key,
     required this.onShareLocation,
     required this.onAddAddress,
-    required this.onGpsDisabled,
+    this.isLoading = false,
   }) : super(key: key);
-
-  @override
-  State<SharingScreen> createState() => _SharingScreenState();
-}
-
-class _SharingScreenState extends State<SharingScreen> {
-  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -90,18 +83,7 @@ class _SharingScreenState extends State<SharingScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: isLoading
-                        ? null
-                        : () {
-                            FocusScope.of(context).unfocus();
-                            setState(() {
-                              isLoading = true;
-                            });
-                            widget.onShareLocation();
-                            setState(() {
-                              isLoading = false;
-                            });
-                          },
+                    onPressed: isLoading ? null : onShareLocation,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF006C4A),
                       padding: const EdgeInsets.symmetric(vertical: 15),
@@ -132,10 +114,7 @@ class _SharingScreenState extends State<SharingScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: OutlinedButton(
-                    onPressed: () {
-                      FocusScope.of(context).unfocus();
-                      widget.onAddAddress();
-                    },
+                    onPressed: isLoading ? null : onAddAddress,
                     style: OutlinedButton.styleFrom(
                       side: BorderSide(color: Colors.grey[400]!),
                       padding: const EdgeInsets.symmetric(vertical: 15),
@@ -143,13 +122,22 @@ class _SharingScreenState extends State<SharingScreen> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: Text(
-                      l10n.addAddressButton,
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey[700],
-                      ),
-                    ),
+                    child: isLoading
+                        ? const SizedBox(
+                            height: 22,
+                            width: 22,
+                            child: CircularProgressIndicator(
+                              color: Colors.grey,
+                              strokeWidth: 2.5,
+                            ),
+                          )
+                        : Text(
+                            l10n.addAddressButton,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[700],
+                            ),
+                          ),
                   ),
                 ),
               ],

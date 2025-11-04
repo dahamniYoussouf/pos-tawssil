@@ -13,7 +13,9 @@ class PermissionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final l10n = AppLocalizations.of(context)!;
+    return Material(
+        child: Container(
       color: const Color(0xFF006C4A),
       child: SafeArea(
         child: Column(
@@ -29,7 +31,7 @@ class PermissionPage extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    AppLocalizations.of(context)!.allowLocation,
+                    l10n.allowLocation,
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -39,7 +41,7 @@ class PermissionPage extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    AppLocalizations.of(context)!.locationPurpose,
+                    l10n.locationPurpose,
                     style: const TextStyle(fontSize: 12, color: Colors.white70),
                     textAlign: TextAlign.center,
                   ),
@@ -61,9 +63,9 @@ class PermissionPage extends StatelessWidget {
                   const SizedBox(height: 25),
                   Column(
                     children: [
-                      _buildPermissionButton(AppLocalizations.of(context)!.allowOnce, onAuthorized),
-                      _buildPermissionButton(AppLocalizations.of(context)!.allowWhenActive, onAuthorized),
-                      _buildPermissionButton(AppLocalizations.of(context)!.doNotAllow, onDenied, isLast: true),
+                      _buildPermissionButton(l10n.allowOnce, onAuthorized),
+                      _buildPermissionButton(l10n.allowWhenActive, onAuthorized),
+                      _buildPermissionButton(l10n.doNotAllow, onDenied, isLast: true),
                     ],
                   ),
                 ],
@@ -72,7 +74,7 @@ class PermissionPage extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 
   Widget _buildPermissionButton(String text, VoidCallback onPressed, {bool isLast = false}) {
@@ -80,7 +82,12 @@ class PermissionPage extends StatelessWidget {
       margin: EdgeInsets.only(bottom: isLast ? 0 : 1),
       child: ElevatedButton(
         onPressed: onPressed,
-        style: ElevatedButton.styleFrom(backgroundColor: Colors.transparent, shadowColor: Colors.transparent, elevation: 0, padding: EdgeInsets.only(left: 10)),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.transparent,
+          shadowColor: Colors.transparent,
+          elevation: 0,
+          padding: const EdgeInsets.only(left: 10),
+        ),
         child: Text(
           text,
           style: const TextStyle(

@@ -27,8 +27,6 @@ class LocationService extends BaseApiService {
     return await Geolocator.requestPermission();
   }
 
-  static const String _locationFullAddressKey = 'location_full_address';
-
   // Récupérer la position actuelle
   static Future<Position?> getCurrentLocation() async {
     try {

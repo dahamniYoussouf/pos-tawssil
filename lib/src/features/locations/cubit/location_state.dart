@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-// Location States
 abstract class LocationState extends Equatable {
   const LocationState();
 
@@ -10,7 +9,9 @@ abstract class LocationState extends Equatable {
 
 class LocationInitial extends LocationState {}
 
-class LocationLoading extends LocationState {}
+class LocationPermissionRequesting extends LocationState {}
+
+class LocationPermissionGranted extends LocationState {}
 
 class LocationPermissionDenied extends LocationState {
   final String message;
@@ -21,9 +22,9 @@ class LocationPermissionDenied extends LocationState {
   List<Object?> get props => [message];
 }
 
-class LocationGpsDisabled extends LocationState {}
+class LocationLoading extends LocationState {}
 
-class LocationPermissionGranted extends LocationState {}
+class LocationGpsDisabled extends LocationState {}
 
 class LocationSuccess extends LocationState {
   final String area;
