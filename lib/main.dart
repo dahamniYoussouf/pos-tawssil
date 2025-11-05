@@ -11,6 +11,7 @@ import 'package:frontend/l10n/app_localizations.dart';
 // BLoC Imports
 import 'src/features/auth/cubit/auth_cubit.dart';
 import 'src/features/auth/cubit/auth_state.dart';
+import 'src/features/auth/cubit/user_cubit.dart';
 import 'src/features/locations/cubit/location_cubit.dart';
 import 'src/features/cart/cubit/cart_cubit.dart';
 import 'src/features/restaurant/cubit/restaurant_cubit.dart';
@@ -52,6 +53,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<AuthCubit>(
           create: (context) => AuthCubit(authService: AuthService()),
+        ),
+        BlocProvider<UserCubit>(
+          create: (context) => UserCubit(authService: AuthService()),
         ),
         BlocProvider<LocationCubit>(
           create: (context) => LocationCubit(),

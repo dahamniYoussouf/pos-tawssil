@@ -133,6 +133,8 @@
   "errorLastNameRequired": "يرجى إدخال اسمك الأخير",
   "errorProfileUpdateFailed": "خطأ في تحديث الملف الشخصي",
   "errorProfileUpdate": "خطأ في تحديث الملف الشخصي: {error}",
+  "errorProfileFetchFailed": "خطأ في جلب الملف الشخصي",
+  "errorProfileFetch": "خطأ في جلب الملف الشخصي: {error}",
   "errorCategoriesLoading": "خطأ في تحميل الفئات: {error}",
   "errorCategoriesLoadingFailed": "خطأ في تحميل الفئات",
   "errorRestaurantsLoading": "خطأ في تحميل المطاعم: {error}",
@@ -142,6 +144,19 @@
   "errorRestaurantDetailsLoading": "خطأ في تحميل تفاصيل المطعم: {error}",
   "errorRestaurantDetailsLoadingFailed": "خطأ في تحميل تفاصيل المطعم",
   "errorRestaurantsFilterByCategory": "خطأ في تصفية المطاعم حسب الفئة: {error}",
-  "errorRestaurantsFilterByCategoryFailed": "خطأ في تصفية المطاعم حسب الفئة"
+  "errorRestaurantsFilterByCategoryFailed": "خطأ في تصفية المطاعم حسب الفئة",
+  "user": "مستخدم",
+  "greetingMorning": "صباح الخير",
+  "@greetingMorning": {
+    "description": "تحية الصباح (قبل 12)"
+  },
+  "greetingAfternoon": "مساء الخير",
+  "@greetingAfternoon": {
+    "description": "تحية بعد الظهر (12-17)"
+  },
+  "greetingEvening": "مساء الخير",
+  "@greetingEvening": {
+    "description": "تحية المساء (بعد 17)"
+  }
 }
 

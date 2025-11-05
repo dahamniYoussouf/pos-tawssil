@@ -1,6 +1,7 @@
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 
 class UserLocation {
   final String area;
@@ -168,15 +169,14 @@ class UserService {
   }
 
   // Get greeting message based on time
-  String getGreetingMessage() {
-    var hour = DateTime.now().hour;
+  String getGreetingMessage(AppLocalizations localizations) {
+    final hour = DateTime.now().hour;
     if (hour < 12) {
-      return 'Bonjour';
+      return localizations.greetingMorning;
     } else if (hour < 17) {
-      return "Bonsoir";
-      // return 'Bonne après-midi';
+      return localizations.greetingAfternoon;
     } else {
-      return 'Bonsoir';
+      return localizations.greetingEvening;
     }
   }
 

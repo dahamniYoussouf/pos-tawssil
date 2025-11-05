@@ -442,6 +442,14 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get errorProfileFetchFailed => 'Error fetching profile';
+
+  @override
+  String errorProfileFetch(String error) {
+    return 'Error fetching profile: $error';
+  }
+
+  @override
   String errorCategoriesLoading(String error) {
     return 'Error loading categories: $error';
   }
@@ -482,4 +490,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorRestaurantsFilterByCategoryFailed =>
       'Error filtering restaurants by category';
+
+  @override
+  String get user => 'User';
+
+  @override
+  String get greetingMorning => 'Good morning';
+
+  @override
+  String get greetingAfternoon => 'Good afternoon';
+
+  @override
+  String get greetingEvening => 'Good evening';
 }

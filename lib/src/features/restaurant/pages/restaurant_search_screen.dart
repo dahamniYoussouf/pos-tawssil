@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/l10n/app_localizations.dart';
+import 'package:frontend/src/features/auth/cubit/user_cubit.dart';
+import 'package:frontend/src/features/auth/cubit/user_state.dart';
 import '../../auth/services/user_service.dart';
 import '../services/autocomplete_service.dart';
 import '../widgets/restaurant_search_card.dart';
@@ -76,6 +79,7 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final userCubit = context.read<UserCubit>();
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -98,7 +102,7 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${_userService.getGreetingMessage()}, ${"utilisateur"}',
+                              '${_userService.getGreetingMessage(AppLocalizations.of(context)!)}, ${userCubit.state is UserLoaded ? (userCubit.state as UserLoaded).profile.firstName : AppLocalizations.of(context)!.user}',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,

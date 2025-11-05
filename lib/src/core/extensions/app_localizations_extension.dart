@@ -33,7 +33,8 @@ extension AppLocalizationsErrorExtension on AppLocalizations {
             message == 'errorCodeInvalid' ||
             message == 'errorFirstNameRequired' ||
             message == 'errorLastNameRequired' ||
-            message == 'errorProfileUpdateFailed');
+            message == 'errorProfileUpdateFailed' ||
+            message == 'errorProfileFetchFailed');
   }
 
   String _translateKey(String key) {
@@ -56,6 +57,8 @@ extension AppLocalizationsErrorExtension on AppLocalizations {
         return errorLastNameRequired;
       case 'errorProfileUpdateFailed':
         return errorProfileUpdateFailed;
+      case 'errorProfileFetchFailed':
+        return errorProfileFetchFailed;
       default:
         return key;
     }
@@ -69,6 +72,8 @@ extension AppLocalizationsErrorExtension on AppLocalizations {
         return errorVerification(dynamicValue);
       case 'errorProfileUpdate':
         return errorProfileUpdate(dynamicValue);
+      case 'errorProfileFetch':
+        return errorProfileFetch(dynamicValue);
       case 'errorCategoriesLoading':
         return errorCategoriesLoadingFailed;
       case 'errorRestaurantsLoading':

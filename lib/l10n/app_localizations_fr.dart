@@ -445,6 +445,15 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get errorProfileFetchFailed =>
+      'Erreur lors de la récupération du profil';
+
+  @override
+  String errorProfileFetch(String error) {
+    return 'Erreur lors de la récupération du profil: $error';
+  }
+
+  @override
   String errorCategoriesLoading(String error) {
     return 'Erreur lors du chargement des catégories: $error';
   }
@@ -487,4 +496,16 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get errorRestaurantsFilterByCategoryFailed =>
       'Erreur lors du filtrage par catégorie';
+
+  @override
+  String get user => 'utilisateur';
+
+  @override
+  String get greetingMorning => 'Bonjour';
+
+  @override
+  String get greetingAfternoon => 'Bon après-midi';
+
+  @override
+  String get greetingEvening => 'Bonsoir';
 }

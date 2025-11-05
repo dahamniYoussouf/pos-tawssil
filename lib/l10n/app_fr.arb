@@ -133,6 +133,8 @@
   "errorLastNameRequired": "Veuillez entrer votre nom de famille",
   "errorProfileUpdateFailed": "Erreur lors de la mise à jour du profil",
   "errorProfileUpdate": "Erreur lors de la mise à jour du profil: {error}",
+  "errorProfileFetchFailed": "Erreur lors de la récupération du profil",
+  "errorProfileFetch": "Erreur lors de la récupération du profil: {error}",
   "errorCategoriesLoading": "Erreur lors du chargement des catégories: {error}",
   "errorCategoriesLoadingFailed": "Erreur lors du chargement des catégories",
   "errorRestaurantsLoading": "Erreur lors du chargement des restaurants: {error}",
@@ -142,6 +144,19 @@
   "errorRestaurantDetailsLoading": "Erreur lors du chargement des détails: {error}",
   "errorRestaurantDetailsLoadingFailed": "Erreur lors du chargement des détails",
   "errorRestaurantsFilterByCategory": "Erreur lors du filtrage par catégorie: {error}",
-  "errorRestaurantsFilterByCategoryFailed": "Erreur lors du filtrage par catégorie"
+  "errorRestaurantsFilterByCategoryFailed": "Erreur lors du filtrage par catégorie",
+  "user": "utilisateur",
+  "greetingMorning": "Bonjour",
+  "@greetingMorning": {
+    "description": "Salutation du matin (avant 12h)"
+  },
+  "greetingAfternoon": "Bon après-midi",
+  "@greetingAfternoon": {
+    "description": "Salutation de l'après-midi (12-17h)"
+  },
+  "greetingEvening": "Bonsoir",
+  "@greetingEvening": {
+    "description": "Salutation du soir (après 17h)"
+  }
 }
 

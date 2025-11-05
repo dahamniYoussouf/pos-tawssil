@@ -436,6 +436,14 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get errorProfileFetchFailed => 'خطأ في جلب الملف الشخصي';
+
+  @override
+  String errorProfileFetch(String error) {
+    return 'خطأ في جلب الملف الشخصي: $error';
+  }
+
+  @override
   String errorCategoriesLoading(String error) {
     return 'خطأ في تحميل الفئات: $error';
   }
@@ -476,4 +484,16 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get errorRestaurantsFilterByCategoryFailed =>
       'خطأ في تصفية المطاعم حسب الفئة';
+
+  @override
+  String get user => 'مستخدم';
+
+  @override
+  String get greetingMorning => 'صباح الخير';
+
+  @override
+  String get greetingAfternoon => 'مساء الخير';
+
+  @override
+  String get greetingEvening => 'مساء الخير';
 }

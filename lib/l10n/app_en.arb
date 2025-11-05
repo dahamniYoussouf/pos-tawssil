@@ -572,6 +572,19 @@
       }
     }
   },
+  "errorProfileFetchFailed": "Error fetching profile",
+  "@errorProfileFetchFailed": {
+    "description": "Profile fetch error"
+  },
+  "errorProfileFetch": "Error fetching profile: {error}",
+  "@errorProfileFetch": {
+    "description": "Profile fetch error with details",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "errorCategoriesLoading": "Error loading categories: {error}",
   "@errorCategoriesLoading": {
     "description": "Categories loading error with details",
@@ -636,6 +649,22 @@
   "errorRestaurantsFilterByCategoryFailed": "Error filtering restaurants by category",
   "@errorRestaurantsFilterByCategoryFailed": {
     "description": "Restaurants filter by category error"
+  },
+  "user": "User",
+  "@user": {
+    "description": "User label"
+  },
+  "greetingMorning": "Good morning",
+  "@greetingMorning": {
+    "description": "Morning greeting (before 12)"
+  },
+  "greetingAfternoon": "Good afternoon",
+  "@greetingAfternoon": {
+    "description": "Afternoon greeting (12-17)"
+  },
+  "greetingEvening": "Good evening",
+  "@greetingEvening": {
+    "description": "Evening greeting (after 17)"
   }
 }
 

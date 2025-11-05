@@ -898,6 +898,18 @@ abstract class AppLocalizations {
   /// **'Error updating profile: {error}'**
   String errorProfileUpdate(String error);
 
+  /// Profile fetch error
+  ///
+  /// In en, this message translates to:
+  /// **'Error fetching profile'**
+  String get errorProfileFetchFailed;
+
+  /// Profile fetch error with details
+  ///
+  /// In en, this message translates to:
+  /// **'Error fetching profile: {error}'**
+  String errorProfileFetch(String error);
+
   /// Categories loading error with details
   ///
   /// In en, this message translates to:
@@ -957,6 +969,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error filtering restaurants by category'**
   String get errorRestaurantsFilterByCategoryFailed;
+
+  /// User label
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get user;
+
+  /// Morning greeting (before 12)
+  ///
+  /// In en, this message translates to:
+  /// **'Good morning'**
+  String get greetingMorning;
+
+  /// Afternoon greeting (12-17)
+  ///
+  /// In en, this message translates to:
+  /// **'Good afternoon'**
+  String get greetingAfternoon;
+
+  /// Evening greeting (after 17)
+  ///
+  /// In en, this message translates to:
+  /// **'Good evening'**
+  String get greetingEvening;
 }
 
 class _AppLocalizationsDelegate

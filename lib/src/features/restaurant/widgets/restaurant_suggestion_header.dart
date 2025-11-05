@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/src/features/auth/cubit/auth_cubit.dart';
+import 'package:frontend/src/features/auth/cubit/user_cubit.dart';
+import 'package:frontend/src/features/auth/cubit/user_state.dart';
+import 'package:frontend/l10n/app_localizations.dart';
 import '../../auth/services/user_service.dart';
 import 'restaurant_search_bar.dart';
 
@@ -21,6 +24,7 @@ class RestaurantSuggestionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final UserService userService = UserService();
+    final userCubit = context.read<UserCubit>();
     return Container(
       padding: EdgeInsets.fromLTRB(20, 16, 20, 20),
       color: Colors.white,
@@ -30,11 +34,12 @@ class RestaurantSuggestionHeader extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Column(
+              Flexible(
+                  child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${userService.getGreetingMessage()}, ${"utilisateur"}',
+                    '${userService.getGreetingMessage(AppLocalizations.of(context)!)}, ${userCubit.state is UserLoaded ? (userCubit.state as UserLoaded).profile.firstName : AppLocalizations.of(context)!.user}',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -51,7 +56,7 @@ class RestaurantSuggestionHeader extends StatelessWidget {
                       ),
                     ),
                 ],
-              ),
+              )),
               Row(
                 children: [
                   Container(
