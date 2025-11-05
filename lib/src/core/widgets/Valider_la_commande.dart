@@ -39,6 +39,7 @@ class _ValiderLaCommandePageState extends State<ValiderLaCommandePage> {
   bool _isLoading = false;
   late LatLng _pickupLatLng;
   late LatLng _deliveryLatLng;
+  double _dragPosition = 0.0;
 
   @override
   void initState() {
@@ -128,7 +129,7 @@ class _ValiderLaCommandePageState extends State<ValiderLaCommandePage> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        centerTitle: false,
+        centerTitle: true,
       ),
       body: Stack(
         children: [
@@ -426,40 +427,125 @@ class _ValiderLaCommandePageState extends State<ValiderLaCommandePage> {
         ],
       ),
       child: SafeArea(
-        child: SizedBox(
-          width: double.infinity,
-          height: 56,
-          child: ElevatedButton(
-            onPressed: _isLoading ? null : _validateOrder,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF00695C),
-              disabledBackgroundColor: Colors.grey[400],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+        child: _isLoading
+            ? SizedBox(
+                height: 56,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(const Color(0xFF00695C)),
+                  ),
+                ),
+              )
+            : _buildSwipeToConfirmButton(),
+      ),
+    );
+  }
+
+  Widget _buildSwipeToConfirmButton() {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final double maxWidth = constraints.maxWidth;
+        final double buttonHeight = 56.0;
+        final double iconSize = 44.0;
+        final double padding = 4.0;
+        final double maxDragDistance = maxWidth - iconSize - (padding * 2);
+        final double threshold = maxDragDistance * 0.85;
+        final double clampedPosition = _dragPosition.clamp(0.0, maxDragDistance);
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onHorizontalDragStart: (details) {
+            // Track initial drag position for smooth tracking
+          },
+          onHorizontalDragUpdate: (details) {
+            if (!_isLoading) {
+              setState(() {
+                _dragPosition = (_dragPosition + details.delta.dx).clamp(0.0, maxDragDistance);
+              });
+            }
+          },
+          onHorizontalDragEnd: (details) {
+            if (!_isLoading) {
+              if (_dragPosition >= threshold) {
+                _validateOrder();
+              } else {
+                setState(() {
+                  _dragPosition = 0.0;
+                });
+              }
+            }
+          },
+          child: Container(
+            height: buttonHeight,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: const Color(0xFF4CAF50).withOpacity(0.3),
+                width: 1.5,
               ),
-              elevation: 2,
             ),
-            child: _isLoading
-                ? const SizedBox(
-                    height: 24,
-                    width: 24,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
-                : Text(
-                    AppLocalizations.of(context)!.validate,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white,
-                      letterSpacing: 0.5,
+            child: Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Positioned.fill(
+                  child: Center(
+                    child: Text(
+                      AppLocalizations.of(context)!.validate,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: const Color(0xFF00695C),
+                        letterSpacing: 0.5,
+                      ),
                     ),
                   ),
+                ),
+                AnimatedPositioned(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOut,
+                  left: padding + clampedPosition,
+                  top: padding,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () {
+                      if (!_isLoading && _dragPosition < threshold) {
+                        setState(() {
+                          _dragPosition = maxDragDistance;
+                        });
+                        Future.delayed(const Duration(milliseconds: 300), () {
+                          if (mounted) {
+                            _validateOrder();
+                          }
+                        });
+                      }
+                    },
+                    child: Container(
+                      width: iconSize,
+                      height: iconSize,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF00695C),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.arrow_forward_ios_outlined,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -522,7 +608,12 @@ class _ValiderLaCommandePageState extends State<ValiderLaCommandePage> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () {
+              Navigator.pop(context);
+              setState(() {
+                _dragPosition = 0.0;
+              });
+            },
             child: Text(
               AppLocalizations.of(context)!.cancel,
               style: TextStyle(color: Colors.grey[600]),
@@ -542,7 +633,7 @@ class _ValiderLaCommandePageState extends State<ValiderLaCommandePage> {
             ),
             child: Text(
               AppLocalizations.of(context)!.confirm,
-              style: const TextStyle(fontWeight: FontWeight.w600),
+              style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
             ),
           ),
         ],
@@ -574,7 +665,10 @@ class _ValiderLaCommandePageState extends State<ValiderLaCommandePage> {
   }
 
   Future<void> _submitOrder() async {
-    setState(() => _isLoading = true);
+    setState(() {
+      _isLoading = true;
+      _dragPosition = 0.0;
+    });
 
     try {
       await Future.delayed(const Duration(seconds: 2));

@@ -91,7 +91,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deliveryOption => 'Option de livraison';
 
   @override
-  String get pickup => 'Sur place (sans livraison)';
+  String get pickup => 'Sur place';
 
   @override
   String get delivery => 'Livraison';

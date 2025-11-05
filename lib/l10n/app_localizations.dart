@@ -247,7 +247,7 @@ abstract class AppLocalizations {
   /// Pickup option
   ///
   /// In en, this message translates to:
-  /// **'Pickup (no delivery)'**
+  /// **'Pickup'**
   String get pickup;
 
   /// Delivery option

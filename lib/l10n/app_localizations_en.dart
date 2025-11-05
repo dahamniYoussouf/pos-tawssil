@@ -91,7 +91,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deliveryOption => 'Delivery option';
 
   @override
-  String get pickup => 'Pickup (no delivery)';
+  String get pickup => 'Pickup';
 
   @override
   String get delivery => 'Delivery';

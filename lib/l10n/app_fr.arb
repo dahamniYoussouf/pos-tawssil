@@ -24,7 +24,7 @@
   "baridiMob": "Baridi Mob",
   "bankTransfer": "Virement bancaire",
   "deliveryOption": "Option de livraison",
-  "pickup": "Sur place (sans livraison)",
+  "pickup": "Sur place",
   "delivery": "Livraison",
   "verifyAndFinalize": "Vérifier et Finaliser",
   "emptyCart": "Votre panier est vide",

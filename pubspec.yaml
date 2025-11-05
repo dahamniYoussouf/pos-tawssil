@@ -63,6 +63,7 @@ flutter:
     - assets/images/svg/app_icon.svg
     - assets/images/splash_screen_icon.png
     - assets/images/app_icon.png
+    - assets/images/svg/
 
 flutter_launcher_icons:
   android: true

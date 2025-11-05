@@ -101,7 +101,7 @@
   "@deliveryOption": {
     "description": "Delivery option section title"
   },
-  "pickup": "Pickup (no delivery)",
+  "pickup": "Pickup",
   "@pickup": {
     "description": "Pickup option"
   },
