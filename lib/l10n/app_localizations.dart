@@ -897,6 +897,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error updating profile: {error}'**
   String errorProfileUpdate(String error);
+
+  /// Categories loading error with details
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading categories: {error}'**
+  String errorCategoriesLoading(String error);
+
+  /// Categories loading error
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading categories'**
+  String get errorCategoriesLoadingFailed;
+
+  /// Restaurants loading error with details
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading restaurants: {error}'**
+  String errorRestaurantsLoading(String error);
+
+  /// Restaurants loading error
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading restaurants'**
+  String get errorRestaurantsLoadingFailed;
+
+  /// Restaurants search error with details
+  ///
+  /// In en, this message translates to:
+  /// **'Error searching restaurants: {error}'**
+  String errorRestaurantsSearch(String error);
+
+  /// Restaurants search error
+  ///
+  /// In en, this message translates to:
+  /// **'Error searching restaurants'**
+  String get errorRestaurantsSearchFailed;
+
+  /// Restaurant details loading error with details
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading restaurant details: {error}'**
+  String errorRestaurantDetailsLoading(String error);
+
+  /// Restaurant details loading error
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading restaurant details'**
+  String get errorRestaurantDetailsLoadingFailed;
+
+  /// Restaurants filter by category error with details
+  ///
+  /// In en, this message translates to:
+  /// **'Error filtering restaurants by category: {error}'**
+  String errorRestaurantsFilterByCategory(String error);
+
+  /// Restaurants filter by category error
+  ///
+  /// In en, this message translates to:
+  /// **'Error filtering restaurants by category'**
+  String get errorRestaurantsFilterByCategoryFailed;
 }
 
 class _AppLocalizationsDelegate

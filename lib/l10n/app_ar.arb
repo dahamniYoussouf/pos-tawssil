@@ -132,6 +132,16 @@
   "errorFirstNameRequired": "يرجى إدخال اسمك الأول",
   "errorLastNameRequired": "يرجى إدخال اسمك الأخير",
   "errorProfileUpdateFailed": "خطأ في تحديث الملف الشخصي",
-  "errorProfileUpdate": "خطأ في تحديث الملف الشخصي: {error}"
+  "errorProfileUpdate": "خطأ في تحديث الملف الشخصي: {error}",
+  "errorCategoriesLoading": "خطأ في تحميل الفئات: {error}",
+  "errorCategoriesLoadingFailed": "خطأ في تحميل الفئات",
+  "errorRestaurantsLoading": "خطأ في تحميل المطاعم: {error}",
+  "errorRestaurantsLoadingFailed": "خطأ في تحميل المطاعم",
+  "errorRestaurantsSearch": "خطأ في البحث عن المطاعم: {error}",
+  "errorRestaurantsSearchFailed": "خطأ في البحث عن المطاعم",
+  "errorRestaurantDetailsLoading": "خطأ في تحميل تفاصيل المطعم: {error}",
+  "errorRestaurantDetailsLoadingFailed": "خطأ في تحميل تفاصيل المطعم",
+  "errorRestaurantsFilterByCategory": "خطأ في تصفية المطاعم حسب الفئة: {error}",
+  "errorRestaurantsFilterByCategoryFailed": "خطأ في تصفية المطاعم حسب الفئة"
 }
 

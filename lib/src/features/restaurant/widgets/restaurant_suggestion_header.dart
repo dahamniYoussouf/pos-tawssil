@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:frontend/src/features/auth/cubit/auth_cubit.dart';
 import '../../auth/services/user_service.dart';
 import 'restaurant_search_bar.dart';
 
 class RestaurantSuggestionHeader extends StatelessWidget {
-  final String? username;
   final UserLocation? userLocation;
   final VoidCallback onSearchTap;
   final VoidCallback? onNotificationTap;
@@ -11,7 +12,6 @@ class RestaurantSuggestionHeader extends StatelessWidget {
 
   const RestaurantSuggestionHeader({
     Key? key,
-    this.username,
     this.userLocation,
     required this.onSearchTap,
     this.onNotificationTap,
@@ -34,7 +34,7 @@ class RestaurantSuggestionHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    '${userService.getGreetingMessage()}, ${username ?? 'khouloud'}',
+                    '${userService.getGreetingMessage()}, ${"utilisateur"}',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
@@ -54,6 +54,27 @@ class RestaurantSuggestionHeader extends StatelessWidget {
               ),
               Row(
                 children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: Colors.black,
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Center(
+                      child: IconButton(
+                        icon: Icon(Icons.logout_outlined, size: 22, color: Colors.black),
+                        onPressed: () {
+                          context.read<AuthCubit>().logout();
+                        },
+                        padding: EdgeInsets.zero,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12),
                   Container(
                     width: 40,
                     height: 40,

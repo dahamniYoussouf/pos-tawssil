@@ -571,6 +571,71 @@
         "type": "String"
       }
     }
+  },
+  "errorCategoriesLoading": "Error loading categories: {error}",
+  "@errorCategoriesLoading": {
+    "description": "Categories loading error with details",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorCategoriesLoadingFailed": "Error loading categories",
+  "@errorCategoriesLoadingFailed": {
+    "description": "Categories loading error"
+  },
+  "errorRestaurantsLoading": "Error loading restaurants: {error}",
+  "@errorRestaurantsLoading": {
+    "description": "Restaurants loading error with details",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorRestaurantsLoadingFailed": "Error loading restaurants",
+  "@errorRestaurantsLoadingFailed": {
+    "description": "Restaurants loading error"
+  },
+  "errorRestaurantsSearch": "Error searching restaurants: {error}",
+  "@errorRestaurantsSearch": {
+    "description": "Restaurants search error with details",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorRestaurantsSearchFailed": "Error searching restaurants",
+  "@errorRestaurantsSearchFailed": {
+    "description": "Restaurants search error"
+  },
+  "errorRestaurantDetailsLoading": "Error loading restaurant details: {error}",
+  "@errorRestaurantDetailsLoading": {
+    "description": "Restaurant details loading error with details",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorRestaurantDetailsLoadingFailed": "Error loading restaurant details",
+  "@errorRestaurantDetailsLoadingFailed": {
+    "description": "Restaurant details loading error"
+  },
+  "errorRestaurantsFilterByCategory": "Error filtering restaurants by category: {error}",
+  "@errorRestaurantsFilterByCategory": {
+    "description": "Restaurants filter by category error with details",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorRestaurantsFilterByCategoryFailed": "Error filtering restaurants by category",
+  "@errorRestaurantsFilterByCategoryFailed": {
+    "description": "Restaurants filter by category error"
   }
 }
 

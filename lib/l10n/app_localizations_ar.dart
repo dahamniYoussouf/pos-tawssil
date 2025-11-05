@@ -434,4 +434,46 @@ class AppLocalizationsAr extends AppLocalizations {
   String errorProfileUpdate(String error) {
     return 'خطأ في تحديث الملف الشخصي: $error';
   }
+
+  @override
+  String errorCategoriesLoading(String error) {
+    return 'خطأ في تحميل الفئات: $error';
+  }
+
+  @override
+  String get errorCategoriesLoadingFailed => 'خطأ في تحميل الفئات';
+
+  @override
+  String errorRestaurantsLoading(String error) {
+    return 'خطأ في تحميل المطاعم: $error';
+  }
+
+  @override
+  String get errorRestaurantsLoadingFailed => 'خطأ في تحميل المطاعم';
+
+  @override
+  String errorRestaurantsSearch(String error) {
+    return 'خطأ في البحث عن المطاعم: $error';
+  }
+
+  @override
+  String get errorRestaurantsSearchFailed => 'خطأ في البحث عن المطاعم';
+
+  @override
+  String errorRestaurantDetailsLoading(String error) {
+    return 'خطأ في تحميل تفاصيل المطعم: $error';
+  }
+
+  @override
+  String get errorRestaurantDetailsLoadingFailed =>
+      'خطأ في تحميل تفاصيل المطعم';
+
+  @override
+  String errorRestaurantsFilterByCategory(String error) {
+    return 'خطأ في تصفية المطاعم حسب الفئة: $error';
+  }
+
+  @override
+  String get errorRestaurantsFilterByCategoryFailed =>
+      'خطأ في تصفية المطاعم حسب الفئة';
 }

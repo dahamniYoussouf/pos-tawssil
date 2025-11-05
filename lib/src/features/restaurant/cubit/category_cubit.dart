@@ -39,10 +39,10 @@ class CategoryCubit extends Cubit<CategoryState> {
   Future<void> loadCategories() async {
     try {
       emit(CategoryLoading());
-      final categories = await _restaurantService.getCategories();
+      final categories = await _restaurantService.getStaticCategories();
       emit(CategoryLoaded(categories: categories));
     } catch (e) {
-      emit(CategoryError(message: 'Erreur lors du chargement des catégories: ${e.toString()}'));
+      emit(CategoryError(message: 'errorCategoriesLoading|${e.toString()}'));
     }
   }
 

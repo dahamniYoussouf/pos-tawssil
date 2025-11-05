@@ -216,4 +216,17 @@ class AuthCubit extends HydratedCubit<AuthState> {
       emit(AuthError(message: 'errorProfileUpdate|${e.toString()}'));
     }
   }
+
+  Future<void> logout() async {
+    try {
+      final success = await _authService.logout();
+      if (success) {
+        emit(const AuthInitial());
+      } else {
+        emit(const AuthError(message: 'errorLogoutFailed'));
+      }
+    } catch (e) {
+      emit(AuthError(message: 'errorLogout|${e.toString()}'));
+    }
+  }
 }

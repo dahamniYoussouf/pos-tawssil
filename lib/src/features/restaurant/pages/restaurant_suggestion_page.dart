@@ -67,7 +67,6 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
                   child: Column(
                     children: [
                       RestaurantSuggestionHeader(
-                        username: state.username,
                         userLocation: state.userLocation,
                         onSearchTap: () {
                           Navigator.push(

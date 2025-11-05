@@ -18,7 +18,6 @@ class UserService {
 
   UserService._internal();
 
-  static const String _usernameKey = 'username';
   static const String _locationAreaKey = 'location_area';
   static const String _locationCityKey = 'location_city';
   static const String _locationLatitudeKey = 'location_latitude';
@@ -28,26 +27,6 @@ class UserService {
     try {
       final prefs = await SharedPreferences.getInstance();
       return await prefs.setString('location_full_address', address);
-    } catch (e) {
-      return false;
-    }
-  }
-
-  // Get current username
-  Future<String> getCurrentUsername() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      return prefs.getString(_usernameKey) ?? 'khouloud';
-    } catch (e) {
-      return 'khouloud'; // Fallback on error
-    }
-  }
-
-  // Set current username
-  Future<bool> setCurrentUsername(String username) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      return await prefs.setString(_usernameKey, username);
     } catch (e) {
       return false;
     }
@@ -194,7 +173,8 @@ class UserService {
     if (hour < 12) {
       return 'Bonjour';
     } else if (hour < 17) {
-      return 'Bonne après-midi';
+      return "Bonsoir";
+      // return 'Bonne après-midi';
     } else {
       return 'Bonsoir';
     }

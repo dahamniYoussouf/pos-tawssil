@@ -443,4 +443,48 @@ class AppLocalizationsFr extends AppLocalizations {
   String errorProfileUpdate(String error) {
     return 'Erreur lors de la mise à jour du profil: $error';
   }
+
+  @override
+  String errorCategoriesLoading(String error) {
+    return 'Erreur lors du chargement des catégories: $error';
+  }
+
+  @override
+  String get errorCategoriesLoadingFailed =>
+      'Erreur lors du chargement des catégories';
+
+  @override
+  String errorRestaurantsLoading(String error) {
+    return 'Erreur lors du chargement des restaurants: $error';
+  }
+
+  @override
+  String get errorRestaurantsLoadingFailed =>
+      'Erreur lors du chargement des restaurants';
+
+  @override
+  String errorRestaurantsSearch(String error) {
+    return 'Erreur lors de la recherche: $error';
+  }
+
+  @override
+  String get errorRestaurantsSearchFailed => 'Erreur lors de la recherche';
+
+  @override
+  String errorRestaurantDetailsLoading(String error) {
+    return 'Erreur lors du chargement des détails: $error';
+  }
+
+  @override
+  String get errorRestaurantDetailsLoadingFailed =>
+      'Erreur lors du chargement des détails';
+
+  @override
+  String errorRestaurantsFilterByCategory(String error) {
+    return 'Erreur lors du filtrage par catégorie: $error';
+  }
+
+  @override
+  String get errorRestaurantsFilterByCategoryFailed =>
+      'Erreur lors du filtrage par catégorie';
 }

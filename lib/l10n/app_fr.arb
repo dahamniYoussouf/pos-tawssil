@@ -132,6 +132,16 @@
   "errorFirstNameRequired": "Veuillez entrer votre prénom",
   "errorLastNameRequired": "Veuillez entrer votre nom de famille",
   "errorProfileUpdateFailed": "Erreur lors de la mise à jour du profil",
-  "errorProfileUpdate": "Erreur lors de la mise à jour du profil: {error}"
+  "errorProfileUpdate": "Erreur lors de la mise à jour du profil: {error}",
+  "errorCategoriesLoading": "Erreur lors du chargement des catégories: {error}",
+  "errorCategoriesLoadingFailed": "Erreur lors du chargement des catégories",
+  "errorRestaurantsLoading": "Erreur lors du chargement des restaurants: {error}",
+  "errorRestaurantsLoadingFailed": "Erreur lors du chargement des restaurants",
+  "errorRestaurantsSearch": "Erreur lors de la recherche: {error}",
+  "errorRestaurantsSearchFailed": "Erreur lors de la recherche",
+  "errorRestaurantDetailsLoading": "Erreur lors du chargement des détails: {error}",
+  "errorRestaurantDetailsLoadingFailed": "Erreur lors du chargement des détails",
+  "errorRestaurantsFilterByCategory": "Erreur lors du filtrage par catégorie: {error}",
+  "errorRestaurantsFilterByCategoryFailed": "Erreur lors du filtrage par catégorie"
 }
 

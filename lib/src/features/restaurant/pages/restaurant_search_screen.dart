@@ -22,7 +22,6 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
   final UserService _userService = UserService();
   final AutocompleteService _autocompleteService = AutocompleteService();
   Timer? _debounce;
-  String? username;
   UserLocation? userLocation;
   static const int _maxResults = 50; // safety cap for search results
 
@@ -43,12 +42,10 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
 
   Future<void> _loadUserData() async {
     try {
-      final currentUsername = await _userService.getCurrentUsername();
       final currentLocation = await _userService.getCurrentLocation();
 
       if (mounted) {
         setState(() {
-          username = currentUsername;
           userLocation = currentLocation;
         });
       }
@@ -101,7 +98,7 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              '${_userService.getGreetingMessage()}, ${username ?? 'utilisateur'}',
+                              '${_userService.getGreetingMessage()}, ${"utilisateur"}',
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.bold,

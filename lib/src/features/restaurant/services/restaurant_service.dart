@@ -173,48 +173,7 @@ class RestaurantService extends BaseApiService {
     }
   }
 
-  Future<List<CategoryModel>> getCategories() async {
-    try {
-      final accessToken = await _tokenStorageService.getAccessToken();
-      dio.options.headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        if (accessToken != null) 'Authorization': 'Bearer $accessToken',
-      };
-      final response = await dio.get('${ApiConfig.baseUrl}/restaurant/getall');
-      final result = response.data is Map ? response.data : jsonDecode(response.data);
-      dev.log("fouad : result: $result");
-      if (response.statusCode == 200 && result['success'] == true && result.containsKey('data')) {
-        final List<dynamic> categoriesList = result['data'];
-        if (categoriesList.isEmpty) {
-          return _getStaticCategories();
-        }
-        List<CategoryModel> parsedCategories = [];
-        for (int i = 0; i < categoriesList.length; i++) {
-          try {
-            final categoryData = categoriesList[i] as Map<String, dynamic>;
-            final category = CategoryModel(
-              id: categoryData['id'] ?? '',
-              name: categoryData['nom'] ?? categoryData['name'] ?? '',
-              iconPath: categoryData['icone_url'] ?? 'assets/icons/restaurant.png',
-              description: categoryData['description'] ?? '',
-            );
-            parsedCategories.add(category);
-          } catch (e) {
-            // Error parsing category
-          }
-        }
-        return parsedCategories;
-      }
-      return _getStaticCategories();
-    } on DioException {
-      return _getStaticCategories();
-    } catch (_) {
-      return _getStaticCategories();
-    }
-  }
-
-  List<CategoryModel> _getStaticCategories() {
+  List<CategoryModel> getStaticCategories() {
     return [
       CategoryModel(id: 'pizza', name: 'Pizza', iconPath: 'assets/icons/pizza.png'),
       CategoryModel(id: 'burger', name: 'Burger', iconPath: 'assets/icons/burger.png'),

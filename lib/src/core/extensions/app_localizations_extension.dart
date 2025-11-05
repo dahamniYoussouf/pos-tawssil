@@ -69,6 +69,16 @@ extension AppLocalizationsErrorExtension on AppLocalizations {
         return errorVerification(dynamicValue);
       case 'errorProfileUpdate':
         return errorProfileUpdate(dynamicValue);
+      case 'errorCategoriesLoading':
+        return errorCategoriesLoadingFailed;
+      case 'errorRestaurantsLoading':
+        return errorRestaurantsLoadingFailed;
+      case 'errorRestaurantsSearch':
+        return errorRestaurantsSearchFailed;
+      case 'errorRestaurantDetailsLoading':
+        return errorRestaurantDetailsLoadingFailed;
+      case 'errorRestaurantsFilterByCategory':
+        return errorRestaurantsFilterByCategoryFailed;
       default:
         return '$key: $dynamicValue';
     }

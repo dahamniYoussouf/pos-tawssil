@@ -25,7 +25,6 @@ class RestaurantLoaded extends RestaurantState {
   final List<CategoryModel> categories;
   final String? searchQuery;
   final String? selectedCategory;
-  final String? username;
   final UserLocation? userLocation;
 
   const RestaurantLoaded({
@@ -33,12 +32,11 @@ class RestaurantLoaded extends RestaurantState {
     required this.categories,
     this.searchQuery,
     this.selectedCategory,
-    this.username,
     this.userLocation,
   });
 
   @override
-  List<Object?> get props => [restaurants, categories, searchQuery, selectedCategory, username, userLocation];
+  List<Object?> get props => [restaurants, categories, searchQuery, selectedCategory, userLocation];
 
   RestaurantLoaded copyWith({
     List<RestaurantModel>? restaurants,
@@ -53,7 +51,6 @@ class RestaurantLoaded extends RestaurantState {
       categories: categories ?? this.categories,
       searchQuery: searchQuery ?? this.searchQuery,
       selectedCategory: selectedCategory ?? this.selectedCategory,
-      username: username ?? this.username,
       userLocation: userLocation ?? this.userLocation,
     );
   }
@@ -116,17 +113,15 @@ class RestaurantCubit extends Cubit<RestaurantState> {
       final restaurants = await _restaurantService.getNearbyRestaurantsFromStoredLocation(
         radius: radius,
       );
-      final categories = await _restaurantService.getCategories();
-      final username = await _userService.getCurrentUsername();
+      final categories = await _restaurantService.getStaticCategories();
       final userLocation = await _userService.getCurrentLocation();
       emit(RestaurantLoaded(
         restaurants: restaurants,
         categories: categories,
-        username: username,
         userLocation: userLocation,
       ));
     } catch (e) {
-      emit(RestaurantError(message: 'Erreur lors du chargement des restaurants: ${e.toString()}'));
+      emit(RestaurantError(message: 'errorRestaurantsLoading|${e.toString()}'));
     }
   }
 
@@ -134,17 +129,15 @@ class RestaurantCubit extends Cubit<RestaurantState> {
     try {
       emit(RestaurantLoading());
       final restaurants = await _restaurantService.getRestaurants();
-      final categories = await _restaurantService.getCategories();
-      final username = await _userService.getCurrentUsername();
+      final categories = await _restaurantService.getStaticCategories();
       final userLocation = await _userService.getCurrentLocation();
       emit(RestaurantLoaded(
         restaurants: restaurants,
         categories: categories,
-        username: username,
         userLocation: userLocation,
       ));
     } catch (e) {
-      emit(RestaurantError(message: 'Erreur lors du chargement des restaurants: ${e.toString()}'));
+      emit(RestaurantError(message: 'errorRestaurantsLoading|${e.toString()}'));
     }
   }
 
@@ -168,7 +161,7 @@ class RestaurantCubit extends Cubit<RestaurantState> {
         hasMore: restaurants.length >= maxResults,
       ));
     } catch (e) {
-      emit(RestaurantError(message: 'Erreur lors de la recherche: ${e.toString()}'));
+      emit(RestaurantError(message: 'errorRestaurantsSearch|${e.toString()}'));
     }
   }
 
@@ -186,7 +179,7 @@ class RestaurantCubit extends Cubit<RestaurantState> {
         menuItems: menuItems,
       ));
     } catch (e) {
-      emit(RestaurantError(message: 'Erreur lors du chargement des détails: ${e.toString()}'));
+      emit(RestaurantError(message: 'errorRestaurantDetailsLoading|${e.toString()}'));
     }
   }
 
@@ -203,7 +196,7 @@ class RestaurantCubit extends Cubit<RestaurantState> {
           selectedCategory: categoryName,
         ));
       } catch (e) {
-        emit(RestaurantError(message: 'Erreur lors du filtrage par catégorie: ${e.toString()}'));
+        emit(RestaurantError(message: 'errorRestaurantsFilterByCategory|${e.toString()}'));
       }
     }
   }
@@ -213,14 +206,14 @@ class RestaurantCubit extends Cubit<RestaurantState> {
 
     try {
       final restaurants = await _restaurantService.getNearbyRestaurants(lat: latitude, lng: longitude, radius: radius);
-      final categories = await _restaurantService.getCategories();
+      final categories = await _restaurantService.getStaticCategories();
 
       emit(RestaurantLoaded(
         restaurants: restaurants,
         categories: categories,
       ));
     } catch (e) {
-      emit(RestaurantError(message: 'Erreur de chargement des restaurants: ${e.toString()}'));
+      emit(RestaurantError(message: 'errorRestaurantsLoading|${e.toString()}'));
     }
   }
 
