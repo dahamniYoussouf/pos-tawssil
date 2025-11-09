@@ -359,9 +359,8 @@ class _MenuItemDetailPageState extends State<MenuItemDetailPage> {
                   child: Text(
                     AppLocalizations.of(context)!.addToCart,
                     style: const TextStyle(
-                      fontSize: 15,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      letterSpacing: 0.2,
                     ),
                   ),
                 ),

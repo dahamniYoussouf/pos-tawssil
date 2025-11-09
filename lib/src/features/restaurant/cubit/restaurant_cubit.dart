@@ -170,7 +170,7 @@ class RestaurantCubit extends Cubit<RestaurantState> {
       emit(RestaurantLoading());
 
       final restaurant = await _restaurantService.getRestaurantById(restaurantId);
-      final categories = await _restaurantService.getRestaurantCategories(restaurantId);
+      final categories = await _restaurantService.getStaticCategories();
       final menuItems = await _restaurantService.getRestaurantMenuItems(restaurantId);
 
       emit(RestaurantDetailsLoaded(

@@ -14,31 +14,6 @@ class RestaurantService extends BaseApiService {
   final UserService _userService = UserService();
   final TokenStorageService _tokenStorageService = locator<TokenStorageService>();
 
-  /// Fetch categories for a specific restaurant
-  Future<List<CategoryModel>> getRestaurantCategories(String restaurantId) async {
-    try {
-      final accessToken = await _tokenStorageService.getAccessToken();
-      dio.options.headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        if (accessToken != null) 'Authorization': 'Bearer $accessToken',
-      };
-      final response = await dio.get(
-        '${ApiConfig.baseUrl}/restaurantcategory/byrestaurant/$restaurantId',
-      );
-      final result = response.data is Map ? response.data : jsonDecode(response.data);
-      if (response.statusCode == 200 && result['success'] == true && result.containsKey('data')) {
-        final List<dynamic> categoriesList = result['data'];
-        return categoriesList.map((json) => CategoryModel.fromJson(json)).toList();
-      }
-      return [];
-    } on DioException {
-      return [];
-    } catch (_) {
-      return [];
-    }
-  }
-
   /// Fetch menu items for a specific restaurant
   Future<List<MenuModel>> getRestaurantMenuItems(String restaurantId) async {
     try {

@@ -8,6 +8,7 @@ import 'package:frontend/src/features/order/widgets/order_details_card_widget.da
 import 'package:frontend/src/features/order/widgets/order_timeline_widget.dart';
 import 'package:frontend/src/features/order/widgets/order_tracking_map_widget.dart';
 import 'package:frontend/src/features/order/widgets/status_card_widget.dart';
+import 'package:frontend/src/features/restaurant/pages/restaurant_suggestion_page.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../cubit/order_cubit.dart';
 import '../cubit/order_state.dart';
@@ -177,7 +178,10 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
               backgroundColor: Colors.white,
               child: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () {
+                  context.read<OrderCubit>().stopPolling();
+                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const RestaurantSuggestionPage()), (route) => false);
+                },
               ),
             ),
           ),
