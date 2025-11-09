@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/l10n/app_localizations.dart';
+import 'package:frontend/src/core/res/color_app.dart';
 import '../../permissions/pages/permission_page.dart';
 import '../../../core/widgets/sharing_screen.dart';
 import '../widgets/gps_disabled_popup.dart';
@@ -26,7 +27,6 @@ class _LocationPageState extends State<LocationPage> {
         listener: (context, state) {
           if (state is LocationSuccess) {
             if (!_isDialogOpen) {
-              print("fouad : BlocListener received LocationSuccess, navigating...");
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (context.mounted) {
                   Navigator.of(context).pushAndRemoveUntil(
@@ -40,7 +40,7 @@ class _LocationPageState extends State<LocationPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.red,
+                backgroundColor: ColorApp.redColor,
               ),
             );
           }
@@ -54,7 +54,7 @@ class _LocationPageState extends State<LocationPage> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(AppLocalizations.of(context)!.permissionDenied),
-                      backgroundColor: Colors.red,
+                      backgroundColor: ColorApp.redColor,
                     ),
                   );
                 },
@@ -83,7 +83,7 @@ class _LocationPageState extends State<LocationPage> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text(AppLocalizations.of(context)!.permissionDenied),
-                      backgroundColor: Colors.red,
+                      backgroundColor: ColorApp.redColor,
                     ),
                   );
                 },
@@ -141,7 +141,7 @@ class _LocationPageState extends State<LocationPage> {
             child: Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: ColorApp.white,
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: [
                   BoxShadow(
@@ -160,12 +160,12 @@ class _LocationPageState extends State<LocationPage> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF006C4A).withValues(alpha: 0.1),
+                          color: ColorApp.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: const Icon(
                           Icons.location_on,
-                          color: Color(0xFF006C4A),
+                          color: ColorApp.primary,
                           size: 24,
                         ),
                       ),
@@ -175,7 +175,7 @@ class _LocationPageState extends State<LocationPage> {
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFF2E2E2E),
+                          color: ColorApp.black,
                         ),
                       ),
                     ],
@@ -183,10 +183,10 @@ class _LocationPageState extends State<LocationPage> {
                   const SizedBox(height: 20),
                   Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF8F9FA),
+                      color: ColorApp.greyDark,
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: const Color(0xFFE9ECEF),
+                        color: ColorApp.greyLight,
                         width: 1,
                       ),
                     ),
@@ -196,17 +196,17 @@ class _LocationPageState extends State<LocationPage> {
                       textCapitalization: TextCapitalization.words,
                       style: const TextStyle(
                         fontSize: 16,
-                        color: Color(0xFF2E2E2E),
+                        color: ColorApp.black,
                       ),
                       decoration: InputDecoration(
                         hintText: AppLocalizations.of(builderContext)!.addressHint,
                         hintStyle: const TextStyle(
-                          color: Color(0xFF9E9E9E),
+                          color: ColorApp.greyMedium,
                           fontSize: 15,
                         ),
                         prefixIcon: const Icon(
                           Icons.home,
-                          color: Color(0xFF9E9E9E),
+                          color: ColorApp.greyMedium,
                           size: 20,
                         ),
                         border: InputBorder.none,
@@ -237,7 +237,7 @@ class _LocationPageState extends State<LocationPage> {
                           child: Text(
                             AppLocalizations.of(builderContext)!.cancel,
                             style: const TextStyle(
-                              color: Color(0xFF6C757D),
+                              color: ColorApp.greyMedium,
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
                             ),
@@ -256,8 +256,8 @@ class _LocationPageState extends State<LocationPage> {
                                   }
                                 },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF006C4A),
-                            foregroundColor: Colors.white,
+                            backgroundColor: ColorApp.primary,
+                            foregroundColor: ColorApp.white,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -270,7 +270,7 @@ class _LocationPageState extends State<LocationPage> {
                                   height: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                    valueColor: AlwaysStoppedAnimation<Color>(ColorApp.white),
                                   ),
                                 )
                               : Text(

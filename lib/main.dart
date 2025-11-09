@@ -16,6 +16,7 @@ import 'src/features/locations/cubit/location_cubit.dart';
 import 'src/features/cart/cubit/cart_cubit.dart';
 import 'src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'src/features/restaurant/cubit/category_cubit.dart';
+import 'src/features/order/cubit/order_cubit.dart';
 import 'src/core/localization/locale_cubit.dart';
 
 // Screen Imports
@@ -27,6 +28,7 @@ import 'src/features/restaurant/pages/restaurant_suggestion_page.dart';
 import 'src/features/auth/services/auth_service.dart';
 import 'src/features/cart/services/cart_service.dart';
 import 'src/features/restaurant/services/restaurant_service.dart';
+import 'src/features/order/services/order_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -68,6 +70,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<CategoryCubit>(
           create: (context) => CategoryCubit(restaurantService: RestaurantService()),
+        ),
+        BlocProvider<OrderCubit>(
+          create: (context) => OrderCubit(orderService: OrderService()),
         ),
       ],
       child: BlocBuilder<LocaleCubit, LocaleState>(

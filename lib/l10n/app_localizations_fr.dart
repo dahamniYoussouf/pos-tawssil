@@ -508,4 +508,70 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get greetingEvening => 'Bonsoir';
+
+  @override
+  String get orderedProducts => 'Produit commandés';
+
+  @override
+  String get orderTracking => 'Suivi la commande';
+
+  @override
+  String get orderStatusPending => 'En attente';
+
+  @override
+  String get orderStatusPendingDescription =>
+      'Le restaurant examine votre commande';
+
+  @override
+  String get orderStatusAccepted => 'Commande acceptée';
+
+  @override
+  String get orderStatusAcceptedDescription => 'Votre commande a été acceptée';
+
+  @override
+  String get orderStatusPreparing => 'Preparation de la comande';
+
+  @override
+  String get orderStatusPreparingDescription =>
+      'Le restaurant prépare votre commande';
+
+  @override
+  String get orderStatusAssigned => 'Commande assignée';
+
+  @override
+  String get orderStatusAssignedDescription =>
+      'Un livreur a été assigné à votre commande';
+
+  @override
+  String get orderStatusDelivering => 'La commande est en route';
+
+  @override
+  String get orderStatusDeliveringDescription =>
+      'Votre commande est en cours de livraison';
+
+  @override
+  String get orderStatusDelivered => 'Commande livrée';
+
+  @override
+  String get orderStatusDeliveredDescription => 'Votre commande a été livrée';
+
+  @override
+  String get deliveryPerson => 'Livreur';
+
+  @override
+  String get orderRefused => 'Commande refusée';
+
+  @override
+  String get orderDelayed => 'Commande retardée';
+
+  @override
+  String get errorOrderNotFound => 'Commande non trouvée';
+
+  @override
+  String get errorOrderLoadFailed => 'Erreur lors du chargement de la commande';
+
+  @override
+  String errorOrderLoad(String error) {
+    return 'Erreur lors du chargement de la commande: $error';
+  }
 }

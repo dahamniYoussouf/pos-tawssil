@@ -50,11 +50,23 @@ class BaseApiService {
       status = -2; // General error
     }
 
-    return {
+    final errorResponse = <String, dynamic>{
       'status': status,
       'success': false,
       'message': _getErrorMessage(status, e),
     };
+
+    if (e.response?.data != null && e.response!.data is Map) {
+      final responseData = e.response!.data as Map<String, dynamic>;
+      if (responseData.containsKey('errors')) {
+        errorResponse['errors'] = responseData['errors'];
+      }
+      if (responseData.containsKey('message') && responseData['message'] != null) {
+        errorResponse['message'] = responseData['message'];
+      }
+    }
+
+    return errorResponse;
   }
 
   /// Get user-friendly error message based on status code

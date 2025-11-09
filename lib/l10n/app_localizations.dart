@@ -993,6 +993,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Good evening'**
   String get greetingEvening;
+
+  /// Ordered products label
+  ///
+  /// In en, this message translates to:
+  /// **'Ordered products'**
+  String get orderedProducts;
+
+  /// Order tracking title
+  ///
+  /// In en, this message translates to:
+  /// **'Order tracking'**
+  String get orderTracking;
+
+  /// Order status pending
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get orderStatusPending;
+
+  /// Order status pending description
+  ///
+  /// In en, this message translates to:
+  /// **'The restaurant is reviewing your order'**
+  String get orderStatusPendingDescription;
+
+  /// Order status accepted
+  ///
+  /// In en, this message translates to:
+  /// **'Order accepted'**
+  String get orderStatusAccepted;
+
+  /// Order status accepted description
+  ///
+  /// In en, this message translates to:
+  /// **'Your order has been accepted'**
+  String get orderStatusAcceptedDescription;
+
+  /// Order status preparing
+  ///
+  /// In en, this message translates to:
+  /// **'Order preparation'**
+  String get orderStatusPreparing;
+
+  /// Order status preparing description
+  ///
+  /// In en, this message translates to:
+  /// **'The restaurant is preparing your order'**
+  String get orderStatusPreparingDescription;
+
+  /// Order status assigned
+  ///
+  /// In en, this message translates to:
+  /// **'Order assigned'**
+  String get orderStatusAssigned;
+
+  /// Order status assigned description
+  ///
+  /// In en, this message translates to:
+  /// **'A delivery person has been assigned to your order'**
+  String get orderStatusAssignedDescription;
+
+  /// Order status delivering
+  ///
+  /// In en, this message translates to:
+  /// **'Order is on the way'**
+  String get orderStatusDelivering;
+
+  /// Order status delivering description
+  ///
+  /// In en, this message translates to:
+  /// **'Your order is being delivered'**
+  String get orderStatusDeliveringDescription;
+
+  /// Order status delivered
+  ///
+  /// In en, this message translates to:
+  /// **'Order delivered'**
+  String get orderStatusDelivered;
+
+  /// Order status delivered description
+  ///
+  /// In en, this message translates to:
+  /// **'Your order has been delivered'**
+  String get orderStatusDeliveredDescription;
+
+  /// Delivery person label
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery person'**
+  String get deliveryPerson;
+
+  /// Order refused message
+  ///
+  /// In en, this message translates to:
+  /// **'Order refused'**
+  String get orderRefused;
+
+  /// Order delayed message
+  ///
+  /// In en, this message translates to:
+  /// **'Order delayed'**
+  String get orderDelayed;
+
+  /// Order not found error
+  ///
+  /// In en, this message translates to:
+  /// **'Order not found'**
+  String get errorOrderNotFound;
+
+  /// Order load error
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading order'**
+  String get errorOrderLoadFailed;
+
+  /// Order load error with details
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading order: {error}'**
+  String errorOrderLoad(String error);
 }
 
 class _AppLocalizationsDelegate

@@ -496,4 +496,66 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get greetingEvening => 'مساء الخير';
+
+  @override
+  String get orderedProducts => 'المنتجات المطلوبة';
+
+  @override
+  String get orderTracking => 'تتبع الطلب';
+
+  @override
+  String get orderStatusPending => 'قيد الانتظار';
+
+  @override
+  String get orderStatusPendingDescription => 'المطعم يفحص طلبك';
+
+  @override
+  String get orderStatusAccepted => 'تم قبول الطلب';
+
+  @override
+  String get orderStatusAcceptedDescription => 'تم قبول طلبك';
+
+  @override
+  String get orderStatusPreparing => 'تحضير الطلب';
+
+  @override
+  String get orderStatusPreparingDescription => 'المطعم يحضر طلبك';
+
+  @override
+  String get orderStatusAssigned => 'تم تعيين الطلب';
+
+  @override
+  String get orderStatusAssignedDescription => 'تم تعيين مندوب توصيل لطلبك';
+
+  @override
+  String get orderStatusDelivering => 'الطلب في الطريق';
+
+  @override
+  String get orderStatusDeliveringDescription => 'طلبك قيد التوصيل';
+
+  @override
+  String get orderStatusDelivered => 'تم تسليم الطلب';
+
+  @override
+  String get orderStatusDeliveredDescription => 'تم تسليم طلبك';
+
+  @override
+  String get deliveryPerson => 'مندوب التوصيل';
+
+  @override
+  String get orderRefused => 'تم رفض الطلب';
+
+  @override
+  String get orderDelayed => 'تأخر الطلب';
+
+  @override
+  String get errorOrderNotFound => 'الطلب غير موجود';
+
+  @override
+  String get errorOrderLoadFailed => 'خطأ في تحميل الطلب';
+
+  @override
+  String errorOrderLoad(String error) {
+    return 'خطأ في تحميل الطلب: $error';
+  }
 }

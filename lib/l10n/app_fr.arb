@@ -157,6 +157,34 @@
   "greetingEvening": "Bonsoir",
   "@greetingEvening": {
     "description": "Salutation du soir (après 17h)"
+  },
+  "orderedProducts": "Produit commandés",
+  "orderTracking": "Suivi la commande",
+  "orderStatusPending": "En attente",
+  "orderStatusPendingDescription": "Le restaurant examine votre commande",
+  "orderStatusAccepted": "Commande acceptée",
+  "orderStatusAcceptedDescription": "Votre commande a été acceptée",
+  "orderStatusPreparing": "Preparation de la comande",
+  "orderStatusPreparingDescription": "Le restaurant prépare votre commande",
+  "orderStatusAssigned": "Commande assignée",
+  "orderStatusAssignedDescription": "Un livreur a été assigné à votre commande",
+  "orderStatusDelivering": "La commande est en route",
+  "orderStatusDeliveringDescription": "Votre commande est en cours de livraison",
+  "orderStatusDelivered": "Commande livrée",
+  "orderStatusDeliveredDescription": "Votre commande a été livrée",
+  "deliveryPerson": "Livreur",
+  "orderRefused": "Commande refusée",
+  "orderDelayed": "Commande retardée",
+  "errorOrderNotFound": "Commande non trouvée",
+  "errorOrderLoadFailed": "Erreur lors du chargement de la commande",
+  "errorOrderLoad": "Erreur lors du chargement de la commande: {error}",
+  "@errorOrderLoad": {
+    "description": "Erreur de chargement de commande avec détails",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   }
 }
 

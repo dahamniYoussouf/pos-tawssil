@@ -76,9 +76,6 @@ class AuthService extends BaseApiService {
   /// This calls the API to send OTP via SMS
   Future<Map<String, dynamic>> sendPhoneNumber(String phoneNumber) async {
     try {
-      // Save phone number
-      await _savePhoneNumber(phoneNumber);
-
       // Request OTP from API
       final apiResult = await _smsService.requestOtpCode(phoneNumber);
 
@@ -155,110 +152,6 @@ class AuthService extends BaseApiService {
         'success': false,
         'message': 'Erreur lors de la vérification',
       };
-    }
-  }
-
-  /// Get or create user in backend based on phone number
-  /// Calls the backend API to check if user exists or creates a new one
-  Future<Map<String, dynamic>> _getOrCreateUserInBackend(String phoneNumber) async {
-    try {
-      // First, try to get all clients to check if user exists
-
-      dio.options.headers = {'Content-Type': 'application/json'};
-
-      final getResponse = await dio.get('${ApiConfig.baseUrl}/client/getall');
-
-      if (getResponse.statusCode == 200) {
-        final data = getResponse.data is Map ? getResponse.data : jsonDecode(getResponse.data);
-
-        // Check if user with this phone number exists
-        if (data['success'] && data['data'] != null) {
-          final clients = data['data'] as List;
-          final existingClient = clients.firstWhere(
-            (client) => client['phone_number'] == phoneNumber,
-            orElse: () => null,
-          );
-
-          if (existingClient != null) {
-            // User exists
-            return {
-              'success': true,
-              'userId': existingClient['id'],
-              'userName': '${existingClient['first_name']} ${existingClient['last_name']}',
-              'isNewUser': false,
-            };
-          }
-        }
-      }
-
-      // User doesn't exist, create new one
-      final phoneDigits = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
-      final lastFourDigits = phoneDigits.substring(phoneDigits.length - 4);
-
-      final createUrl = '${ApiConfig.baseUrl}/client/create';
-
-      final createResponse = await dio.post(
-        createUrl,
-        data: {
-          'first_name': 'User',
-          'last_name': lastFourDigits,
-          'email': 'user$phoneDigits@tawsil.app',
-          'phone_number': phoneNumber,
-          'is_verified': true,
-          'is_active': true,
-        },
-      );
-
-      if (createResponse.statusCode == 201) {
-        final data = createResponse.data is Map ? createResponse.data : jsonDecode(createResponse.data);
-        if (data['success']) {
-          final client = data['data'];
-          return {
-            'success': true,
-            'userId': client['id'],
-            'userName': '${client['first_name']} ${client['last_name']}',
-            'isNewUser': true,
-          };
-        }
-      }
-
-      // If backend call fails, return error
-      return {
-        'success': false,
-        'message': 'Impossible de créer le compte',
-      };
-    } catch (e) {
-      // Fallback to local user creation if backend is unavailable
-      final phoneDigits = phoneNumber.replaceAll(RegExp(r'[^0-9]'), '');
-      final userId = 'local_$phoneDigits';
-      final userName = 'User ${phoneDigits.substring(phoneDigits.length - 4)}';
-
-      return {
-        'success': true,
-        'userId': userId,
-        'userName': userName,
-        'isNewUser': true,
-      };
-    }
-  }
-
-  /// Save phone number
-  Future<bool> _savePhoneNumber(String phone) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      return await prefs.setString(_phoneKey, phone);
-    } catch (e) {
-      return false;
-    }
-  }
-
-  /// Get saved phone number
-  Future<String?> getPhoneNumber() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      return prefs.getString(_phoneKey);
-    } catch (e) {
-      return null;
     }
   }
 

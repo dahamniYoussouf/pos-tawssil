@@ -502,4 +502,70 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get greetingEvening => 'Good evening';
+
+  @override
+  String get orderedProducts => 'Ordered products';
+
+  @override
+  String get orderTracking => 'Order tracking';
+
+  @override
+  String get orderStatusPending => 'Pending';
+
+  @override
+  String get orderStatusPendingDescription =>
+      'The restaurant is reviewing your order';
+
+  @override
+  String get orderStatusAccepted => 'Order accepted';
+
+  @override
+  String get orderStatusAcceptedDescription => 'Your order has been accepted';
+
+  @override
+  String get orderStatusPreparing => 'Order preparation';
+
+  @override
+  String get orderStatusPreparingDescription =>
+      'The restaurant is preparing your order';
+
+  @override
+  String get orderStatusAssigned => 'Order assigned';
+
+  @override
+  String get orderStatusAssignedDescription =>
+      'A delivery person has been assigned to your order';
+
+  @override
+  String get orderStatusDelivering => 'Order is on the way';
+
+  @override
+  String get orderStatusDeliveringDescription =>
+      'Your order is being delivered';
+
+  @override
+  String get orderStatusDelivered => 'Order delivered';
+
+  @override
+  String get orderStatusDeliveredDescription => 'Your order has been delivered';
+
+  @override
+  String get deliveryPerson => 'Delivery person';
+
+  @override
+  String get orderRefused => 'Order refused';
+
+  @override
+  String get orderDelayed => 'Order delayed';
+
+  @override
+  String get errorOrderNotFound => 'Order not found';
+
+  @override
+  String get errorOrderLoadFailed => 'Error loading order';
+
+  @override
+  String errorOrderLoad(String error) {
+    return 'Error loading order: $error';
+  }
 }

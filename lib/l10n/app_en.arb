@@ -665,6 +665,91 @@
   "greetingEvening": "Good evening",
   "@greetingEvening": {
     "description": "Evening greeting (after 17)"
+  },
+  "orderedProducts": "Ordered products",
+  "@orderedProducts": {
+    "description": "Ordered products label"
+  },
+  "orderTracking": "Order tracking",
+  "@orderTracking": {
+    "description": "Order tracking title"
+  },
+  "orderStatusPending": "Pending",
+  "@orderStatusPending": {
+    "description": "Order status pending"
+  },
+  "orderStatusPendingDescription": "The restaurant is reviewing your order",
+  "@orderStatusPendingDescription": {
+    "description": "Order status pending description"
+  },
+  "orderStatusAccepted": "Order accepted",
+  "@orderStatusAccepted": {
+    "description": "Order status accepted"
+  },
+  "orderStatusAcceptedDescription": "Your order has been accepted",
+  "@orderStatusAcceptedDescription": {
+    "description": "Order status accepted description"
+  },
+  "orderStatusPreparing": "Order preparation",
+  "@orderStatusPreparing": {
+    "description": "Order status preparing"
+  },
+  "orderStatusPreparingDescription": "The restaurant is preparing your order",
+  "@orderStatusPreparingDescription": {
+    "description": "Order status preparing description"
+  },
+  "orderStatusAssigned": "Order assigned",
+  "@orderStatusAssigned": {
+    "description": "Order status assigned"
+  },
+  "orderStatusAssignedDescription": "A delivery person has been assigned to your order",
+  "@orderStatusAssignedDescription": {
+    "description": "Order status assigned description"
+  },
+  "orderStatusDelivering": "Order is on the way",
+  "@orderStatusDelivering": {
+    "description": "Order status delivering"
+  },
+  "orderStatusDeliveringDescription": "Your order is being delivered",
+  "@orderStatusDeliveringDescription": {
+    "description": "Order status delivering description"
+  },
+  "orderStatusDelivered": "Order delivered",
+  "@orderStatusDelivered": {
+    "description": "Order status delivered"
+  },
+  "orderStatusDeliveredDescription": "Your order has been delivered",
+  "@orderStatusDeliveredDescription": {
+    "description": "Order status delivered description"
+  },
+  "deliveryPerson": "Delivery person",
+  "@deliveryPerson": {
+    "description": "Delivery person label"
+  },
+  "orderRefused": "Order refused",
+  "@orderRefused": {
+    "description": "Order refused message"
+  },
+  "orderDelayed": "Order delayed",
+  "@orderDelayed": {
+    "description": "Order delayed message"
+  },
+  "errorOrderNotFound": "Order not found",
+  "@errorOrderNotFound": {
+    "description": "Order not found error"
+  },
+  "errorOrderLoadFailed": "Error loading order",
+  "@errorOrderLoadFailed": {
+    "description": "Order load error"
+  },
+  "errorOrderLoad": "Error loading order: {error}",
+  "@errorOrderLoad": {
+    "description": "Order load error with details",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   }
 }
 

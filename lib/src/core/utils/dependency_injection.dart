@@ -22,7 +22,7 @@ void setupLocator() {
     ..interceptors.add(PrettyDioLogger(
       requestHeader: false,
       requestBody: true,
-      responseBody: false,
+      responseBody: true,
       responseHeader: false,
       request: true,
       error: true,

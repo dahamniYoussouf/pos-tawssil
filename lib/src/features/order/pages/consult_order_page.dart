@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/src/core/res/media_res.dart';
-import '../../features/cart/services/cart_service.dart';
-import 'Valider_la_commande.dart';
+import '../../cart/services/cart_service.dart';
+import 'validate_order_page.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class ConsulterLePanier extends StatefulWidget {
+class ConsultOrderPage extends StatefulWidget {
   final String? restaurantName;
   final String? restaurantId;
   final String? deliveryAddress;
   final LatLng? restaurantLocation;
   final LatLng? deliveryLocation;
 
-  const ConsulterLePanier({
+  const ConsultOrderPage({
     Key? key,
     this.restaurantName,
     this.restaurantId,
@@ -23,10 +23,10 @@ class ConsulterLePanier extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<ConsulterLePanier> createState() => _ConsulterLePanierState();
+  State<ConsultOrderPage> createState() => _ConsultOrderPageState();
 }
 
-class _ConsulterLePanierState extends State<ConsulterLePanier> {
+class _ConsultOrderPageState extends State<ConsultOrderPage> {
   final CartService _cartService = CartService();
   String selectedPaymentMethod = 'cash_on_delivery';
   String selectedDeliveryOption = 'delivery';
@@ -181,10 +181,11 @@ class _ConsulterLePanierState extends State<ConsulterLePanier> {
     final orderNumber = '$orderType-$dateStr-$timeStr';
     final orderItems = _cartService.items.values.map((item) {
       return {
-        'name': item.menuItemName,
+        'menu_item_id': item.menuItemId,
+        'name': item.menuItemName, // For display purposes
         'quantity': item.quantity,
-        'price': item.price.toStringAsFixed(0),
-        'note': item.note,
+        'special_instructions': item.note,
+        'price': item.price.toStringAsFixed(0), // For display purposes
       };
     }).toList();
     final l10n = AppLocalizations.of(context)!;
@@ -197,16 +198,20 @@ class _ConsulterLePanierState extends State<ConsulterLePanier> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ValiderLaCommandePage(
-          deliveryAddress: widget.deliveryAddress ?? 'Baraki, Sidi Moussa',
+        builder: (context) => ValidateOrderPage(
+          deliveryAddress: widget.deliveryAddress ?? '',
           estimatedTime: _estimatedDeliveryTime,
           orderNumber: orderNumber,
           totalPrice: _total,
           paymentMethod: paymentMethodLabel,
+          paymentMethodCode: selectedPaymentMethod,
           orderItems: orderItems,
+          orderType: orderType,
+          deliveryFee: _actualDeliveryFee,
           pickupLocation: widget.restaurantLocation,
           deliveryLocation: widget.deliveryLocation,
           restaurantName: widget.restaurantName,
+          restaurantId: widget.restaurantId,
         ),
       ),
     );

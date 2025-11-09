@@ -7,7 +7,7 @@ import '../services/restaurant_service.dart';
 import '../../cart/services/cart_service.dart';
 import '../../cart/widgets/cart_icon.dart';
 import '../../../core/widgets/menu_item_detail_page.dart';
-import '../../../core/widgets/Consulter_le_panier.dart';
+import '../../order/pages/consult_order_page.dart';
 
 class RestaurantDetailsPage extends StatefulWidget {
   final RestaurantModel restaurant;
@@ -173,7 +173,7 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => ConsulterLePanier(
+        builder: (context) => ConsultOrderPage(
           restaurantName: widget.restaurant.name,
           restaurantId: widget.restaurant.id,
           deliveryAddress: 'Baraki, Sidi Moussa', // TODO: Get from user location service

@@ -157,6 +157,34 @@
   "greetingEvening": "مساء الخير",
   "@greetingEvening": {
     "description": "تحية المساء (بعد 17)"
+  },
+  "orderedProducts": "المنتجات المطلوبة",
+  "orderTracking": "تتبع الطلب",
+  "orderStatusPending": "قيد الانتظار",
+  "orderStatusPendingDescription": "المطعم يفحص طلبك",
+  "orderStatusAccepted": "تم قبول الطلب",
+  "orderStatusAcceptedDescription": "تم قبول طلبك",
+  "orderStatusPreparing": "تحضير الطلب",
+  "orderStatusPreparingDescription": "المطعم يحضر طلبك",
+  "orderStatusAssigned": "تم تعيين الطلب",
+  "orderStatusAssignedDescription": "تم تعيين مندوب توصيل لطلبك",
+  "orderStatusDelivering": "الطلب في الطريق",
+  "orderStatusDeliveringDescription": "طلبك قيد التوصيل",
+  "orderStatusDelivered": "تم تسليم الطلب",
+  "orderStatusDeliveredDescription": "تم تسليم طلبك",
+  "deliveryPerson": "مندوب التوصيل",
+  "orderRefused": "تم رفض الطلب",
+  "orderDelayed": "تأخر الطلب",
+  "errorOrderNotFound": "الطلب غير موجود",
+  "errorOrderLoadFailed": "خطأ في تحميل الطلب",
+  "errorOrderLoad": "خطأ في تحميل الطلب: {error}",
+  "@errorOrderLoad": {
+    "description": "خطأ في تحميل الطلب مع التفاصيل",
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   }
 }
 
