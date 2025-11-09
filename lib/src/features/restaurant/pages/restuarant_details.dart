@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/src/core/res/color_app.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 import '../models/restaurant_model.dart';
@@ -169,6 +170,7 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
       );
       return;
     }
+    // String deliveryAddress =
 
     Navigator.push(
       context,
@@ -234,29 +236,29 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
 
                     // Add button overlay at bottom-right corner of image
                     Positioned(
-                      bottom: -3,
-                      right: -3,
+                      bottom: -2,
+                      right: -2,
                       child: Container(
                         width: 24,
                         height: 24,
                         decoration: BoxDecoration(
-                          color: item.disponible ? Color(0xFF006C4A) : Colors.grey[300],
+                          color: item.disponible ? ColorApp.primary : ColorApp.greyLight,
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white, width: 2),
+                          border: Border.all(color: ColorApp.white, width: 2),
                         ),
                         child: Center(
                           child: isInCart
                               ? Text(
                                   '$quantity',
                                   style: TextStyle(
-                                    color: Colors.white,
+                                    color: ColorApp.white,
                                     fontSize: 11,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 )
                               : Icon(
                                   Icons.add,
-                                  color: Colors.white,
+                                  color: ColorApp.white,
                                   size: 14,
                                 ),
                         ),
@@ -684,11 +686,11 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
                 child: Container(
                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                   decoration: BoxDecoration(
-                    color: Color(0xFF006C4A),
+                    color: ColorApp.primary,
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.2),
+                        color: Colors.black.withValues(alpha: 0.2),
                         blurRadius: 10,
                         offset: Offset(0, 4),
                       ),
@@ -703,7 +705,7 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
                             width: 24,
                             height: 24,
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.3),
+                              color: Colors.white.withValues(alpha: 0.3),
                               shape: BoxShape.circle,
                             ),
                             child: Center(

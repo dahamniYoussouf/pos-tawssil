@@ -365,7 +365,7 @@ class CartItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
+      margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: Colors.grey[50],
@@ -374,8 +374,8 @@ class CartItemWidget extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 60,
-            height: 60,
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8),
               color: Colors.grey[200],
@@ -427,7 +427,7 @@ class CartItemWidget extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -439,8 +439,6 @@ class CartItemWidget extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.remove, size: 18),
                   onPressed: onQuantityDecrease,
-                  padding: const EdgeInsets.all(4),
-                  constraints: const BoxConstraints(),
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -455,8 +453,6 @@ class CartItemWidget extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.add, size: 18),
                   onPressed: onQuantityIncrease,
-                  padding: const EdgeInsets.all(4),
-                  constraints: const BoxConstraints(),
                 ),
               ],
             ),

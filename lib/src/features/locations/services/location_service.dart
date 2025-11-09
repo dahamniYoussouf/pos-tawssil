@@ -310,15 +310,4 @@ class UserService {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('current_location_city');
   }
-
-  static const String _locationFullAddressKey = 'location_full_address';
-
-  Future<bool> setFullAddress(String address) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      return await prefs.setString(_locationFullAddressKey, address);
-    } catch (e) {
-      return false;
-    }
-  }
 }
