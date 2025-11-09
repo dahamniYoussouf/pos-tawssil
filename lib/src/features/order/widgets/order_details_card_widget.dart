@@ -49,7 +49,7 @@ class _OrderDetailsCardState extends State<OrderDetailsCard> {
                 const SizedBox(width: 8),
                 Flexible(
                   child: Text(
-                    '${l10n!.orderNumber}: ${widget.order.orderNumber}',
+                    '${l10n!.orderNumber}: ${widget.order.orderNumber.toString().substring(widget.order.orderNumber.length - 4, widget.order.orderNumber.length)}',
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,

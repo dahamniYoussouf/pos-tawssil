@@ -38,13 +38,13 @@ class OrderTimeline extends StatelessWidget {
   List<_TimelineItemData> _createTimelineItems() {
     return <_TimelineItemData>[
       _TimelineItemData(
-        status: OrderStatus.accepted,
+        status: OrderStatus.pending,
         title: localization.orderTracking,
         description: '',
         icon: MediaRes.suivIcon,
       ),
       _TimelineItemData(
-        status: OrderStatus.pending,
+        status: OrderStatus.accepted,
         title: localization.orderStatusAccepted,
         description: localization.orderStatusAcceptedDescription,
         icon: MediaRes.acceptIcon,

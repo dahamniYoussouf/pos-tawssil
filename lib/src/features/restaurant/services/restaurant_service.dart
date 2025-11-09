@@ -9,7 +9,6 @@ import '../../../core/services/base_api_service.dart';
 import '../../../core/services/token_storage_service.dart';
 import '../../../core/utils/dependency_injection.dart';
 import '../../auth/services/user_service.dart';
-import 'dart:developer' as dev;
 
 class RestaurantService extends BaseApiService {
   final UserService _userService = UserService();

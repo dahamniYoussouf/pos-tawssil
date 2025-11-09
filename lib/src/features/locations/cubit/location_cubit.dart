@@ -55,12 +55,9 @@ class LocationCubit extends Cubit<LocationState> {
   }
 
   Future<void> saveManualAddress(String address) async {
-    print("fouad : saveManualAddress : $address");
     emit(LocationLoading());
     final result = await _saveManualAddressUseCase.execute(address);
-    print("fouad : result : $result");
     if (result.isSuccess) {
-      print("fouad : result isSuccess : ${result.isSuccess}");
       emit(LocationSuccess(
         area: result.area!,
         city: result.city!,
@@ -68,8 +65,6 @@ class LocationCubit extends Cubit<LocationState> {
         latitude: result.latitude,
         longitude: result.longitude,
       ));
-      final state = this.state;
-      print("fouad : result state : $state");
     } else {
       emit(LocationError(message: result.errorMessage ?? 'Unknown error'));
     }
