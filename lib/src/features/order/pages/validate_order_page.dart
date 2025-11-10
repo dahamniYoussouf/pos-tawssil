@@ -171,7 +171,7 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
     return <OrderInformationData>[
       OrderInformationData(icon: Icons.location_on_outlined, title: localization.deliveryAddressLabel, subtitle: widget.deliveryAddress),
       OrderInformationData(icon: Icons.access_time, title: localization.deliveryTime, subtitle: widget.estimatedTime),
-      OrderInformationData(icon: Icons.receipt_outlined, title: localization.orderNumber, subtitle: widget.orderNumber),
+      // OrderInformationData(icon: Icons.receipt_outlined, title: localization.orderNumber, subtitle: widget.orderNumber),
       OrderInformationData(icon: Icons.payments_outlined, title: localization.totalLabel, subtitle: localization.totalValue(widget.totalPrice.toStringAsFixed(2)), isTotal: true),
       OrderInformationData(icon: Icons.credit_card, title: localization.paymentMethodLabel, subtitle: widget.paymentMethod)
     ];

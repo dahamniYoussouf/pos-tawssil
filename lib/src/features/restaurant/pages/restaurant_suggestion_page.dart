@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/l10n/app_localizations.dart';
+import 'package:frontend/src/core/res/color_app.dart';
 import 'package:frontend/src/features/auth/cubit/user_cubit.dart';
 import 'package:frontend/src/features/auth/cubit/user_state.dart';
 import 'package:frontend/src/features/restaurant/pages/restaurant_details_page.dart';
@@ -40,13 +41,17 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ColorApp.white,
       body: SafeArea(child: BlocBuilder<UserCubit, UserState>(builder: (context, state) {
         if (state is UserLoading) {
           return _buildLoadingState(context);
         }
         if (state is UserError) {
-          return _buildErrorState(context, state.message);
+          return _buildErrorState(
+            context,
+            state.message,
+            onRetry: () => context.read<UserCubit>().fetchProfile(),
+          );
         }
         if (state is UserLoaded) {
           return BlocBuilder<RestaurantCubit, RestaurantState>(
@@ -55,12 +60,16 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
                 return _buildLoadingState(context);
               }
               if (state is RestaurantError) {
-                return _buildErrorState(context, state.message);
+                return _buildErrorState(
+                  context,
+                  state.message,
+                  onRetry: () => context.read<RestaurantCubit>().loadNearbyRestaurants(radius: 5000),
+                );
               }
               if (state is RestaurantLoaded) {
                 return RefreshIndicator(
-                  color: Color(0xFF006C4A),
-                  backgroundColor: Colors.white,
+                  color: ColorApp.primary,
+                  backgroundColor: ColorApp.white,
                   strokeWidth: 3.0,
                   displacement: 40.0,
                   edgeOffset: 0.0,
@@ -109,7 +118,7 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
                               return SizedBox(
                                 height: 100,
                                 child: Center(
-                                  child: CircularProgressIndicator(color: Color(0xFF006C4A)),
+                                  child: CircularProgressIndicator(color: ColorApp.primary),
                                 ),
                               );
                             }
@@ -148,7 +157,7 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          CircularProgressIndicator(color: Color(0xFF006C4A)),
+          CircularProgressIndicator(color: ColorApp.primary),
           SizedBox(height: 16),
           Text(AppLocalizations.of(context)!.loadingRestaurants),
         ],
@@ -156,25 +165,25 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
     );
   }
 
-  Widget _buildErrorState(BuildContext context, String message) {
+  Widget _buildErrorState(BuildContext context, String message, {VoidCallback? onRetry}) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.error_outline, size: 64, color: Colors.red),
+          Icon(Icons.error_outline, size: 64, color: ColorApp.redColor),
           SizedBox(height: 16),
           Text(
             message,
-            style: TextStyle(color: Colors.red),
+            style: TextStyle(color: ColorApp.redColor),
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 16),
           ElevatedButton(
-            onPressed: () => context.read<RestaurantCubit>().loadNearbyRestaurants(radius: 5000),
+            onPressed: onRetry ?? () => context.read<RestaurantCubit>().loadNearbyRestaurants(radius: 5000),
             child: Text(AppLocalizations.of(context)!.reload),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Color(0xFF006C4A),
-              foregroundColor: Colors.white,
+              backgroundColor: ColorApp.primary,
+              foregroundColor: ColorApp.white,
             ),
           ),
         ],
