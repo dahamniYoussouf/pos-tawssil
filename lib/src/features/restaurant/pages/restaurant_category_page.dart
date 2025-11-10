@@ -3,7 +3,7 @@ import 'package:frontend/l10n/app_localizations.dart';
 import '../models/restaurant_model.dart';
 import '../models/category_model.dart';
 import '../../cart/widgets/cart_icon.dart';
-import 'restuarant_details.dart';
+import 'restaurant_details_page.dart';
 
 class RestaurantListPage extends StatefulWidget {
   final CategoryModel category;

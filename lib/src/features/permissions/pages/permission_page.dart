@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/l10n/app_localizations.dart';
+import 'package:frontend/src/core/res/color_app.dart';
 
 class PermissionPage extends StatelessWidget {
   final VoidCallback onAuthorized;
@@ -16,7 +17,7 @@ class PermissionPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return Material(
         child: Container(
-      color: const Color(0xFF006C4A),
+      color: ColorApp.primary,
       child: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -25,7 +26,7 @@ class PermissionPage extends StatelessWidget {
               padding: const EdgeInsets.all(30),
               margin: const EdgeInsets.all(30),
               decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.3),
+                color: ColorApp.black.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Column(
@@ -35,21 +36,21 @@ class PermissionPage extends StatelessWidget {
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: ColorApp.white,
                     ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 10),
                   Text(
                     l10n.locationPurpose,
-                    style: const TextStyle(fontSize: 12, color: Colors.white70),
+                    style: const TextStyle(fontSize: 12, color: ColorApp.white70),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 25),
                   Container(
                     height: 155,
                     decoration: BoxDecoration(
-                      color: Colors.grey[300],
+                      color: ColorApp.greyLight,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: ClipRRect(
@@ -83,15 +84,15 @@ class PermissionPage extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
+          backgroundColor: ColorApp.transparent,
+          shadowColor: ColorApp.transparent,
           elevation: 0,
           padding: const EdgeInsets.only(left: 10),
         ),
         child: Text(
           text,
           style: const TextStyle(
-            color: Color(0xFF87CEEB),
+            color: ColorApp.blue,
             fontSize: 13,
           ),
         ),

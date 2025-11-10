@@ -3,10 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 import 'package:frontend/src/features/auth/cubit/user_cubit.dart';
 import 'package:frontend/src/features/auth/cubit/user_state.dart';
-import 'package:frontend/src/features/restaurant/pages/restuarant_details.dart';
-import '../widgets/custom_bottom_navigation_bar.dart';
-import 'restaurant_search_screen.dart';
-import 'resturant_category_page.dart';
+import 'package:frontend/src/features/restaurant/pages/restaurant_details_page.dart';
+import 'restaurant_search_page.dart';
+import 'restaurant_category_page.dart';
 import '../cubit/restaurant_cubit.dart';
 import '../cubit/category_cubit.dart';
 import '../widgets/restaurant_suggestion_header.dart';
@@ -141,7 +140,6 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
         }
         return _buildLoadingState(context);
       })),
-      bottomNavigationBar: CustomBottomNavigationBar(),
     );
   }
 

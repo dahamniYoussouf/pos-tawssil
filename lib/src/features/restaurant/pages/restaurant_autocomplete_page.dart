@@ -7,7 +7,7 @@ import '../models/restaurant_model.dart';
 import '../services/restaurant_service.dart';
 import '../../auth/services/user_service.dart';
 import '../widgets/restaurant_search_bar.dart';
-import 'restuarant_details.dart';
+import 'restaurant_details_page.dart';
 
 class RestaurantAutocompletePage extends StatefulWidget {
   const RestaurantAutocompletePage({Key? key}) : super(key: key);

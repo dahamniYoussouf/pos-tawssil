@@ -22,7 +22,7 @@ import 'src/core/localization/locale_cubit.dart';
 // Screen Imports
 import 'src/features/auth/pages/phone_number_page.dart';
 import 'src/features/auth/pages/user_info_page.dart';
-import 'src/features/restaurant/pages/restaurant_suggestion_page.dart';
+import 'src/features/home/pages/home_page.dart';
 
 // Service Imports
 import 'src/features/auth/services/auth_service.dart';
@@ -117,7 +117,7 @@ class AuthWrapper extends StatelessWidget {
           if (state.isNewUser) {
             return UserInfoPage(userId: state.userId);
           } else {
-            return RestaurantSuggestionPage();
+            return const HomePage();
           }
         } else {
           return const PhoneNumberPage();

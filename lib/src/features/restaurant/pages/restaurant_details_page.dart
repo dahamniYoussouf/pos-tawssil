@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:frontend/src/core/res/color_app.dart';
+import 'package:frontend/src/features/locations/cubit/location_cubit.dart';
+import 'package:frontend/src/features/locations/cubit/location_state.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:frontend/l10n/app_localizations.dart';
 import '../models/restaurant_model.dart';
@@ -159,7 +162,7 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
     return _cartService.totalPrice;
   }
 
-  void _navigateToCart() {
+  void _navigateToCart() async {
     if (_cartService.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -170,23 +173,38 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
       );
       return;
     }
-    // String deliveryAddress =
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ConsultOrderPage(
-          restaurantName: widget.restaurant.name,
-          restaurantId: widget.restaurant.id,
-          deliveryAddress: 'Baraki, Sidi Moussa', // TODO: Get from user location service
-          restaurantLocation: LatLng(
-            widget.restaurant.lat ?? 0.0,
-            widget.restaurant.lng ?? 0.0,
+    await context.read<LocationCubit>().loadSavedLocation();
+    final locationState = context.read<LocationCubit>().state;
+    print(locationState);
+    if (locationState is LocationSuccess) {
+      String deliveryAddress = locationState.fullAddress;
+      double Latitude = locationState.latitude ?? 0.0;
+      double Longitude = locationState.longitude ?? 0.0;
+      LatLng deliveryLocation = LatLng(Latitude, Longitude);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ConsultOrderPage(
+            restaurantName: widget.restaurant.name,
+            restaurantId: widget.restaurant.id,
+            deliveryAddress: deliveryAddress,
+            restaurantLocation: LatLng(
+              widget.restaurant.lat ?? 0.0,
+              widget.restaurant.lng ?? 0.0,
+            ),
+            deliveryLocation: deliveryLocation,
           ),
-          deliveryLocation: const LatLng(36.7538, 3.0588), // TODO: Get from user location
         ),
-      ),
-    );
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.error),
+          duration: const Duration(seconds: 2),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   Widget _buildFoodItem(MenuModel item) {

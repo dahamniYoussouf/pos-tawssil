@@ -1,17 +1,21 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
+import '../repositories/location_repository.dart';
 import 'location_state.dart';
 import '../usecases/get_gps_location_usecase.dart';
 import '../usecases/save_manual_address_usecase.dart';
 
 class LocationCubit extends Cubit<LocationState> {
+  final LocationRepository _locationRepository;
   final GetGpsLocationUseCase _getGpsLocationUseCase;
   final SaveManualAddressUseCase _saveManualAddressUseCase;
 
   LocationCubit({
+    LocationRepository? locationRepository,
     GetGpsLocationUseCase? getGpsLocationUseCase,
     SaveManualAddressUseCase? saveManualAddressUseCase,
-  })  : _getGpsLocationUseCase = getGpsLocationUseCase ?? GetGpsLocationUseCase(),
+  })  : _locationRepository = locationRepository ?? LocationRepository(),
+        _getGpsLocationUseCase = getGpsLocationUseCase ?? GetGpsLocationUseCase(),
         _saveManualAddressUseCase = saveManualAddressUseCase ?? SaveManualAddressUseCase(),
         super(LocationInitial());
 
@@ -82,6 +86,37 @@ class LocationCubit extends Cubit<LocationState> {
 
   void resetToPermissionGranted() {
     emit(LocationPermissionGranted());
+  }
+
+  Future<void> loadSavedLocation() async {
+    emit(LocationLoading());
+    try {
+      final data = await _locationRepository.getLocationData();
+      print(data);
+      final area = data['area'];
+      final city = data['city'];
+      final fullAddress = data['fullAddress'];
+      double? latitude = double.tryParse(data['latitude'].toString());
+      double? longitude = double.tryParse(data['longitude'].toString());
+
+      if (area != null && city != null && fullAddress != null) {
+        print("success");
+        emit(LocationSuccess(
+          area: area,
+          city: city,
+          fullAddress: fullAddress,
+          latitude: latitude,
+          longitude: longitude,
+        ));
+        print("state : ${state}");
+      } else {
+        print("error 1");
+        emit(const LocationError(message: 'No saved location data.'));
+      }
+    } catch (e) {
+      print(e);
+      emit(LocationError(message: 'Failed to load saved location: ${e.toString()}'));
+    }
   }
 
   void openLocationSettings() {

@@ -9,7 +9,7 @@ import '../services/autocomplete_service.dart';
 import '../widgets/restaurant_search_card.dart';
 import '../widgets/autocomplete_dropdown.dart';
 import '../cubit/restaurant_cubit.dart';
-import 'restuarant_details.dart';
+import 'restaurant_details_page.dart';
 
 class RestaurantSearchPage extends StatefulWidget {
   final String? initialQuery;

@@ -12,6 +12,10 @@ class ColorApp {
   static const Color white = Color(0xFFFFFFFF);
   static const Color whiteLight = Color(0xFFFFFFFF);
   static const Color whiteDark = Color(0xFFFFFFFF);
+  static const Color white70 = Color(0xB3FFFFFF);
   static const Color redColor = Color(0xFFD32F2F);
   static const Color orangeColor = Color(0xFFFFA000);
+  static const Color blue = Color(0xFF87CEEB);
+
+  static const Color transparent = Color(0x00000000);
 }
