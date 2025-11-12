@@ -6,7 +6,6 @@ import 'package:client_app/src/core/res/color_app.dart';
 import '../../permissions/pages/permission_page.dart';
 import '../../../core/widgets/sharing_screen.dart';
 import '../widgets/gps_disabled_popup.dart';
-import '../../restaurant/pages/restaurant_suggestion_page.dart';
 import '../cubit/location_cubit.dart';
 import '../cubit/location_state.dart';
 

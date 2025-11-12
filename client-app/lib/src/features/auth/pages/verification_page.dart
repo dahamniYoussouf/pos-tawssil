@@ -8,7 +8,6 @@ import 'package:client_app/src/features/auth/cubit/auth_state.dart';
 import '../cubit/auth_cubit.dart';
 import 'user_info_page.dart';
 import '../../locations/pages/location_page.dart';
-import '../../restaurant/pages/restaurant_suggestion_page.dart';
 
 /// Verification Page for OTP code entry
 class VerificationPage extends StatefulWidget {
