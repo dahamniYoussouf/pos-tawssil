@@ -158,4 +158,4 @@ app.*.map.json
 
 # App-specific build files
 **/local.properties
-**/local.properties.example
+
