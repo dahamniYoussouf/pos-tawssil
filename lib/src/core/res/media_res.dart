@@ -14,4 +14,6 @@ class MediaRes {
   static const routeIcon = '$_baseImageIcon/route_icon.svg';
   static const prepareIcon = '$_baseImageIcon/prepare_icon.svg';
   static const deliveryEndIcon = '$_baseImageIcon/delivery_end_icon.svg';
+  static const pretRecupererIcon = '$_baseImageIcon/pret_recuperer_icon.svg';
+  static const recupererIcon = '$_baseImageIcon/recuperer_icon.svg';
 }

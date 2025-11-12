@@ -55,18 +55,34 @@ class OrderTimeline extends StatelessWidget {
         description: localization.orderStatusPreparingDescription,
         icon: MediaRes.prepareIcon,
       ),
-      _TimelineItemData(
-        status: OrderStatus.delivering,
-        title: localization.orderStatusDelivering,
-        description: localization.orderStatusDeliveringDescription,
-        icon: MediaRes.routeIcon,
-      ),
-      _TimelineItemData(
-        status: OrderStatus.delivered,
-        title: localization.orderStatusDelivered,
-        description: localization.orderStatusDeliveredDescription,
-        icon: MediaRes.deliveryEndIcon,
-      ),
+      if (order.orderType == "delivery")
+        _TimelineItemData(
+          status: OrderStatus.delivering,
+          title: localization.orderStatusDelivering,
+          description: localization.orderStatusDeliveringDescription,
+          icon: MediaRes.routeIcon,
+        ),
+      if (order.orderType == "delivery")
+        _TimelineItemData(
+          status: OrderStatus.delivered,
+          title: localization.orderStatusDelivered,
+          description: localization.orderStatusDeliveredDescription,
+          icon: MediaRes.deliveryEndIcon,
+        ),
+      if (order.orderType != "delivery")
+        _TimelineItemData(
+          status: OrderStatus.readyToCollect,
+          title: localization.orderStatusPretRecuperer,
+          description: localization.orderStatusPretRecupererDescription,
+          icon: MediaRes.pretRecupererIcon,
+        ),
+      if (order.orderType != "delivery")
+        _TimelineItemData(
+          status: OrderStatus.collected,
+          title: localization.orderStatusRecuperer,
+          description: localization.orderStatusRecupererDescription,
+          icon: MediaRes.recupererIcon,
+        ),
     ];
   }
 }

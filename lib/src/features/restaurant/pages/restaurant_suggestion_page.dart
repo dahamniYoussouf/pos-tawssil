@@ -29,12 +29,8 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
       context.read<UserCubit>().fetchProfile();
       final restaurantCubit = context.read<RestaurantCubit>();
       final categoryCubit = context.read<CategoryCubit>();
-      if (restaurantCubit.state is RestaurantInitial) {
-        restaurantCubit.loadNearbyRestaurants(radius: 5000);
-      }
-      if (categoryCubit.state is CategoryInitial) {
-        categoryCubit.loadCategories();
-      }
+      restaurantCubit.loadNearbyRestaurants(radius: 5000);
+      categoryCubit.loadCategories();
     });
   }
 

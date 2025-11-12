@@ -722,6 +722,22 @@
   "@orderStatusDeliveredDescription": {
     "description": "Order status delivered description"
   },
+  "orderStatusPretRecuperer": "Ready for pickup",
+  "@orderStatusPretRecuperer": {
+    "description": "Order status ready for pickup"
+  },
+  "orderStatusPretRecupererDescription": "Your order is ready to be picked up",
+  "@orderStatusPretRecupererDescription": {
+    "description": "Order status ready for pickup description"
+  },
+  "orderStatusRecuperer": "Picked up",
+  "@orderStatusRecuperer": {
+    "description": "Order status picked up"
+  },
+  "orderStatusRecupererDescription": "Your order has been picked up",
+  "@orderStatusRecupererDescription": {
+    "description": "Order status picked up description"
+  },
   "deliveryPerson": "Delivery person",
   "@deliveryPerson": {
     "description": "Delivery person label"

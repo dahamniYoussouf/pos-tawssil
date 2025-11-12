@@ -147,6 +147,10 @@ String _getStatusText(String status, AppLocalizations l10n) {
       return l10n.orderStatusDelivering;
     case OrderStatus.delivered:
       return l10n.orderStatusDelivered;
+    case OrderStatus.readyToCollect:
+      return l10n.orderStatusPretRecuperer;
+    case OrderStatus.collected:
+      return l10n.orderStatusRecuperer;
     default:
       return status;
   }
@@ -166,6 +170,10 @@ String _getStatusDescription(String status, AppLocalizations l10n) {
       return l10n.orderStatusDeliveringDescription;
     case OrderStatus.delivered:
       return l10n.orderStatusDeliveredDescription;
+    case OrderStatus.readyToCollect:
+      return l10n.orderStatusPretRecupererDescription;
+    case OrderStatus.collected:
+      return l10n.orderStatusRecupererDescription;
     default:
       return '';
   }

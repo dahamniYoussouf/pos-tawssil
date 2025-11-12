@@ -540,6 +540,18 @@ class AppLocalizationsAr extends AppLocalizations {
   String get orderStatusDeliveredDescription => 'تم تسليم طلبك';
 
   @override
+  String get orderStatusPretRecuperer => 'جاهز للاستلام';
+
+  @override
+  String get orderStatusPretRecupererDescription => 'طلبك جاهز للاستلام';
+
+  @override
+  String get orderStatusRecuperer => 'تم الاستلام';
+
+  @override
+  String get orderStatusRecupererDescription => 'تم استلام طلبك';
+
+  @override
   String get deliveryPerson => 'مندوب التوصيل';
 
   @override

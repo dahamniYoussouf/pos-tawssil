@@ -7,6 +7,8 @@ class OrderStatus {
   static const String delivered = 'delivered';
   static const String refused = 'refused';
   static const String delayed = 'delayed';
+  static const String readyToCollect = 'readyToCollect';
+  static const String collected = 'collected';
 }
 
 class OrderItem {

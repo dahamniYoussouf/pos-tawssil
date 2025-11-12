@@ -1078,6 +1078,30 @@ abstract class AppLocalizations {
   /// **'Your order has been delivered'**
   String get orderStatusDeliveredDescription;
 
+  /// Order status ready for pickup
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for pickup'**
+  String get orderStatusPretRecuperer;
+
+  /// Order status ready for pickup description
+  ///
+  /// In en, this message translates to:
+  /// **'Your order is ready to be picked up'**
+  String get orderStatusPretRecupererDescription;
+
+  /// Order status picked up
+  ///
+  /// In en, this message translates to:
+  /// **'Picked up'**
+  String get orderStatusRecuperer;
+
+  /// Order status picked up description
+  ///
+  /// In en, this message translates to:
+  /// **'Your order has been picked up'**
+  String get orderStatusRecupererDescription;
+
   /// Delivery person label
   ///
   /// In en, this message translates to:

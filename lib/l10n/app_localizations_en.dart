@@ -550,6 +550,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orderStatusDeliveredDescription => 'Your order has been delivered';
 
   @override
+  String get orderStatusPretRecuperer => 'Ready for pickup';
+
+  @override
+  String get orderStatusPretRecupererDescription =>
+      'Your order is ready to be picked up';
+
+  @override
+  String get orderStatusRecuperer => 'Picked up';
+
+  @override
+  String get orderStatusRecupererDescription => 'Your order has been picked up';
+
+  @override
   String get deliveryPerson => 'Delivery person';
 
   @override
