@@ -1,6 +1,8 @@
+import 'package:client_app/src/core/res/color_app.dart';
 import 'package:flutter/material.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import 'package:client_app/src/features/order/models/order_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class DeliveryPersonCard extends StatelessWidget {
   final DeliveryPerson person;
@@ -11,16 +13,15 @@ class DeliveryPersonCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        color: ColorApp.white,
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.1),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
+            color: ColorApp.black.withValues(alpha: 0.4),
+            blurRadius: 14,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -29,44 +30,55 @@ class DeliveryPersonCard extends StatelessWidget {
           CircleAvatar(
             radius: 30,
             backgroundColor: const Color(0xFF00695C),
-            child: Text(
-              person.name.isNotEmpty ? person.name[0].toUpperCase() : 'D',
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+            backgroundImage: const AssetImage('assets/images/delivery_icon.png'),
           ),
           const SizedBox(width: 16),
           Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  localization.deliveryPerson,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  person.name,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      localization.deliveryPerson,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      person.name,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
                 if (person.phoneNumber != null) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    person.phoneNumber!,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey,
+                  GestureDetector(
+                    onTap: () async {
+                      final Uri phoneUri = Uri.parse('tel:${person.phoneNumber}');
+                      if (await canLaunchUrl(phoneUri)) {
+                        await launchUrl(phoneUri);
+                      } else {
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(localization.error),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    child: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: ColorApp.primary,
+                      child: Icon(Icons.phone, color: ColorApp.white, size: 20),
                     ),
-                  ),
+                  )
                 ],
               ],
             ),

@@ -14,25 +14,33 @@ class OrderTimeline extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<_TimelineItemData> items = _createTimelineItems();
     final int activeIndex = items.indexWhere((item) => item.status == order.status);
-    if (activeIndex == -1) {
-      return const SizedBox.shrink();
-    }
+
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-      decoration: BoxDecoration(
-        color: ColorApp.greyDark,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: ColorApp.primary, width: 1),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 24),
-          for (int index = 0; index < items.length; index++) _OrderTimelineStep(item: items[index], index: index, activeIndex: activeIndex, totalCount: items.length),
-        ],
-      ),
-    );
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        decoration: BoxDecoration(
+          color: ColorApp.greyDark,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: ColorApp.primary, width: 1),
+        ),
+        child: ListView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: EdgeInsets.zero,
+            itemBuilder: (context, index) {
+              final item = items[index];
+              if (item.hideStatus == true) {
+                return SizedBox.shrink();
+              }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 4),
+                  _OrderTimelineStep(item: items[index], index: index, activeIndex: activeIndex, totalCount: items.length),
+                ],
+              );
+            },
+            itemCount: items.length));
   }
 
   List<_TimelineItemData> _createTimelineItems() {
@@ -55,6 +63,30 @@ class OrderTimeline extends StatelessWidget {
         description: localization.orderStatusPreparingDescription,
         icon: MediaRes.prepareIcon,
       ),
+      // hide status for assigned
+      _TimelineItemData(
+        status: OrderStatus.assigned,
+        title: "",
+        description: "",
+        icon: "",
+        hideStatus: true,
+      ),
+      // hide status for accepted to collect
+      _TimelineItemData(
+        status: OrderStatus.accepted,
+        title: "",
+        description: "",
+        icon: "",
+        hideStatus: true,
+      ),
+      // hide status for delivering
+      _TimelineItemData(
+        status: OrderStatus.arrived,
+        title: "",
+        description: "",
+        icon: "",
+        hideStatus: true,
+      ),
       if (order.orderType == "delivery")
         _TimelineItemData(
           status: OrderStatus.delivering,
@@ -69,6 +101,7 @@ class OrderTimeline extends StatelessWidget {
           description: localization.orderStatusDeliveredDescription,
           icon: MediaRes.deliveryEndIcon,
         ),
+
       if (order.orderType != "delivery")
         _TimelineItemData(
           status: OrderStatus.readyToCollect,
@@ -169,5 +202,12 @@ class _TimelineItemData {
   final String title;
   final String? description;
   final String icon;
-  const _TimelineItemData({required this.status, required this.title, required this.description, required this.icon});
+  bool? hideStatus;
+  _TimelineItemData({
+    required this.status,
+    required this.title,
+    required this.description,
+    required this.icon,
+    this.hideStatus,
+  });
 }

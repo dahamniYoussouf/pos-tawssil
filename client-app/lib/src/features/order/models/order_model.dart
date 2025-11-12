@@ -3,6 +3,7 @@ class OrderStatus {
   static const String accepted = 'accepted';
   static const String preparing = 'preparing';
   static const String assigned = 'assigned';
+  static const String arrived = 'arrived';
   static const String delivering = 'delivering';
   static const String delivered = 'delivered';
   static const String refused = 'refused';
@@ -59,29 +60,64 @@ class OrderItem {
 
 class DeliveryPerson {
   final String id;
-  final String name;
+  final String firstName;
+  final String lastName;
   final String? phoneNumber;
+  final String? vehicleType;
+  final String? rating;
   final double? latitude;
   final double? longitude;
 
   DeliveryPerson({
     required this.id,
-    required this.name,
+    required this.firstName,
+    required this.lastName,
     this.phoneNumber,
+    this.vehicleType,
+    this.rating,
     this.latitude,
     this.longitude,
   });
 
+  // Computed property for backward compatibility
+  String get name {
+    if (firstName.isEmpty && lastName.isEmpty) return '';
+    if (firstName.isEmpty) return lastName;
+    if (lastName.isEmpty) return firstName;
+    return '$firstName $lastName';
+  }
+
   factory DeliveryPerson.fromJson(Map<String, dynamic>? json) {
     if (json == null) {
-      return DeliveryPerson(id: '', name: '');
+      return DeliveryPerson(id: '', firstName: '', lastName: '');
     }
+
+    // Parse location from GeoJSON Point format
+    // GeoJSON format: {type: "Point", coordinates: [longitude, latitude]}
+    double? latitude;
+    double? longitude;
+    final currentLocation = json['current_location'] as Map<String, dynamic>?;
+    if (currentLocation != null && currentLocation['type'] == 'Point' && currentLocation['coordinates'] != null) {
+      final coords = currentLocation['coordinates'] as List;
+      if (coords.length >= 2) {
+        longitude = (coords[0] as num).toDouble(); // First is longitude
+        latitude = (coords[1] as num).toDouble(); // Second is latitude
+      }
+    }
+
+    // Fallback to direct latitude/longitude fields if GeoJSON not available
+    latitude ??= json['latitude'] != null ? (json['latitude'] as num).toDouble() : null;
+    longitude ??= json['longitude'] != null ? (json['longitude'] as num).toDouble() : null;
+
     return DeliveryPerson(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
-      name: json['name'] ?? json['nom'] ?? '',
-      phoneNumber: json['phoneNumber'] ?? json['phone_number'] ?? json['tel'],
-      latitude: json['latitude'] != null ? (json['latitude'] as num).toDouble() : null,
-      longitude: json['longitude'] != null ? (json['longitude'] as num).toDouble() : null,
+      firstName: json['first_name'] ?? json['firstName'] ?? json['name'] ?? json['nom'] ?? '',
+      lastName: json['last_name'] ?? json['lastName'] ?? '',
+      phoneNumber: json['phone'] ?? json['phoneNumber'] ?? json['phone_number'] ?? json['tel'],
+      vehicleType: json['vehicle_type'] ?? json['vehicleType'],
+      rating: json['rating']?.toString(),
+      latitude: latitude,
+      longitude: longitude,
     );
   }
 }

@@ -9,6 +9,7 @@ import 'package:client_app/src/features/order/widgets/order_timeline_widget.dart
 import 'package:client_app/src/features/order/widgets/order_tracking_map_widget.dart';
 import 'package:client_app/src/features/order/widgets/restaurant_info_card_widget.dart';
 import 'package:client_app/src/features/order/widgets/status_card_widget.dart';
+import 'package:client_app/src/features/order/widgets/validate_order_button_widget.dart';
 import '../cubit/order_cubit.dart';
 import '../cubit/order_state.dart';
 import '../models/order_model.dart';
@@ -256,15 +257,16 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
             ),
           ),
         StatusCardWidget(order: order),
+        if (order.isDelivering && order.deliveryPerson != null) const SizedBox(height: 16),
+        if (order.isDelivering && order.deliveryPerson != null) DeliveryPersonCard(person: order.deliveryPerson!, localization: localization),
         const SizedBox(height: 16),
         RestaurantInfoCard(order: order),
         const SizedBox(height: 16),
         OrderDetailsCard(order: order),
         const SizedBox(height: 16),
-        if (order.isDelivering && order.deliveryPerson != null) DeliveryPersonCard(person: order.deliveryPerson!, localization: localization),
-        if (order.isDelivering && order.deliveryPerson != null) const SizedBox(height: 16),
         OrderTimeline(order: order, localization: localization),
-        const SizedBox(height: 32),
+        const SizedBox(height: 16),
+        if (order.isDelivered) ValidateOrderButtonWidget(orderCubit: _orderCubit),
       ],
     );
   }
