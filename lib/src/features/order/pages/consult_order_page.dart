@@ -26,21 +26,26 @@ class ConsultOrderPage extends StatefulWidget {
   State<ConsultOrderPage> createState() => _ConsultOrderPageState();
 }
 
+enum DeliveryOption {
+  delivery,
+  pickup,
+}
+
 class _ConsultOrderPageState extends State<ConsultOrderPage> {
   final CartService _cartService = CartService();
   String selectedPaymentMethod = 'cash_on_delivery';
-  String selectedDeliveryOption = 'delivery';
+  DeliveryOption selectedDeliveryOption = DeliveryOption.delivery;
   final double deliveryFee = 300.0;
   final double platformFee = 0.0;
 
   double get _subtotal => _cartService.totalPrice;
 
-  double get _actualDeliveryFee => selectedDeliveryOption == 'pickup' ? 0.0 : deliveryFee;
+  double get _actualDeliveryFee => selectedDeliveryOption == DeliveryOption.pickup ? 0.0 : deliveryFee;
 
   double get _total => _subtotal + platformFee + _actualDeliveryFee;
 
   String get _estimatedDeliveryTime {
-    if (selectedDeliveryOption == 'pickup') {
+    if (selectedDeliveryOption == DeliveryOption.pickup) {
       return '15-20 min';
     }
     return '25-30 min';
@@ -79,7 +84,7 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (widget.restaurantName != null) _RestaurantNameSection(name: widget.restaurantName!),
-                if (selectedDeliveryOption == 'delivery')
+                if (selectedDeliveryOption == DeliveryOption.delivery)
                   _DeliveryAddressSection(
                     address: widget.deliveryAddress ?? 'Baraki, Sidi Moussa',
                   ),
@@ -102,7 +107,7 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
                     )),
                 const SizedBox(height: 12),
                 _DeliveryTimeInfo(
-                  showDeliveryFee: selectedDeliveryOption == 'delivery',
+                  showDeliveryFee: selectedDeliveryOption == DeliveryOption.delivery,
                   deliveryFee: _actualDeliveryFee,
                   estimatedTime: _estimatedDeliveryTime,
                 ),
@@ -110,15 +115,15 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
                 Divider(color: Colors.grey[300], thickness: 1),
                 const SizedBox(height: 12),
                 _DeliveryOptionSection(
-                  selectedOption: selectedDeliveryOption,
+                  selectedOption: selectedDeliveryOption.name,
                   onOptionSelected: (option) {
-                    setState(() => selectedDeliveryOption = option);
+                    setState(() => selectedDeliveryOption = DeliveryOption.values.byName(option));
                   },
                 ),
                 _OrderDetailsSection(
                   subtotal: _subtotal,
                   platformFee: platformFee,
-                  deliveryFee: selectedDeliveryOption == 'delivery' ? _actualDeliveryFee : null,
+                  deliveryFee: selectedDeliveryOption == DeliveryOption.delivery ? _actualDeliveryFee : null,
                   total: _total,
                 ),
                 const SizedBox(height: 20),
@@ -175,7 +180,7 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
 
   void _handleOrderValidation() {
     final now = DateTime.now();
-    final orderType = selectedDeliveryOption == 'pickup' ? 'PKP' : 'DEL';
+    final orderType = selectedDeliveryOption == DeliveryOption.pickup ? 'PKP' : 'DEL';
     final dateStr = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
     final timeStr = '${now.hour}${now.minute}${now.second}';
     final orderNumber = '$orderType-$dateStr-$timeStr';

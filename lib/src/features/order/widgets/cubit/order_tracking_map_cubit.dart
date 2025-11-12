@@ -82,7 +82,7 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
         height: 44,
         child: Tooltip(
           message: order.restaurantName ?? 'Restaurant',
-          child: const Icon(Icons.location_on, color: Colors.redAccent, size: 32),
+          child: const Icon(Icons.location_on, color: ColorApp.redColor, size: 32),
         ),
       ),
       Marker(
@@ -91,7 +91,7 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
         height: 44,
         child: Tooltip(
           message: order.deliveryAddress ?? 'Destination',
-          child: const Icon(Icons.location_on, color: Colors.green, size: 32),
+          child: const Icon(Icons.location_on, color: ColorApp.primary, size: 32),
         ),
       ),
     ];
@@ -108,7 +108,7 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
             height: 44,
             child: Tooltip(
               message: person.name,
-              child: const Icon(Icons.delivery_dining, color: Colors.blueAccent, size: 32),
+              child: const Icon(Icons.delivery_dining, color: ColorApp.blueAccentColor, size: 32),
             ),
           ),
         );

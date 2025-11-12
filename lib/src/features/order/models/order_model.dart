@@ -96,6 +96,8 @@ class OrderModel {
   final double? deliveryLatitude;
   final double? deliveryLongitude;
   final String? restaurantName;
+  final String? restaurantAddress;
+  final String? restaurantImageUrl;
   final DeliveryPerson? deliveryPerson;
   final DateTime? estimatedDeliveryTime;
   final DateTime? createdAt;
@@ -103,6 +105,7 @@ class OrderModel {
   final String? paymentMethod;
   final String? refusalReason;
   final String? delayReason;
+  final String? orderType;
 
   OrderModel({
     required this.id,
@@ -116,6 +119,8 @@ class OrderModel {
     this.deliveryLatitude,
     this.deliveryLongitude,
     this.restaurantName,
+    this.restaurantAddress,
+    this.restaurantImageUrl,
     this.deliveryPerson,
     this.estimatedDeliveryTime,
     this.createdAt,
@@ -123,6 +128,7 @@ class OrderModel {
     this.paymentMethod,
     this.refusalReason,
     this.delayReason,
+    this.orderType,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
@@ -159,17 +165,18 @@ class OrderModel {
     // Parse restaurant location from GeoJSON Point
     double? restaurantLat;
     double? restaurantLng;
+    Map<String, dynamic>? restaurantJson;
     if (json['restaurant'] != null) {
-      final restaurant = json['restaurant'] is Map ? json['restaurant'] as Map<String, dynamic> : null;
-      if (restaurant != null) {
-        final location = restaurant['location'] as Map<String, dynamic>?;
+      restaurantJson = json['restaurant'] is Map ? json['restaurant'] as Map<String, dynamic> : null;
+      if (restaurantJson != null) {
+        final location = restaurantJson['location'] as Map<String, dynamic>?;
         final coords = parseGeoJsonPoint(location);
         if (coords != null) {
           restaurantLng = coords[0];
           restaurantLat = coords[1];
         } else {
-          restaurantLat = restaurant['latitude'] != null ? (restaurant['latitude'] as num).toDouble() : null;
-          restaurantLng = restaurant['longitude'] != null ? (restaurant['longitude'] as num).toDouble() : null;
+          restaurantLat = restaurantJson['latitude'] != null ? (restaurantJson['latitude'] as num).toDouble() : null;
+          restaurantLng = restaurantJson['longitude'] != null ? (restaurantJson['longitude'] as num).toDouble() : null;
         }
       }
     }
@@ -197,12 +204,25 @@ class OrderModel {
     // Parse restaurant name
     String? restaurantName;
     restaurantName = json['restaurantName'] ?? json['restaurant_name'];
-    if (restaurantName == null && json['restaurant'] != null) {
-      final restaurant = json['restaurant'] is Map ? json['restaurant'] as Map<String, dynamic> : null;
-      if (restaurant != null) {
-        restaurantName = restaurant['name'] ?? restaurant['nom'];
+    String? restaurantAddress;
+    String? restaurantImageUrl;
+    if (restaurantJson != null) {
+      restaurantName ??= restaurantJson['name'] ?? restaurantJson['nom'];
+      restaurantAddress = restaurantJson['address'] ?? restaurantJson['adresse'];
+      final dynamic cover = restaurantJson['coverImage'] ?? restaurantJson['cover_image'] ?? restaurantJson['image'] ?? restaurantJson['image_url'];
+      if (cover is String && cover.isNotEmpty) {
+        restaurantImageUrl = cover;
+      } else if (restaurantJson['images'] is List && (restaurantJson['images'] as List).isNotEmpty) {
+        final first = (restaurantJson['images'] as List).first;
+        if (first is String) {
+          restaurantImageUrl = first;
+        } else if (first is Map<String, dynamic>) {
+          restaurantImageUrl = first['url'] as String?;
+        }
       }
     }
+    restaurantAddress ??= json['restaurantAddress'] ?? json['restaurant_address'];
+    restaurantImageUrl ??= json['restaurantImageUrl'] ?? json['restaurant_image_url'];
 
     // Parse dates
     DateTime? parseDate(dynamic value) {
@@ -240,6 +260,8 @@ class OrderModel {
       deliveryLatitude: deliveryLat,
       deliveryLongitude: deliveryLng,
       restaurantName: restaurantName,
+      restaurantAddress: restaurantAddress,
+      restaurantImageUrl: restaurantImageUrl,
       deliveryPerson: deliveryPerson,
       estimatedDeliveryTime: parseDate(json['estimatedDeliveryTime'] ?? json['estimated_delivery_time']),
       createdAt: parseDate(json['createdAt'] ?? json['created_at']),
@@ -247,6 +269,7 @@ class OrderModel {
       paymentMethod: json['paymentMethod'] ?? json['payment_method'],
       refusalReason: json['refusalReason'] ?? json['refusal_reason'] ?? json['decline_reason'],
       delayReason: json['delayReason'] ?? json['delay_reason'],
+      orderType: json['order_type'] ?? "delivery",
     );
   }
 

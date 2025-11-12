@@ -18,4 +18,6 @@ class ColorApp {
   static const Color blue = Color(0xFF87CEEB);
 
   static const Color transparent = Color(0x00000000);
+  static const Color greenColor = Color(0xFF006C4A);
+  static const Color blueAccentColor = Color(0xFF87CEEB);
 }

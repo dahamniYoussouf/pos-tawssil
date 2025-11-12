@@ -7,6 +7,7 @@ import 'package:frontend/src/features/order/widgets/delivery_person_card_widget.
 import 'package:frontend/src/features/order/widgets/order_details_card_widget.dart';
 import 'package:frontend/src/features/order/widgets/order_timeline_widget.dart';
 import 'package:frontend/src/features/order/widgets/order_tracking_map_widget.dart';
+import 'package:frontend/src/features/order/widgets/restaurant_info_card_widget.dart';
 import 'package:frontend/src/features/order/widgets/status_card_widget.dart';
 import '../cubit/order_cubit.dart';
 import '../cubit/order_state.dart';
@@ -152,75 +153,119 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
   }
 
   Widget _buildOrderTrackingContent(BuildContext context, OrderModel order, AppLocalizations localization) {
+    final bool isDelivery = order.orderType == "delivery";
     return Stack(
-      children: <Widget>[
-        SizedBox(
-          height: MediaQuery.of(context).size.height * 0.5,
-          child: OrderTrackingMap(
-            order: order,
-          ),
-        ),
-        Positioned(
-          top: MediaQuery.of(context).padding.top + 2,
-          left: 16,
-          child: SafeArea(
-            child: CircleAvatar(
-              backgroundColor: Colors.white,
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back, color: Colors.black),
-                onPressed: () {
-                  _orderCubit.stopPolling();
-                  Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomePage()), (route) => false);
-                },
-              ),
+      children: [
+        if (isDelivery) ...[
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5,
+            child: OrderTrackingMap(
+              order: order,
             ),
           ),
-        ),
-        _buildContentSheet(order, localization),
+        ],
+        _buildBackButton(context),
+        _buildContentSheet(context, order, localization, isDelivery: isDelivery),
       ],
     );
   }
 
-  Widget _buildContentSheet(OrderModel order, AppLocalizations localization) {
-    return DraggableScrollableSheet(
-      initialChildSize: 0.55,
-      minChildSize: 0.55,
-      maxChildSize: 0.95,
-      builder: (BuildContext context, ScrollController scrollController) {
-        return Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-          ),
-          child: SingleChildScrollView(
-            controller: scrollController,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Center(
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
-                StatusCardWidget(order: order),
-                const SizedBox(height: 16),
-                OrderDetailsCard(order: order),
-                const SizedBox(height: 16),
-                if (order.isDelivering && order.deliveryPerson != null) DeliveryPersonCard(person: order.deliveryPerson!, localization: localization),
-                if (order.isDelivering && order.deliveryPerson != null) const SizedBox(height: 16),
-                OrderTimeline(order: order, localization: localization),
-                const SizedBox(height: 32),
-              ],
+  Widget _buildBackButton(BuildContext context) {
+    return Align(
+      alignment: Alignment.topLeft,
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 16, left: 8),
+          child: CircleAvatar(
+            backgroundColor: ColorApp.white,
+            child: IconButton(
+              icon: const Icon(Icons.arrow_back, color: ColorApp.black),
+              onPressed: () {
+                _orderCubit.stopPolling();
+                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomePage()), (route) => false);
+              },
             ),
           ),
-        );
-      },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContentSheet(BuildContext context, OrderModel order, AppLocalizations localization, {required bool isDelivery}) {
+    if (!isDelivery) {
+      // pickup order
+      return Positioned.fill(
+        child: Container(
+          color: Colors.white,
+          child: SafeArea(
+            top: true,
+            bottom: false,
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                child: Column(
+                  children: [
+                    _buildBackButton(context),
+                    _buildSheetContent(order, localization, includeHandle: false),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+    } else {
+      // delivery order
+      return DraggableScrollableSheet(
+        initialChildSize: 0.55,
+        minChildSize: 0.55,
+        maxChildSize: 0.95,
+        builder: (BuildContext context, ScrollController scrollController) {
+          return Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: SingleChildScrollView(
+              controller: scrollController,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: _buildSheetContent(order, localization, includeHandle: true),
+              ),
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  Widget _buildSheetContent(OrderModel order, AppLocalizations localization, {required bool includeHandle}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        if (includeHandle)
+          Center(
+            child: Container(
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+          ),
+        StatusCardWidget(order: order),
+        const SizedBox(height: 16),
+        RestaurantInfoCard(order: order),
+        const SizedBox(height: 16),
+        OrderDetailsCard(order: order),
+        const SizedBox(height: 16),
+        if (order.isDelivering && order.deliveryPerson != null) DeliveryPersonCard(person: order.deliveryPerson!, localization: localization),
+        if (order.isDelivering && order.deliveryPerson != null) const SizedBox(height: 16),
+        OrderTimeline(order: order, localization: localization),
+        const SizedBox(height: 32),
+      ],
     );
   }
 
