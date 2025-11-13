@@ -1,0 +1,164 @@
+{
+  "@@locale": "en",
+  "appTitle": "tawsil",
+  "@appTitle": {
+    "description": "Application title"
+  },
+  "welcome": "Welcome",
+  "@welcome": {
+    "description": "Welcome message"
+  },
+  "loginSubtitle": "Log in to your Rider account with your credentials.",
+  "@loginSubtitle": {
+    "description": "Login page subtitle"
+  },
+  "username": "Username",
+  "@username": {
+    "description": "Username label"
+  },
+  "usernameHint": "Enter your identifier",
+  "@usernameHint": {
+    "description": "Username input hint"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Password label"
+  },
+  "passwordHint": "Enter your password",
+  "@passwordHint": {
+    "description": "Password input hint"
+  },
+  "login": "Connect",
+  "@login": {
+    "description": "Login button text"
+  },
+  "termsAndConditions": "By logging in, you accept our Terms of Use",
+  "@termsAndConditions": {
+    "description": "Terms and conditions text"
+  },
+  "becomePartner": "Become a delivery partner →",
+  "@becomePartner": {
+    "description": "Become partner link"
+  },
+  "signUpTitle": "Become a delivery partner",
+  "@signUpTitle": {
+    "description": "Sign up page title"
+  },
+  "signUpSubtitle": "Deliver with Tawsila, it's managing your activity autonomously and increasing your income thanks to the market-leading application.",
+  "@signUpSubtitle": {
+    "description": "Sign up page subtitle"
+  },
+  "firstName": "First Name",
+  "@firstName": {
+    "description": "First name label"
+  },
+  "firstNameHint": "Enter your first name",
+  "@firstNameHint": {
+    "description": "First name input hint"
+  },
+  "lastName": "Name",
+  "@lastName": {
+    "description": "Last name label"
+  },
+  "lastNameHint": "Enter your name",
+  "@lastNameHint": {
+    "description": "Last name input hint"
+  },
+  "phoneNumber": "Phone number",
+  "@phoneNumber": {
+    "description": "Phone number label"
+  },
+  "phoneNumberHint": "Phone number",
+  "@phoneNumberHint": {
+    "description": "Phone number input hint"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Email label"
+  },
+  "emailHint": "Enter your Email",
+  "@emailHint": {
+    "description": "Email input hint"
+  },
+  "confirmPassword": "Confirm password",
+  "@confirmPassword": {
+    "description": "Confirm password label"
+  },
+  "confirmPasswordHint": "Confirm your password",
+  "@confirmPasswordHint": {
+    "description": "Confirm password input hint"
+  },
+  "willaya": "Willaya",
+  "@willaya": {
+    "description": "Willaya label"
+  },
+  "zone": "Zone",
+  "@zone": {
+    "description": "Zone label"
+  },
+  "signUp": "Sign up",
+  "@signUp": {
+    "description": "Sign up button text"
+  },
+  "signUpTerms": "By signing up for tawsila you accept Terms of Use",
+  "@signUpTerms": {
+    "description": "Sign up terms text"
+  },
+  "errorUsernameRequired": "Username is required",
+  "@errorUsernameRequired": {
+    "description": "Username required error"
+  },
+  "errorPasswordRequired": "Password is required",
+  "@errorPasswordRequired": {
+    "description": "Password required error"
+  },
+  "errorFirstNameRequired": "First name is required",
+  "@errorFirstNameRequired": {
+    "description": "First name required error"
+  },
+  "errorLastNameRequired": "Last name is required",
+  "@errorLastNameRequired": {
+    "description": "Last name required error"
+  },
+  "errorPhoneNumberRequired": "Phone number is required",
+  "@errorPhoneNumberRequired": {
+    "description": "Phone number required error"
+  },
+  "errorEmailRequired": "Email is required",
+  "@errorEmailRequired": {
+    "description": "Email required error"
+  },
+  "errorConfirmPasswordRequired": "Please confirm your password",
+  "@errorConfirmPasswordRequired": {
+    "description": "Confirm password required error"
+  },
+  "errorPasswordMismatch": "Passwords do not match",
+  "@errorPasswordMismatch": {
+    "description": "Password mismatch error"
+  },
+  "errorWillayaRequired": "Willaya is required",
+  "@errorWillayaRequired": {
+    "description": "Willaya required error"
+  },
+  "errorZoneRequired": "Zone is required",
+  "@errorZoneRequired": {
+    "description": "Zone required error"
+  },
+  "errorLoginFailed": "Login failed",
+  "@errorLoginFailed": {
+    "description": "Login failed error"
+  },
+  "errorRegistrationFailed": "Registration failed",
+  "@errorRegistrationFailed": {
+    "description": "Registration failed error"
+  },
+  "errorLogoutFailed": "Logout failed",
+  "@errorLogoutFailed": {
+    "description": "Logout failed error"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "Home page title"
+  }
+}
+
