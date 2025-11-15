@@ -90,6 +90,33 @@ class AppLocalizationsAr extends AppLocalizations {
   String get zoneHint => 'اختر المنطقة';
 
   @override
+  String get description => 'الوصف';
+
+  @override
+  String get descriptionHint => 'صف مطعمك';
+
+  @override
+  String get address => 'العنوان';
+
+  @override
+  String get addressHint => 'أدخل العنوان الكامل';
+
+  @override
+  String get locationSearchLabel => 'موقع المطعم';
+
+  @override
+  String get locationSearchHint => 'ابحث بالعنوان أو المنطقة';
+
+  @override
+  String get locationSearchButton => 'ابحث';
+
+  @override
+  String get locationLatitudeLabel => 'خط العرض';
+
+  @override
+  String get locationLongitudeLabel => 'خط الطول';
+
+  @override
   String get signUp => 'التسجيل';
 
   @override
@@ -121,6 +148,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errorZoneRequired => 'المنطقة مطلوبة';
+
+  @override
+  String get errorDescriptionRequired => 'الوصف مطلوب';
+
+  @override
+  String get errorLocationRequired => 'يرجى البحث عن موقع المطعم';
+
+  @override
+  String get errorLocationNotFound => 'لم يتم العثور على موقع مطابق';
+
+  @override
+  String get errorLocationLookupFailed => 'تعذر جلب الموقع، أعد المحاولة';
 
   @override
   String get errorLoginFailed => 'فشل تسجيل الدخول';

@@ -1,11 +1,12 @@
 import 'dart:convert';
-import 'package:restaurant_app/src/core/res/media_res.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restaurant_app/src/core/res/media_res.dart';
 import 'package:restaurant_app/src/features/auth/cubit/auth_cubit.dart';
 import 'package:restaurant_app/src/features/auth/cubit/auth_state.dart';
 import 'package:restaurant_app/src/core/res/color_app.dart';
+import 'package:restaurant_app/src/features/auth/widgets/location_search_field.dart';
 import 'package:restaurant_app/l10n/app_localizations.dart';
 
 class SignupPage extends StatefulWidget {
@@ -22,17 +23,22 @@ class _SignupPageState extends State<SignupPage> {
   final _phoneController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _latitudeController = TextEditingController();
+  final TextEditingController _longitudeController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
-  String? _selectedRestaurantType;
+  final List<String> _selectedRestaurantCategories = [];
   String? _selectedWillaya;
   String? _selectedZone;
 
-  final List<String> _restaurantTypes = [
+  final List<String> _restaurantCategories = const [
     'Pizza',
     'Burger',
-    'Sandwich',
-    'Tacos',
+    "Sushi",
+    "Desserts",
+    "Drinks",
     'Autre',
   ];
 
@@ -71,38 +77,45 @@ class _SignupPageState extends State<SignupPage> {
     _phoneController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _descriptionController.dispose();
+    _addressController.dispose();
+    _latitudeController.dispose();
+    _longitudeController.dispose();
     super.dispose();
   }
 
   void _handleSignup() {
     if (_formKey.currentState?.validate() ?? false) {
-      if (_selectedRestaurantType == null || _selectedRestaurantType!.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.errorRestaurantTypeRequired),
-            backgroundColor: Colors.red,
-          ),
-        );
+      if (_selectedRestaurantCategories.isEmpty) {
+        _showErrorSnackBar(AppLocalizations.of(context)!.errorRestaurantTypeRequired);
         return;
       }
 
       if (_selectedWillaya == null || _selectedWillaya!.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.errorWillayaRequired),
-            backgroundColor: Colors.red,
-          ),
-        );
+        _showErrorSnackBar(AppLocalizations.of(context)!.errorWillayaRequired);
         return;
       }
 
       if (_selectedZone == null || _selectedZone!.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.errorZoneRequired),
-            backgroundColor: Colors.red,
-          ),
-        );
+        _showErrorSnackBar(AppLocalizations.of(context)!.errorZoneRequired);
+        return;
+      }
+
+      if (_descriptionController.text.trim().isEmpty) {
+        _showErrorSnackBar(AppLocalizations.of(context)!.errorDescriptionRequired);
+        return;
+      }
+
+      if (_addressController.text.trim().isEmpty) {
+        _showErrorSnackBar(AppLocalizations.of(context)!.errorLocationRequired);
+        return;
+      }
+
+      final double? latitude = double.tryParse(_latitudeController.text.trim());
+      final double? longitude = double.tryParse(_longitudeController.text.trim());
+
+      if (latitude == null || longitude == null) {
+        _showErrorSnackBar(AppLocalizations.of(context)!.errorLocationRequired);
         return;
       }
 
@@ -112,11 +125,24 @@ class _SignupPageState extends State<SignupPage> {
             phoneNumber: _phoneController.text.trim(),
             password: _passwordController.text,
             confirmPassword: _confirmPasswordController.text,
-            restaurantType: _selectedRestaurantType!,
+            restaurantCategories: _selectedRestaurantCategories,
+            description: _descriptionController.text.trim(),
+            address: _addressController.text.trim(),
+            latitude: latitude,
+            longitude: longitude,
             willaya: _selectedWillaya!,
             zone: _selectedZone!,
           );
     }
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
 
   @override
@@ -196,6 +222,10 @@ class _SignupPageState extends State<SignupPage> {
                         Expanded(child: _buildZoneField(localizations)),
                       ],
                     ),
+                    const SizedBox(height: 24),
+                    _buildDescriptionField(localizations),
+                    const SizedBox(height: 16),
+                    _buildLocationSection(localizations),
                     const SizedBox(height: 24),
                     _buildSignupButton(localizations, isLoading),
                     const SizedBox(height: 16),
@@ -503,10 +533,55 @@ class _SignupPageState extends State<SignupPage> {
           ),
         ),
         const SizedBox(height: 8),
-        DropdownButtonFormField<String>(
-          initialValue: _selectedRestaurantType,
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: _restaurantCategories.map((type) {
+            final bool isSelected = _selectedRestaurantCategories.contains(type);
+            return FilterChip(
+              label: Text(
+                type,
+                style: TextStyle(
+                  color: isSelected ? AppColors.primaryColor : Colors.black87,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              selected: isSelected,
+              onSelected: (_) => _handleRestaurantTypeTap(type),
+              backgroundColor: Colors.white,
+              selectedColor: AppColors.primaryColor.withOpacity(0.15),
+              checkmarkColor: AppColors.primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+                side: BorderSide(
+                  color: isSelected ? AppColors.primaryColor : Colors.grey.shade400,
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDescriptionField(AppLocalizations localizations) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          localizations.description,
+          style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Colors.black87,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _descriptionController,
+          maxLines: 4,
           decoration: InputDecoration(
-            hintText: localizations.restaurantTypeHint,
+            hintText: localizations.descriptionHint,
             hintStyle: const TextStyle(color: Colors.grey),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
@@ -521,22 +596,37 @@ class _SignupPageState extends State<SignupPage> {
               borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            suffixIcon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
           ),
-          items: _restaurantTypes.map((type) {
-            return DropdownMenuItem<String>(
-              value: type,
-              child: Text(type),
-            );
-          }).toList(),
-          onChanged: (value) {
-            setState(() {
-              _selectedRestaurantType = value;
-            });
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return localizations.errorDescriptionRequired;
+            }
+            return null;
           },
         ),
       ],
     );
+  }
+
+  Widget _buildLocationSection(AppLocalizations localizations) {
+    return LocationSearchField(
+      controller: _addressController,
+      onLocationSelected: (selection) {
+        _addressController.text = selection.address;
+        _latitudeController.text = selection.latitude.toStringAsFixed(6);
+        _longitudeController.text = selection.longitude.toStringAsFixed(6);
+      },
+    );
+  }
+
+  void _handleRestaurantTypeTap(String type) {
+    setState(() {
+      if (_selectedRestaurantCategories.contains(type)) {
+        _selectedRestaurantCategories.remove(type);
+        return;
+      }
+      _selectedRestaurantCategories.add(type);
+    });
   }
 
   Widget _buildWillayaField(AppLocalizations localizations) {

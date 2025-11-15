@@ -90,6 +90,33 @@ class AppLocalizationsFr extends AppLocalizations {
   String get zoneHint => 'Sélectionnez la zone';
 
   @override
+  String get description => 'Description';
+
+  @override
+  String get descriptionHint => 'Décrivez votre restaurant';
+
+  @override
+  String get address => 'Adresse';
+
+  @override
+  String get addressHint => 'Saisissez l\'adresse complète';
+
+  @override
+  String get locationSearchLabel => 'Localisation du restaurant';
+
+  @override
+  String get locationSearchHint => 'Recherchez par adresse ou zone';
+
+  @override
+  String get locationSearchButton => 'Rechercher';
+
+  @override
+  String get locationLatitudeLabel => 'Latitude';
+
+  @override
+  String get locationLongitudeLabel => 'Longitude';
+
+  @override
   String get signUp => 'S\'inscrire';
 
   @override
@@ -123,6 +150,20 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get errorZoneRequired => 'La zone est requise';
+
+  @override
+  String get errorDescriptionRequired => 'La description est obligatoire';
+
+  @override
+  String get errorLocationRequired =>
+      'Veuillez rechercher la localisation du restaurant';
+
+  @override
+  String get errorLocationNotFound => 'Aucune localisation correspondante';
+
+  @override
+  String get errorLocationLookupFailed =>
+      'Impossible de récupérer la localisation, réessayez';
 
   @override
   String get errorLoginFailed => 'Échec de la connexion';

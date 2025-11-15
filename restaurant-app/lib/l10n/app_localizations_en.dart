@@ -89,6 +89,33 @@ class AppLocalizationsEn extends AppLocalizations {
   String get zoneHint => 'Select zone';
 
   @override
+  String get description => 'Description';
+
+  @override
+  String get descriptionHint => 'Tell customers about your restaurant';
+
+  @override
+  String get address => 'Address';
+
+  @override
+  String get addressHint => 'Enter the full address';
+
+  @override
+  String get locationSearchLabel => 'Restaurant location';
+
+  @override
+  String get locationSearchHint => 'Search by address or area';
+
+  @override
+  String get locationSearchButton => 'Search';
+
+  @override
+  String get locationLatitudeLabel => 'Latitude';
+
+  @override
+  String get locationLongitudeLabel => 'Longitude';
+
+  @override
   String get signUp => 'Register';
 
   @override
@@ -121,6 +148,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorZoneRequired => 'Zone is required';
+
+  @override
+  String get errorDescriptionRequired => 'Description is required';
+
+  @override
+  String get errorLocationRequired =>
+      'Please search for the restaurant location';
+
+  @override
+  String get errorLocationNotFound => 'No matching location found';
+
+  @override
+  String get errorLocationLookupFailed => 'Unable to fetch location, try again';
 
   @override
   String get errorLoginFailed => 'Login failed';

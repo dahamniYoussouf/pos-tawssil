@@ -145,7 +145,8 @@ class _LoginPageState extends State<LoginPage> {
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -189,10 +190,13 @@ class _LoginPageState extends State<LoginPage> {
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             suffixIcon: IconButton(
               icon: Icon(
-                _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                _obscurePassword
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
                 color: Colors.grey,
               ),
               onPressed: () {
@@ -275,4 +279,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-

@@ -82,4 +82,3 @@ class AuthError extends AuthState {
     };
   }
 }
-

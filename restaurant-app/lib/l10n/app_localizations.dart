@@ -256,6 +256,60 @@ abstract class AppLocalizations {
   /// **'Select zone'**
   String get zoneHint;
 
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @descriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell customers about your restaurant'**
+  String get descriptionHint;
+
+  /// No description provided for @address.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get address;
+
+  /// No description provided for @addressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the full address'**
+  String get addressHint;
+
+  /// No description provided for @locationSearchLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant location'**
+  String get locationSearchLabel;
+
+  /// No description provided for @locationSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by address or area'**
+  String get locationSearchHint;
+
+  /// No description provided for @locationSearchButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get locationSearchButton;
+
+  /// No description provided for @locationLatitudeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude'**
+  String get locationLatitudeLabel;
+
+  /// No description provided for @locationLongitudeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude'**
+  String get locationLongitudeLabel;
+
   /// No description provided for @signUp.
   ///
   /// In en, this message translates to:
@@ -321,6 +375,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Zone is required'**
   String get errorZoneRequired;
+
+  /// No description provided for @errorDescriptionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Description is required'**
+  String get errorDescriptionRequired;
+
+  /// No description provided for @errorLocationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please search for the restaurant location'**
+  String get errorLocationRequired;
+
+  /// No description provided for @errorLocationNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching location found'**
+  String get errorLocationNotFound;
+
+  /// No description provided for @errorLocationLookupFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to fetch location, try again'**
+  String get errorLocationLookupFailed;
 
   /// No description provided for @errorLoginFailed.
   ///

@@ -4,6 +4,7 @@ import 'package:restaurant_app/src/core/services/token_storage_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:restaurant_app/src/features/auth/services/location_geocoding_service.dart';
 import 'constant.dart';
 
 final locator = GetIt.instance;
@@ -34,5 +35,7 @@ void setupLocator() {
   locator.registerLazySingleton<TokenStorageService>(
     () => TokenStorageService(),
   );
+  locator.registerLazySingleton<LocationGeocodingService>(
+    () => const LocationGeocodingService(),
+  );
 }
-

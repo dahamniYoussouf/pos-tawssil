@@ -13,7 +13,8 @@ class AuthCubit extends HydratedCubit<AuthState> {
     AuthService? authService,
     TokenStorageService? tokenStorageService,
   })  : _authService = authService ?? AuthService(),
-        _tokenStorageService = tokenStorageService ?? locator<TokenStorageService>(),
+        _tokenStorageService =
+            tokenStorageService ?? locator<TokenStorageService>(),
         super(const AuthInitial());
 
   @override
@@ -72,7 +73,8 @@ class AuthCubit extends HydratedCubit<AuthState> {
     required String password,
   }) async {
     emit(const AuthLoading());
-    final validationResult = _validateLoginInput(email: email, password: password);
+    final validationResult =
+        _validateLoginInput(email: email, password: password);
     if (validationResult.isLeft) {
       emit(AuthError(message: validationResult.left!));
       return;
@@ -107,7 +109,9 @@ class AuthCubit extends HydratedCubit<AuthState> {
         password: password,
       );
       if (result['success'] == true) {
-        final userId = result['user']?['id']?.toString() ?? result['profile']?['id']?.toString() ?? '';
+        final userId = result['user']?['id']?.toString() ??
+            result['profile']?['id']?.toString() ??
+            '';
         return Right(userId);
       } else {
         return Left(result['message'] ?? 'errorLoginFailed');
@@ -123,7 +127,11 @@ class AuthCubit extends HydratedCubit<AuthState> {
     required String phoneNumber,
     required String password,
     required String confirmPassword,
-    required String restaurantType,
+    required List<String> restaurantCategories,
+    required String description,
+    required String address,
+    required double latitude,
+    required double longitude,
     required String willaya,
     required String zone,
   }) async {
@@ -134,7 +142,7 @@ class AuthCubit extends HydratedCubit<AuthState> {
       phoneNumber: phoneNumber,
       password: password,
       confirmPassword: confirmPassword,
-      restaurantType: restaurantType,
+      restaurantCategories: restaurantCategories,
       willaya: willaya,
       zone: zone,
     );
@@ -148,7 +156,11 @@ class AuthCubit extends HydratedCubit<AuthState> {
       phoneNumber: phoneNumber,
       password: password,
       confirmPassword: confirmPassword,
-      restaurantType: restaurantType,
+      restaurantCategories: restaurantCategories,
+      description: description,
+      address: address,
+      latitude: latitude,
+      longitude: longitude,
       willaya: willaya,
       zone: zone,
     );
@@ -164,7 +176,7 @@ class AuthCubit extends HydratedCubit<AuthState> {
     required String phoneNumber,
     required String password,
     required String confirmPassword,
-    required String restaurantType,
+    required List<String> restaurantCategories,
     required String willaya,
     required String zone,
   }) {
@@ -186,7 +198,7 @@ class AuthCubit extends HydratedCubit<AuthState> {
     if (password != confirmPassword) {
       return const Left('errorPasswordMismatch');
     }
-    if (restaurantType.isEmpty) {
+    if (restaurantCategories.isEmpty) {
       return const Left('errorRestaurantTypeRequired');
     }
     if (willaya.isEmpty) {
@@ -204,7 +216,11 @@ class AuthCubit extends HydratedCubit<AuthState> {
     required String phoneNumber,
     required String password,
     required String confirmPassword,
-    required String restaurantType,
+    required List<String> restaurantCategories,
+    required String description,
+    required String address,
+    required double latitude,
+    required double longitude,
     required String willaya,
     required String zone,
   }) async {
@@ -215,12 +231,18 @@ class AuthCubit extends HydratedCubit<AuthState> {
         phoneNumber: phoneNumber,
         password: password,
         confirmPassword: confirmPassword,
-        restaurantType: restaurantType,
+        restaurantCategories: restaurantCategories,
+        description: description,
+        address: address,
+        latitude: latitude,
+        longitude: longitude,
         willaya: willaya,
         zone: zone,
       );
       if (result['success'] == true) {
-        final userId = result['user']?['id']?.toString() ?? result['profile']?['id']?.toString() ?? '';
+        final userId = result['user']?['id']?.toString() ??
+            result['profile']?['id']?.toString() ??
+            '';
         return Right(userId);
       } else {
         return Left(result['message'] ?? 'errorRegistrationFailed');
@@ -257,4 +279,3 @@ class AuthCubit extends HydratedCubit<AuthState> {
     }
   }
 }
-

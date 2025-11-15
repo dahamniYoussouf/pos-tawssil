@@ -62,23 +62,41 @@ class AuthService extends BaseApiService {
     required String phoneNumber,
     required String password,
     required String confirmPassword,
-    required String restaurantType,
+    required List<String> restaurantCategories,
+    required String description,
+    required String address,
+    required double latitude,
+    required double longitude,
     required String willaya,
     required String zone,
   }) async {
     try {
+      final List<String> normalizedCategories = restaurantCategories.map((String category) => category.toLowerCase()).toList();
       final response = await postRequest(
         ApiConfig.registerEndpoint,
         data: {
-          'restaurant_name': restaurantName,
           'email': email,
           'phone': phoneNumber,
+          'name': restaurantName,
           'password': password,
           'confirm_password': confirmPassword,
-          'restaurant_type': restaurantType,
+          'categories': normalizedCategories,
           'willaya': willaya,
+          'address': address,
+          'description': description,
+          'lat': latitude,
+          'lng': longitude,
           'zone': zone,
           'role': 'restaurant',
+          "opening_hours": {
+            "mon": {"open": 900, "close": 1800},
+            "tue": {"open": 900, "close": 1800},
+            "wed": {"open": 900, "close": 2200},
+            "thu": {"open": 400, "close": 2200},
+            "fri": {"open": 1000, "close": 2300},
+            "sat": {"open": 1000, "close": 2300},
+            "sun": {"open": 1200, "close": 2000}
+          }
         },
         includeAuth: false,
       );
@@ -135,4 +153,3 @@ class AuthService extends BaseApiService {
     }
   }
 }
-
