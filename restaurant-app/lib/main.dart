@@ -14,6 +14,7 @@ import 'package:restaurant_app/src/features/auth/pages/login_page.dart';
 import 'package:restaurant_app/src/features/auth/pages/signup_page.dart';
 import 'package:restaurant_app/src/features/home/pages/home_page.dart';
 import 'package:restaurant_app/src/features/orders/cubit/orders_cubit.dart';
+import 'package:restaurant_app/src/features/notifications/cubit/notifications_cubit.dart';
 import 'package:restaurant_app/l10n/app_localizations.dart';
 
 void main() async {
@@ -44,8 +45,14 @@ class MyApp extends StatelessWidget {
         BlocProvider<AuthCubit>(
           create: (context) => AuthCubit(authService: AuthService()),
         ),
+        BlocProvider<NotificationsCubit>(
+          create: (context) => NotificationsCubit(),
+        ),
         BlocProvider<OrdersCubit>(
-          create: (context) => OrdersCubit(),
+          create: (context) {
+            final notificationsCubit = context.read<NotificationsCubit>();
+            return OrdersCubit(notificationsCubit: notificationsCubit);
+          },
         ),
       ],
       child: MaterialApp(
@@ -106,20 +113,34 @@ class _AuthWrapperState extends State<AuthWrapper> {
       _hasCheckedAuth = true;
       if (mounted) {
         await context.read<AuthCubit>().checkAuthenticationStatus();
+        final authState = context.read<AuthCubit>().state;
+        if (authState is AuthSuccess) {
+          context.read<NotificationsCubit>().connect();
+        }
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthCubit, AuthState>(
-      builder: (context, state) {
+    return BlocListener<AuthCubit, AuthState>(
+      listener: (context, state) {
+        final notificationsCubit = context.read<NotificationsCubit>();
         if (state is AuthSuccess) {
-          return const HomePage();
+          notificationsCubit.connect();
         } else {
-          return const LoginPage();
+          notificationsCubit.disconnect();
         }
       },
+      child: BlocBuilder<AuthCubit, AuthState>(
+        builder: (context, state) {
+          if (state is AuthSuccess) {
+            return const HomePage();
+          } else {
+            return const LoginPage();
+          }
+        },
+      ),
     );
   }
 }

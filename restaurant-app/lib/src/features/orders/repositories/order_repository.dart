@@ -32,22 +32,22 @@ class OrderRepository {
       } else {
         final statusCode = response['status'];
         if (statusCode == -3 || statusCode == -2) {
-          final fakeOrders = FakeOrdersData.getFakeOrders();
+          // final fakeOrders = FakeOrdersData.getFakeOrders();
           if (status != null && status.isNotEmpty) {
-            final filteredOrders = fakeOrders.where((order) => order.status == status).toList();
-            return Right(filteredOrders);
+            // final filteredOrders = fakeOrders.where((order) => order.status == status).toList();
+            return Right([]);
           }
-          return Right(fakeOrders);
+          return Right([]);
         }
         return Left(response['message'] ?? 'Failed to fetch orders');
       }
     } catch (e) {
-      final fakeOrders = FakeOrdersData.getFakeOrders();
+      // final fakeOrders = FakeOrdersData.getFakeOrders();
       if (status != null && status.isNotEmpty) {
-        final filteredOrders = fakeOrders.where((order) => order.status == status).toList();
-        return Right(filteredOrders);
+        // final filteredOrders = fakeOrders.where((order) => order.status == status).toList();
+        return Right([]);
       }
-      return Right(fakeOrders);
+      return Right([]);
     }
   }
 
@@ -61,6 +61,19 @@ class OrderRepository {
       }
     } catch (e) {
       return Left('Error accepting order: ${e.toString()}');
+    }
+  }
+
+  Future<Either<String, void>> declineOrder(String orderId) async {
+    try {
+      final response = await _orderService.declineOrder(orderId);
+      if (response['success'] == true) {
+        return const Right(null);
+      } else {
+        return Left(response['message'] ?? 'Failed to decline order');
+      }
+    } catch (e) {
+      return Left('Error declining order: ${e.toString()}');
     }
   }
 

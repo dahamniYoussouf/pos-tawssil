@@ -41,7 +41,7 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: const OrdersPage(status: 'pending'),
+      body: const OrdersPage(),
     );
   }
 }

@@ -99,19 +99,11 @@ class OrderCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                localizations.orderTitle(order.id),
+                _formatDate(order.createdAt),
                 style: const TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: AppColors.black,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                _formatDate(order.createdAt),
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: AppColors.grey,
                 ),
               ),
             ],

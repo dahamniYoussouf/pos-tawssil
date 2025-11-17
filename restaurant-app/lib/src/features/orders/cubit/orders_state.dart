@@ -2,18 +2,20 @@ import 'package:equatable/equatable.dart';
 import 'package:restaurant_app/src/features/orders/models/order_model.dart';
 
 abstract class OrdersState extends Equatable {
-  const OrdersState();
+  final String selectedStatus;
+
+  const OrdersState({required this.selectedStatus});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [selectedStatus];
 }
 
 class OrdersInitial extends OrdersState {
-  const OrdersInitial();
+  const OrdersInitial({required super.selectedStatus});
 }
 
 class OrdersLoading extends OrdersState {
-  const OrdersLoading();
+  const OrdersLoading({required super.selectedStatus});
 }
 
 class OrdersLoaded extends OrdersState {
@@ -23,22 +25,25 @@ class OrdersLoaded extends OrdersState {
 
   const OrdersLoaded({
     required this.orders,
+    required super.selectedStatus,
     this.hasMore = true,
     this.currentPage = 1,
   });
 
   @override
-  List<Object?> get props => [orders, hasMore, currentPage];
+  List<Object?> get props => [orders, hasMore, currentPage, selectedStatus];
 
   OrdersLoaded copyWith({
     List<OrderModel>? orders,
     bool? hasMore,
     int? currentPage,
+    String? selectedStatus,
   }) {
     return OrdersLoaded(
       orders: orders ?? this.orders,
       hasMore: hasMore ?? this.hasMore,
       currentPage: currentPage ?? this.currentPage,
+      selectedStatus: selectedStatus ?? this.selectedStatus,
     );
   }
 }
@@ -46,10 +51,13 @@ class OrdersLoaded extends OrdersState {
 class OrdersError extends OrdersState {
   final String message;
 
-  const OrdersError({required this.message});
+  const OrdersError({
+    required this.message,
+    required super.selectedStatus,
+  });
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [message, selectedStatus];
 }
 
 class OrderActionLoading extends OrdersState {
@@ -59,10 +67,11 @@ class OrderActionLoading extends OrdersState {
   const OrderActionLoading({
     required this.orders,
     required this.orderId,
+    required super.selectedStatus,
   });
 
   @override
-  List<Object?> get props => [orders, orderId];
+  List<Object?> get props => [orders, orderId, selectedStatus];
 }
 
 class OrderActionSuccess extends OrdersState {
@@ -72,10 +81,11 @@ class OrderActionSuccess extends OrdersState {
   const OrderActionSuccess({
     required this.orders,
     required this.message,
+    required super.selectedStatus,
   });
 
   @override
-  List<Object?> get props => [orders, message];
+  List<Object?> get props => [orders, message, selectedStatus];
 }
 
 class OrderActionError extends OrdersState {
@@ -85,9 +95,9 @@ class OrderActionError extends OrdersState {
   const OrderActionError({
     required this.orders,
     required this.message,
+    required super.selectedStatus,
   });
 
   @override
-  List<Object?> get props => [orders, message];
+  List<Object?> get props => [orders, message, selectedStatus];
 }
-

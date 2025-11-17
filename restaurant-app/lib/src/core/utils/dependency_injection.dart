@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:restaurant_app/src/features/auth/services/location_geocoding_service.dart';
 import 'package:restaurant_app/src/features/orders/repositories/order_repository.dart';
+import 'package:restaurant_app/src/features/notifications/services/notification_service.dart';
 import 'constant.dart';
 
 final locator = GetIt.instance;
@@ -41,5 +42,8 @@ void setupLocator() {
   );
   locator.registerLazySingleton<OrderRepository>(
     () => OrderRepository(),
+  );
+  locator.registerLazySingleton<NotificationService>(
+    () => NotificationService(),
   );
 }

@@ -25,6 +25,12 @@ class OrderService extends BaseApiService {
     );
   }
 
+  Future<Map<String, dynamic>> declineOrder(String orderId) async {
+    return await postRequest(
+      '/api/orders/$orderId/decline',
+    );
+  }
+
   Future<Map<String, dynamic>> refuseOrder(String orderId, {String? reason}) async {
     final data = <String, dynamic>{};
     if (reason != null && reason.isNotEmpty) {
@@ -36,4 +42,3 @@ class OrderService extends BaseApiService {
     );
   }
 }
-

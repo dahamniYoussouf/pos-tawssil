@@ -4,15 +4,14 @@ import 'package:restaurant_app/l10n/app_localizations.dart';
 import 'package:restaurant_app/src/core/res/color_app.dart';
 import 'package:restaurant_app/src/features/orders/cubit/orders_cubit.dart';
 import 'package:restaurant_app/src/features/orders/cubit/orders_state.dart';
+import 'package:restaurant_app/src/features/orders/models/order_model.dart';
 import 'package:restaurant_app/src/features/orders/widgets/order_card.dart';
 import 'package:restaurant_app/src/features/orders/widgets/order_card_shimmer.dart';
+import 'package:restaurant_app/src/features/orders/widgets/status_selector.dart';
 
 class OrdersPage extends StatefulWidget {
-  final String? status;
-
   const OrdersPage({
     super.key,
-    this.status,
   });
 
   @override
@@ -26,7 +25,8 @@ class _OrdersPageState extends State<OrdersPage> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    context.read<OrdersCubit>().fetchOrders(status: widget.status ?? 'pending');
+    final initialStatus = OrderStatus.pending;
+    context.read<OrdersCubit>().fetchOrders(status: initialStatus);
   }
 
   @override
@@ -35,78 +35,119 @@ class _OrdersPageState extends State<OrdersPage> {
     super.dispose();
   }
 
+  void _onStatusChanged(String status) {
+    context.read<OrdersCubit>().changeStatus(status);
+  }
+
   void _onScroll() {
+    final currentState = context.read<OrdersCubit>().state;
     if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.8) {
-      context.read<OrdersCubit>().loadMoreOrders(status: widget.status ?? 'pending');
+      context.read<OrdersCubit>().loadMoreOrders(status: currentState.selectedStatus);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<OrdersCubit, OrdersState>(
-      listener: (context, state) {
-        final localizations = AppLocalizations.of(context)!;
-        if (state is OrderActionError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(_translateErrorMessage(state.message, localizations)),
-              backgroundColor: Colors.red,
-            ),
-          );
-        } else if (state is OrderActionSuccess) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(_translateSuccessMessage(state.message, localizations)),
-              backgroundColor: AppColors.primaryColor,
-            ),
-          );
-        }
-      },
+    return BlocBuilder<OrdersCubit, OrdersState>(
       builder: (context, state) {
-        if (state is OrdersLoading) {
-          return _buildShimmerList();
-        } else if (state is OrdersLoaded) {
-          if (state.orders.isEmpty) {
-            return _buildEmptyState();
-          }
-          return RefreshIndicator(
-            onRefresh: () async {
-              context.read<OrdersCubit>().refreshOrders(status: widget.status ?? 'pending');
-            },
-            child: ListView.builder(
-              controller: _scrollController,
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: state.orders.length + (state.hasMore ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index >= state.orders.length) {
-                  return const Center(
-                    child: Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
-                }
-                final order = state.orders[index];
-                final currentState = context.read<OrdersCubit>().state;
-                final isLoading = currentState is OrderActionLoading && currentState.orderId == order.id;
-                return OrderCard(
-                  order: order,
-                  isLoading: isLoading,
-                  onAccept: () {
-                    context.read<OrdersCubit>().acceptOrder(order.id);
-                  },
-                  onRefuse: () {
-                    context.read<OrdersCubit>().refuseOrder(order.id);
-                  },
-                );
-              },
+        return Column(
+          children: [
+            StatusSelector(
+              selectedStatus: state.selectedStatus,
+              onStatusChanged: _onStatusChanged,
             ),
-          );
-        } else if (state is OrdersError) {
-          return _buildErrorState(state.message);
-        }
-        return const SizedBox.shrink();
+            Expanded(
+              child: BlocConsumer<OrdersCubit, OrdersState>(
+                listener: _handleStateChanges,
+                builder: _buildContent,
+              ),
+            ),
+          ],
+        );
       },
+    );
+  }
+
+  void _handleStateChanges(BuildContext context, OrdersState state) {
+    final localizations = AppLocalizations.of(context)!;
+    if (state is OrderActionError) {
+      _showErrorSnackBar(context, _translateErrorMessage(state.message, localizations));
+    } else if (state is OrderActionSuccess) {
+      _showSuccessSnackBar(context, _translateSuccessMessage(state.message, localizations));
+    }
+  }
+
+  Widget _buildContent(BuildContext context, OrdersState state) {
+    if (state is OrdersLoading) {
+      return _buildShimmerList();
+    } else if (state is OrdersLoaded) {
+      if (state.orders.isEmpty) {
+        return _buildEmptyState();
+      }
+      return _buildOrdersList(state);
+    } else if (state is OrdersError) {
+      return _buildErrorState(state.message);
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildOrdersList(OrdersLoaded state) {
+    return RefreshIndicator(
+      onRefresh: _refreshOrders,
+      child: ListView.builder(
+        controller: _scrollController,
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        itemCount: state.orders.length + (state.hasMore ? 1 : 0),
+        itemBuilder: (context, index) {
+          if (index >= state.orders.length) {
+            return _buildLoadingIndicator();
+          }
+          return _buildOrderCard(state.orders[index]);
+        },
+      ),
+    );
+  }
+
+  Widget _buildOrderCard(OrderModel order) {
+    final currentState = context.read<OrdersCubit>().state;
+    final isLoading = currentState is OrderActionLoading && currentState.orderId == order.id;
+    return OrderCard(
+      order: order,
+      isLoading: isLoading,
+      onAccept: () => context.read<OrdersCubit>().acceptOrder(order.id),
+      onRefuse: () => context.read<OrdersCubit>().declineOrder(order.id),
+    );
+  }
+
+  Widget _buildLoadingIndicator() {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: CircularProgressIndicator(),
+      ),
+    );
+  }
+
+  Future<void> _refreshOrders() async {
+    final currentState = context.read<OrdersCubit>().state;
+    context.read<OrdersCubit>().refreshOrders(status: currentState.selectedStatus);
+  }
+
+  void _showErrorSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+
+  void _showSuccessSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: AppColors.primaryColor,
+      ),
     );
   }
 
@@ -185,7 +226,8 @@ class _OrdersPageState extends State<OrdersPage> {
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () {
-              context.read<OrdersCubit>().refreshOrders(status: widget.status ?? 'pending');
+              final currentState = context.read<OrdersCubit>().state;
+              context.read<OrdersCubit>().refreshOrders(status: currentState.selectedStatus);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryColor,
@@ -203,6 +245,8 @@ class _OrdersPageState extends State<OrdersPage> {
   String _translateSuccessMessage(String message, AppLocalizations localizations) {
     if (message.contains('accepted successfully')) {
       return localizations.orderAcceptedSuccess;
+    } else if (message.contains('declined successfully')) {
+      return localizations.orderRefusedSuccess;
     } else if (message.contains('refused successfully')) {
       return localizations.orderRefusedSuccess;
     }
@@ -222,6 +266,14 @@ class _OrdersPageState extends State<OrdersPage> {
         return localizations.errorAcceptingOrder(errorMatch.group(1) ?? '');
       }
       return localizations.errorAcceptingOrder(message);
+    } else if (message.contains('Failed to decline order')) {
+      return localizations.errorFailedToRefuseOrder;
+    } else if (message.contains('Error declining order:')) {
+      final errorMatch = RegExp(r'Error declining order: (.+)').firstMatch(message);
+      if (errorMatch != null) {
+        return localizations.errorRefusingOrder(errorMatch.group(1) ?? '');
+      }
+      return localizations.errorRefusingOrder(message);
     } else if (message.contains('Failed to refuse order')) {
       return localizations.errorFailedToRefuseOrder;
     } else if (message.contains('Error refusing order:')) {
