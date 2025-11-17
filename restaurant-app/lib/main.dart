@@ -13,6 +13,7 @@ import 'package:restaurant_app/src/features/auth/services/auth_service.dart';
 import 'package:restaurant_app/src/features/auth/pages/login_page.dart';
 import 'package:restaurant_app/src/features/auth/pages/signup_page.dart';
 import 'package:restaurant_app/src/features/home/pages/home_page.dart';
+import 'package:restaurant_app/src/features/orders/cubit/orders_cubit.dart';
 import 'package:restaurant_app/l10n/app_localizations.dart';
 
 void main() async {
@@ -42,6 +43,9 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<AuthCubit>(
           create: (context) => AuthCubit(authService: AuthService()),
+        ),
+        BlocProvider<OrdersCubit>(
+          create: (context) => OrdersCubit(),
         ),
       ],
       child: MaterialApp(

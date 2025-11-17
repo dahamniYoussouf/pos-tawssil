@@ -172,4 +172,89 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get home => 'الرئيسية';
+
+  @override
+  String get homeTitle => 'تبدأ توصيلاتك من هنا!';
+
+  @override
+  String get homeSubtitle =>
+      'استقبل طلباتك، اتبع العناوين وقدم خدمة استثنائية في وقت قياسي.';
+
+  @override
+  String get getOrders => 'الحصول على الطلبات';
+
+  @override
+  String get orders => 'الطلبات';
+
+  @override
+  String orderTitle(String id) {
+    return 'طلب #$id';
+  }
+
+  @override
+  String get orderNumberLabel => 'رقم الطلب';
+
+  @override
+  String get deliveryTime => 'وقت التوصيل';
+
+  @override
+  String get minutes => 'دقيقة';
+
+  @override
+  String get distance => 'المسافة';
+
+  @override
+  String get kilometers => 'كم';
+
+  @override
+  String get deliveryPrice => 'سعر التوصيل';
+
+  @override
+  String get totalPrice => 'السعر الإجمالي';
+
+  @override
+  String get refuse => 'رفض';
+
+  @override
+  String get accept => 'قبول';
+
+  @override
+  String get noOrders => 'لا توجد طلبات';
+
+  @override
+  String get noPendingOrders => 'ليس لديك أي طلبات قيد الانتظار';
+
+  @override
+  String get error => 'خطأ';
+
+  @override
+  String get retry => 'إعادة المحاولة';
+
+  @override
+  String get orderAcceptedSuccess => 'تم قبول الطلب بنجاح';
+
+  @override
+  String get orderRefusedSuccess => 'تم رفض الطلب بنجاح';
+
+  @override
+  String get errorInvalidResponseFormat => 'تنسيق الاستجابة غير صالح';
+
+  @override
+  String get errorFailedToFetchOrders => 'فشل في جلب الطلبات';
+
+  @override
+  String get errorFailedToAcceptOrder => 'فشل في قبول الطلب';
+
+  @override
+  String errorAcceptingOrder(String error) {
+    return 'خطأ في قبول الطلب: $error';
+  }
+
+  @override
+  String get errorFailedToRefuseOrder => 'فشل في رفض الطلب';
+
+  @override
+  String errorRefusingOrder(String error) {
+    return 'خطأ في رفض الطلب: $error';
+  }
 }

@@ -16,7 +16,7 @@ class AuthService extends BaseApiService {
         data: {
           'email': email,
           'password': password,
-          'role': 'restaurant',
+          'type': 'restaurant',
         },
         includeAuth: false,
       );
@@ -87,7 +87,7 @@ class AuthService extends BaseApiService {
           'lat': latitude,
           'lng': longitude,
           'zone': zone,
-          'role': 'restaurant',
+          'type': 'restaurant',
           "opening_hours": {
             "mon": {"open": 900, "close": 1800},
             "tue": {"open": 900, "close": 1800},

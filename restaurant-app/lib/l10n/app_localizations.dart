@@ -423,6 +423,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Home'**
   String get home;
+
+  /// No description provided for @homeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your delivery starts here!'**
+  String get homeTitle;
+
+  /// No description provided for @homeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive your orders, follow addresses and offer exceptional service in record time.'**
+  String get homeSubtitle;
+
+  /// No description provided for @getOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Get orders'**
+  String get getOrders;
+
+  /// No description provided for @orders.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get orders;
+
+  /// No description provided for @orderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Order #{id}'**
+  String orderTitle(String id);
+
+  /// No description provided for @orderNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Order number'**
+  String get orderNumberLabel;
+
+  /// No description provided for @deliveryTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery time'**
+  String get deliveryTime;
+
+  /// No description provided for @minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'MIN'**
+  String get minutes;
+
+  /// No description provided for @distance.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get distance;
+
+  /// No description provided for @kilometers.
+  ///
+  /// In en, this message translates to:
+  /// **'KM'**
+  String get kilometers;
+
+  /// No description provided for @deliveryPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery price'**
+  String get deliveryPrice;
+
+  /// No description provided for @totalPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Total price'**
+  String get totalPrice;
+
+  /// No description provided for @refuse.
+  ///
+  /// In en, this message translates to:
+  /// **'Refuse'**
+  String get refuse;
+
+  /// No description provided for @accept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get accept;
+
+  /// No description provided for @noOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'No orders'**
+  String get noOrders;
+
+  /// No description provided for @noPendingOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no pending orders'**
+  String get noPendingOrders;
+
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @orderAcceptedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Order accepted successfully'**
+  String get orderAcceptedSuccess;
+
+  /// No description provided for @orderRefusedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Order refused successfully'**
+  String get orderRefusedSuccess;
+
+  /// No description provided for @errorInvalidResponseFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid response format'**
+  String get errorInvalidResponseFormat;
+
+  /// No description provided for @errorFailedToFetchOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to fetch orders'**
+  String get errorFailedToFetchOrders;
+
+  /// No description provided for @errorFailedToAcceptOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to accept order'**
+  String get errorFailedToAcceptOrder;
+
+  /// No description provided for @errorAcceptingOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Error accepting order: {error}'**
+  String errorAcceptingOrder(String error);
+
+  /// No description provided for @errorFailedToRefuseOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to refuse order'**
+  String get errorFailedToRefuseOrder;
+
+  /// No description provided for @errorRefusingOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Error refusing order: {error}'**
+  String errorRefusingOrder(String error);
 }
 
 class _AppLocalizationsDelegate

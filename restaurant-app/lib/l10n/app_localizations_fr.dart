@@ -176,4 +176,91 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get home => 'Accueil';
+
+  @override
+  String get homeTitle => 'Votre livraison commence ici!';
+
+  @override
+  String get homeSubtitle =>
+      'Recevez vos commandes, suivez les adresses et offrez un service exceptionnel en un temps record.';
+
+  @override
+  String get getOrders => 'Obtenir des commandes';
+
+  @override
+  String get orders => 'Commandes';
+
+  @override
+  String orderTitle(String id) {
+    return 'Commande #$id';
+  }
+
+  @override
+  String get orderNumberLabel => 'Numéro de commande';
+
+  @override
+  String get deliveryTime => 'Délai de livraison';
+
+  @override
+  String get minutes => 'MIN';
+
+  @override
+  String get distance => 'Distance';
+
+  @override
+  String get kilometers => 'KM';
+
+  @override
+  String get deliveryPrice => 'Prix de livraison';
+
+  @override
+  String get totalPrice => 'Prix totale';
+
+  @override
+  String get refuse => 'Refuser';
+
+  @override
+  String get accept => 'Accepter';
+
+  @override
+  String get noOrders => 'Aucune commande';
+
+  @override
+  String get noPendingOrders => 'Vous n\'avez aucune commande en attente';
+
+  @override
+  String get error => 'Erreur';
+
+  @override
+  String get retry => 'Réessayer';
+
+  @override
+  String get orderAcceptedSuccess => 'Commande acceptée avec succès';
+
+  @override
+  String get orderRefusedSuccess => 'Commande refusée avec succès';
+
+  @override
+  String get errorInvalidResponseFormat => 'Format de réponse invalide';
+
+  @override
+  String get errorFailedToFetchOrders =>
+      'Échec de la récupération des commandes';
+
+  @override
+  String get errorFailedToAcceptOrder =>
+      'Échec de l\'acceptation de la commande';
+
+  @override
+  String errorAcceptingOrder(String error) {
+    return 'Erreur lors de l\'acceptation de la commande : $error';
+  }
+
+  @override
+  String get errorFailedToRefuseOrder => 'Échec du refus de la commande';
+
+  @override
+  String errorRefusingOrder(String error) {
+    return 'Erreur lors du refus de la commande : $error';
+  }
 }

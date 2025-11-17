@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_app/l10n/app_localizations.dart';
+import 'package:restaurant_app/src/core/res/color_app.dart';
 import 'package:restaurant_app/src/features/auth/cubit/auth_cubit.dart';
+import 'package:restaurant_app/src/features/orders/pages/orders_page.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -11,27 +13,35 @@ class HomePage extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(localizations.home),
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: Center(
+      backgroundColor: AppColors.white,
+      drawer: Drawer(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('Home Page'),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () {
-                context.read<AuthCubit>().logout();
-              },
-              child: const Text('Logout'),
-            ),
+            Text('Hello'),
           ],
         ),
       ),
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        title: Text(
+          localizations.orders,
+          style: TextStyle(color: AppColors.primaryColor),
+        ),
+        centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.logout,
+              color: AppColors.primaryColor,
+            ),
+            onPressed: () {
+              context.read<AuthCubit>().logout();
+            },
+          ),
+        ],
+      ),
+      body: const OrdersPage(status: 'pending'),
     );
   }
 }
-
