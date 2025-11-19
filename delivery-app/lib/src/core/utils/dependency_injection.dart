@@ -1,3 +1,11 @@
+import 'package:delivery_app/src/features/driver/cubit/driver_cubit.dart';
+import 'package:delivery_app/src/features/driver/services/driver_service.dart';
+import 'package:delivery_app/src/features/notifications/cubit/notifications_cubit.dart';
+import 'package:delivery_app/src/features/notifications/services/notification_service.dart';
+import 'package:delivery_app/src/features/orders/cubit/orders_cubit.dart';
+import 'package:delivery_app/src/features/orders/repositories/order_repository.dart';
+import 'package:delivery_app/src/features/driver/repositories/driver_repository.dart';
+import 'package:delivery_app/src/features/orders/widgets/cubit/order_tracking_map_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:delivery_app/src/core/services/token_storage_service.dart';
@@ -34,5 +42,38 @@ void setupLocator() {
   locator.registerLazySingleton<TokenStorageService>(
     () => TokenStorageService(),
   );
-}
+  locator.registerLazySingleton<OrderRepository>(
+    () => OrderRepository(),
+  );
+  locator.registerLazySingleton<NotificationService>(
+    () => NotificationService(),
+  );
+  locator.registerLazySingleton<NotificationsCubit>(
+    () => NotificationsCubit(
+      notificationService: locator<NotificationService>(),
+    ),
+  );
+  locator.registerLazySingleton<OrdersCubit>(
+    () => OrdersCubit(
+      orderRepository: locator<OrderRepository>(),
+      notificationsCubit: locator<NotificationsCubit>(),
+    ),
+  );
+  locator.registerLazySingleton<DriverService>(
+    () => DriverService(),
+  );
+  locator.registerLazySingleton<DriverRepository>(
+    () => DriverRepository(
+      driverService: locator<DriverService>(),
+    ),
+  );
+  locator.registerLazySingleton<DriverCubit>(
+    () => DriverCubit(
+      driverRepository: locator<DriverRepository>(),
+    ),
+  );
 
+  locator.registerLazySingleton<OrderTrackingMapCubit>(
+    () => OrderTrackingMapCubit(),
+  );
+}

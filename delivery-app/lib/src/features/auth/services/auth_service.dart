@@ -16,7 +16,7 @@ class AuthService extends BaseApiService {
         data: {
           'email': email,
           'password': password,
-          "role": "driver",
+          "type": "driver",
         },
         includeAuth: false,
       );
@@ -78,7 +78,7 @@ class AuthService extends BaseApiService {
           'confirm_password': confirmPassword,
           'willaya': willaya,
           'zone': zone,
-          "role": "driver",
+          "type": "driver",
         },
         includeAuth: false,
       );

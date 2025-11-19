@@ -1,3 +1,6 @@
+import 'package:delivery_app/src/features/notifications/cubit/notifications_cubit.dart';
+import 'package:delivery_app/src/features/orders/cubit/orders_cubit.dart';
+import 'package:delivery_app/src/features/driver/cubit/driver_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -42,6 +45,15 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<AuthCubit>(
           create: (context) => AuthCubit(authService: AuthService()),
+        ),
+        BlocProvider<NotificationsCubit>(
+          create: (context) => locator<NotificationsCubit>(),
+        ),
+        BlocProvider<OrdersCubit>(
+          create: (context) => locator<OrdersCubit>(),
+        ),
+        BlocProvider<DriverCubit>(
+          create: (context) => locator<DriverCubit>(),
         ),
       ],
       child: MaterialApp(

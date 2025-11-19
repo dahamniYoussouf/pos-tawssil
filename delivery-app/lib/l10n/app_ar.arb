@@ -39,6 +39,56 @@
   "errorLoginFailed": "فشل تسجيل الدخول",
   "errorRegistrationFailed": "فشل التسجيل",
   "errorLogoutFailed": "فشل تسجيل الخروج",
-  "home": "الرئيسية"
+  "home": "الرئيسية",
+  "homeTitle": "تبدأ توصيلاتك من هنا!",
+  "homeSubtitle": "استقبل طلباتك، اتبع العناوين وقدم خدمة استثنائية في وقت قياسي.",
+  "getOrders": "الحصول على الطلبات",
+  "orders": "الطلبات",
+  "orderTitle": "طلب #{id}",
+  "@orderTitle": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "orderNumberLabel": "رقم الطلب",
+  "deliveryTime": "وقت التوصيل",
+  "minutes": "دقيقة",
+  "distance": "المسافة",
+  "kilometers": "كم",
+  "deliveryPrice": "سعر التوصيل",
+  "totalPrice": "السعر الإجمالي",
+  "refuse": "رفض",
+  "accept": "قبول",
+  "noOrders": "لا توجد طلبات",
+  "noPendingOrders": "ليس لديك أي طلبات قيد الانتظار",
+  "error": "خطأ",
+  "retry": "إعادة المحاولة",
+  "orderAcceptedSuccess": "تم قبول الطلب بنجاح",
+  "orderRefusedSuccess": "تم رفض الطلب بنجاح",
+  "errorInvalidResponseFormat": "تنسيق الاستجابة غير صالح",
+  "errorFailedToFetchOrders": "فشل في جلب الطلبات",
+  "errorFailedToAcceptOrder": "فشل في قبول الطلب",
+  "errorAcceptingOrder": "خطأ في قبول الطلب: {error}",
+  "@errorAcceptingOrder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFailedToRefuseOrder": "فشل في رفض الطلب",
+  "errorRefusingOrder": "خطأ في رفض الطلب: {error}",
+  "@errorRefusingOrder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "delivery": "التوصيل",
+  "restaurant": "المطعم",
+  "minutesShort": "د"
 }
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant_app/src/core/res/color_app.dart';
+import 'package:delivery_app/src/core/res/color_app.dart';
 
 class OrderCardShimmer extends StatelessWidget {
   const OrderCardShimmer({super.key});

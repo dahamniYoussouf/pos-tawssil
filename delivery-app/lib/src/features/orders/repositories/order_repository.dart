@@ -1,6 +1,6 @@
-import 'package:restaurant_app/src/core/utils/either.dart';
-import 'package:restaurant_app/src/features/orders/models/order_model.dart';
-import 'package:restaurant_app/src/features/orders/services/order_service.dart';
+import 'package:delivery_app/src/core/utils/either.dart';
+import 'package:delivery_app/src/features/orders/models/order_model.dart';
+import 'package:delivery_app/src/features/orders/services/order_service.dart';
 
 class OrderRepository {
   final OrderService _orderService;
@@ -50,16 +50,34 @@ class OrderRepository {
     }
   }
 
-  Future<Either<String, void>> acceptOrder(String orderId) async {
+  Future<Either<String, List<OrderModel>>> fetchOrdersNearby() async {
     try {
-      final response = await _orderService.acceptOrder(orderId);
+      final response = await _orderService.fetchOrdersNearby();
+      if (response['success'] == true) {
+        final data = response['data'] ?? response['orders'] ?? [];
+        if (data is List) {
+          final orders = data.map((json) => OrderModel.fromJson(json as Map<String, dynamic>)).toList();
+          return Right(orders);
+        }
+        return const Left('Invalid response format');
+      } else {
+        return Left(response['message'] ?? 'Failed to fetch nearby orders');
+      }
+    } catch (e) {
+      return Left('Error fetching nearby orders: ${e.toString()}');
+    }
+  }
+
+  Future<Either<String, void>> assignOrderToDriver(String orderId) async {
+    try {
+      final response = await _orderService.assignOrderToDriver(orderId);
       if (response['success'] == true) {
         return const Right(null);
       } else {
-        return Left(response['message'] ?? 'Failed to accept order');
+        return Left(response['message'] ?? 'Failed to assign order to driver');
       }
     } catch (e) {
-      return Left('Error accepting order: ${e.toString()}');
+      return Left('Error assigning order to driver: ${e.toString()}');
     }
   }
 

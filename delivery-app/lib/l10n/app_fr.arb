@@ -39,6 +39,56 @@
   "errorLoginFailed": "Échec de la connexion",
   "errorRegistrationFailed": "Échec de l'inscription",
   "errorLogoutFailed": "Échec de la déconnexion",
-  "home": "Accueil"
+  "home": "Accueil",
+  "homeTitle": "Votre livraison commence ici!",
+  "homeSubtitle": "Recevez vos commandes, suivez les adresses et offrez un service exceptionnel en un temps record.",
+  "getOrders": "Obtenir des commandes",
+  "orders": "Commandes",
+  "orderTitle": "Commande #{id}",
+  "@orderTitle": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "orderNumberLabel": "Numéro de commande",
+  "deliveryTime": "Délai de livraison",
+  "minutes": "MIN",
+  "distance": "Distance",
+  "kilometers": "KM",
+  "deliveryPrice": "Prix de livraison",
+  "totalPrice": "Prix totale",
+  "refuse": "Refuser",
+  "accept": "Accepter",
+  "noOrders": "Aucune commande",
+  "noPendingOrders": "Vous n'avez aucune commande en attente",
+  "error": "Erreur",
+  "retry": "Réessayer",
+  "orderAcceptedSuccess": "Commande acceptée avec succès",
+  "orderRefusedSuccess": "Commande refusée avec succès",
+  "errorInvalidResponseFormat": "Format de réponse invalide",
+  "errorFailedToFetchOrders": "Échec de la récupération des commandes",
+  "errorFailedToAcceptOrder": "Échec de l'acceptation de la commande",
+  "errorAcceptingOrder": "Erreur lors de l'acceptation de la commande : {error}",
+  "@errorAcceptingOrder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFailedToRefuseOrder": "Échec du refus de la commande",
+  "errorRefusingOrder": "Erreur lors du refus de la commande : {error}",
+  "@errorRefusingOrder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "delivery": "Livraison",
+  "restaurant": "Restaurant",
+  "minutesShort": "min"
 }
 

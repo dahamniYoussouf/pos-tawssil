@@ -159,6 +159,65 @@
   "home": "Home",
   "@home": {
     "description": "Home page title"
+  },
+  "homeTitle": "Your delivery starts here!",
+  "homeSubtitle": "Receive your orders, follow addresses and offer exceptional service in record time.",
+  "getOrders": "Get orders",
+  "orders": "Orders",
+  "orderTitle": "Order #{id}",
+  "@orderTitle": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "orderNumberLabel": "Order number",
+  "deliveryTime": "Delivery time",
+  "minutes": "MIN",
+  "distance": "Distance",
+  "kilometers": "KM",
+  "deliveryPrice": "Delivery price",
+  "totalPrice": "Total price",
+  "refuse": "Refuse",
+  "accept": "Accept",
+  "noOrders": "No orders",
+  "noPendingOrders": "You have no pending orders",
+  "error": "Error",
+  "retry": "Retry",
+  "orderAcceptedSuccess": "Order accepted successfully",
+  "orderRefusedSuccess": "Order refused successfully",
+  "errorInvalidResponseFormat": "Invalid response format",
+  "errorFailedToFetchOrders": "Failed to fetch orders",
+  "errorFailedToAcceptOrder": "Failed to accept order",
+  "errorAcceptingOrder": "Error accepting order: {error}",
+  "@errorAcceptingOrder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorFailedToRefuseOrder": "Failed to refuse order",
+  "errorRefusingOrder": "Error refusing order: {error}",
+  "@errorRefusingOrder": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "delivery": "Delivery",
+  "@delivery": {
+    "description": "Delivery label"
+  },
+  "restaurant": "Restaurant",
+  "@restaurant": {
+    "description": "Restaurant label"
+  },
+  "minutesShort": "min",
+  "@minutesShort": {
+    "description": "Minutes abbreviation"
   }
 }
 

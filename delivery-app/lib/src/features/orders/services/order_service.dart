@@ -1,4 +1,4 @@
-import 'package:restaurant_app/src/core/services/base_api_service.dart';
+import 'package:delivery_app/src/core/services/base_api_service.dart';
 
 class OrderService extends BaseApiService {
   Future<Map<String, dynamic>> fetchOrders({
@@ -19,9 +19,16 @@ class OrderService extends BaseApiService {
     );
   }
 
-  Future<Map<String, dynamic>> acceptOrder(String orderId) async {
+  Future<Map<String, dynamic>> fetchOrdersNearby() async {
+    return await getRequest(
+      '/order/nearby',
+    );
+  }
+
+  Future<Map<String, dynamic>> assignOrderToDriver(String orderId) async {
+    // this is use to assigned an order to a driver
     return await postRequest(
-      '/order/$orderId/accept',
+      '/order/$orderId/assign-driver',
     );
   }
 

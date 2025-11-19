@@ -129,4 +129,98 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get home => 'Home';
+
+  @override
+  String get homeTitle => 'Your delivery starts here!';
+
+  @override
+  String get homeSubtitle =>
+      'Receive your orders, follow addresses and offer exceptional service in record time.';
+
+  @override
+  String get getOrders => 'Get orders';
+
+  @override
+  String get orders => 'Orders';
+
+  @override
+  String orderTitle(String id) {
+    return 'Order #$id';
+  }
+
+  @override
+  String get orderNumberLabel => 'Order number';
+
+  @override
+  String get deliveryTime => 'Delivery time';
+
+  @override
+  String get minutes => 'MIN';
+
+  @override
+  String get distance => 'Distance';
+
+  @override
+  String get kilometers => 'KM';
+
+  @override
+  String get deliveryPrice => 'Delivery price';
+
+  @override
+  String get totalPrice => 'Total price';
+
+  @override
+  String get refuse => 'Refuse';
+
+  @override
+  String get accept => 'Accept';
+
+  @override
+  String get noOrders => 'No orders';
+
+  @override
+  String get noPendingOrders => 'You have no pending orders';
+
+  @override
+  String get error => 'Error';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get orderAcceptedSuccess => 'Order accepted successfully';
+
+  @override
+  String get orderRefusedSuccess => 'Order refused successfully';
+
+  @override
+  String get errorInvalidResponseFormat => 'Invalid response format';
+
+  @override
+  String get errorFailedToFetchOrders => 'Failed to fetch orders';
+
+  @override
+  String get errorFailedToAcceptOrder => 'Failed to accept order';
+
+  @override
+  String errorAcceptingOrder(String error) {
+    return 'Error accepting order: $error';
+  }
+
+  @override
+  String get errorFailedToRefuseOrder => 'Failed to refuse order';
+
+  @override
+  String errorRefusingOrder(String error) {
+    return 'Error refusing order: $error';
+  }
+
+  @override
+  String get delivery => 'Delivery';
+
+  @override
+  String get restaurant => 'Restaurant';
+
+  @override
+  String get minutesShort => 'min';
 }

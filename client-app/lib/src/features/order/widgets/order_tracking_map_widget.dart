@@ -1,3 +1,4 @@
+import 'package:client_app/src/core/utils/dependency_injection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -22,32 +23,31 @@ class OrderTrackingMap extends StatefulWidget {
 
 class _OrderTrackingMapState extends State<OrderTrackingMap> {
   late final MapController _mapController;
-  late final OrderTrackingMapCubit _mapCubit;
   bool _isMapReady = false;
 
   @override
   void initState() {
     super.initState();
     _mapController = MapController();
-    _mapCubit = OrderTrackingMapCubit()..updateOrder(widget.order);
+    locator<OrderTrackingMapCubit>().updateOrder(widget.order);
   }
 
   @override
   void dispose() {
-    _mapCubit.close();
+    locator<OrderTrackingMapCubit>().close();
     super.dispose();
   }
 
   @override
   void didUpdateWidget(covariant OrderTrackingMap oldWidget) {
     super.didUpdateWidget(oldWidget);
-    _mapCubit.updateOrder(widget.order);
+    locator<OrderTrackingMapCubit>().updateOrder(widget.order);
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<OrderTrackingMapCubit>.value(
-      value: _mapCubit,
+      value: locator<OrderTrackingMapCubit>(),
       child: BlocListener<OrderTrackingMapCubit, OrderTrackingMapState>(
         listenWhen: (OrderTrackingMapState previous, OrderTrackingMapState current) => previous.bounds != current.bounds,
         listener: (BuildContext context, OrderTrackingMapState state) {
@@ -90,7 +90,7 @@ class _OrderTrackingMapState extends State<OrderTrackingMap> {
 
   void _handleMapReady() {
     _isMapReady = true;
-    final LatLngBounds? bounds = _mapCubit.state.bounds;
+    final LatLngBounds? bounds = locator<OrderTrackingMapCubit>().state.bounds;
     if (bounds != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _fitBounds(bounds));
     }
