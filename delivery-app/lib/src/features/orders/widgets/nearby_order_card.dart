@@ -200,6 +200,8 @@ class NearbyOrderCard extends StatelessWidget {
                         color: AppColors.grey,
                       ),
                     ),
+                    const SizedBox(width: 8),
+                    Icon(Icons.timer_outlined, size: 16, color: AppColors.grey),
                     const SizedBox(width: 4),
                     Text(
                       '$time${localizations.minutesShort}',
@@ -257,9 +259,5 @@ class NearbyOrderCard extends StatelessWidget {
               ),
       ),
     );
-  }
-
-  String? _getPhoneNumber(OrderModel order) {
-    return order.client?.phoneNumber;
   }
 }
