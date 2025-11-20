@@ -78,10 +78,10 @@ class NotificationsCubit extends Cubit<NotificationsState> {
         final message = notification['message'] as String? ?? 'Unknown error';
         emit(NotificationsError(message: message));
         break;
-      case 'new_order':
-      case 'order_updated':
-      case 'order_cancelled':
-      case 'order_status_changed':
+      case 'new_delivery':
+      case 'notification':
+      case 'config_update':
+      case 'driver_alert':
         emit(NotificationReceived(
           eventType: type,
           data: notification['data'] as Map<String, dynamic>? ?? {},

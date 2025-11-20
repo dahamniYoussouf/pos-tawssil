@@ -121,7 +121,7 @@ class OrdersCubit extends Cubit<OrdersState> {
     );
   }
 
-  Future<void> declineOrder(String orderId) async {
+  Future<void> cancelOrder(String orderId) async {
     if (state is! OrdersLoaded) return;
     final currentState = state as OrdersLoaded;
     emit(OrderActionLoading(
@@ -129,7 +129,7 @@ class OrdersCubit extends Cubit<OrdersState> {
       orderId: orderId,
       selectedStatus: currentState.selectedStatus,
     ));
-    final result = await _orderRepository.declineOrder(orderId);
+    final result = await _orderRepository.cancelOrder(orderId);
     result.fold(
       (error) => emit(OrderActionError(
         orders: currentState.orders,
@@ -140,39 +140,7 @@ class OrdersCubit extends Cubit<OrdersState> {
         final updatedOrders = currentState.orders.where((order) => order.id != orderId).toList();
         emit(OrderActionSuccess(
           orders: updatedOrders,
-          message: 'Order declined successfully',
-          selectedStatus: currentState.selectedStatus,
-        ));
-        emit(OrdersLoaded(
-          orders: updatedOrders,
-          hasMore: currentState.hasMore,
-          currentPage: currentState.currentPage,
-          selectedStatus: currentState.selectedStatus,
-        ));
-      },
-    );
-  }
-
-  Future<void> refuseOrder(String orderId, {String? reason}) async {
-    if (state is! OrdersLoaded) return;
-    final currentState = state as OrdersLoaded;
-    emit(OrderActionLoading(
-      orders: currentState.orders,
-      orderId: orderId,
-      selectedStatus: currentState.selectedStatus,
-    ));
-    final result = await _orderRepository.refuseOrder(orderId, reason: reason);
-    result.fold(
-      (error) => emit(OrderActionError(
-        orders: currentState.orders,
-        message: error,
-        selectedStatus: currentState.selectedStatus,
-      )),
-      (_) {
-        final updatedOrders = currentState.orders.where((order) => order.id != orderId).toList();
-        emit(OrderActionSuccess(
-          orders: updatedOrders,
-          message: 'Order refused successfully',
+          message: 'Order canceled successfully',
           selectedStatus: currentState.selectedStatus,
         ));
         emit(OrdersLoaded(

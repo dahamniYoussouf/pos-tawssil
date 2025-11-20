@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:restaurant_app/l10n/app_localizations.dart';
 import 'package:restaurant_app/src/core/res/color_app.dart';
+import 'package:restaurant_app/src/features/orders/cubit/orders_cubit.dart';
+import 'package:restaurant_app/src/features/orders/cubit/orders_state.dart';
 import 'package:restaurant_app/src/features/orders/models/order_model.dart';
 
 class OrderCard extends StatelessWidget {
   final OrderModel order;
-  final VoidCallback? onAccept;
-  final VoidCallback? onRefuse;
-  final bool isLoading;
 
   const OrderCard({
     super.key,
     required this.order,
-    this.onAccept,
-    this.onRefuse,
-    this.isLoading = false,
   });
 
   String _formatDate(DateTime? date) {
@@ -192,17 +189,22 @@ class OrderCard extends StatelessWidget {
         children: [
           _buildDeliveryDetailRow(
             localizations.deliveryTime,
-            order.deliveryTimeMinutes != null ? '${order.deliveryTimeMinutes} ${localizations.minutes}' : '10 ${localizations.minutes}',
+            order.estimatedDeliveryTime != null
+                ? () {
+                    final minutes = order.estimatedDeliveryTime!.difference(DateTime.now()).inMinutes;
+                    return '${minutes < 0 ? 0 : minutes} ${localizations.minutes}';
+                  }()
+                : '10 ${localizations.minutes}',
           ),
           const SizedBox(height: 8),
           _buildDeliveryDetailRow(
             localizations.distance,
-            order.deliveryDistance != null ? '${order.deliveryDistance!.toStringAsFixed(1)} ${localizations.kilometers}' : '2.5 ${localizations.kilometers}',
+            order.deliveryDistance != null ? '${order.deliveryDistance!.toStringAsFixed(1)} ${localizations.kilometers}' : '0 ${localizations.kilometers}',
           ),
           const SizedBox(height: 8),
           _buildDeliveryDetailRow(
             localizations.deliveryPrice,
-            order.deliveryPrice != null ? _formatPrice(order.deliveryPrice!) : '500 DA',
+            order.deliveryPrice != null ? _formatPrice(order.deliveryPrice!) : '000 DA',
           ),
         ],
       ),
@@ -256,59 +258,65 @@ class OrderCard extends StatelessWidget {
   }
 
   Widget _buildActionButtons(BuildContext context, AppLocalizations localizations) {
-    return Row(
-      children: [
-        Expanded(
-          child: OutlinedButton(
-            onPressed: isLoading ? null : onRefuse,
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              side: const BorderSide(color: AppColors.primaryColor),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: Text(
-              localizations.refuse,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: AppColors.black,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: ElevatedButton(
-            onPressed: isLoading ? null : onAccept,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primaryColor,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: isLoading
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+    // show buttons only if the order is pending
+    return Visibility(
+        visible: order.status == OrderStatus.pending,
+        child: BlocBuilder<OrdersCubit, OrdersState>(builder: (context, state) {
+          final isLoading = state is OrderActionLoading && state.orderId == order.id;
+          return Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: isLoading ? null : () => context.read<OrdersCubit>().cancelOrder(order.id),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    side: const BorderSide(color: AppColors.primaryColor),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  )
-                : Text(
-                    localizations.accept,
+                  ),
+                  child: Text(
+                    localizations.refuse,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w500,
-                      color: AppColors.white,
+                      color: AppColors.black,
                     ),
                   ),
-          ),
-        ),
-      ],
-    );
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: ElevatedButton(
+                  onPressed: isLoading ? null : () => context.read<OrdersCubit>().acceptOrder(order.id),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryColor,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                  child: isLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                          ),
+                        )
+                      : Text(
+                          localizations.accept,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.white,
+                          ),
+                        ),
+                ),
+              ),
+            ],
+          );
+        }));
   }
 }

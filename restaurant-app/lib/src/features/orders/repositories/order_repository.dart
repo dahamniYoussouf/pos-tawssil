@@ -63,29 +63,16 @@ class OrderRepository {
     }
   }
 
-  Future<Either<String, void>> declineOrder(String orderId) async {
+  Future<Either<String, void>> cancelOrder(String orderId) async {
     try {
-      final response = await _orderService.declineOrder(orderId);
+      final response = await _orderService.cancelOrder(orderId);
       if (response['success'] == true) {
         return const Right(null);
       } else {
-        return Left(response['message'] ?? 'Failed to decline order');
+        return Left(response['message'] ?? 'Failed to cancel order');
       }
     } catch (e) {
-      return Left('Error declining order: ${e.toString()}');
-    }
-  }
-
-  Future<Either<String, void>> refuseOrder(String orderId, {String? reason}) async {
-    try {
-      final response = await _orderService.refuseOrder(orderId, reason: reason);
-      if (response['success'] == true) {
-        return const Right(null);
-      } else {
-        return Left(response['message'] ?? 'Failed to refuse order');
-      }
-    } catch (e) {
-      return Left('Error refusing order: ${e.toString()}');
+      return Left('Error canceling order: ${e.toString()}');
     }
   }
 }

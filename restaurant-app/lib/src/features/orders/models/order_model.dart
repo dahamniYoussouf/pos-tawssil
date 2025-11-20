@@ -12,20 +12,114 @@ class OrderStatus {
   static const String collected = 'collected';
 }
 
+class MenuItem {
+  final String id;
+  final String? categoryId;
+  final String name;
+  final String? description;
+  final double price;
+  final String? photoUrl;
+  final bool isAvailable;
+  final int? preparationTimeMinutes;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final String? restaurantId;
+
+  MenuItem({
+    required this.id,
+    this.categoryId,
+    required this.name,
+    this.description,
+    required this.price,
+    this.photoUrl,
+    this.isAvailable = true,
+    this.preparationTimeMinutes,
+    this.createdAt,
+    this.updatedAt,
+    this.restaurantId,
+  });
+
+  factory MenuItem.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      return MenuItem(id: '', name: '', price: 0.0);
+    }
+
+    double parseDouble(dynamic value) {
+      if (value == null) return 0.0;
+      if (value is num) return value.toDouble();
+      if (value is String) {
+        return double.tryParse(value) ?? 0.0;
+      }
+      return 0.0;
+    }
+
+    DateTime? parseDate(dynamic value) {
+      if (value == null) return null;
+      if (value is DateTime) return value;
+      if (value is String) {
+        try {
+          return DateTime.parse(value);
+        } catch (e) {
+          return null;
+        }
+      }
+      return null;
+    }
+
+    int? parseInt(dynamic value) {
+      if (value == null) return null;
+      if (value is int) return value;
+      if (value is num) return value.toInt();
+      if (value is String) {
+        return int.tryParse(value);
+      }
+      return null;
+    }
+
+    return MenuItem(
+      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      categoryId: json['category_id']?.toString(),
+      name: json['nom'] ?? json['name'] ?? '',
+      description: json['description'],
+      price: parseDouble(json['prix'] ?? json['price']),
+      photoUrl: json['photo_url'] ?? json['photoUrl'] ?? json['image'] ?? json['image_url'],
+      isAvailable: json['is_available'] ?? json['isAvailable'] ?? true,
+      preparationTimeMinutes: parseInt(json['temps_preparation'] ?? json['preparation_time'] ?? json['preparationTimeMinutes']),
+      createdAt: parseDate(json['created_at'] ?? json['createdAt']),
+      updatedAt: parseDate(json['updated_at'] ?? json['updatedAt']),
+      restaurantId: json['restaurant_id']?.toString(),
+    );
+  }
+}
+
 class OrderItem {
   final String id;
+  final String? orderId;
+  final String? menuItemId;
   final String name;
   final int quantity;
   final double price;
+  final double? _totalPriceValue;
   final String? imageUrl;
+  final String? specialInstructions;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+  final MenuItem? menuItem;
 
   OrderItem({
     required this.id,
+    this.orderId,
+    this.menuItemId,
     required this.name,
     required this.quantity,
     required this.price,
+    double? totalPrice,
     this.imageUrl,
-  });
+    this.specialInstructions,
+    this.createdAt,
+    this.updatedAt,
+    this.menuItem,
+  }) : _totalPriceValue = totalPrice;
 
   factory OrderItem.fromJson(Map<String, dynamic> json) {
     double parseDouble(dynamic value) {
@@ -37,29 +131,68 @@ class OrderItem {
       return 0.0;
     }
 
-    final menuItem = json['menu_item'] as Map<String, dynamic>?;
+    double? parseNullableDouble(dynamic value) {
+      if (value == null) return null;
+      if (value is num) return value.toDouble();
+      if (value is String) {
+        return double.tryParse(value);
+      }
+      return null;
+    }
+
+    DateTime? parseDate(dynamic value) {
+      if (value == null) return null;
+      if (value is DateTime) return value;
+      if (value is String) {
+        try {
+          return DateTime.parse(value);
+        } catch (e) {
+          return null;
+        }
+      }
+      return null;
+    }
+
+    final menuItemJson = json['menu_item'] as Map<String, dynamic>?;
+    final MenuItem? menuItem = menuItemJson != null ? MenuItem.fromJson(menuItemJson) : null;
+
     final String name;
     final double price;
     String? imageUrl;
     if (menuItem != null) {
-      name = menuItem['nom'] ?? menuItem['name'] ?? '';
-      price = parseDouble(menuItem['prix'] ?? menuItem['price'] ?? json['prix_unitaire'] ?? json['price']);
-      imageUrl = menuItem['image'] ?? menuItem['image_url'] ?? menuItem['imageUrl'];
+      name = menuItem.name;
+      price = menuItem.price;
+      imageUrl = menuItem.photoUrl;
     } else {
-      name = json['name'] ?? json['nom'] ?? '';
-      price = parseDouble(json['price'] ?? json['prix'] ?? json['prix_unitaire']);
-      imageUrl = json['image'] ?? json['image_url'] ?? json['imageUrl'];
+      final menuItemData = json['menu_item'] as Map<String, dynamic>?;
+      if (menuItemData != null) {
+        name = menuItemData['nom'] ?? menuItemData['name'] ?? '';
+        price = parseDouble(menuItemData['prix'] ?? menuItemData['price'] ?? json['prix_unitaire'] ?? json['price']);
+        imageUrl = menuItemData['image'] ?? menuItemData['image_url'] ?? menuItemData['imageUrl'] ?? menuItemData['photo_url'] ?? menuItemData['photoUrl'];
+      } else {
+        name = json['name'] ?? json['nom'] ?? '';
+        price = parseDouble(json['price'] ?? json['prix'] ?? json['prix_unitaire']);
+        imageUrl = json['image'] ?? json['image_url'] ?? json['imageUrl'];
+      }
     }
+
     return OrderItem(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
+      orderId: json['order_id']?.toString(),
+      menuItemId: json['menu_item_id']?.toString(),
       name: name,
       quantity: json['quantity'] ?? json['quantite'] ?? 1,
       price: price,
+      totalPrice: parseNullableDouble(json['prix_total'] ?? json['total_price'] ?? json['totalPrice']),
       imageUrl: imageUrl,
+      specialInstructions: json['instructions_speciales'] ?? json['special_instructions'] ?? json['specialInstructions'],
+      createdAt: parseDate(json['created_at'] ?? json['createdAt']),
+      updatedAt: parseDate(json['updated_at'] ?? json['updatedAt']),
+      menuItem: menuItem,
     );
   }
 
-  double get totalPrice => price * quantity;
+  double get totalPrice => _totalPriceValue ?? (price * quantity);
 }
 
 class DeliveryPerson {
@@ -298,23 +431,23 @@ class OrderModel {
       restaurantAddress: restaurantAddress,
       restaurantImageUrl: restaurantImageUrl,
       deliveryPerson: deliveryPerson,
-      estimatedDeliveryTime: parseDate(json['estimatedDeliveryTime'] ?? json['estimated_delivery_time']),
+      estimatedDeliveryTime: parseDate(json['estimated_delivery_time'] ?? json['estimated_delivery_time']),
       createdAt: parseDate(json['createdAt'] ?? json['created_at']),
       updatedAt: parseDate(json['updatedAt'] ?? json['updated_at']),
       paymentMethod: json['paymentMethod'] ?? json['payment_method'],
       refusalReason: json['refusalReason'] ?? json['refusal_reason'] ?? json['decline_reason'],
       delayReason: json['delayReason'] ?? json['delay_reason'],
       orderType: json['order_type'] ?? "delivery",
-      deliveryDistance: json['deliveryDistance'] != null
-          ? parseDouble(json['deliveryDistance'])
-          : json['distance'] != null
-              ? parseDouble(json['distance'])
+      deliveryDistance: json['delivery_distance'] != null
+          ? parseDouble(json['delivery_distance'])
+          : json['delivery_distance'] != null
+              ? parseDouble(json['delivery_distance'])
               : null,
       deliveryTimeMinutes: json['deliveryTimeMinutes'] ?? json['delivery_time_minutes'] ?? json['delivery_time'],
-      deliveryPrice: json['deliveryPrice'] != null
-          ? parseDouble(json['deliveryPrice'])
-          : json['delivery_price'] != null
-              ? parseDouble(json['delivery_price'])
+      deliveryPrice: json['delivery_fee'] != null
+          ? parseDouble(json['delivery_fee'])
+          : json['delivery_fee'] != null
+              ? parseDouble(json['delivery_fee'])
               : null,
     );
   }

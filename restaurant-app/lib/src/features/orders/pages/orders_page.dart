@@ -109,14 +109,7 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   Widget _buildOrderCard(OrderModel order) {
-    final currentState = context.read<OrdersCubit>().state;
-    final isLoading = currentState is OrderActionLoading && currentState.orderId == order.id;
-    return OrderCard(
-      order: order,
-      isLoading: isLoading,
-      onAccept: () => context.read<OrdersCubit>().acceptOrder(order.id),
-      onRefuse: () => context.read<OrdersCubit>().declineOrder(order.id),
-    );
+    return OrderCard(order: order);
   }
 
   Widget _buildLoadingIndicator() {
@@ -243,9 +236,9 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   String _translateSuccessMessage(String message, AppLocalizations localizations) {
-    if (message.contains('accepted successfully')) {
+    if (message.contains('Order accepted successfully')) {
       return localizations.orderAcceptedSuccess;
-    } else if (message.contains('declined successfully')) {
+    } else if (message.contains('Order canceled successfully')) {
       return localizations.orderRefusedSuccess;
     } else if (message.contains('refused successfully')) {
       return localizations.orderRefusedSuccess;

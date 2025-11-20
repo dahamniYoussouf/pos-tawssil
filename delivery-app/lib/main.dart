@@ -121,9 +121,19 @@ class _AuthWrapperState extends State<AuthWrapper> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthCubit, AuthState>(
-      builder: (context, state) {
-        if (state is AuthSuccess) {
-          return const HomePage();
+      builder: (context, authState) {
+        if (authState is AuthSuccess) {
+          return BlocListener<AuthCubit, AuthState>(
+            listenWhen: (previous, current) => current is AuthSuccess && previous is! AuthSuccess,
+            listener: (context, state) {
+              if (state is AuthSuccess) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  context.read<NotificationsCubit>().connect();
+                });
+              }
+            },
+            child: const HomePage(),
+          );
         } else {
           return const LoginPage();
         }

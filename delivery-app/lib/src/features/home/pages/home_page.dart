@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:delivery_app/l10n/app_localizations.dart';
 import 'package:delivery_app/src/features/auth/cubit/auth_cubit.dart';
+import 'package:delivery_app/src/features/notifications/cubit/notifications_cubit.dart';
 import 'package:delivery_app/src/features/driver/cubit/driver_cubit.dart';
 import 'package:delivery_app/src/features/driver/cubit/driver_state.dart';
 
@@ -19,6 +20,9 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     context.read<DriverCubit>().fetchDriverProfile();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<NotificationsCubit>().connect();
+    });
   }
 
   @override
@@ -51,6 +55,7 @@ class _HomePageState extends State<HomePage> {
                   color: AppColors.primaryColor,
                 ),
                 onPressed: () {
+                  context.read<NotificationsCubit>().disconnect();
                   context.read<AuthCubit>().logout();
                 },
               ),

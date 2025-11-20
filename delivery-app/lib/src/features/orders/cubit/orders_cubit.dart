@@ -34,8 +34,27 @@ class OrdersCubit extends Cubit<OrdersState> {
   void _handleNotification(NotificationReceived notification) {
     if (isClosed) return;
     final eventType = notification.eventType;
-    if (eventType == 'new_order' || eventType == 'order_updated' || eventType == 'order_status_changed' || eventType == 'order_cancelled') {
-      refreshOrders();
+    final data = notification.data;
+
+    switch (eventType) {
+      case 'new_delivery':
+        fetchOrdersNearby();
+        break;
+      case 'notification':
+        final notificationType = data['type'] as String?;
+        if (notificationType == 'order_assigned' || notificationType == 'delivery_complete' || notificationType == 'order_location') {
+          refreshOrders();
+        }
+        break;
+      case 'config_update':
+        final configType = data['type'] as String?;
+        if (configType == 'max_orders_updated') {
+          refreshOrders();
+        }
+        break;
+      case 'driver_alert':
+        refreshOrders();
+        break;
     }
   }
 
@@ -237,7 +256,7 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   void refreshOrders({String? status, int limit = 20}) {
-    fetchOrders(page: 1, limit: limit, status: status);
+    fetchOrdersNearby();
   }
 
   void changeStatus(String status) {
