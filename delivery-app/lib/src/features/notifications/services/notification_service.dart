@@ -11,6 +11,22 @@ class NotificationService {
   final StreamController<Map<String, dynamic>> _notificationController = StreamController<Map<String, dynamic>>.broadcast();
   bool _isConnected = false;
   bool _isConnecting = false;
+  static const int _reconnectionAttempts = 5;
+  static const Duration _reconnectionDelay = Duration(milliseconds: 1000);
+  static const Duration _reconnectionDelayMax = Duration(milliseconds: 5000);
+  static const Duration _connectionTimeout = Duration(seconds: 20);
+  static const List<String> _knownEvents = <String>[
+    'connect',
+    'disconnect',
+    'connect_error',
+    'error',
+    'reconnect_attempt',
+    'reconnect_error',
+    'new_delivery',
+    'notification',
+    'config_update',
+    'driver_alert',
+  ];
 
   NotificationService({
     TokenStorageService? tokenStorageService,
@@ -42,10 +58,7 @@ class NotificationService {
         await disconnect();
       }
       dev.log('[NotificationService] Creating socket connection to: ${ApiConfig.socketUrl}', name: 'NotificationService');
-      _socket = IO.io(
-        ApiConfig.socketUrl,
-        IO.OptionBuilder().setTransports(['websocket']).disableAutoConnect().enableReconnection().setReconnectionAttempts(5).setReconnectionDelay(1000).setReconnectionDelayMax(5000).setExtraHeaders({'Authorization': 'Bearer $token'}).build(),
-      );
+      _socket = _buildSocket(token);
       _setupSocketListeners();
       dev.log('[NotificationService] Calling socket.connect()', name: 'NotificationService');
       _socket!.connect();
@@ -70,33 +83,23 @@ class NotificationService {
     dev.log('[NotificationService] Setting up socket listeners', name: 'NotificationService');
     _socket!.onConnect((_) {
       dev.log('[NotificationService] Socket connected', name: 'NotificationService');
-      _isConnected = true;
-      _isConnecting = false;
-      dev.log('[NotificationService] State updated: isConnected=true, isConnecting=false', name: 'NotificationService');
-      _notificationController.add({
-        'type': 'connection',
-        'status': 'connected',
-      });
+      _handleConnectionChange(isConnected: true);
     });
-    _socket!.onDisconnect((_) {
-      dev.log('[NotificationService] Socket disconnected', name: 'NotificationService');
-      _isConnected = false;
-      _isConnecting = false;
-      dev.log('[NotificationService] State updated: isConnected=false, isConnecting=false', name: 'NotificationService');
-      _notificationController.add({
-        'type': 'connection',
-        'status': 'disconnected',
-      });
+    _socket!.onDisconnect((reason) {
+      dev.log('[NotificationService] Socket disconnected. Reason: $reason', name: 'NotificationService');
+      _handleConnectionChange(isConnected: false, reason: reason?.toString());
     });
     _socket!.onConnectError((error) {
-      dev.log('[NotificationService] Socket connection error: $error', name: 'NotificationService', error: error);
-      _isConnected = false;
-      _isConnecting = false;
-      dev.log('[NotificationService] State updated: isConnected=false, isConnecting=false', name: 'NotificationService');
-      _notificationController.add({
-        'type': 'error',
-        'message': error.toString(),
-      });
+      _handleSocketError('connect_error', error);
+    });
+    _socket!.onError((error) {
+      _handleSocketError('error', error);
+    });
+    _socket!.onReconnectAttempt((attempt) {
+      dev.log('[NotificationService] Reconnect attempt: $attempt', name: 'NotificationService');
+    });
+    _socket!.onReconnectError((error) {
+      dev.log('[NotificationService] Reconnect error: $error', name: 'NotificationService', error: error);
     });
     _socket!.on('new_delivery', (data) {
       dev.log('[NotificationService] Received new_delivery event: $data', name: 'NotificationService');
@@ -115,7 +118,7 @@ class NotificationService {
       _handleNotification('driver_alert', data);
     });
     _socket!.onAny((event, data) {
-      if (!['connect', 'disconnect', 'connect_error', 'new_delivery', 'notification', 'config_update', 'driver_alert'].contains(event)) {
+      if (!_knownEvents.contains(event)) {
         dev.log('[NotificationService] Received unhandled event: $event, data: $data', name: 'NotificationService');
         _notificationController.add({
           'type': event,
@@ -169,5 +172,51 @@ class NotificationService {
     disconnect();
     _notificationController.close();
     dev.log('[NotificationService] Service disposed', name: 'NotificationService');
+  }
+
+  IO.Socket _buildSocket(String token) {
+    final options = IO.OptionBuilder()
+        .setTransports(<String>['websocket', 'polling'])
+        .disableAutoConnect()
+        .enableReconnection()
+        .setReconnectionAttempts(_reconnectionAttempts)
+        .setReconnectionDelay(_reconnectionDelay.inMilliseconds)
+        .setReconnectionDelayMax(_reconnectionDelayMax.inMilliseconds)
+        .setTimeout(_connectionTimeout.inMilliseconds)
+        .setAuth(<String, dynamic>{'token': token})
+        .setQuery(<String, dynamic>{'token': token})
+        .setExtraHeaders(<String, dynamic>{'Authorization': 'Bearer $token'})
+        .build();
+    return IO.io(ApiConfig.socketUrl, options);
+  }
+
+  void _handleConnectionChange({required bool isConnected, String? reason}) {
+    _isConnected = isConnected;
+    _isConnecting = false;
+    dev.log('[NotificationService] State updated: isConnected=$isConnected, isConnecting=false, reason=${reason ?? "none"}', name: 'NotificationService');
+    final payload = <String, dynamic>{
+      'type': 'connection',
+      'status': isConnected ? 'connected' : 'disconnected',
+    };
+    if (reason != null && reason.isNotEmpty) {
+      payload['reason'] = reason;
+    }
+    _notificationController.add(payload);
+    if (!isConnected && reason == 'io server disconnect') {
+      dev.log('[NotificationService] Server forced disconnect detected, rebuilding socket', name: 'NotificationService');
+      _socket?.connect();
+    }
+  }
+
+  void _handleSocketError(String event, dynamic error) {
+    final message = error?.toString() ?? 'Unknown error';
+    dev.log('[NotificationService] Socket $event: $message', name: 'NotificationService', error: error);
+    _isConnected = false;
+    _isConnecting = false;
+    _notificationController.add({
+      'type': 'error',
+      'source': event,
+      'message': message,
+    });
   }
 }
