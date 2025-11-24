@@ -228,4 +228,49 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get minutesShort => 'min';
+
+  @override
+  String get taskDetails => 'Détails de la tâche';
+
+  @override
+  String get arrive => 'Arriver';
+
+  @override
+  String get cancel => 'Annuler';
+
+  @override
+  String get cancelOrderQuestion =>
+      'Pourquoi shouaitez-vous annuler cette commande?';
+
+  @override
+  String get cancelReasonDriverLate =>
+      'Le livreur a mise trop de temps a arriver';
+
+  @override
+  String get cancelReasonClientCanceled => 'Le client a annule sa commande';
+
+  @override
+  String get cancelReasonTechnicalIssue =>
+      'Probleme technique avec la commande';
+
+  @override
+  String get cancelReasonOther => 'Autre raison';
+
+  @override
+  String get confirm => 'Confirmer';
+
+  @override
+  String get orderNotFound => 'Commande introuvable';
+
+  @override
+  String get clientOrderTitle => 'Commande client';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get clientLabel => 'Client';
+
+  @override
+  String get startDelivery => 'Démarrer la livraison';
 }

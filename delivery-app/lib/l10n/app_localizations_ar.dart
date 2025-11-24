@@ -223,4 +223,46 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get minutesShort => 'د';
+
+  @override
+  String get taskDetails => 'تفاصيل المهمة';
+
+  @override
+  String get arrive => 'وصل';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get cancelOrderQuestion => 'لماذا تريد إلغاء هذا الطلب؟';
+
+  @override
+  String get cancelReasonDriverLate => 'استغرق السائق وقتًا طويلاً للوصول';
+
+  @override
+  String get cancelReasonClientCanceled => 'ألغى العميل طلبه';
+
+  @override
+  String get cancelReasonTechnicalIssue => 'مشكلة تقنية مع الطلب';
+
+  @override
+  String get cancelReasonOther => 'سبب آخر';
+
+  @override
+  String get confirm => 'تأكيد';
+
+  @override
+  String get orderNotFound => 'الطلب غير موجود';
+
+  @override
+  String get clientOrderTitle => 'طلب العميل';
+
+  @override
+  String get total => 'الإجمالي';
+
+  @override
+  String get clientLabel => 'العميل';
+
+  @override
+  String get startDelivery => 'بدء التوصيل';
 }

@@ -165,6 +165,7 @@ class OrdersCubit extends Cubit<OrdersState> {
           orders: updatedOrders,
           message: 'Order assigned to driver successfully',
           selectedStatus: currentState.selectedStatus,
+          orderId: orderId,
         ));
         if (isClosed) return;
         emit(OrdersLoaded(

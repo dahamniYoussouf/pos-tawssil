@@ -48,4 +48,39 @@ class OrderService extends BaseApiService {
       data: data,
     );
   }
+
+  Future<Map<String, dynamic>> fetchOrderById(String orderId) async {
+    return await getRequest(
+      '/order/$orderId',
+    );
+  }
+
+  Future<Map<String, dynamic>> markOrderArrived(String orderId) async {
+    return await postRequest(
+      '/order/$orderId/arrived',
+    );
+  }
+
+  Future<Map<String, dynamic>> startDelivery(String orderId) async {
+    return await postRequest(
+      '/order/$orderId/start-delivery',
+    );
+  }
+
+  Future<Map<String, dynamic>> completeDelivery(String orderId) async {
+    return await postRequest(
+      '/order/$orderId/complete-delivery',
+    );
+  }
+
+  Future<Map<String, dynamic>> driverCancelOrder(String orderId, {String? reason}) async {
+    final data = <String, dynamic>{};
+    if (reason != null && reason.isNotEmpty) {
+      data['reason'] = reason;
+    }
+    return await postRequest(
+      '/order/$orderId/driver-cancel',
+      data: data,
+    );
+  }
 }

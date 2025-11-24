@@ -513,6 +513,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'min'**
   String get minutesShort;
+
+  /// Task details label
+  ///
+  /// In en, this message translates to:
+  /// **'Task Details'**
+  String get taskDetails;
+
+  /// Arrive button text
+  ///
+  /// In en, this message translates to:
+  /// **'Arrive'**
+  String get arrive;
+
+  /// Cancel button text
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// Cancel order question
+  ///
+  /// In en, this message translates to:
+  /// **'Why do you wish to cancel this order?'**
+  String get cancelOrderQuestion;
+
+  /// Cancel reason: driver late
+  ///
+  /// In en, this message translates to:
+  /// **'The delivery person took too long to arrive'**
+  String get cancelReasonDriverLate;
+
+  /// Cancel reason: client canceled
+  ///
+  /// In en, this message translates to:
+  /// **'The client canceled their order'**
+  String get cancelReasonClientCanceled;
+
+  /// Cancel reason: technical issue
+  ///
+  /// In en, this message translates to:
+  /// **'Technical problem with the order'**
+  String get cancelReasonTechnicalIssue;
+
+  /// Cancel reason: other
+  ///
+  /// In en, this message translates to:
+  /// **'Other reason'**
+  String get cancelReasonOther;
+
+  /// Confirm button text
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// Order not found message
+  ///
+  /// In en, this message translates to:
+  /// **'Order not found'**
+  String get orderNotFound;
+
+  /// Client order page title
+  ///
+  /// In en, this message translates to:
+  /// **'Client order'**
+  String get clientOrderTitle;
+
+  /// Total label
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// Client label
+  ///
+  /// In en, this message translates to:
+  /// **'Client'**
+  String get clientLabel;
+
+  /// Start delivery button text
+  ///
+  /// In en, this message translates to:
+  /// **'Start delivery'**
+  String get startDelivery;
 }
 
 class _AppLocalizationsDelegate

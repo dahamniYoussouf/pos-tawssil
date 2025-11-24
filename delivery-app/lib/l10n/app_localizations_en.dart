@@ -223,4 +223,47 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get minutesShort => 'min';
+
+  @override
+  String get taskDetails => 'Task Details';
+
+  @override
+  String get arrive => 'Arrive';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get cancelOrderQuestion => 'Why do you wish to cancel this order?';
+
+  @override
+  String get cancelReasonDriverLate =>
+      'The delivery person took too long to arrive';
+
+  @override
+  String get cancelReasonClientCanceled => 'The client canceled their order';
+
+  @override
+  String get cancelReasonTechnicalIssue => 'Technical problem with the order';
+
+  @override
+  String get cancelReasonOther => 'Other reason';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get orderNotFound => 'Order not found';
+
+  @override
+  String get clientOrderTitle => 'Client order';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get clientLabel => 'Client';
+
+  @override
+  String get startDelivery => 'Start delivery';
 }

@@ -106,4 +106,74 @@ class OrderRepository {
       return Left('Error refusing order: ${e.toString()}');
     }
   }
+
+  Future<Either<String, OrderModel>> fetchOrderById(String orderId) async {
+    try {
+      final response = await _orderService.fetchOrderById(orderId);
+      if (response['success'] == true) {
+        final data = response['data'] ?? response['order'] ?? {};
+        if (data is Map<String, dynamic>) {
+          final order = OrderModel.fromJson(data);
+          return Right(order);
+        }
+        return const Left('Invalid response format');
+      } else {
+        return Left(response['message'] ?? 'Failed to fetch order');
+      }
+    } catch (e) {
+      return Left('Error fetching order: ${e.toString()}');
+    }
+  }
+
+  Future<Either<String, void>> markOrderArrived(String orderId) async {
+    try {
+      final response = await _orderService.markOrderArrived(orderId);
+      if (response['success'] == true) {
+        return const Right(null);
+      } else {
+        return Left(response['message'] ?? 'Failed to mark order as arrived');
+      }
+    } catch (e) {
+      return Left('Error marking order as arrived: ${e.toString()}');
+    }
+  }
+
+  Future<Either<String, void>> startDelivery(String orderId) async {
+    try {
+      final response = await _orderService.startDelivery(orderId);
+      if (response['success'] == true) {
+        return const Right(null);
+      } else {
+        return Left(response['message'] ?? 'Failed to start delivery');
+      }
+    } catch (e) {
+      return Left('Error starting delivery: ${e.toString()}');
+    }
+  }
+
+  Future<Either<String, void>> completeDelivery(String orderId) async {
+    try {
+      final response = await _orderService.completeDelivery(orderId);
+      if (response['success'] == true) {
+        return const Right(null);
+      } else {
+        return Left(response['message'] ?? 'Failed to complete delivery');
+      }
+    } catch (e) {
+      return Left('Error completing delivery: ${e.toString()}');
+    }
+  }
+
+  Future<Either<String, void>> driverCancelOrder(String orderId, {String? reason}) async {
+    try {
+      final response = await _orderService.driverCancelOrder(orderId, reason: reason);
+      if (response['success'] == true) {
+        return const Right(null);
+      } else {
+        return Left(response['message'] ?? 'Failed to cancel order');
+      }
+    } catch (e) {
+      return Left('Error canceling order: ${e.toString()}');
+    }
+  }
 }

@@ -6,6 +6,7 @@ import 'package:delivery_app/src/core/res/color_app.dart';
 import 'package:delivery_app/src/features/orders/cubit/orders_cubit.dart';
 import 'package:delivery_app/src/features/orders/cubit/orders_state.dart';
 import 'package:delivery_app/src/features/orders/models/order_model.dart';
+import 'package:delivery_app/src/features/orders/pages/order_assigned_page.dart';
 import 'package:delivery_app/src/features/orders/widgets/nearby_order_card.dart';
 import 'package:delivery_app/src/features/orders/widgets/order_tracking_map_widget.dart';
 import 'package:delivery_app/src/features/orders/widgets/empty_orders_map_widget.dart';
@@ -43,7 +44,17 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
     if (state is OrderActionError) {
       _showErrorSnackBar(context, _translateErrorMessage(state.message, localizations));
     } else if (state is OrderActionSuccess) {
-      _showSuccessSnackBar(context, _translateSuccessMessage(state.message, localizations));
+      if (state.orderId != null) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => OrderAssignedPage(
+              orderId: state.orderId!,
+            ),
+          ),
+        );
+      } else {
+        _showSuccessSnackBar(context, _translateSuccessMessage(state.message, localizations));
+      }
     }
   }
 

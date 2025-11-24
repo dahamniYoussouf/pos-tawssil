@@ -77,15 +77,17 @@ class OrderActionLoading extends OrdersState {
 class OrderActionSuccess extends OrdersState {
   final List<OrderModel> orders;
   final String message;
+  final String? orderId;
 
   const OrderActionSuccess({
     required this.orders,
     required this.message,
     required super.selectedStatus,
+    this.orderId,
   });
 
   @override
-  List<Object?> get props => [orders, message, selectedStatus];
+  List<Object?> get props => [orders, message, selectedStatus, orderId];
 }
 
 class OrderActionError extends OrdersState {

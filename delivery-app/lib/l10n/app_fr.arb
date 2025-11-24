@@ -89,6 +89,20 @@
   },
   "delivery": "Livraison",
   "restaurant": "Restaurant",
-  "minutesShort": "min"
+  "minutesShort": "min",
+  "taskDetails": "Détails de la tâche",
+  "arrive": "Arriver",
+  "cancel": "Annuler",
+  "cancelOrderQuestion": "Pourquoi shouaitez-vous annuler cette commande?",
+  "cancelReasonDriverLate": "Le livreur a mise trop de temps a arriver",
+  "cancelReasonClientCanceled": "Le client a annule sa commande",
+  "cancelReasonTechnicalIssue": "Probleme technique avec la commande",
+  "cancelReasonOther": "Autre raison",
+  "confirm": "Confirmer",
+  "orderNotFound": "Commande introuvable",
+  "clientOrderTitle": "Commande client",
+  "total": "Total",
+  "clientLabel": "Client",
+  "startDelivery": "Démarrer la livraison"
 }
 

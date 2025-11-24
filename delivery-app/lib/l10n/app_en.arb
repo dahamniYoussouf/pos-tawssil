@@ -218,6 +218,62 @@
   "minutesShort": "min",
   "@minutesShort": {
     "description": "Minutes abbreviation"
+  },
+  "taskDetails": "Task Details",
+  "@taskDetails": {
+    "description": "Task details label"
+  },
+  "arrive": "Arrive",
+  "@arrive": {
+    "description": "Arrive button text"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  "cancelOrderQuestion": "Why do you wish to cancel this order?",
+  "@cancelOrderQuestion": {
+    "description": "Cancel order question"
+  },
+  "cancelReasonDriverLate": "The delivery person took too long to arrive",
+  "@cancelReasonDriverLate": {
+    "description": "Cancel reason: driver late"
+  },
+  "cancelReasonClientCanceled": "The client canceled their order",
+  "@cancelReasonClientCanceled": {
+    "description": "Cancel reason: client canceled"
+  },
+  "cancelReasonTechnicalIssue": "Technical problem with the order",
+  "@cancelReasonTechnicalIssue": {
+    "description": "Cancel reason: technical issue"
+  },
+  "cancelReasonOther": "Other reason",
+  "@cancelReasonOther": {
+    "description": "Cancel reason: other"
+  },
+  "confirm": "Confirm",
+  "@confirm": {
+    "description": "Confirm button text"
+  },
+  "orderNotFound": "Order not found",
+  "@orderNotFound": {
+    "description": "Order not found message"
+  },
+  "clientOrderTitle": "Client order",
+  "@clientOrderTitle": {
+    "description": "Client order page title"
+  },
+  "total": "Total",
+  "@total": {
+    "description": "Total label"
+  },
+  "clientLabel": "Client",
+  "@clientLabel": {
+    "description": "Client label"
+  },
+  "startDelivery": "Start delivery",
+  "@startDelivery": {
+    "description": "Start delivery button text"
   }
 }
 

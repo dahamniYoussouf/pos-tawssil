@@ -89,6 +89,20 @@
   },
   "delivery": "التوصيل",
   "restaurant": "المطعم",
-  "minutesShort": "د"
+  "minutesShort": "د",
+  "taskDetails": "تفاصيل المهمة",
+  "arrive": "وصل",
+  "cancel": "إلغاء",
+  "cancelOrderQuestion": "لماذا تريد إلغاء هذا الطلب؟",
+  "cancelReasonDriverLate": "استغرق السائق وقتًا طويلاً للوصول",
+  "cancelReasonClientCanceled": "ألغى العميل طلبه",
+  "cancelReasonTechnicalIssue": "مشكلة تقنية مع الطلب",
+  "cancelReasonOther": "سبب آخر",
+  "confirm": "تأكيد",
+  "orderNotFound": "الطلب غير موجود",
+  "clientOrderTitle": "طلب العميل",
+  "total": "الإجمالي",
+  "clientLabel": "العميل",
+  "startDelivery": "بدء التوصيل"
 }
 
