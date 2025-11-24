@@ -1,7 +1,6 @@
+import 'package:delivery_app/l10n/app_localizations.dart';
 import 'package:delivery_app/src/core/res/color_app.dart';
 import 'package:delivery_app/src/features/orders/cubit/assigned_order_cubit.dart';
-import 'package:delivery_app/src/features/orders/pages/cancel_order_page.dart';
-import 'package:delivery_app/src/features/orders/pages/order_details_page.dart';
 import 'package:delivery_app/src/features/orders/widgets/order_assigned_card.dart';
 import 'package:delivery_app/src/features/orders/widgets/order_tracking_map_widget.dart';
 import 'package:flutter/material.dart';
@@ -17,6 +16,7 @@ class OrderAssignedPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return BlocProvider<AssignedOrderCubit>(
       create: (context) => AssignedOrderCubit()..fetchOrderById(orderId),
       child: Scaffold(
@@ -42,15 +42,15 @@ class OrderAssignedPage extends StatelessWidget {
                       onPressed: () {
                         context.read<AssignedOrderCubit>().fetchOrderById(orderId);
                       },
-                      child: const Text('Retry'),
+                      child: Text(localizations.retry),
                     ),
                   ],
                 ),
               );
             }
             if (state.order == null) {
-              return const Center(
-                child: Text('Order not found'),
+              return Center(
+                child: Text(localizations.orderNotFound),
               );
             }
             return Stack(
@@ -64,26 +64,6 @@ class OrderAssignedPage extends StatelessWidget {
                   right: 0,
                   child: OrderAssignedCard(
                     order: state.order!,
-                    isLoading: state.isActionLoading,
-                    onArrived: () {
-                      context.read<AssignedOrderCubit>().markOrderArrived(orderId);
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => OrderDetailsPage(
-                            orderId: orderId,
-                          ),
-                        ),
-                      );
-                    },
-                    onCancel: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => CancelOrderPage(
-                            orderId: orderId,
-                          ),
-                        ),
-                      );
-                    },
                   ),
                 ),
               ],
@@ -94,4 +74,3 @@ class OrderAssignedPage extends StatelessWidget {
     );
   }
 }
-

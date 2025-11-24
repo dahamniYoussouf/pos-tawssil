@@ -2,6 +2,7 @@ import 'package:delivery_app/src/core/utils/dependency_injection.dart';
 import 'package:delivery_app/src/features/orders/cubit/orders_cubit.dart';
 import 'package:delivery_app/src/features/orders/cubit/orders_state.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:delivery_app/l10n/app_localizations.dart';
 import 'package:delivery_app/src/core/res/color_app.dart';
@@ -231,33 +232,48 @@ class NearbyOrderCard extends StatelessWidget {
   }
 
   Widget _buildAcceptButton(BuildContext context, AppLocalizations localizations) {
-    bool isLoading = locator<OrdersCubit>().state is OrderActionLoading ? true : false;
-    return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        onPressed: () => locator<OrdersCubit>().assignOrderToDriver(order.id),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.limeGreen.withValues(alpha: 0.5),
-          padding: const EdgeInsets.symmetric(vertical: 14),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 0,
-        ),
-        child: isLoading
-            ? const CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.black),
-              )
-            : Text(
-                localizations.accept,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.black,
-                ),
+    return BlocBuilder<OrdersCubit, OrdersState>(
+      bloc: locator<OrdersCubit>(),
+      builder: (context, state) {
+        // Check if we're loading for this specific order
+        bool isLoading = state is OrderActionLoading && state.orderId == order.id;
+
+        // Enable button when:
+        // - Not loading for this order
+        // - In OrdersLoaded state
+        // - In OrderActionError state (to allow retry)
+        // - In OrderActionSuccess state (though this shouldn't happen for this order if successful)
+        bool isEnabled = !isLoading && (state is OrdersLoaded || state is OrderActionError || state is OrderActionSuccess || state is OrdersInitial || state is OrdersError);
+
+        return SizedBox(
+          width: double.infinity,
+          child: ElevatedButton(
+            onPressed: isEnabled ? () => locator<OrdersCubit>().assignOrderToDriver(order.id) : null,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.limeGreen.withValues(alpha: isEnabled ? 0.5 : 0.3),
+              padding: const EdgeInsets.symmetric(vertical: 14),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-      ),
+              elevation: 0,
+              disabledBackgroundColor: AppColors.limeGreen.withValues(alpha: 0.3),
+            ),
+            child: isLoading
+                ? const CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.black),
+                  )
+                : Text(
+                    localizations.accept,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: isEnabled ? AppColors.black : AppColors.black.withValues(alpha: 0.5),
+                    ),
+                  ),
+          ),
+        );
+      },
     );
   }
 }

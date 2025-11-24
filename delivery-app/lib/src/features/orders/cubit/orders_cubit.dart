@@ -139,13 +139,51 @@ class OrdersCubit extends Cubit<OrdersState> {
   }
 
   Future<void> assignOrderToDriver(String orderId) async {
-    if (isClosed || state is! OrdersLoaded) return;
-    final currentState = state as OrdersLoaded;
+    if (isClosed) return;
+
+    // Get orders and selectedStatus from current state
+    // Allow retry from OrderActionError or OrderActionLoading states
+    List<OrderModel> orders;
+    String selectedStatus;
+    bool hasMore;
+    int currentPage;
+
+    if (state is OrdersLoaded) {
+      final currentState = state as OrdersLoaded;
+      orders = currentState.orders;
+      selectedStatus = currentState.selectedStatus;
+      hasMore = currentState.hasMore;
+      currentPage = currentState.currentPage;
+    } else if (state is OrderActionError) {
+      final currentState = state as OrderActionError;
+      orders = currentState.orders;
+      selectedStatus = currentState.selectedStatus;
+      hasMore = true; // Default value, will be preserved from previous OrdersLoaded if needed
+      currentPage = 1; // Default value
+    } else if (state is OrderActionLoading) {
+      // Prevent duplicate calls while loading
+      final currentState = state as OrderActionLoading;
+      if (currentState.orderId == orderId) return;
+      orders = currentState.orders;
+      selectedStatus = currentState.selectedStatus;
+      hasMore = true;
+      currentPage = 1;
+    } else if (state is OrderActionSuccess) {
+      final currentState = state as OrderActionSuccess;
+      orders = currentState.orders;
+      selectedStatus = currentState.selectedStatus;
+      hasMore = true;
+      currentPage = 1;
+    } else {
+      // Not in a valid state to assign order
+      return;
+    }
+
     if (isClosed) return;
     emit(OrderActionLoading(
-      orders: currentState.orders,
+      orders: orders,
       orderId: orderId,
-      selectedStatus: currentState.selectedStatus,
+      selectedStatus: selectedStatus,
     ));
     final result = await _orderRepository.assignOrderToDriver(orderId);
     if (isClosed) return;
@@ -153,26 +191,27 @@ class OrdersCubit extends Cubit<OrdersState> {
       (error) {
         if (isClosed) return;
         emit(OrderActionError(
-          orders: currentState.orders,
+          orders: orders,
           message: error,
-          selectedStatus: currentState.selectedStatus,
+          selectedStatus: selectedStatus,
         ));
       },
       (_) {
         if (isClosed) return;
-        final updatedOrders = currentState.orders.where((order) => order.id != orderId).toList();
+        final updatedOrders = orders.where((order) => order.id != orderId).toList();
         emit(OrderActionSuccess(
           orders: updatedOrders,
           message: 'Order assigned to driver successfully',
-          selectedStatus: currentState.selectedStatus,
+          selectedStatus: selectedStatus,
           orderId: orderId,
         ));
         if (isClosed) return;
+        // Use the preserved hasMore and currentPage values
         emit(OrdersLoaded(
           orders: updatedOrders,
-          hasMore: currentState.hasMore,
-          currentPage: currentState.currentPage,
-          selectedStatus: currentState.selectedStatus,
+          hasMore: hasMore,
+          currentPage: currentPage,
+          selectedStatus: selectedStatus,
         ));
       },
     );

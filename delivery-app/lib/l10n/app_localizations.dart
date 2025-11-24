@@ -526,6 +526,12 @@ abstract class AppLocalizations {
   /// **'Arrive'**
   String get arrive;
 
+  /// Delivered button text
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get delivered;
+
   /// Cancel button text
   ///
   /// In en, this message translates to:

@@ -92,6 +92,7 @@
   "minutesShort": "min",
   "taskDetails": "Détails de la tâche",
   "arrive": "Arriver",
+  "delivered": "Livré",
   "cancel": "Annuler",
   "cancelOrderQuestion": "Pourquoi shouaitez-vous annuler cette commande?",
   "cancelReasonDriverLate": "Le livreur a mise trop de temps a arriver",

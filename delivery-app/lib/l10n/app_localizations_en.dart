@@ -231,6 +231,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get arrive => 'Arrive';
 
   @override
+  String get delivered => 'Delivered';
+
+  @override
   String get cancel => 'Cancel';
 
   @override

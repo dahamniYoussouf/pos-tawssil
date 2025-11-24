@@ -236,6 +236,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get arrive => 'Arriver';
 
   @override
+  String get delivered => 'Livré';
+
+  @override
   String get cancel => 'Annuler';
 
   @override

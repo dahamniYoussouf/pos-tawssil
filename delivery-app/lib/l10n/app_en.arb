@@ -227,6 +227,10 @@
   "@arrive": {
     "description": "Arrive button text"
   },
+  "delivered": "Delivered",
+  "@delivered": {
+    "description": "Delivered button text"
+  },
   "cancel": "Cancel",
   "@cancel": {
     "description": "Cancel button text"

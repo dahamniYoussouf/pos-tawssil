@@ -1,21 +1,19 @@
 import 'package:delivery_app/l10n/app_localizations.dart';
 import 'package:delivery_app/src/core/res/color_app.dart';
+import 'package:delivery_app/src/features/orders/cubit/assigned_order_cubit.dart';
 import 'package:delivery_app/src/features/orders/models/order_model.dart';
+import 'package:delivery_app/src/features/orders/pages/cancel_order_page.dart';
+import 'package:delivery_app/src/features/orders/pages/order_details_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class OrderAssignedCard extends StatelessWidget {
   final OrderModel order;
-  final VoidCallback onArrived;
-  final VoidCallback onCancel;
-  final bool isLoading;
 
   const OrderAssignedCard({
     super.key,
     required this.order,
-    required this.onArrived,
-    required this.onCancel,
-    this.isLoading = false,
   });
 
   String _formatPrice(double price) {
@@ -24,87 +22,111 @@ class OrderAssignedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    final String restaurantName = order.restaurantName ?? localizations.restaurant;
-    final String restaurantPhone = order.client?.phoneNumber ?? '';
-    final String restaurantAddress = order.restaurantAddress ?? '';
-    final String deliveryAddress = order.deliveryAddress ?? '';
-    final int estimatedTime = order.deliveryTimeMinutes ?? 12;
-    final double deliveryPrice = order.deliveryPrice ?? 300.0;
+    return BlocBuilder<AssignedOrderCubit, AssignedOrderState>(
+      builder: (context, state) {
+        final currentOrder = state.order ?? order;
+        final localizations = AppLocalizations.of(context)!;
+        final cubit = context.read<AssignedOrderCubit>();
+        final isLoading = state.isActionLoading;
+        final isDelivering = currentOrder.status == OrderStatus.delivering;
 
-    return Container(
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.black.withValues(alpha: 0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+        final String restaurantName = currentOrder.restaurantName ?? localizations.restaurant;
+        final String restaurantPhone = currentOrder.client?.phoneNumber ?? '';
+        final String restaurantAddress = currentOrder.restaurantAddress ?? '';
+        final String deliveryAddress = currentOrder.deliveryAddress ?? '';
+        final int estimatedTime = currentOrder.deliveryTimeMinutes ?? 0;
+        final double deliveryPrice = currentOrder.deliveryPrice ?? 000.0;
+        print("fouad : isLoading: $isLoading");
+        return Container(
+          margin: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.black.withValues(alpha: 0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _buildHeader(context, restaurantName),
-          const SizedBox(height: 16),
-          _buildInfoRow(
-            context,
-            Icons.phone,
-            restaurantPhone,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(context, restaurantName),
+              const SizedBox(height: 16),
+              _buildInfoRow(
+                context,
+                Icons.phone,
+                restaurantPhone,
+              ),
+              const SizedBox(height: 12),
+              _buildInfoRow(
+                context,
+                Icons.access_time,
+                '$estimatedTime${localizations.minutesShort}',
+              ),
+              const SizedBox(height: 12),
+              _buildInfoRow(
+                context,
+                Icons.location_on,
+                restaurantAddress.isNotEmpty ? restaurantAddress : deliveryAddress,
+              ),
+              const SizedBox(height: 12),
+              _buildInfoRow(
+                context,
+                Icons.description,
+                '${localizations.orderNumberLabel}: #${currentOrder.orderNumber}',
+              ),
+              const SizedBox(height: 16),
+              _buildExpandableRow(
+                context,
+                localizations,
+                localizations.taskDetails,
+                Icons.arrow_forward_ios,
+                onTap: () {},
+              ),
+              const SizedBox(height: 8),
+              _buildExpandableRow(
+                context,
+                localizations,
+                '${localizations.delivery}: ${_formatPrice(deliveryPrice)}',
+                Icons.arrow_forward_ios,
+                onTap: () {},
+              ),
+              const SizedBox(height: 8),
+              _buildExpandableRow(
+                context,
+                localizations,
+                localizations.totalPrice,
+                Icons.arrow_forward_ios,
+                onTap: () {},
+              ),
+              const SizedBox(height: 24),
+              _buildActionButton(
+                context,
+                localizations,
+                cubit,
+                currentOrder.id,
+                isLoading,
+                isDelivering,
+              ),
+              if (!isDelivering) ...[
+                const SizedBox(height: 12),
+                _buildCancelButton(
+                  context,
+                  localizations,
+                  cubit,
+                  currentOrder.id,
+                  isLoading,
+                ),
+              ],
+              const SizedBox(height: 16),
+            ],
           ),
-          const SizedBox(height: 12),
-          _buildInfoRow(
-            context,
-            Icons.access_time,
-            '$estimatedTime${localizations.minutesShort}',
-          ),
-          const SizedBox(height: 12),
-          _buildInfoRow(
-            context,
-            Icons.location_on,
-            restaurantAddress.isNotEmpty ? restaurantAddress : deliveryAddress,
-          ),
-          const SizedBox(height: 12),
-          _buildInfoRow(
-            context,
-            Icons.description,
-            '${localizations.orderNumberLabel}: #${order.orderNumber}',
-          ),
-          const SizedBox(height: 16),
-          _buildExpandableRow(
-            context,
-            localizations,
-            localizations.taskDetails,
-            Icons.arrow_forward_ios,
-            onTap: () {},
-          ),
-          const SizedBox(height: 8),
-          _buildExpandableRow(
-            context,
-            localizations,
-            '${localizations.delivery}: ${_formatPrice(deliveryPrice)}',
-            Icons.arrow_forward_ios,
-            onTap: () {},
-          ),
-          const SizedBox(height: 8),
-          _buildExpandableRow(
-            context,
-            localizations,
-            localizations.totalPrice,
-            Icons.arrow_forward_ios,
-            onTap: () {},
-          ),
-          const SizedBox(height: 24),
-          _buildArrivedButton(context, localizations),
-          const SizedBox(height: 12),
-          _buildCancelButton(context, localizations),
-          const SizedBox(height: 16),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -194,13 +216,38 @@ class OrderAssignedCard extends StatelessWidget {
     );
   }
 
-  Widget _buildArrivedButton(BuildContext context, AppLocalizations localizations) {
+  Widget _buildActionButton(
+    BuildContext context,
+    AppLocalizations localizations,
+    AssignedOrderCubit cubit,
+    String orderId,
+    bool isLoading,
+    bool isDelivering,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: SizedBox(
         width: double.infinity,
         child: ElevatedButton(
-          onPressed: isLoading ? null : onArrived,
+          onPressed: isLoading
+              ? null
+              : () {
+                  if (isDelivering) {
+                    cubit.completeDelivery(orderId);
+                  } else {
+                    cubit.markOrderArrived(orderId).whenComplete(() {
+                      if (context.mounted) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => OrderDetailsPage(
+                              orderId: orderId,
+                            ),
+                          ),
+                        );
+                      }
+                    });
+                  }
+                },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.limeGreen,
             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -215,7 +262,7 @@ class OrderAssignedCard extends StatelessWidget {
                   valueColor: AlwaysStoppedAnimation<Color>(AppColors.black),
                 )
               : Text(
-                  localizations.arrive,
+                  isDelivering ? localizations.delivered : localizations.arrive,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -227,13 +274,29 @@ class OrderAssignedCard extends StatelessWidget {
     );
   }
 
-  Widget _buildCancelButton(BuildContext context, AppLocalizations localizations) {
+  Widget _buildCancelButton(
+    BuildContext context,
+    AppLocalizations localizations,
+    AssignedOrderCubit cubit,
+    String orderId,
+    bool isLoading,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: SizedBox(
         width: double.infinity,
         child: OutlinedButton(
-          onPressed: isLoading ? null : onCancel,
+          onPressed: isLoading
+              ? null
+              : () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => CancelOrderPage(
+                        orderId: orderId,
+                      ),
+                    ),
+                  );
+                },
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: AppColors.redColor, width: 1),
             padding: const EdgeInsets.symmetric(vertical: 16),

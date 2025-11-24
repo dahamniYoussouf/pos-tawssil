@@ -231,6 +231,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get arrive => 'وصل';
 
   @override
+  String get delivered => 'تم التوصيل';
+
+  @override
   String get cancel => 'إلغاء';
 
   @override

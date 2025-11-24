@@ -92,6 +92,7 @@
   "minutesShort": "د",
   "taskDetails": "تفاصيل المهمة",
   "arrive": "وصل",
+  "delivered": "تم التوصيل",
   "cancel": "إلغاء",
   "cancelOrderQuestion": "لماذا تريد إلغاء هذا الطلب؟",
   "cancelReasonDriverLate": "استغرق السائق وقتًا طويلاً للوصول",
