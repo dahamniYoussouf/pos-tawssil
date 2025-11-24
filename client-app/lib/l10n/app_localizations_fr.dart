@@ -579,6 +579,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orderDelayed => 'Commande retardée';
 
   @override
+  String get orderDeclinedByRestaurant => 'Commande Refusée';
+
+  @override
+  String get orderDeclinedMessage =>
+      'Nous sommes désolés, mais le restaurant a refusé votre commande. Vous pouvez essayer de commander dans un autre restaurant.';
+
+  @override
+  String get close => 'Fermer';
+
+  @override
   String get errorOrderNotFound => 'Commande non trouvée';
 
   @override

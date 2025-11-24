@@ -1,3 +1,4 @@
+import 'package:client_app/src/core/utils/dependency_injection.dart';
 import 'package:flutter/material.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import 'package:client_app/src/core/res/color_app.dart';
@@ -5,16 +6,13 @@ import 'package:client_app/src/features/home/pages/home_page.dart';
 import 'package:client_app/src/features/order/cubit/order_cubit.dart';
 
 class ValidateOrderButtonWidget extends StatelessWidget {
-  final OrderCubit orderCubit;
-
   const ValidateOrderButtonWidget({
     super.key,
-    required this.orderCubit,
   });
 
   void _onValidatePressed(BuildContext context) {
     // Stop polling
-    orderCubit.stopPolling();
+    locator<OrderCubit>().stopPolling();
 
     // Navigate to home page and remove all previous routes
     Navigator.pushAndRemoveUntil(

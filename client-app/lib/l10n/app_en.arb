@@ -750,6 +750,18 @@
   "@orderDelayed": {
     "description": "Order delayed message"
   },
+  "orderDeclinedByRestaurant": "Order Declined",
+  "@orderDeclinedByRestaurant": {
+    "description": "Order declined by restaurant title"
+  },
+  "orderDeclinedMessage": "We're sorry, but the restaurant has declined your order. You can try ordering from another restaurant.",
+  "@orderDeclinedMessage": {
+    "description": "Order declined message"
+  },
+  "close": "Close",
+  "@close": {
+    "description": "Close button text"
+  },
   "errorOrderNotFound": "Order not found",
   "@errorOrderNotFound": {
     "description": "Order not found error"

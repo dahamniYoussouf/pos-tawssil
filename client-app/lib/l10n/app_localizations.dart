@@ -1120,6 +1120,24 @@ abstract class AppLocalizations {
   /// **'Order delayed'**
   String get orderDelayed;
 
+  /// Order declined by restaurant title
+  ///
+  /// In en, this message translates to:
+  /// **'Order Declined'**
+  String get orderDeclinedByRestaurant;
+
+  /// Order declined message
+  ///
+  /// In en, this message translates to:
+  /// **'We\'re sorry, but the restaurant has declined your order. You can try ordering from another restaurant.'**
+  String get orderDeclinedMessage;
+
+  /// Close button text
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
   /// Order not found error
   ///
   /// In en, this message translates to:

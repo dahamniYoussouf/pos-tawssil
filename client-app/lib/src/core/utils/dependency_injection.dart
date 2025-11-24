@@ -1,3 +1,5 @@
+import 'package:client_app/src/features/order/index.dart';
+import 'package:client_app/src/features/order/widgets/cubit/order_tracking_map_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:client_app/src/core/localization/locale_cubit.dart';
@@ -21,8 +23,8 @@ void setupLocator() {
   locator.registerLazySingleton<Dio>(() => Dio(options)
     ..interceptors.add(PrettyDioLogger(
       requestHeader: false,
-      requestBody: true,
-      responseBody: true,
+      requestBody: false,
+      responseBody: false,
       responseHeader: false,
       request: true,
       error: true,
@@ -37,4 +39,9 @@ void setupLocator() {
   locator.registerLazySingleton<TokenStorageService>(
     () => TokenStorageService(),
   );
+  locator.registerLazySingleton<OrderService>(() => OrderService());
+
+  locator.registerLazySingleton<OrderCubit>(() => OrderCubit(orderService: locator<OrderService>()));
+
+  locator.registerLazySingleton<OrderTrackingMapCubit>(() => OrderTrackingMapCubit());
 }

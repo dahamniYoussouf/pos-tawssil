@@ -72,7 +72,7 @@ class MyApp extends StatelessWidget {
           create: (context) => CategoryCubit(restaurantService: RestaurantService()),
         ),
         BlocProvider<OrderCubit>(
-          create: (context) => OrderCubit(orderService: OrderService()),
+          create: (context) => locator<OrderCubit>(),
         ),
       ],
       child: BlocBuilder<LocaleCubit, LocaleState>(

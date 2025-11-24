@@ -1,3 +1,4 @@
+import 'package:client_app/src/core/utils/dependency_injection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/l10n/app_localizations.dart';
@@ -10,6 +11,7 @@ import 'package:client_app/src/features/order/widgets/order_tracking_map_widget.
 import 'package:client_app/src/features/order/widgets/restaurant_info_card_widget.dart';
 import 'package:client_app/src/features/order/widgets/status_card_widget.dart';
 import 'package:client_app/src/features/order/widgets/validate_order_button_widget.dart';
+import 'package:client_app/src/features/order/widgets/declined_order_widget.dart';
 import '../cubit/order_cubit.dart';
 import '../cubit/order_state.dart';
 import '../models/order_model.dart';
@@ -24,24 +26,22 @@ class OrderTrackingPage extends StatefulWidget {
 class _OrderTrackingPageState extends State<OrderTrackingPage> {
   OrderModel? _currentOrder;
   bool _isInitialLoad = true;
-  late final OrderCubit _orderCubit;
 
   @override
   void initState() {
     super.initState();
-    _orderCubit = context.read<OrderCubit>();
     _executeInitialLoad();
   }
 
   @override
   void dispose() {
-    _orderCubit.stopPolling();
+    locator<OrderCubit>().stopPolling();
     super.dispose();
   }
 
   void _executeInitialLoad() {
-    _orderCubit.fetchOrder(widget.orderId);
-    _orderCubit.startPolling();
+    locator<OrderCubit>().fetchOrder(widget.orderId);
+    locator<OrderCubit>().startPolling();
   }
 
   @override
@@ -98,8 +98,16 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     if (state is OrderError && _isInitialLoad) {
       return _buildInitialError(context, state, localization);
     }
+    // Check if order is declined
+    if (state is OrderRefused) {
+      return DeclinedOrderWidget(refusalReason: state.reason);
+    }
     final OrderModel? order = _extractOrderFromStateOrNull(state) ?? _currentOrder;
     if (order != null) {
+      // Also check if order status is declined
+      if (order.isRefused) {
+        return DeclinedOrderWidget(refusalReason: order.refusalReason);
+      }
       return _buildOrderTrackingContent(context, order, localization);
     }
     return const Center(child: CircularProgressIndicator());
@@ -121,7 +129,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
           ElevatedButton(
             onPressed: () {
               _isInitialLoad = true;
-              _orderCubit.refreshOrder();
+              locator<OrderCubit>().refreshOrder();
             },
             child: Text(localization.retry),
           ),
@@ -182,7 +190,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
             child: IconButton(
               icon: const Icon(Icons.arrow_back, color: ColorApp.black),
               onPressed: () {
-                _orderCubit.stopPolling();
+                locator<OrderCubit>().stopPolling();
                 Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomePage()), (route) => false);
               },
             ),
@@ -266,7 +274,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
         const SizedBox(height: 16),
         OrderTimeline(order: order, localization: localization),
         const SizedBox(height: 16),
-        if (order.isDelivered) ValidateOrderButtonWidget(orderCubit: _orderCubit),
+        if (order.isDelivered) const ValidateOrderButtonWidget(),
       ],
     );
   }

@@ -561,6 +561,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get orderDelayed => 'تأخر الطلب';
 
   @override
+  String get orderDeclinedByRestaurant => 'تم رفض الطلب';
+
+  @override
+  String get orderDeclinedMessage =>
+      'نأسف، لكن المطعم رفض طلبك. يمكنك محاولة الطلب من مطعم آخر.';
+
+  @override
+  String get close => 'إغلاق';
+
+  @override
   String get errorOrderNotFound => 'الطلب غير موجود';
 
   @override
