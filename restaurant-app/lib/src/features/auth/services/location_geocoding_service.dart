@@ -10,7 +10,6 @@ class LocationGeocodingService {
 
   Future<LocationSelection> fetchCoordinates({required String address}) async {
     final List<Location> locations = await locationFromAddress(address);
-    print("fouad : locations: $locations");
     if (locations.isEmpty) {
       throw const LocationNotFoundException();
     }

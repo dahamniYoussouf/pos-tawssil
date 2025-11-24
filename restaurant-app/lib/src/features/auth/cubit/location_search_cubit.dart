@@ -19,7 +19,6 @@ class LocationSearchCubit extends Cubit<LocationSearchState> {
     required String genericErrorMessage,
   }) async {
     final String trimmedQuery = query.trim();
-    print("fouad : trimmedQuery: $trimmedQuery");
     if (trimmedQuery.isEmpty) {
       emit(LocationSearchError(message: emptyQueryMessage));
       return;
@@ -27,12 +26,10 @@ class LocationSearchCubit extends Cubit<LocationSearchState> {
     emit(const LocationSearchLoading());
     try {
       final LocationSelection selection = await _geocodingService.fetchCoordinates(address: trimmedQuery);
-      print("fouad : selection: $selection");
       emit(LocationSearchSuccess(selection: selection));
     } on LocationNotFoundException {
       emit(LocationSearchError(message: notFoundMessage));
     } catch (_) {
-      print("fouad : error: $_");
       emit(LocationSearchError(message: genericErrorMessage));
     }
   }

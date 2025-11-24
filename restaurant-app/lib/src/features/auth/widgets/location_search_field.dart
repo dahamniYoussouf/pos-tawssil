@@ -59,8 +59,6 @@ class _LocationSearchFieldBodyState extends State<_LocationSearchFieldBody> {
   }
 
   void _handleSearch() {
-    print("fouad : _handleSearch");
-    print("fouad : widget.controller.text: ${widget.controller.text}");
     final AppLocalizations localizations = AppLocalizations.of(context)!;
     context.read<LocationSearchCubit>().searchLocation(
           query: widget.controller.text,

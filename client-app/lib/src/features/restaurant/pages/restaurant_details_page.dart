@@ -175,7 +175,6 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
     }
     await context.read<LocationCubit>().loadSavedLocation();
     final locationState = context.read<LocationCubit>().state;
-    print(locationState);
     if (locationState is LocationSuccess) {
       String deliveryAddress = locationState.fullAddress;
       double Latitude = locationState.latitude ?? 0.0;

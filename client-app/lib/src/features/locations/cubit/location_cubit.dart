@@ -92,7 +92,6 @@ class LocationCubit extends Cubit<LocationState> {
     emit(LocationLoading());
     try {
       final data = await _locationRepository.getLocationData();
-      print(data);
       final area = data['area'];
       final city = data['city'];
       final fullAddress = data['fullAddress'];
@@ -100,7 +99,6 @@ class LocationCubit extends Cubit<LocationState> {
       double? longitude = double.tryParse(data['longitude'].toString());
 
       if (area != null && city != null && fullAddress != null) {
-        print("success");
         emit(LocationSuccess(
           area: area,
           city: city,
@@ -108,13 +106,10 @@ class LocationCubit extends Cubit<LocationState> {
           latitude: latitude,
           longitude: longitude,
         ));
-        print("state : ${state}");
       } else {
-        print("error 1");
         emit(const LocationError(message: 'No saved location data.'));
       }
     } catch (e) {
-      print(e);
       emit(LocationError(message: 'Failed to load saved location: ${e.toString()}'));
     }
   }
