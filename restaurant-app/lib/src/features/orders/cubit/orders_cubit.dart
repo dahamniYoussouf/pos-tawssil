@@ -95,6 +95,7 @@ class OrdersCubit extends Cubit<OrdersState> {
     emit(OrderActionLoading(
       orders: currentState.orders,
       orderId: orderId,
+      actionType: OrderActionType.accept,
       selectedStatus: currentState.selectedStatus,
     ));
     final result = await _orderRepository.acceptOrder(orderId);
@@ -105,18 +106,13 @@ class OrdersCubit extends Cubit<OrdersState> {
         selectedStatus: currentState.selectedStatus,
       )),
       (_) {
-        final updatedOrders = currentState.orders.where((order) => order.id != orderId).toList();
         emit(OrderActionSuccess(
-          orders: updatedOrders,
+          orders: currentState.orders,
           message: 'Order accepted successfully',
           selectedStatus: currentState.selectedStatus,
         ));
-        emit(OrdersLoaded(
-          orders: updatedOrders,
-          hasMore: currentState.hasMore,
-          currentPage: currentState.currentPage,
-          selectedStatus: currentState.selectedStatus,
-        ));
+        // Refresh orders with the same status after successful action
+        refreshOrders(status: currentState.selectedStatus);
       },
     );
   }
@@ -127,6 +123,7 @@ class OrdersCubit extends Cubit<OrdersState> {
     emit(OrderActionLoading(
       orders: currentState.orders,
       orderId: orderId,
+      actionType: OrderActionType.cancel,
       selectedStatus: currentState.selectedStatus,
     ));
     final result = await _orderRepository.cancelOrder(orderId);
@@ -137,18 +134,13 @@ class OrdersCubit extends Cubit<OrdersState> {
         selectedStatus: currentState.selectedStatus,
       )),
       (_) {
-        final updatedOrders = currentState.orders.where((order) => order.id != orderId).toList();
         emit(OrderActionSuccess(
-          orders: updatedOrders,
+          orders: currentState.orders,
           message: 'Order canceled successfully',
           selectedStatus: currentState.selectedStatus,
         ));
-        emit(OrdersLoaded(
-          orders: updatedOrders,
-          hasMore: currentState.hasMore,
-          currentPage: currentState.currentPage,
-          selectedStatus: currentState.selectedStatus,
-        ));
+        // Refresh orders with the same status after successful action
+        refreshOrders(status: currentState.selectedStatus);
       },
     );
   }

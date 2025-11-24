@@ -262,12 +262,15 @@ class OrderCard extends StatelessWidget {
     return Visibility(
         visible: order.status == OrderStatus.pending,
         child: BlocBuilder<OrdersCubit, OrdersState>(builder: (context, state) {
-          final isLoading = state is OrderActionLoading && state.orderId == order.id;
+          final actionLoading = state is OrderActionLoading && state.orderId == order.id;
+          final isCancelLoading = actionLoading && state.actionType == OrderActionType.cancel;
+          final isAcceptLoading = actionLoading && state.actionType == OrderActionType.accept;
+          
           return Row(
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: isLoading ? null : () => context.read<OrdersCubit>().cancelOrder(order.id),
+                  onPressed: (isCancelLoading || isAcceptLoading) ? null : () => context.read<OrdersCubit>().cancelOrder(order.id),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     side: const BorderSide(color: AppColors.primaryColor),
@@ -275,20 +278,29 @@ class OrderCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: Text(
-                    localizations.refuse,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.black,
-                    ),
-                  ),
+                  child: isCancelLoading
+                      ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryColor),
+                          ),
+                        )
+                      : Text(
+                          localizations.refuse,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.black,
+                          ),
+                        ),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: isLoading ? null : () => context.read<OrdersCubit>().acceptOrder(order.id),
+                  onPressed: (isCancelLoading || isAcceptLoading) ? null : () => context.read<OrdersCubit>().acceptOrder(order.id),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 12),
@@ -296,7 +308,7 @@ class OrderCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: isLoading
+                  child: isAcceptLoading
                       ? const SizedBox(
                           width: 20,
                           height: 20,

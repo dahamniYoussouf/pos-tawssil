@@ -85,6 +85,33 @@ class _OrdersPageState extends State<OrdersPage> {
         return _buildEmptyState();
       }
       return _buildOrdersList(state);
+    } else if (state is OrderActionLoading) {
+      // Show orders list with loading buttons during action
+      if (state.orders.isEmpty) {
+        return _buildEmptyState();
+      }
+      return _buildOrdersList(OrdersLoaded(
+        orders: state.orders,
+        selectedStatus: state.selectedStatus,
+      ));
+    } else if (state is OrderActionSuccess) {
+      // Show orders list after successful action (will be refreshed)
+      if (state.orders.isEmpty) {
+        return _buildEmptyState();
+      }
+      return _buildOrdersList(OrdersLoaded(
+        orders: state.orders,
+        selectedStatus: state.selectedStatus,
+      ));
+    } else if (state is OrderActionError) {
+      // Show orders list even when action fails
+      if (state.orders.isEmpty) {
+        return _buildEmptyState();
+      }
+      return _buildOrdersList(OrdersLoaded(
+        orders: state.orders,
+        selectedStatus: state.selectedStatus,
+      ));
     } else if (state is OrdersError) {
       return _buildErrorState(state.message);
     }
@@ -156,33 +183,42 @@ class _OrdersPageState extends State<OrdersPage> {
 
   Widget _buildEmptyState() {
     final localizations = AppLocalizations.of(context)!;
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.inbox_outlined,
-            size: 80,
-            color: AppColors.greyLight,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            localizations.noOrders,
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              color: AppColors.grey,
+    return RefreshIndicator(
+      onRefresh: _refreshOrders,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height * 0.7,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.inbox_outlined,
+                  size: 80,
+                  color: AppColors.greyLight,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  localizations.noOrders,
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w500,
+                    color: AppColors.grey,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  localizations.noPendingOrders,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: AppColors.greyDark,
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            localizations.noPendingOrders,
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.greyDark,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

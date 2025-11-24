@@ -6,7 +6,7 @@ class OrderStatus {
   static const String arrived = 'arrived';
   static const String delivering = 'delivering';
   static const String delivered = 'delivered';
-  static const String refused = 'refused';
+  static const String declined = 'declined';
   static const String delayed = 'delayed';
   static const String readyToCollect = 'readyToCollect';
   static const String collected = 'collected';
@@ -454,6 +454,6 @@ class OrderModel {
 
   bool get isDelivering => status == OrderStatus.delivering;
   bool get isDelivered => status == OrderStatus.delivered;
-  bool get isRefused => status == OrderStatus.refused;
+  bool get isRefused => status == OrderStatus.declined;
   bool get isDelayed => status == OrderStatus.delayed;
 }

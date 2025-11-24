@@ -20,7 +20,7 @@ class StatusSelector extends StatelessWidget {
     OrderStatus.arrived,
     OrderStatus.delivering,
     OrderStatus.delivered,
-    OrderStatus.refused,
+    OrderStatus.declined,
   ];
 
   String _getStatusLabel(String status) {
@@ -39,7 +39,7 @@ class StatusSelector extends StatelessWidget {
         return 'Delivering';
       case OrderStatus.delivered:
         return 'Delivered';
-      case OrderStatus.refused:
+      case OrderStatus.declined:
         return 'Declined';
       default:
         return status;

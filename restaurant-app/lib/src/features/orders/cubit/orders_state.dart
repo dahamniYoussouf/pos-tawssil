@@ -1,6 +1,11 @@
 import 'package:equatable/equatable.dart';
 import 'package:restaurant_app/src/features/orders/models/order_model.dart';
 
+enum OrderActionType {
+  accept,
+  cancel,
+}
+
 abstract class OrdersState extends Equatable {
   final String selectedStatus;
 
@@ -63,15 +68,17 @@ class OrdersError extends OrdersState {
 class OrderActionLoading extends OrdersState {
   final List<OrderModel> orders;
   final String orderId;
+  final OrderActionType actionType;
 
   const OrderActionLoading({
     required this.orders,
     required this.orderId,
+    required this.actionType,
     required super.selectedStatus,
   });
 
   @override
-  List<Object?> get props => [orders, orderId, selectedStatus];
+  List<Object?> get props => [orders, orderId, actionType, selectedStatus];
 }
 
 class OrderActionSuccess extends OrdersState {
