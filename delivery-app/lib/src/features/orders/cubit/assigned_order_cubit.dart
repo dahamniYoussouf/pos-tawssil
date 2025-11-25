@@ -78,6 +78,8 @@ class AssignedOrderCubit extends Cubit<AssignedOrderState> {
       },
       (_) {
         if (isClosed) return;
+        emit(state.copyWith(isActionLoading: false, errorMessage: null));
+        if (isClosed) return;
         fetchOrderById(orderId);
       },
     );
@@ -91,12 +93,11 @@ class AssignedOrderCubit extends Cubit<AssignedOrderState> {
     result.fold(
       (error) {
         if (isClosed) return;
-        emit(state.copyWith(
-          isActionLoading: false,
-          errorMessage: error,
-        ));
+        emit(state.copyWith(isActionLoading: false, errorMessage: error));
       },
       (_) {
+        if (isClosed) return;
+        emit(state.copyWith(isActionLoading: false, errorMessage: null));
         if (isClosed) return;
         fetchOrderById(orderId);
       },
@@ -146,4 +147,3 @@ class AssignedOrderCubit extends Cubit<AssignedOrderState> {
     );
   }
 }
-

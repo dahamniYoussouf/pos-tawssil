@@ -1,5 +1,6 @@
 import 'package:delivery_app/l10n/app_localizations.dart';
 import 'package:delivery_app/src/core/res/color_app.dart';
+import 'package:delivery_app/src/features/home/pages/home_page.dart';
 import 'package:delivery_app/src/features/orders/cubit/assigned_order_cubit.dart';
 import 'package:delivery_app/src/features/orders/models/order_model.dart';
 import 'package:delivery_app/src/features/orders/pages/cancel_order_page.dart';
@@ -26,17 +27,15 @@ class OrderAssignedCard extends StatelessWidget {
       builder: (context, state) {
         final currentOrder = state.order ?? order;
         final localizations = AppLocalizations.of(context)!;
-        final cubit = context.read<AssignedOrderCubit>();
         final isLoading = state.isActionLoading;
-        final isDelivering = currentOrder.status == OrderStatus.delivering;
-
+        final isDelivering = OrderStatus.delivering == state.order?.status;
+        print("fouad : status: ${state.order?.status}");
         final String restaurantName = currentOrder.restaurantName ?? localizations.restaurant;
         final String restaurantPhone = currentOrder.client?.phoneNumber ?? '';
         final String restaurantAddress = currentOrder.restaurantAddress ?? '';
         final String deliveryAddress = currentOrder.deliveryAddress ?? '';
         final int estimatedTime = currentOrder.deliveryTimeMinutes ?? 0;
         final double deliveryPrice = currentOrder.deliveryPrice ?? 000.0;
-        print("fouad : isLoading: $isLoading");
         return Container(
           margin: const EdgeInsets.all(16),
           decoration: BoxDecoration(
@@ -107,7 +106,6 @@ class OrderAssignedCard extends StatelessWidget {
               _buildActionButton(
                 context,
                 localizations,
-                cubit,
                 currentOrder.id,
                 isLoading,
                 isDelivering,
@@ -117,7 +115,6 @@ class OrderAssignedCard extends StatelessWidget {
                 _buildCancelButton(
                   context,
                   localizations,
-                  cubit,
                   currentOrder.id,
                   isLoading,
                 ),
@@ -219,7 +216,6 @@ class OrderAssignedCard extends StatelessWidget {
   Widget _buildActionButton(
     BuildContext context,
     AppLocalizations localizations,
-    AssignedOrderCubit cubit,
     String orderId,
     bool isLoading,
     bool isDelivering,
@@ -233,14 +229,25 @@ class OrderAssignedCard extends StatelessWidget {
               ? null
               : () {
                   if (isDelivering) {
-                    cubit.completeDelivery(orderId);
+                    context.read<AssignedOrderCubit>().completeDelivery(orderId).whenComplete(() {
+                      // delivered status go home pick new one
+                      if (context.mounted) {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => HomePage(),
+                          ),
+                        );
+                      }
+                    });
                   } else {
+                    final cubit = context.read<AssignedOrderCubit>();
                     cubit.markOrderArrived(orderId).whenComplete(() {
                       if (context.mounted) {
                         Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (context) => OrderDetailsPage(
                               orderId: orderId,
+                              cubit: cubit,
                             ),
                           ),
                         );
@@ -277,7 +284,6 @@ class OrderAssignedCard extends StatelessWidget {
   Widget _buildCancelButton(
     BuildContext context,
     AppLocalizations localizations,
-    AssignedOrderCubit cubit,
     String orderId,
     bool isLoading,
   ) {

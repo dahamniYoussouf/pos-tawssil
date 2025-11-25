@@ -10,10 +10,12 @@ import 'package:intl/intl.dart';
 
 class OrderDetailsPage extends StatefulWidget {
   final String orderId;
+  final AssignedOrderCubit? cubit;
 
   const OrderDetailsPage({
     super.key,
     required this.orderId,
+    this.cubit,
   });
 
   @override
@@ -30,8 +32,13 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    return BlocProvider<AssignedOrderCubit>(
-      create: (context) => AssignedOrderCubit()..fetchOrderById(widget.orderId),
+    final cubit = widget.cubit ?? AssignedOrderCubit();
+
+    // Always refresh the order to ensure we have the latest data
+    cubit.fetchOrderById(widget.orderId);
+
+    return BlocProvider<AssignedOrderCubit>.value(
+      value: cubit,
       child: BlocListener<AssignedOrderCubit, AssignedOrderState>(
         listener: (context, state) {
           if (state.isActionLoading) {
@@ -168,26 +175,6 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             ],
           ),
           const SizedBox(height: 12),
-          // Row(
-          //   crossAxisAlignment: CrossAxisAlignment.start,
-          //   children: [
-          //     const Icon(
-          //       Icons.description,
-          //       size: 18,
-          //       color: AppColors.grey,
-          //     ),
-          //     const SizedBox(width: 8),
-          //     Expanded(
-          //       child: Text(
-          //          '',
-          //         style: const TextStyle(
-          //           fontSize: 14,
-          //           color: AppColors.black,
-          //         ),
-          //       ),
-          //     ),
-          //   ],
-          // ),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -354,8 +341,11 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                     key: _swipeButtonKey,
                     label: localizations.startDelivery,
                     onConfirm: () {
-                      context.read<AssignedOrderCubit>().startDelivery(order.id);
-                      Navigator.of(context).pop();
+                      context.read<AssignedOrderCubit>().startDelivery(order.id).whenComplete(() {
+                        if (context.mounted) {
+                          Navigator.of(context).pop();
+                        }
+                      });
                     },
                   ),
           ),
