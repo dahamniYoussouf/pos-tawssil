@@ -81,7 +81,7 @@ class _RestaurantAutocompletePageState extends State<RestaurantAutocompletePage>
 
       // Fallback to all restaurants if nearby failed or no coords
       if (results.isEmpty) {
-        final allRestaurants = await _restaurantService.getRestaurants();
+        final allRestaurants = <RestaurantModel>[];
         final q = query.toLowerCase().trim();
         results = allRestaurants.where((r) => r.name.toLowerCase().contains(q) || r.description.toLowerCase().contains(q)).toList();
       }

@@ -52,41 +52,6 @@ class RestaurantService extends BaseApiService {
           radius: radius,
         );
       }
-      return await getRestaurants();
-    } catch (_) {
-      return [];
-    }
-  }
-
-  Future<List<RestaurantModel>> getRestaurants() async {
-    try {
-      final accessToken = await _tokenStorageService.getAccessToken();
-      dio.options.headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        if (accessToken != null) 'Authorization': 'Bearer $accessToken',
-      };
-      final response = await dio.get(ApiConfig.restaurantsUrl);
-      final result = response.data is Map ? response.data : jsonDecode(response.data);
-      if (response.statusCode == 200 && result['success'] == true && result.containsKey('data')) {
-        final List<dynamic> restaurantsList = result['data'];
-        if (restaurantsList.isEmpty) {
-          return [];
-        }
-        List<RestaurantModel> parsedRestaurants = [];
-        for (int i = 0; i < restaurantsList.length; i++) {
-          try {
-            final restaurantData = restaurantsList[i] as Map<String, dynamic>;
-            final restaurant = RestaurantModel.fromJson(restaurantData);
-            parsedRestaurants.add(restaurant);
-          } catch (e) {
-            // Error parsing restaurant
-          }
-        }
-        return parsedRestaurants;
-      }
-      return [];
-    } on DioException {
       return [];
     } catch (_) {
       return [];
@@ -159,7 +124,7 @@ class RestaurantService extends BaseApiService {
 
   Future<List<RestaurantModel>> searchRestaurants({required String query, int maxResults = 50}) async {
     try {
-      final allRestaurants = await getRestaurants();
+      final allRestaurants = <RestaurantModel>[];
       if (query.isEmpty) {
         return allRestaurants.take(maxResults).toList();
       }
@@ -173,56 +138,6 @@ class RestaurantService extends BaseApiService {
           .take(maxResults)
           .toList();
     } catch (e) {
-      return [];
-    }
-  }
-
-  Future<List<RestaurantModel>> getRestaurantsByCategory(List<String> categories, double lat, double lng, {int radius = 50000, int page = 1, int pageSize = 20}) async {
-    try {
-      final accessToken = await _tokenStorageService.getAccessToken();
-      dio.options.headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        if (accessToken != null) 'Authorization': 'Bearer $accessToken',
-      };
-      final response = await dio.post(
-        'https://tawssilbackyou.onrender.com/restaurant/nearbyfilter',
-        data: {
-          'lat': lat.toString(),
-          'lng': lng.toString(),
-          'radius': radius,
-          'categories': categories,
-          'page': page,
-          'pageSize': pageSize,
-        },
-      );
-      final result = response.data is Map ? response.data : jsonDecode(response.data);
-      if (response.statusCode == 200 && result['success'] == true && result.containsKey('data')) {
-        final List<dynamic> restaurantsList = result['data'];
-        if (restaurantsList.isEmpty) {
-          return [];
-        }
-        List<RestaurantModel> parsedRestaurants = [];
-        for (int i = 0; i < restaurantsList.length; i++) {
-          try {
-            final restaurantData = restaurantsList[i] as Map<String, dynamic>;
-            final restaurant = RestaurantModel.fromJson(restaurantData);
-            parsedRestaurants.add(restaurant);
-          } catch (e) {
-            // Error parsing restaurant
-          }
-        }
-        parsedRestaurants.sort((a, b) {
-          if (a.isPremium && !b.isPremium) return -1;
-          if (!a.isPremium && b.isPremium) return 1;
-          return b.rating.compareTo(a.rating);
-        });
-        return parsedRestaurants;
-      }
-      return [];
-    } on DioException {
-      return [];
-    } catch (_) {
       return [];
     }
   }

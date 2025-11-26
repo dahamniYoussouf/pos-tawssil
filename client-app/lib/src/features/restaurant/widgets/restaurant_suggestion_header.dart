@@ -1,3 +1,4 @@
+import 'package:client_app/src/features/auth/pages/phone_number_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/src/features/auth/cubit/auth_cubit.dart';
@@ -73,7 +74,11 @@ class RestaurantSuggestionHeader extends StatelessWidget {
                       child: IconButton(
                         icon: Icon(Icons.logout_outlined, size: 22, color: Colors.black),
                         onPressed: () {
-                          context.read<AuthCubit>().logout();
+                          context.read<AuthCubit>().logout().then(
+                            (value) {
+                              Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => PhoneNumberPage()), (route) => false);
+                            },
+                          );
                         },
                         padding: EdgeInsets.zero,
                       ),

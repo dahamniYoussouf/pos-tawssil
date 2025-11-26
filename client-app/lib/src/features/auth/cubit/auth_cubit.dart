@@ -96,6 +96,22 @@ class AuthCubit extends HydratedCubit<AuthState> {
     }
   }
 
+  /// Normalizes phone number by removing leading 0 after country code
+  /// For Algeria (+213), removes leading 0 from phone number
+  String _normalizePhoneNumber(String phoneNumber, String countryCode) {
+    // For Algeria (+213), remove leading 0 if present
+    if (countryCode == '+213' && phoneNumber.isNotEmpty && phoneNumber.startsWith('0')) {
+      return phoneNumber.substring(1);
+    }
+    return phoneNumber;
+  }
+
+  /// Formats phone number for API (country code + phone number, no +)
+  String _formatPhoneForApi(String phoneNumber, String countryCode) {
+    final normalizedPhone = _normalizePhoneNumber(phoneNumber, countryCode);
+    return (countryCode + normalizedPhone).replaceAll('+', '');
+  }
+
   Future<void> sendVerificationCode(String phoneNumber, String countryCode) async {
     try {
       emit(AuthLoading());
@@ -111,18 +127,22 @@ class AuthCubit extends HydratedCubit<AuthState> {
         return;
       }
 
-      if (phoneNumber.length < 8) {
+      // Normalize phone number (remove leading 0 for Algeria)
+      final normalizedPhone = _normalizePhoneNumber(phoneNumber, countryCode);
+
+      if (normalizedPhone.length < 8) {
         emit(const AuthError(message: 'errorPhoneNumberMinLength'));
         return;
       }
 
-      // Send verification code (strip '+' for backend)
-      String formattedPhone = (countryCode + phoneNumber).replaceAll('+', '');
+      // Format phone number for API (strip '+' for backend)
+      String formattedPhone = _formatPhoneForApi(phoneNumber, countryCode);
       final result = await _authService.sendVerificationCode(formattedPhone);
 
       if (result['success'] == true) {
+        // Store normalized phone number in state
         emit(AuthCodeSent(
-          phoneNumber: phoneNumber,
+          phoneNumber: normalizedPhone,
           verificationId: result['verificationId'] ?? '',
         ));
       } else {
@@ -217,16 +237,17 @@ class AuthCubit extends HydratedCubit<AuthState> {
     }
   }
 
-  Future<void> logout() async {
+  Future<bool> logout() async {
     try {
       final success = await _authService.logout();
       if (success) {
-        emit(const AuthInitial());
+        emit(AuthInitial());
+        return true;
       } else {
-        emit(const AuthError(message: 'errorLogoutFailed'));
+        return false;
       }
     } catch (e) {
-      emit(AuthError(message: 'errorLogout|${e.toString()}'));
+      return false;
     }
   }
 }

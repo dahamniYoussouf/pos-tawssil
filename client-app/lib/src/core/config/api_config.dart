@@ -10,12 +10,10 @@ class ApiConfig {
 
   static String get baseUrl => useLocal ? localBaseUrl : remoteBaseUrl;
 
-  static const String restaurantsEndpoint = '/restaurant/getall';
   static const String nearbyRestaurantsEndpoint = '/restaurant/nearbyfilter';
   static const String searchRestaurantsEndpoint = '/restaurant/nearbyfilter';
   static const String nearbyRestaurantsNames = '/restaurant/getnearbynames';
 
-  static String get restaurantsUrl => '$baseUrl$restaurantsEndpoint';
   static String get nearbyRestaurantsUrl => '$baseUrl$nearbyRestaurantsEndpoint';
   static String get searchRestaurantsUrl => '$baseUrl$searchRestaurantsEndpoint';
 

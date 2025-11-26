@@ -125,22 +125,6 @@ class RestaurantCubit extends Cubit<RestaurantState> {
     }
   }
 
-  Future<void> loadAllRestaurants() async {
-    try {
-      emit(RestaurantLoading());
-      final restaurants = await _restaurantService.getRestaurants();
-      final categories = await _restaurantService.getStaticCategories();
-      final userLocation = await _userService.getCurrentLocation();
-      emit(RestaurantLoaded(
-        restaurants: restaurants,
-        categories: categories,
-        userLocation: userLocation,
-      ));
-    } catch (e) {
-      emit(RestaurantError(message: 'errorRestaurantsLoading|${e.toString()}'));
-    }
-  }
-
   Future<void> searchRestaurants(String query, {int maxResults = 50}) async {
     try {
       if (query.trim().length < 2) {
@@ -180,24 +164,6 @@ class RestaurantCubit extends Cubit<RestaurantState> {
       ));
     } catch (e) {
       emit(RestaurantError(message: 'errorRestaurantDetailsLoading|${e.toString()}'));
-    }
-  }
-
-  Future<void> filterRestaurantsByCategory(String categoryName) async {
-    final currentState = state;
-    if (currentState is RestaurantLoaded) {
-      try {
-        // Use static example coordinates for testing
-        final double latitude = 36.7309787;
-        final double longitude = 3.1670409;
-        final restaurants = await _restaurantService.getRestaurantsByCategory([categoryName], latitude, longitude);
-        emit(currentState.copyWith(
-          restaurants: restaurants,
-          selectedCategory: categoryName,
-        ));
-      } catch (e) {
-        emit(RestaurantError(message: 'errorRestaurantsFilterByCategory|${e.toString()}'));
-      }
     }
   }
 

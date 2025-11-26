@@ -59,6 +59,22 @@ class _VerificationPageState extends State<VerificationPage> {
     super.dispose();
   }
 
+  /// Normalizes phone number by removing leading 0 after country code
+  /// For Algeria (+213), removes leading 0 from phone number
+  String _normalizePhoneNumber(String phoneNumber, String countryCode) {
+    // For Algeria (+213), remove leading 0 if present
+    if (countryCode == '+213' && phoneNumber.isNotEmpty && phoneNumber.startsWith('0')) {
+      return phoneNumber.substring(1);
+    }
+    return phoneNumber;
+  }
+
+  /// Formats phone number for API (country code + phone number, no +)
+  String _formatPhoneForApi(String phoneNumber, String countryCode) {
+    final normalizedPhone = _normalizePhoneNumber(phoneNumber, countryCode);
+    return (countryCode + normalizedPhone).replaceAll('+', '');
+  }
+
   void _verifyCode() async {
     // Get complete code
     final code = _controllers.map((c) => c.text).join();
@@ -71,8 +87,8 @@ class _VerificationPageState extends State<VerificationPage> {
       );
       return;
     }
-    // Pass the phone number (with country code, formatted as sent to backend)
-    String formattedPhone = (widget.countryCode + widget.phoneNumber).replaceAll('+', '');
+    // Normalize and format phone number (with country code, formatted as sent to backend)
+    String formattedPhone = _formatPhoneForApi(widget.phoneNumber, widget.countryCode);
     try {
       await context.read<AuthCubit>().verifyCode(formattedPhone, code);
     } catch (e) {
@@ -360,6 +376,7 @@ class _VerificationPageState extends State<VerificationPage> {
                       Center(
                         child: TextButton(
                           onPressed: () {
+                            // Use normalized phone number (widget.phoneNumber is already normalized from state)
                             context.read<AuthCubit>().sendVerificationCode(widget.phoneNumber, widget.countryCode);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
