@@ -5,13 +5,11 @@ import '../repositories/location_repository.dart';
 
 class GetGpsLocationUseCase {
   final LocationRepository _locationRepository;
-  final LocationService _locationService;
 
   GetGpsLocationUseCase({
     LocationRepository? locationRepository,
     LocationService? locationService,
-  })  : _locationRepository = locationRepository ?? LocationRepository(),
-        _locationService = locationService ?? LocationService();
+  }) : _locationRepository = locationRepository ?? LocationRepository();
 
   Future<GpsLocationResult> execute() async {
     try {
@@ -25,18 +23,14 @@ class GetGpsLocationUseCase {
       }
       final AddressData addressData = await _getAddressFromCoordinates(position);
       await _saveLocationData(position, addressData);
-      final bool success = await _sendLocationToServer(position);
-      if (success) {
-        return GpsLocationResult.success(
-          area: addressData.area,
-          city: addressData.city,
-          fullAddress: addressData.fullAddress,
-          latitude: position.latitude,
-          longitude: position.longitude,
-        );
-      } else {
-        return GpsLocationResult.error('Failed to send location to server');
-      }
+
+      return GpsLocationResult.success(
+        area: addressData.area,
+        city: addressData.city,
+        fullAddress: addressData.fullAddress,
+        latitude: position.latitude,
+        longitude: position.longitude,
+      );
     } catch (e) {
       return GpsLocationResult.error(e.toString());
     }
@@ -64,10 +58,7 @@ class GetGpsLocationUseCase {
           place.postalCode,
           place.country,
         ];
-        final List<String> parts = addressParts
-            .where((part) => part != null && part.trim().isNotEmpty)
-            .map((part) => part!.trim())
-            .toList();
+        final List<String> parts = addressParts.where((part) => part != null && part.trim().isNotEmpty).map((part) => part!.trim()).toList();
         fullAddress = parts.join(', ');
         if (fullAddress.isEmpty) {
           fullAddress = 'Lat: ${position.latitude.toStringAsFixed(6)}, Lng: ${position.longitude.toStringAsFixed(6)}';
@@ -93,24 +84,6 @@ class GetGpsLocationUseCase {
       longitude: position.longitude.toString(),
       fullAddress: addressData.fullAddress,
     );
-  }
-
-  Future<bool> _sendLocationToServer(Position position) async {
-    for (int attempt = 1; attempt <= 3; attempt++) {
-      try {
-        final bool success = await _locationService
-            .sendLocationWithCoordinates('', position.latitude, position.longitude)
-            .timeout(const Duration(seconds: 10));
-        if (success) {
-          return true;
-        }
-      } catch (e) {
-        if (attempt < 3) {
-          await Future.delayed(Duration(seconds: 2 * attempt));
-        }
-      }
-    }
-    return false;
   }
 }
 
@@ -180,4 +153,3 @@ class GpsLocationResult {
     );
   }
 }
-

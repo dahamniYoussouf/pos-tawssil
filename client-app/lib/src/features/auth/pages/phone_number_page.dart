@@ -1,3 +1,4 @@
+import 'package:client_app/src/core/res/color_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,8 +8,6 @@ import 'package:client_app/src/features/auth/cubit/auth_state.dart';
 import '../cubit/auth_cubit.dart';
 import 'verification_page.dart';
 
-/// Phone Number Authentication Page
-/// Matches the Tawsil design with green branding
 class PhoneNumberPage extends StatelessWidget {
   const PhoneNumberPage({Key? key}) : super(key: key);
 
@@ -68,7 +67,7 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
         final errorMessage = errorMessageRaw.isNotEmpty ? AppLocalizations.of(context)!.translateErrorMessage(errorMessageRaw) : '';
 
         return Scaffold(
-          backgroundColor: const Color(0xFF006C4A), // Tawsil green
+          backgroundColor: ColorApp.primary,
           body: SafeArea(
             child: Column(
               children: [
@@ -81,7 +80,6 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Tawsil logo image
                         Image.asset(
                           'assets/icons/tawwsil.png',
                           width: 200,
@@ -99,7 +97,7 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
                   child: Container(
                     width: double.infinity,
                     decoration: const BoxDecoration(
-                      color: Colors.white,
+                      color: ColorApp.white,
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(30),
                         topRight: Radius.circular(30),
@@ -116,7 +114,7 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
                             style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF2E2E2E),
+                              color: ColorApp.black,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -126,7 +124,7 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
                             AppLocalizations.of(context)!.phoneNumberSubtitle,
                             style: const TextStyle(
                               fontSize: 13,
-                              color: Color(0xFF6C757D),
+                              color: ColorApp.grey,
                               height: 1.4,
                             ),
                           ),
@@ -135,10 +133,10 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
                           // Phone input field
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.white,
+                              color: ColorApp.white,
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: errorMessage.isNotEmpty ? Colors.red : const Color(0xFFD1D5DB),
+                                color: errorMessage.isNotEmpty ? ColorApp.redColor : ColorApp.grey,
                                 width: 1,
                               ),
                             ),
@@ -153,7 +151,7 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
                                   decoration: const BoxDecoration(
                                     border: Border(
                                       right: BorderSide(
-                                        color: Color(0xFFD1D5DB),
+                                        color: ColorApp.grey,
                                         width: 1,
                                       ),
                                     ),
@@ -191,7 +189,7 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
                                     keyboardType: TextInputType.phone,
                                     style: const TextStyle(
                                       fontSize: 14,
-                                      color: Color(0xFF374151),
+                                      color: ColorApp.black,
                                       fontWeight: FontWeight.w500,
                                     ),
                                     inputFormatters: [
@@ -201,7 +199,7 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
                                     decoration: InputDecoration(
                                       hintText: AppLocalizations.of(context)!.phoneNumberHint,
                                       hintStyle: const TextStyle(
-                                        color: Color(0xFF9CA3AF),
+                                        color: ColorApp.grey,
                                         fontSize: 14,
                                         fontWeight: FontWeight.normal,
                                       ),
@@ -229,7 +227,7 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
                               children: [
                                 const Icon(
                                   Icons.error_outline,
-                                  color: Colors.red,
+                                  color: ColorApp.redColor,
                                   size: 16,
                                 ),
                                 const SizedBox(width: 6),
@@ -237,7 +235,7 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
                                   child: Text(
                                     errorMessage,
                                     style: const TextStyle(
-                                      color: Colors.red,
+                                      color: ColorApp.redColor,
                                       fontSize: 12,
                                     ),
                                   ),
@@ -255,8 +253,8 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
                             child: ElevatedButton(
                               onPressed: isLoading ? null : _handleConnect,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF006C4A),
-                                disabledBackgroundColor: const Color(0xFF006C4A).withValues(alpha: 0.6),
+                                backgroundColor: ColorApp.primary,
+                                disabledBackgroundColor: ColorApp.primary.withValues(alpha: 0.6),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -269,7 +267,7 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
                                         valueColor: AlwaysStoppedAnimation<Color>(
-                                          Colors.white,
+                                          ColorApp.white,
                                         ),
                                       ),
                                     )
@@ -278,7 +276,7 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
                                       style: const TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w600,
-                                        color: Colors.white,
+                                        color: ColorApp.white,
                                         letterSpacing: 0.3,
                                       ),
                                     ),

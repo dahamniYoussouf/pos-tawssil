@@ -6,7 +6,6 @@ import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/features/auth/cubit/user_cubit.dart';
 import 'package:client_app/src/features/auth/cubit/user_state.dart';
 import 'package:client_app/src/features/restaurant/pages/restaurant_details_page.dart';
-import 'restaurant_search_page.dart';
 import 'restaurant_category_page.dart';
 import '../cubit/restaurant_cubit.dart';
 import '../cubit/restaurant_state.dart';

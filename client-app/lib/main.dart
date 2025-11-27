@@ -28,8 +28,6 @@ import 'src/features/home/pages/home_page.dart';
 // Service Imports
 import 'src/features/auth/services/auth_service.dart';
 import 'src/features/cart/services/cart_service.dart';
-import 'src/features/restaurant/services/restaurant_service.dart';
-import 'src/features/order/services/order_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -101,9 +99,10 @@ class MyApp extends StatelessWidget {
             ],
             theme: ThemeData(
               primarySwatch: Colors.green,
-              textTheme: GoogleFonts.poppinsTextTheme(
-                Theme.of(context).textTheme,
-              ),
+              fontFamily: GoogleFonts.poppins().fontFamily,
+              textTheme: ThemeData.light().textTheme.apply(
+                    fontFamily: GoogleFonts.poppins().fontFamily,
+                  ),
             ),
             home: AuthWrapper(),
           );

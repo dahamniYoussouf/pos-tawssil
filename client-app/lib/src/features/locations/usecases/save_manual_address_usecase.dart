@@ -4,13 +4,11 @@ import '../repositories/location_repository.dart';
 
 class SaveManualAddressUseCase {
   final LocationRepository _locationRepository;
-  final LocationService _locationService;
 
   SaveManualAddressUseCase({
     LocationRepository? locationRepository,
     LocationService? locationService,
-  })  : _locationRepository = locationRepository ?? LocationRepository(),
-        _locationService = locationService ?? LocationService();
+  }) : _locationRepository = locationRepository ?? LocationRepository();
 
   Future<ManualAddressResult> execute(String address) async {
     try {
@@ -35,37 +33,16 @@ class SaveManualAddressUseCase {
       }
       await _locationRepository.saveAreaAndCity(area: area, city: city);
       await _locationRepository.saveFullAddress(address);
-      final bool success = await _sendAddressToServer(address);
-      if (success) {
-        return ManualAddressResult.success(
-          area: area,
-          city: city,
-          fullAddress: address,
-          latitude: latitude,
-          longitude: longitude,
-        );
-      } else {
-        return ManualAddressResult.error('Failed to send address to server');
-      }
+      return ManualAddressResult.success(
+        area: area,
+        city: city,
+        fullAddress: address,
+        latitude: latitude,
+        longitude: longitude,
+      );
     } catch (e) {
       return ManualAddressResult.error(e.toString());
     }
-  }
-
-  Future<bool> _sendAddressToServer(String address) async {
-    for (int attempt = 1; attempt <= 3; attempt++) {
-      try {
-        final bool success = await _locationService.sendAddressOnly(address).timeout(const Duration(seconds: 10));
-        if (success) {
-          return true;
-        }
-      } catch (e) {
-        if (attempt < 3) {
-          await Future.delayed(Duration(seconds: 2 * attempt));
-        }
-      }
-    }
-    return false;
   }
 }
 
@@ -112,4 +89,3 @@ class ManualAddressResult {
     );
   }
 }
-
