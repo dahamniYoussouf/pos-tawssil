@@ -1,199 +1,189 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:equatable/equatable.dart';
-import '../services/restaurant_service.dart';
+import '../repositories/restaurant_repository.dart';
 import '../../auth/services/user_service.dart';
-import '../models/restaurant_model.dart';
-import '../models/category_model.dart';
-import '../models/menu_model.dart';
-
-// Restaurant States
-abstract class RestaurantState extends Equatable {
-  const RestaurantState();
-
-  @override
-  List<Object?> get props => [];
-}
-
-class RestaurantInitial extends RestaurantState {}
-
-class RestaurantLoading extends RestaurantState {}
-
-class RestaurantSearchLoading extends RestaurantState {}
-
-class RestaurantLoaded extends RestaurantState {
-  final List<RestaurantModel> restaurants;
-  final List<CategoryModel> categories;
-  final String? searchQuery;
-  final String? selectedCategory;
-  final UserLocation? userLocation;
-
-  const RestaurantLoaded({
-    required this.restaurants,
-    required this.categories,
-    this.searchQuery,
-    this.selectedCategory,
-    this.userLocation,
-  });
-
-  @override
-  List<Object?> get props => [restaurants, categories, searchQuery, selectedCategory, userLocation];
-
-  RestaurantLoaded copyWith({
-    List<RestaurantModel>? restaurants,
-    List<CategoryModel>? categories,
-    String? searchQuery,
-    String? selectedCategory,
-    String? username,
-    UserLocation? userLocation,
-  }) {
-    return RestaurantLoaded(
-      restaurants: restaurants ?? this.restaurants,
-      categories: categories ?? this.categories,
-      searchQuery: searchQuery ?? this.searchQuery,
-      selectedCategory: selectedCategory ?? this.selectedCategory,
-      userLocation: userLocation ?? this.userLocation,
-    );
-  }
-}
-
-class RestaurantSearchResults extends RestaurantState {
-  final List<RestaurantModel> restaurants;
-  final String searchQuery;
-  final bool hasMore;
-
-  const RestaurantSearchResults({
-    required this.restaurants,
-    required this.searchQuery,
-    this.hasMore = false,
-  });
-
-  @override
-  List<Object?> get props => [restaurants, searchQuery, hasMore];
-}
-
-class RestaurantDetailsLoaded extends RestaurantState {
-  final RestaurantModel restaurant;
-  final List<CategoryModel> categories;
-  final List<MenuModel> menuItems;
-
-  const RestaurantDetailsLoaded({
-    required this.restaurant,
-    required this.categories,
-    required this.menuItems,
-  });
-
-  @override
-  List<Object?> get props => [restaurant, categories, menuItems];
-}
-
-class RestaurantError extends RestaurantState {
-  final String message;
-
-  const RestaurantError({required this.message});
-
-  @override
-  List<Object?> get props => [message];
-}
+import 'restaurant_state.dart';
 
 // Restaurant Cubit
 class RestaurantCubit extends Cubit<RestaurantState> {
-  final RestaurantService _restaurantService;
+  final RestaurantRepository _restaurantRepository;
   final UserService _userService;
 
   RestaurantCubit({
-    RestaurantService? restaurantService,
+    RestaurantRepository? restaurantRepository,
     UserService? userService,
-  })  : _restaurantService = restaurantService ?? RestaurantService(),
+  })  : _restaurantRepository = restaurantRepository ?? RestaurantRepository(),
         _userService = userService ?? UserService(),
         super(RestaurantInitial());
 
   Future<void> loadNearbyRestaurants({int radius = 5000}) async {
-    try {
-      emit(RestaurantLoading());
-      final restaurants = await _restaurantService.getNearbyRestaurantsFromStoredLocation(
-        radius: radius,
-      );
-      final categories = await _restaurantService.getStaticCategories();
-      final userLocation = await _userService.getCurrentLocation();
-      emit(RestaurantLoaded(
-        restaurants: restaurants,
-        categories: categories,
-        userLocation: userLocation,
-      ));
-    } catch (e) {
-      emit(RestaurantError(message: 'errorRestaurantsLoading|${e.toString()}'));
-    }
-  }
+    if (isClosed) return;
+    emit(RestaurantLoading());
 
-  Future<void> searchRestaurants(String query, {int maxResults = 50}) async {
     try {
-      if (query.trim().length < 2) {
-        emit(const RestaurantSearchResults(restaurants: [], searchQuery: ''));
+      // Get user coordinates
+      final coords = await _userService.getCurrentCoordinates();
+
+      if (isClosed) return;
+      if (coords == null) {
+        emit(const RestaurantError(message: 'Unable to get location. Please enable location services.'));
         return;
       }
 
-      emit(RestaurantSearchLoading());
-
-      final restaurants = await _restaurantService.searchRestaurants(
-        query: query,
-        maxResults: maxResults,
+      final result = await _restaurantRepository.getNearbyRestaurants(
+        lat: coords['lat'],
+        lng: coords['lng'],
+        radius: radius,
       );
 
-      emit(RestaurantSearchResults(
-        restaurants: restaurants,
-        searchQuery: query,
-        hasMore: restaurants.length >= maxResults,
-      ));
+      if (isClosed) return;
+      result.fold(
+        (error) {
+          if (!isClosed) emit(RestaurantError(message: error));
+        },
+        (restaurants) async {
+          final categories = _restaurantRepository.getStaticCategories();
+          final userLocation = await _userService.getCurrentLocation();
+          if (!isClosed) {
+            emit(RestaurantLoaded(
+              restaurants: restaurants,
+              categories: categories,
+              userLocation: userLocation,
+            ));
+          }
+        },
+      );
     } catch (e) {
-      emit(RestaurantError(message: 'errorRestaurantsSearch|${e.toString()}'));
+      if (!isClosed) {
+        emit(RestaurantError(message: 'errorRestaurantsLoading|${e.toString()}'));
+      }
     }
   }
 
   Future<void> loadRestaurantDetails(String restaurantId) async {
+    if (isClosed) return;
     try {
       emit(RestaurantLoading());
 
-      final restaurant = await _restaurantService.getRestaurantById(restaurantId);
-      final categories = await _restaurantService.getStaticCategories();
-      final menuItems = await _restaurantService.getRestaurantMenuItems(restaurantId);
+      final restaurantResult = await _restaurantRepository.getRestaurantById(restaurantId);
+      if (isClosed) return;
+      final menuItemsResult = await _restaurantRepository.getRestaurantMenuItems(restaurantId);
+      if (isClosed) return;
+      final categories = _restaurantRepository.getStaticCategories();
 
-      emit(RestaurantDetailsLoaded(
-        restaurant: restaurant,
-        categories: categories,
-        menuItems: menuItems,
-      ));
+      restaurantResult.fold(
+        (error) {
+          if (!isClosed) emit(RestaurantError(message: error));
+        },
+        (restaurant) {
+          menuItemsResult.fold(
+            (error) {
+              if (!isClosed) emit(RestaurantError(message: error));
+            },
+            (menuItems) {
+              if (!isClosed) {
+                emit(RestaurantDetailsLoaded(
+                  restaurant: restaurant,
+                  categories: categories,
+                  menuItems: menuItems,
+                ));
+              }
+            },
+          );
+        },
+      );
     } catch (e) {
-      emit(RestaurantError(message: 'errorRestaurantDetailsLoading|${e.toString()}'));
+      if (!isClosed) {
+        emit(RestaurantError(message: 'errorRestaurantDetailsLoading|${e.toString()}'));
+      }
     }
   }
 
   Future<void> loadRestaurantsByLocation(double latitude, double longitude, {int radius = 5000}) async {
+    if (isClosed) return;
     emit(RestaurantLoading());
 
-    try {
-      final restaurants = await _restaurantService.getNearbyRestaurants(lat: latitude, lng: longitude, radius: radius);
-      final categories = await _restaurantService.getStaticCategories();
+    final result = await _restaurantRepository.getNearbyRestaurants(
+      lat: latitude,
+      lng: longitude,
+      radius: radius,
+    );
 
-      emit(RestaurantLoaded(
-        restaurants: restaurants,
-        categories: categories,
-      ));
+    if (isClosed) return;
+    result.fold(
+      (error) {
+        if (!isClosed) emit(RestaurantError(message: error));
+      },
+      (restaurants) {
+        final categories = _restaurantRepository.getStaticCategories();
+        if (!isClosed) {
+          emit(RestaurantLoaded(
+            restaurants: restaurants,
+            categories: categories,
+          ));
+        }
+      },
+    );
+  }
+
+  Future<void> searchRestaurants(String query, {int maxResults = 50}) async {
+    if (isClosed) return;
+    if (query.trim().isEmpty) {
+      if (!isClosed) emit(RestaurantInitial());
+      return;
+    }
+
+    emit(RestaurantSearchLoading());
+
+    try {
+      // Get user coordinates for location-based search
+      final coords = await _userService.getCurrentCoordinates();
+
+      if (isClosed) return;
+      final result = await _restaurantRepository.getNearbyRestaurants(
+        lat: coords?['lat'],
+        lng: coords?['lng'],
+        radius: 5000,
+        q: query.trim(),
+        pageSize: maxResults,
+      );
+
+      if (isClosed) return;
+      result.fold(
+        (error) {
+          if (!isClosed) emit(RestaurantError(message: error));
+        },
+        (restaurants) {
+          if (!isClosed) {
+            emit(RestaurantSearchResults(
+              restaurants: restaurants,
+              searchQuery: query.trim(),
+              hasMore: restaurants.length >= maxResults,
+            ));
+          }
+        },
+      );
     } catch (e) {
-      emit(RestaurantError(message: 'errorRestaurantsLoading|${e.toString()}'));
+      if (!isClosed) {
+        emit(RestaurantError(message: 'errorSearchRestaurants|${e.toString()}'));
+      }
     }
   }
 
   void clearError() {
-    if (state is RestaurantError) {
+    if (!isClosed && state is RestaurantError) {
       emit(RestaurantInitial());
     }
   }
 
   void clearSearch() {
-    emit(RestaurantInitial());
+    if (!isClosed) {
+      emit(RestaurantInitial());
+    }
   }
 
   void resetToInitial() {
-    emit(RestaurantInitial());
+    if (!isClosed) {
+      emit(RestaurantInitial());
+    }
   }
 }

@@ -598,4 +598,37 @@ class AppLocalizationsFr extends AppLocalizations {
   String errorOrderLoad(String error) {
     return 'Erreur lors du chargement de la commande: $error';
   }
+
+  @override
+  String get searching => 'Recherche en cours...';
+
+  @override
+  String get searchingFor => 'Recherche de';
+
+  @override
+  String get searchError => 'Erreur de recherche';
+
+  @override
+  String get noResults => 'Aucun résultat';
+
+  @override
+  String get noRestaurantFoundFor => 'Aucun restaurant trouvé pour';
+
+  @override
+  String get tryDifferentSearchTerm =>
+      'Essayez un terme de recherche différent';
+
+  @override
+  String get searchRestaurants => 'Rechercher des restaurants';
+
+  @override
+  String get searchRestaurantsHint =>
+      'Tapez le nom d\'un restaurant ou d\'un plat pour commencer votre recherche';
+
+  @override
+  String get promoBannerTitle => 'Livraison Gratuite à votre 3ème Commande !';
+
+  @override
+  String get promoBannerDescription =>
+      'après deux commandes, la livraison de votre troisième commande est offerte.';
 }

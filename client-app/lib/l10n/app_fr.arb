@@ -192,6 +192,46 @@
         "type": "String"
       }
     }
+  },
+  "searching": "Recherche en cours...",
+  "@searching": {
+    "description": "Message de recherche en cours"
+  },
+  "searchingFor": "Recherche de",
+  "@searchingFor": {
+    "description": "Préfixe de recherche"
+  },
+  "searchError": "Erreur de recherche",
+  "@searchError": {
+    "description": "Titre d'erreur de recherche"
+  },
+  "noResults": "Aucun résultat",
+  "@noResults": {
+    "description": "Message aucun résultat de recherche"
+  },
+  "noRestaurantFoundFor": "Aucun restaurant trouvé pour",
+  "@noRestaurantFoundFor": {
+    "description": "Message aucun restaurant trouvé pour la requête"
+  },
+  "tryDifferentSearchTerm": "Essayez un terme de recherche différent",
+  "@tryDifferentSearchTerm": {
+    "description": "Suggestion d'essayer un terme de recherche différent"
+  },
+  "searchRestaurants": "Rechercher des restaurants",
+  "@searchRestaurants": {
+    "description": "Titre de recherche de restaurants"
+  },
+  "searchRestaurantsHint": "Tapez le nom d'un restaurant ou d'un plat pour commencer votre recherche",
+  "@searchRestaurantsHint": {
+    "description": "Texte d'indication de recherche de restaurants"
+  },
+  "promoBannerTitle": "Livraison Gratuite à votre 3ème Commande !",
+  "@promoBannerTitle": {
+    "description": "Titre de la bannière promotionnelle"
+  },
+  "promoBannerDescription": "après deux commandes, la livraison de votre troisième commande est offerte.",
+  "@promoBannerDescription": {
+    "description": "Description de la bannière promotionnelle"
   }
 }
 

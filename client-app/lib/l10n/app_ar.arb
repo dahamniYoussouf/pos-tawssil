@@ -192,6 +192,46 @@
         "type": "String"
       }
     }
+  },
+  "searching": "جاري البحث...",
+  "@searching": {
+    "description": "رسالة البحث قيد التقدم"
+  },
+  "searchingFor": "البحث عن",
+  "@searchingFor": {
+    "description": "بادئة البحث"
+  },
+  "searchError": "خطأ في البحث",
+  "@searchError": {
+    "description": "عنوان خطأ البحث"
+  },
+  "noResults": "لا توجد نتائج",
+  "@noResults": {
+    "description": "رسالة عدم وجود نتائج بحث"
+  },
+  "noRestaurantFoundFor": "لم يتم العثور على مطعم لـ",
+  "@noRestaurantFoundFor": {
+    "description": "رسالة عدم العثور على مطعم للاستعلام"
+  },
+  "tryDifferentSearchTerm": "جرب مصطلح بحث مختلف",
+  "@tryDifferentSearchTerm": {
+    "description": "اقتراح تجربة مصطلح بحث مختلف"
+  },
+  "searchRestaurants": "البحث عن المطاعم",
+  "@searchRestaurants": {
+    "description": "عنوان البحث عن المطاعم"
+  },
+  "searchRestaurantsHint": "اكتب اسم مطعم أو طبق لبدء البحث",
+  "@searchRestaurantsHint": {
+    "description": "نص تلميح البحث عن المطاعم"
+  },
+  "promoBannerTitle": "توصيل مجاني في طلبك الثالث!",
+  "@promoBannerTitle": {
+    "description": "عنوان البانر الترويجي"
+  },
+  "promoBannerDescription": "بعد طلبين، توصيل طلبك الثالث مجاني.",
+  "@promoBannerDescription": {
+    "description": "وصف البانر الترويجي"
   }
 }
 

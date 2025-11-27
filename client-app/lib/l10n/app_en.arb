@@ -778,6 +778,46 @@
         "type": "String"
       }
     }
+  },
+  "searching": "Searching...",
+  "@searching": {
+    "description": "Search in progress message"
+  },
+  "searchingFor": "Searching for",
+  "@searchingFor": {
+    "description": "Searching for prefix"
+  },
+  "searchError": "Search error",
+  "@searchError": {
+    "description": "Search error title"
+  },
+  "noResults": "No results",
+  "@noResults": {
+    "description": "No search results message"
+  },
+  "noRestaurantFoundFor": "No restaurant found for",
+  "@noRestaurantFoundFor": {
+    "description": "No restaurant found for query message"
+  },
+  "tryDifferentSearchTerm": "Try a different search term",
+  "@tryDifferentSearchTerm": {
+    "description": "Try different search term suggestion"
+  },
+  "searchRestaurants": "Search restaurants",
+  "@searchRestaurants": {
+    "description": "Search restaurants title"
+  },
+  "searchRestaurantsHint": "Type the name of a restaurant or dish to start your search",
+  "@searchRestaurantsHint": {
+    "description": "Search restaurants hint text"
+  },
+  "promoBannerTitle": "Free Delivery on Your 3rd Order!",
+  "@promoBannerTitle": {
+    "description": "Promo banner title"
+  },
+  "promoBannerDescription": "After two orders, the delivery of your third order is free.",
+  "@promoBannerDescription": {
+    "description": "Promo banner description"
   }
 }
 

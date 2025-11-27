@@ -1155,6 +1155,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error loading order: {error}'**
   String errorOrderLoad(String error);
+
+  /// Search in progress message
+  ///
+  /// In en, this message translates to:
+  /// **'Searching...'**
+  String get searching;
+
+  /// Searching for prefix
+  ///
+  /// In en, this message translates to:
+  /// **'Searching for'**
+  String get searchingFor;
+
+  /// Search error title
+  ///
+  /// In en, this message translates to:
+  /// **'Search error'**
+  String get searchError;
+
+  /// No search results message
+  ///
+  /// In en, this message translates to:
+  /// **'No results'**
+  String get noResults;
+
+  /// No restaurant found for query message
+  ///
+  /// In en, this message translates to:
+  /// **'No restaurant found for'**
+  String get noRestaurantFoundFor;
+
+  /// Try different search term suggestion
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different search term'**
+  String get tryDifferentSearchTerm;
+
+  /// Search restaurants title
+  ///
+  /// In en, this message translates to:
+  /// **'Search restaurants'**
+  String get searchRestaurants;
+
+  /// Search restaurants hint text
+  ///
+  /// In en, this message translates to:
+  /// **'Type the name of a restaurant or dish to start your search'**
+  String get searchRestaurantsHint;
+
+  /// Promo banner title
+  ///
+  /// In en, this message translates to:
+  /// **'Free Delivery on Your 3rd Order!'**
+  String get promoBannerTitle;
+
+  /// Promo banner description
+  ///
+  /// In en, this message translates to:
+  /// **'After two orders, the delivery of your third order is free.'**
+  String get promoBannerDescription;
 }
 
 class _AppLocalizationsDelegate

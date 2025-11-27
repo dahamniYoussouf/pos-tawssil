@@ -7,7 +7,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import '../models/restaurant_model.dart';
 import '../models/menu_model.dart';
-import '../services/restaurant_service.dart';
+import '../repositories/restaurant_repository.dart';
 import '../../cart/services/cart_service.dart';
 import '../../cart/widgets/cart_icon.dart';
 import '../../../core/widgets/menu_item_detail_page.dart';
@@ -23,7 +23,7 @@ class RestaurantDetailsPage extends StatefulWidget {
 }
 
 class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
-  final RestaurantService _service = RestaurantService();
+  final RestaurantRepository _repository = RestaurantRepository();
   final CartService _cartService = CartService();
   Set<String> favoriteFoods = {};
   List<MenuModel> _menuItems = [];
@@ -51,56 +51,66 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
     });
 
     try {
-      final items = await _service.getMenuItems(restaurantId: widget.restaurant.id);
+      final result = await _repository.getMenuItems(restaurantId: widget.restaurant.id);
 
-      setState(() {
-        _menuItems = items;
-        // Build a normalized map of categories to avoid duplicates caused by
-        // varying casing or multiple category ids with the same display name.
-        _categoryIdMap.clear();
-        _displayIdToKey.clear();
+      result.fold(
+        (error) {
+          setState(() {
+            _loading = false;
+            _error = error;
+          });
+        },
+        (items) {
+          setState(() {
+            _menuItems = items;
+            // Build a normalized map of categories to avoid duplicates caused by
+            // varying casing or multiple category ids with the same display name.
+            _categoryIdMap.clear();
+            _displayIdToKey.clear();
 
-        final Map<String, MenuItemCategory> displayMap = {};
+            final Map<String, MenuItemCategory> displayMap = {};
 
-        for (var item in items) {
-          final cat = item.category;
-          final cid = (item.categoryId.isNotEmpty ? item.categoryId : (cat?.id ?? '')).toString();
-          final name = (cat?.nom ?? '').toString();
+            for (var item in items) {
+              final cat = item.category;
+              final cid = (item.categoryId.isNotEmpty ? item.categoryId : (cat?.id ?? '')).toString();
+              final name = (cat?.nom ?? '').toString();
 
-          final nameKey = name.isNotEmpty ? name.toLowerCase().trim() : cid.toLowerCase().trim();
+              final nameKey = name.isNotEmpty ? name.toLowerCase().trim() : cid.toLowerCase().trim();
 
-          // Add underlying id to set
-          _categoryIdMap.putIfAbsent(nameKey, () => <String>{});
-          if (cid.isNotEmpty) _categoryIdMap[nameKey]!.add(cid);
+              // Add underlying id to set
+              _categoryIdMap.putIfAbsent(nameKey, () => <String>{});
+              if (cid.isNotEmpty) _categoryIdMap[nameKey]!.add(cid);
 
-          // Build display category entry (first encountered)
-          if (!displayMap.containsKey(nameKey)) {
-            final displayId = cid.isNotEmpty ? cid : nameKey;
-            final displayName = name.isNotEmpty ? name : nameKey;
-            displayMap[nameKey] = MenuItemCategory(id: displayId, nom: displayName);
-            _displayIdToKey[displayId] = nameKey;
-          } else {
-            // ensure mapping exists for this cid as well (if different id)
-            final existing = displayMap[nameKey]!;
-            final existingId = existing.id;
-            // Map the current cid to the same nameKey so filtering works
-            if (cid.isNotEmpty) _displayIdToKey[cid] = nameKey;
-            _displayIdToKey[existingId] = nameKey;
-          }
-        }
+              // Build display category entry (first encountered)
+              if (!displayMap.containsKey(nameKey)) {
+                final displayId = cid.isNotEmpty ? cid : nameKey;
+                final displayName = name.isNotEmpty ? name : nameKey;
+                displayMap[nameKey] = MenuItemCategory(id: displayId, nom: displayName);
+                _displayIdToKey[displayId] = nameKey;
+              } else {
+                // ensure mapping exists for this cid as well (if different id)
+                final existing = displayMap[nameKey]!;
+                final existingId = existing.id;
+                // Map the current cid to the same nameKey so filtering works
+                if (cid.isNotEmpty) _displayIdToKey[cid] = nameKey;
+                _displayIdToKey[existingId] = nameKey;
+              }
+            }
 
-        _categories = displayMap.values.toList();
+            _categories = displayMap.values.toList();
 
-        if (_categories.isNotEmpty) {
-          _selectedCategoryId = _categories.first.id;
-        }
-      });
+            if (_categories.isNotEmpty) {
+              _selectedCategoryId = _categories.first.id;
+            }
+            _loading = false;
+          });
+        },
+      );
     } catch (e) {
       setState(() {
+        _loading = false;
         _error = 'Failed to load menu items. Please try again.';
       });
-    } finally {
-      setState(() => _loading = false);
     }
   }
 

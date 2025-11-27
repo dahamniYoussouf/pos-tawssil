@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:client_app/l10n/app_localizations.dart';
+import '../services/autocomplete_service.dart';
 
 class AutocompleteDropdown extends StatefulWidget {
   final TextEditingController controller;
-  final Future<List<String>> Function(String) onSearch;
-  final Function(String) onSuggestionSelected;
-  final String hintText;
+  final Function(String)? onSuggestionSelected;
 
   const AutocompleteDropdown({
     Key? key,
     required this.controller,
-    required this.onSearch,
-    required this.onSuggestionSelected,
-    this.hintText = 'Rechercher des restaurants...',
+    this.onSuggestionSelected,
   }) : super(key: key);
 
   @override
@@ -20,14 +18,25 @@ class AutocompleteDropdown extends StatefulWidget {
 }
 
 class _AutocompleteDropdownState extends State<AutocompleteDropdown> {
+  // Constants
+  static const _primaryColor = Color(0xFF006C4A);
+  static const _debounceDelay = Duration(milliseconds: 300);
+  static const _minQueryLength = 2;
+  static const _maxSuggestions = 8;
+  static const _overlayOffset = 8.0;
+  static const _maxOverlayHeight = 320.0;
+
+  // State
   final FocusNode _focusNode = FocusNode();
   final LayerLink _layerLink = LayerLink();
+  final AutocompleteService _autocompleteService = AutocompleteService();
+
   OverlayEntry? _overlayEntry;
-  
+  Timer? _debounceTimer;
+
   List<String> _suggestions = [];
   bool _isLoading = false;
   bool _showSuggestions = false;
-  Timer? _debounce;
 
   @override
   void initState() {
@@ -38,7 +47,7 @@ class _AutocompleteDropdownState extends State<AutocompleteDropdown> {
 
   @override
   void dispose() {
-    _debounce?.cancel();
+    _debounceTimer?.cancel();
     _removeOverlay();
     widget.controller.removeListener(_onTextChanged);
     _focusNode.removeListener(_onFocusChanged);
@@ -48,10 +57,10 @@ class _AutocompleteDropdownState extends State<AutocompleteDropdown> {
 
   void _onTextChanged() {
     final query = widget.controller.text.trim();
-    
-    _debounce?.cancel();
-    
-    if (query.length < 2) {
+
+    _debounceTimer?.cancel();
+
+    if (query.length < _minQueryLength) {
       _hideSuggestions();
       return;
     }
@@ -60,28 +69,33 @@ class _AutocompleteDropdownState extends State<AutocompleteDropdown> {
       _isLoading = true;
     });
 
-    _debounce = Timer(const Duration(milliseconds: 300), () async {
-      try {
-        final suggestions = await widget.onSearch(query);
-        if (mounted) {
-          setState(() {
-            _suggestions = suggestions;
-            _isLoading = false;
-            _showSuggestions = suggestions.isNotEmpty && _focusNode.hasFocus;
-          });
-          _updateOverlay();
-        }
-      } catch (e) {
-        if (mounted) {
-          setState(() {
-            _suggestions = [];
-            _isLoading = false;
-            _showSuggestions = false;
-          });
-          _removeOverlay();
-        }
-      }
+    _debounceTimer = Timer(_debounceDelay, () {
+      _fetchSuggestions(query);
     });
+  }
+
+  Future<void> _fetchSuggestions(String query) async {
+    try {
+      final suggestions = await _autocompleteService.getRestaurantSuggestions(query);
+
+      if (!mounted) return;
+
+      setState(() {
+        _suggestions = suggestions.take(_maxSuggestions).toList();
+        _isLoading = false;
+        _showSuggestions = _suggestions.isNotEmpty && _focusNode.hasFocus;
+      });
+
+      _updateOverlay();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _suggestions = [];
+        _isLoading = false;
+        _showSuggestions = false;
+      });
+      _removeOverlay();
+    }
   }
 
   void _onFocusChanged() {
@@ -91,8 +105,8 @@ class _AutocompleteDropdownState extends State<AutocompleteDropdown> {
       });
       _updateOverlay();
     } else {
-      // Delay hiding to allow for suggestion tap
-      Timer(const Duration(milliseconds: 150), () {
+      // Delay hiding to allow tap events to register
+      Future.delayed(const Duration(milliseconds: 150), () {
         if (mounted && !_focusNode.hasFocus) {
           _hideSuggestions();
         }
@@ -109,38 +123,29 @@ class _AutocompleteDropdownState extends State<AutocompleteDropdown> {
 
   void _updateOverlay() {
     _removeOverlay();
-    if (_showSuggestions && _suggestions.isNotEmpty) {
+
+    if (_showSuggestions && _suggestions.isNotEmpty && _focusNode.hasFocus) {
       _overlayEntry = _createOverlayEntry();
       Overlay.of(context).insert(_overlayEntry!);
     }
   }
 
-  void _removeOverlay() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-  }
-
   OverlayEntry _createOverlayEntry() {
-    RenderBox renderBox = context.findRenderObject() as RenderBox;
-    Size size = renderBox.size;
-    Offset position = renderBox.localToGlobal(Offset.zero);
+    final renderBox = context.findRenderObject() as RenderBox;
+    final size = renderBox.size;
 
     return OverlayEntry(
       builder: (context) => Positioned(
-        left: position.dx,
-        top: position.dy + size.height + 8,
         width: size.width,
         child: CompositedTransformFollower(
           link: _layerLink,
           showWhenUnlinked: false,
-          offset: Offset(0, size.height + 8),
+          offset: Offset(0, size.height + _overlayOffset),
           child: Material(
             color: Colors.transparent,
             child: Container(
-              width: size.width,
               constraints: BoxConstraints(
-                maxHeight: 320,
-                minHeight: 60,
+                maxHeight: _maxOverlayHeight,
               ),
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -149,14 +154,12 @@ class _AutocompleteDropdownState extends State<AutocompleteDropdown> {
                   BoxShadow(
                     color: Colors.black.withOpacity(0.08),
                     blurRadius: 16,
-                    offset: Offset(0, 4),
-                    spreadRadius: 0,
+                    offset: const Offset(0, 4),
                   ),
                   BoxShadow(
                     color: Colors.black.withOpacity(0.04),
                     blurRadius: 8,
-                    offset: Offset(0, 2),
-                    spreadRadius: 0,
+                    offset: const Offset(0, 2),
                   ),
                 ],
                 border: Border.all(
@@ -167,7 +170,7 @@ class _AutocompleteDropdownState extends State<AutocompleteDropdown> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12),
                 child: ListView.separated(
-                  padding: EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 8),
                   shrinkWrap: true,
                   itemCount: _suggestions.length,
                   separatorBuilder: (context, index) => Divider(
@@ -177,54 +180,7 @@ class _AutocompleteDropdownState extends State<AutocompleteDropdown> {
                     endIndent: 16,
                     color: Colors.grey.shade200,
                   ),
-                  itemBuilder: (context, index) {
-                    final suggestion = _suggestions[index];
-                    final query = widget.controller.text.toLowerCase();
-                    
-                    return InkWell(
-                      onTap: () {
-                        widget.controller.text = suggestion;
-                        widget.onSuggestionSelected(suggestion);
-                        _hideSuggestions();
-                        _focusNode.unfocus();
-                      },
-                      splashColor: Color(0xFF006C4A).withOpacity(0.1),
-                      highlightColor: Color(0xFF006C4A).withOpacity(0.05),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade100,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Icon(
-                                Icons.restaurant,
-                                color: Colors.grey.shade600,
-                                size: 20,
-                              ),
-                            ),
-                            const SizedBox(width: 14),
-                            Expanded(
-                              child: RichText(
-                                text: _buildHighlightedText(suggestion, query),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Icon(
-                              Icons.arrow_outward,
-                              color: Colors.grey.shade400,
-                              size: 16,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+                  itemBuilder: (context, index) => _buildSuggestionItem(_suggestions[index]),
                 ),
               ),
             ),
@@ -234,69 +190,115 @@ class _AutocompleteDropdownState extends State<AutocompleteDropdown> {
     );
   }
 
+  Widget _buildSuggestionItem(String suggestion) {
+    final query = widget.controller.text.trim().toLowerCase();
+
+    return InkWell(
+      onTap: () {
+        widget.controller.text = suggestion;
+        widget.controller.selection = TextSelection.fromPosition(
+          TextPosition(offset: suggestion.length),
+        );
+        _focusNode.unfocus();
+        _hideSuggestions();
+
+        if (widget.onSuggestionSelected != null) {
+          widget.onSuggestionSelected!(suggestion);
+        }
+      },
+      splashColor: _primaryColor.withOpacity(0.1),
+      highlightColor: _primaryColor.withOpacity(0.05),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(
+                Icons.restaurant,
+                color: Colors.grey.shade600,
+                size: 20,
+              ),
+            ),
+            const SizedBox(width: 14),
+            Expanded(
+              child: RichText(
+                text: _buildHighlightedText(suggestion, query),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.grey.shade400,
+              size: 14,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   TextSpan _buildHighlightedText(String text, String query) {
     if (query.isEmpty) {
-      return TextSpan(
-        text: text,
-        style: TextStyle(
-          fontSize: 15,
-          color: Colors.black87,
-          fontWeight: FontWeight.w500,
-        ),
-      );
+      return _buildTextSpan(text, isHighlighted: false);
     }
 
-    final List<TextSpan> spans = [];
-    final String lowerText = text.toLowerCase();
-    final String lowerQuery = query.toLowerCase();
-    
+    final spans = <TextSpan>[];
+    final lowerText = text.toLowerCase();
+    final lowerQuery = query.toLowerCase();
+
     int start = 0;
     int index = lowerText.indexOf(lowerQuery);
-    
+
     while (index != -1) {
-      // Add text before the match
       if (index > start) {
-        spans.add(TextSpan(
-          text: text.substring(start, index),
-          style: TextStyle(
-            fontSize: 15,
-            color: Colors.black87,
-            fontWeight: FontWeight.w500,
-          ),
-        ));
+        spans.add(_buildTextSpan(text.substring(start, index), isHighlighted: false));
       }
-      
-      // Add the highlighted match
-      spans.add(TextSpan(
-        text: text.substring(index, index + query.length),
-        style: TextStyle(
-          fontSize: 15,
-          color: Color(0xFF006C4A),
-          fontWeight: FontWeight.bold,
-        ),
+
+      spans.add(_buildTextSpan(
+        text.substring(index, index + query.length),
+        isHighlighted: true,
       ));
-      
+
       start = index + query.length;
       index = lowerText.indexOf(lowerQuery, start);
     }
-    
-    // Add remaining text
+
     if (start < text.length) {
-      spans.add(TextSpan(
-        text: text.substring(start),
-        style: TextStyle(
-          fontSize: 15,
-          color: Colors.black87,
-          fontWeight: FontWeight.w500,
-        ),
-      ));
+      spans.add(_buildTextSpan(text.substring(start), isHighlighted: false));
     }
-    
+
     return TextSpan(children: spans);
+  }
+
+  TextSpan _buildTextSpan(String text, {required bool isHighlighted}) {
+    return TextSpan(
+      text: text,
+      style: TextStyle(
+        fontSize: 15,
+        color: isHighlighted ? _primaryColor : Colors.black87,
+        fontWeight: isHighlighted ? FontWeight.bold : FontWeight.w500,
+      ),
+    );
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
   }
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
+    final hasFocus = _focusNode.hasFocus;
+    final hasText = widget.controller.text.isNotEmpty;
+
     return CompositedTransformTarget(
       link: _layerLink,
       child: Container(
@@ -304,34 +306,33 @@ class _AutocompleteDropdownState extends State<AutocompleteDropdown> {
           color: Colors.grey[50],
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: _focusNode.hasFocus ? Color(0xFF006C4A) : Color(0xFF006C4A),
-            width: 1.5,
+            color: hasFocus ? _primaryColor : Colors.grey.shade300,
+            width: hasFocus ? 2 : 1.5,
           ),
         ),
-        padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
             Icon(
               Icons.search,
-              color: _focusNode.hasFocus ? Color(0xFF006C4A) : Colors.black,
-              size: 26,
+              color: hasFocus ? _primaryColor : Colors.grey.shade600,
+              size: 24,
             ),
             const SizedBox(width: 12),
-            
             Expanded(
               child: TextField(
                 controller: widget.controller,
                 focusNode: _focusNode,
-                style: TextStyle(
-                  fontSize: 14,
+                style: const TextStyle(
+                  fontSize: 15,
                   fontWeight: FontWeight.w400,
                   color: Colors.black87,
                 ),
                 decoration: InputDecoration(
-                  hintText: widget.hintText,
+                  hintText: localizations.searchRestaurantPlaceholder,
                   hintStyle: TextStyle(
                     color: Colors.grey[500],
-                    fontSize: 14,
+                    fontSize: 15,
                     fontWeight: FontWeight.w400,
                   ),
                   border: InputBorder.none,
@@ -340,24 +341,23 @@ class _AutocompleteDropdownState extends State<AutocompleteDropdown> {
                 ),
               ),
             ),
-            
             if (_isLoading)
               SizedBox(
                 width: 20,
                 height: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF006C4A)),
+                  valueColor: const AlwaysStoppedAnimation<Color>(_primaryColor),
                 ),
               )
-            else if (widget.controller.text.isNotEmpty)
+            else if (hasText)
               GestureDetector(
                 onTap: () {
                   widget.controller.clear();
                   _hideSuggestions();
                 },
                 child: Container(
-                  padding: EdgeInsets.all(6),
+                  padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
                     color: Colors.grey.shade200,
                     shape: BoxShape.circle,
@@ -365,7 +365,7 @@ class _AutocompleteDropdownState extends State<AutocompleteDropdown> {
                   child: Icon(
                     Icons.close,
                     color: Colors.grey.shade700,
-                    size: 14,
+                    size: 16,
                   ),
                 ),
               ),

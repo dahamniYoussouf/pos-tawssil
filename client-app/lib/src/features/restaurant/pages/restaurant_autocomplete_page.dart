@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:async';
 import '../models/restaurant_model.dart';
-import '../services/restaurant_service.dart';
+import '../repositories/restaurant_repository.dart';
 import '../../auth/services/user_service.dart';
 import '../widgets/restaurant_search_bar.dart';
 import 'restaurant_details_page.dart';
@@ -18,7 +18,7 @@ class RestaurantAutocompletePage extends StatefulWidget {
 
 class _RestaurantAutocompletePageState extends State<RestaurantAutocompletePage> {
   final TextEditingController _searchController = TextEditingController();
-  final RestaurantService _restaurantService = RestaurantService();
+  final RestaurantRepository _restaurantRepository = RestaurantRepository();
   final UserService _userService = UserService();
 
   List<RestaurantModel> _filteredRestaurants = [];
@@ -62,29 +62,26 @@ class _RestaurantAutocompletePageState extends State<RestaurantAutocompletePage>
 
       List<RestaurantModel> results = [];
 
-      if (coords != null) {
-        // Try nearby restaurants first
-        try {
-          final nearbyRestaurants = await _restaurantService.getNearbyRestaurants(
-            lat: coords['lat']!,
-            lng: coords['lng']!,
-            radius: 5000,
-          );
+      // Use the unified API with search query
+      final result = await _restaurantRepository.getNearbyRestaurants(
+        lat: coords?['lat'],
+        lng: coords?['lng'],
+        radius: 5000,
+        q: query.trim(),
+        pageSize: 20,
+      );
 
-          // Filter by query
-          final q = query.toLowerCase().trim();
-          results = nearbyRestaurants.where((r) => r.name.toLowerCase().contains(q) || r.description.toLowerCase().contains(q)).toList();
-        } catch (e) {
-          // Nearby search failed, trying all restaurants
-        }
-      }
-
-      // Fallback to all restaurants if nearby failed or no coords
-      if (results.isEmpty) {
-        final allRestaurants = <RestaurantModel>[];
-        final q = query.toLowerCase().trim();
-        results = allRestaurants.where((r) => r.name.toLowerCase().contains(q) || r.description.toLowerCase().contains(q)).toList();
-      }
+      result.fold(
+        (error) {
+          // Error occurred, results will remain empty
+          setState(() {
+            _errorMessage = error;
+          });
+        },
+        (restaurants) {
+          results = restaurants;
+        },
+      );
 
       // Sort results: premium first, then by rating
       results.sort((a, b) {

@@ -34,4 +34,11 @@ class UserCubit extends Cubit<UserState> {
   void resetUserState() {
     emit(const UserInitial());
   }
+
+  ProfileModel? get profileModel {
+    if (state is UserLoaded) {
+      return (state as UserLoaded).profile;
+    }
+    return null;
+  }
 }

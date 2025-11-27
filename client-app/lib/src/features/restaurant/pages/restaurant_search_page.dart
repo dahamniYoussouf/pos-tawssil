@@ -1,20 +1,24 @@
+import 'package:client_app/src/core/res/color_app.dart';
+import 'package:client_app/src/features/restaurant/cubit/restaurant_search_state.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'dart:async';
 import 'package:client_app/l10n/app_localizations.dart';
 import 'package:client_app/src/features/auth/cubit/user_cubit.dart';
-import 'package:client_app/src/features/auth/cubit/user_state.dart';
-import '../../auth/services/user_service.dart';
-import '../services/autocomplete_service.dart';
+import 'package:client_app/src/features/locations/cubit/location_cubit.dart';
+import 'package:client_app/src/features/locations/cubit/location_state.dart';
+import 'package:client_app/src/features/auth/services/user_service.dart';
 import '../widgets/restaurant_search_card.dart';
-import '../widgets/autocomplete_dropdown.dart';
-import '../cubit/restaurant_cubit.dart';
+import '../cubit/restaurant_search_cubit.dart';
 import 'restaurant_details_page.dart';
 
 class RestaurantSearchPage extends StatefulWidget {
   final String? initialQuery;
 
-  const RestaurantSearchPage({Key? key, this.initialQuery}) : super(key: key);
+  const RestaurantSearchPage({
+    Key? key,
+    this.initialQuery,
+  }) : super(key: key);
 
   @override
   State<RestaurantSearchPage> createState() => _RestaurantSearchPageState();
@@ -23,171 +27,136 @@ class RestaurantSearchPage extends StatefulWidget {
 class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
   final TextEditingController _searchController = TextEditingController();
   final UserService _userService = UserService();
-  final AutocompleteService _autocompleteService = AutocompleteService();
-  Timer? _debounce;
-  UserLocation? userLocation;
-  static const int _maxResults = 50; // safety cap for search results
+  Timer? _debounceTimer;
+  static const int _maxResults = 50;
 
   @override
   void initState() {
     super.initState();
-    _loadUserData();
-    _searchController.addListener(_onSearchTextChanged);
+    _initializeSearch();
+    _loadUserLocation();
+  }
+
+  void _initializeSearch() {
     if (widget.initialQuery != null && widget.initialQuery!.isNotEmpty) {
       _searchController.text = widget.initialQuery!;
-      _onSearchChanged(widget.initialQuery!);
+      _performSearch(widget.initialQuery!);
     }
+    _searchController.addListener(_onSearchChanged);
   }
 
-  void _onSearchTextChanged() {
-    _onSearchChanged(_searchController.text);
+  void _loadUserLocation() {
+    context.read<LocationCubit>().loadSavedLocation();
   }
 
-  Future<void> _loadUserData() async {
-    try {
-      final currentLocation = await _userService.getCurrentLocation();
+  void _onSearchChanged() {
+    final query = _searchController.text.trim();
 
-      if (mounted) {
-        setState(() {
-          userLocation = currentLocation;
-        });
-      }
-    } catch (e) {
-      // Error loading user data
+    // Cancel previous timer
+    _debounceTimer?.cancel();
+
+    if (query.isEmpty) {
+      context.read<RestaurantSearchCubit>().clearSearch();
+      return;
     }
-  }
 
-  void _onSuggestionSelected(String restaurantName) {
-    // When user selects a suggestion, perform a search for that restaurant
-    _searchController.text = restaurantName;
-    context.read<RestaurantCubit>().searchRestaurants(restaurantName.trim(), maxResults: _maxResults);
-  }
-
-  void _onSearchChanged(String q) {
-    if (_debounce?.isActive ?? false) _debounce!.cancel();
-
-    _debounce = Timer(const Duration(milliseconds: 300), () {
-      if (q.trim().isEmpty) {
-        // Clear search results
-        return;
-      }
-
-      // Use BLoC for search
-      context.read<RestaurantCubit>().searchRestaurants(q.trim(), maxResults: _maxResults);
+    // Debounce search to avoid too many API calls
+    _debounceTimer = Timer(const Duration(milliseconds: 500), () {
+      _performSearch(query);
     });
+  }
+
+  void _performSearch(String query) {
+    if (query.trim().isEmpty) {
+      context.read<RestaurantSearchCubit>().clearSearch();
+      return;
+    }
+
+    // Get location from LocationCubit if available
+    final locationState = context.read<LocationCubit>().state;
+    double? lat;
+    double? lng;
+    String? address;
+
+    if (locationState is LocationSuccess) {
+      if (locationState.fullAddress.isNotEmpty) {
+        address = locationState.fullAddress;
+      } else if (locationState.latitude != null && locationState.longitude != null) {
+        lat = locationState.latitude;
+        lng = locationState.longitude;
+      }
+    }
+
+    context.read<RestaurantSearchCubit>().searchRestaurants(
+          query: query.trim(),
+          lat: lat,
+          lng: lng,
+          address: address,
+          pageSize: _maxResults,
+        );
   }
 
   @override
   Widget build(BuildContext context) {
-    final userCubit = context.read<UserCubit>();
+    final localizations = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        title: Text(localizations.searchRestaurants),
+        centerTitle: false,
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            // Header Section (same as restaurant suggestion page)
+            _buildHeader(localizations),
             Container(
-              padding: EdgeInsets.fromLTRB(20, 16, 20, 20),
-              color: Colors.white,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: ColorApp.primary,
+                  width: 1.5,
+                ),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: Row(
                 children: [
-                  // Greeting + location + icons row
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Greeting and location
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '${_userService.getGreetingMessage(AppLocalizations.of(context)!)}, ${userCubit.state is UserLoaded ? (userCubit.state as UserLoaded).profile.firstName : AppLocalizations.of(context)!.user}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            if (userLocation != null)
-                              Text(
-                                '${userLocation!.area}, ${userLocation!.city}',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey[600],
-                                ),
-                              ),
-                          ],
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          // Notification icon with circular border
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.black,
-                                width: 1.5,
-                              ),
-                            ),
-                            child: Center(
-                              child: Icon(
-                                Icons.notifications,
-                                size: 22,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 12),
-                          // Message icon with circular border
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.black,
-                                width: 1.5,
-                              ),
-                            ),
-                            child: Center(
-                              child: Icon(
-                                Icons.message,
-                                size: 22,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                  Icon(
+                    Icons.search,
+                    color: ColorApp.grey,
+                    size: 24,
                   ),
-                  SizedBox(height: 18),
-
-                  // Search Bar with Autocomplete
-                  AutocompleteDropdown(
-                    controller: _searchController,
-                    onSearch: _autocompleteService.getRestaurantSuggestions,
-                    onSuggestionSelected: _onSuggestionSelected,
-                    hintText: 'Rechercher des restaurants, des aliments...',
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextField(
+                      controller: _searchController,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w400,
+                        color: Colors.black87,
+                      ),
+                      decoration: InputDecoration(
+                        hintText: localizations.searchRestaurantPlaceholder,
+                        hintStyle: TextStyle(
+                          color: Colors.grey[500],
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.zero,
+                        isDense: true,
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
-
-            // Search Results (No promo banner, no categories)
             Expanded(
-              child: BlocConsumer<RestaurantCubit, RestaurantState>(
-                listener: (context, state) {
-                  // Handle any side effects if needed
-                },
-                builder: (context, state) {
-                  return _buildBody(state);
-                },
+              child: BlocBuilder<RestaurantSearchCubit, RestaurantSearchState>(
+                builder: (context, state) => _buildContent(state, localizations),
               ),
             ),
           ],
@@ -196,211 +165,291 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
     );
   }
 
-  Widget _buildBody(RestaurantState state) {
-    if (state is RestaurantSearchLoading) {
-      return Center(
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 32),
-          padding: const EdgeInsets.all(32),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 20,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
+  Widget _buildHeader(AppLocalizations localizations) {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+      color: Colors.white,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF006C4A).withOpacity(0.1),
-                  shape: BoxShape.circle,
+              Expanded(
+                child: BlocBuilder<LocationCubit, LocationState>(
+                  builder: (context, locationState) {
+                    final userCubit = context.read<UserCubit>();
+                    final firstName = userCubit.profileModel?.firstName ?? localizations.user;
+                    final greeting = _userService.getGreetingMessage(localizations);
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '$greeting, $firstName',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        if (locationState is LocationSuccess)
+                          Text(
+                            '${locationState.area}, ${locationState.city}',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                      ],
+                    );
+                  },
                 ),
-                child: const CircularProgressIndicator(
-                  color: Color(0xFF006C4A),
-                  strokeWidth: 3,
-                ),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Recherche en cours...',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Recherche de "${_searchController.text}"',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                ),
-                textAlign: TextAlign.center,
               ),
             ],
           ),
-        ),
-      );
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent(RestaurantSearchState state, AppLocalizations localizations) {
+    if (state is RestaurantSearchLoading) {
+      return _buildLoadingState(state, localizations);
     }
 
-    if (state is RestaurantError) {
-      return Center(
-        child: Container(
-          margin: const EdgeInsets.symmetric(horizontal: 32),
-          padding: const EdgeInsets.all(32),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 20,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.red.shade50,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.error_outline,
-                  size: 48,
-                  color: Colors.red.shade400,
-                ),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Erreur de recherche',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                state.message,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey.shade600,
-                  height: 1.4,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      );
+    if (state is RestaurantSearchError) {
+      return _buildErrorState(state, localizations);
     }
 
     if (state is RestaurantSearchResults) {
       if (state.restaurants.isEmpty) {
-        return Center(
-          child: Container(
-            margin: const EdgeInsets.symmetric(horizontal: 32),
-            padding: const EdgeInsets.all(40),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 20,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade100,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.restaurant_outlined,
-                    size: 56,
-                    color: Colors.grey.shade400,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                const Text(
-                  'Aucun résultat',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Aucun restaurant trouvé pour',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '"${state.searchQuery}"',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Color(0xFF006C4A),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Essayez un terme de recherche différent',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade500,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
-        );
+        return _buildEmptyState(state, localizations);
       }
-
-      return ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: state.restaurants.length,
-        itemBuilder: (context, index) {
-          final restaurant = state.restaurants[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => RestaurantDetailsPage(restaurant: restaurant),
-                ),
-              );
-            },
-            child: RestaurantCard(restaurant: restaurant),
-          );
-        },
-      );
+      return _buildResultsList(state);
     }
 
-    // Default state (RestaurantInitial or other states)
+    // Initial state
+    return _buildInitialState(localizations);
+  }
+
+  Widget _buildLoadingState(RestaurantSearchLoading state, AppLocalizations localizations) {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 32),
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFF006C4A).withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const CircularProgressIndicator(
+                color: Color(0xFF006C4A),
+                strokeWidth: 3,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              localizations.searching,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '${localizations.searchingFor} "${state.query}"',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(RestaurantSearchError state, AppLocalizations localizations) {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 32),
+        padding: const EdgeInsets.all(32),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.error_outline,
+                size: 48,
+                color: Colors.red.shade400,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              localizations.searchError,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              state.message,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade600,
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () {
+                final query = _searchController.text.trim();
+                if (query.isNotEmpty) {
+                  _performSearch(query);
+                } else {
+                  context.read<RestaurantSearchCubit>().clearError();
+                }
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF006C4A),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: Text(localizations.retry),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(RestaurantSearchResults state, AppLocalizations localizations) {
+    return Center(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 32),
+        padding: const EdgeInsets.all(40),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 20,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.restaurant_outlined,
+                size: 56,
+                color: Colors.grey.shade400,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              localizations.noResults,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              '${localizations.noRestaurantFoundFor} "${state.searchQuery}"',
+              style: TextStyle(
+                fontSize: 15,
+                color: Colors.grey.shade600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              localizations.tryDifferentSearchTerm,
+              style: TextStyle(
+                fontSize: 13,
+                color: Colors.grey.shade500,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResultsList(RestaurantSearchResults state) {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: state.restaurants.length,
+      itemBuilder: (context, index) {
+        final restaurant = state.restaurants[index];
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => RestaurantDetailsPage(restaurant: restaurant),
+              ),
+            );
+          },
+          child: RestaurantCard(restaurant: restaurant),
+        );
+      },
+    );
+  }
+
+  Widget _buildInitialState(AppLocalizations localizations) {
     return Center(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 32),
@@ -432,9 +481,9 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
               ),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'Rechercher des restaurants',
-              style: TextStyle(
+            Text(
+              localizations.searchRestaurants,
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
@@ -442,7 +491,7 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
             ),
             const SizedBox(height: 12),
             Text(
-              'Tapez le nom d\'un restaurant ou d\'un plat pour commencer votre recherche',
+              localizations.searchRestaurantsHint,
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey.shade600,
@@ -458,8 +507,8 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
 
   @override
   void dispose() {
-    _debounce?.cancel();
-    _searchController.removeListener(_onSearchTextChanged);
+    _debounceTimer?.cancel();
+    _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
     super.dispose();
   }

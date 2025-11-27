@@ -1,5 +1,11 @@
+import 'package:client_app/src/features/auth/cubit/user_cubit.dart';
 import 'package:client_app/src/features/order/index.dart';
 import 'package:client_app/src/features/order/widgets/cubit/order_tracking_map_cubit.dart';
+import 'package:client_app/src/features/restaurant/cubit/category_cubit.dart';
+import 'package:client_app/src/features/restaurant/cubit/restaurant_cubit.dart';
+import 'package:client_app/src/features/restaurant/cubit/restaurant_search_cubit.dart';
+import 'package:client_app/src/features/restaurant/services/restaurant_service.dart';
+import 'package:client_app/src/features/restaurant/repositories/restaurant_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:client_app/src/core/localization/locale_cubit.dart';
@@ -23,8 +29,8 @@ void setupLocator() {
   locator.registerLazySingleton<Dio>(() => Dio(options)
     ..interceptors.add(PrettyDioLogger(
       requestHeader: false,
-      requestBody: false,
-      responseBody: false,
+      requestBody: true,
+      responseBody: true,
       responseHeader: false,
       request: true,
       error: true,
@@ -44,4 +50,19 @@ void setupLocator() {
   locator.registerLazySingleton<OrderCubit>(() => OrderCubit(orderService: locator<OrderService>()));
 
   locator.registerLazySingleton<OrderTrackingMapCubit>(() => OrderTrackingMapCubit());
+
+  // Restaurant services
+  locator.registerLazySingleton<RestaurantService>(() => RestaurantService());
+
+  locator.registerLazySingleton<RestaurantRepository>(
+    () => RestaurantRepository(restaurantService: locator<RestaurantService>()),
+  );
+
+  locator.registerLazySingleton<UserCubit>(() => UserCubit());
+
+  locator.registerLazySingleton<RestaurantCubit>(() => RestaurantCubit(restaurantRepository: locator<RestaurantRepository>()));
+
+  locator.registerLazySingleton<CategoryCubit>(() => CategoryCubit(restaurantRepository: locator<RestaurantRepository>()));
+
+  locator.registerLazySingleton<RestaurantSearchCubit>(() => RestaurantSearchCubit(restaurantRepository: locator<RestaurantRepository>()));
 }

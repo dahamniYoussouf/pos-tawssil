@@ -1,4 +1,5 @@
 import 'package:client_app/src/features/auth/pages/phone_number_page.dart';
+import 'package:client_app/src/features/restaurant/pages/restaurant_search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/src/features/auth/cubit/auth_cubit.dart';
@@ -10,17 +11,8 @@ import 'restaurant_search_bar.dart';
 
 class RestaurantSuggestionHeader extends StatelessWidget {
   final UserLocation? userLocation;
-  final VoidCallback onSearchTap;
-  final VoidCallback? onNotificationTap;
-  final VoidCallback? onMessageTap;
 
-  const RestaurantSuggestionHeader({
-    Key? key,
-    this.userLocation,
-    required this.onSearchTap,
-    this.onNotificationTap,
-    this.onMessageTap,
-  }) : super(key: key);
+  const RestaurantSuggestionHeader({Key? key, this.userLocation}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -85,54 +77,21 @@ class RestaurantSuggestionHeader extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 12),
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 1.5,
-                      ),
-                    ),
-                    child: Center(
-                      child: IconButton(
-                        icon: Icon(Icons.notifications, size: 22, color: Colors.black),
-                        onPressed: onNotificationTap,
-                        padding: EdgeInsets.zero,
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 1.5,
-                      ),
-                    ),
-                    child: Center(
-                      child: IconButton(
-                        icon: Icon(Icons.message, size: 22, color: Colors.black),
-                        onPressed: onMessageTap,
-                        padding: EdgeInsets.zero,
-                      ),
-                    ),
-                  ),
                 ],
               ),
             ],
           ),
           SizedBox(height: 18),
           GestureDetector(
-            onTap: onSearchTap,
-            child: RestaurantSearchBar(
-              readOnly: true,
-              onTap: onSearchTap,
-            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => RestaurantSearchPage(),
+                ),
+              );
+            },
+            child: RestaurantSearchBar(readOnly: true),
           ),
         ],
       ),

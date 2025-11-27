@@ -16,6 +16,7 @@ import 'src/features/locations/cubit/location_cubit.dart';
 import 'src/features/cart/cubit/cart_cubit.dart';
 import 'src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'src/features/restaurant/cubit/category_cubit.dart';
+import 'src/features/restaurant/cubit/restaurant_search_cubit.dart';
 import 'src/features/order/cubit/order_cubit.dart';
 import 'src/core/localization/locale_cubit.dart';
 
@@ -65,11 +66,17 @@ class MyApp extends StatelessWidget {
         BlocProvider<CartCubit>(
           create: (context) => CartCubit(cartService: CartService()),
         ),
+        BlocProvider<UserCubit>(
+          create: (context) => locator<UserCubit>(),
+        ),
         BlocProvider<RestaurantCubit>(
-          create: (context) => RestaurantCubit(restaurantService: RestaurantService()),
+          create: (context) => locator<RestaurantCubit>(),
         ),
         BlocProvider<CategoryCubit>(
-          create: (context) => CategoryCubit(restaurantService: RestaurantService()),
+          create: (context) => locator<CategoryCubit>(),
+        ),
+        BlocProvider<RestaurantSearchCubit>(
+          create: (context) => locator<RestaurantSearchCubit>(),
         ),
         BlocProvider<OrderCubit>(
           create: (context) => locator<OrderCubit>(),

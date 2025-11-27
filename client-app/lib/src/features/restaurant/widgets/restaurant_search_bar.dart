@@ -3,7 +3,6 @@ import 'package:client_app/l10n/app_localizations.dart';
 
 class RestaurantSearchBar extends StatefulWidget {
   final Function(String)? onSearch;
-  final VoidCallback? onTap;
   final bool readOnly;
   final String? hintText;
   final TextEditingController? controller;
@@ -11,7 +10,6 @@ class RestaurantSearchBar extends StatefulWidget {
   const RestaurantSearchBar({
     Key? key,
     this.onSearch,
-    this.onTap,
     this.readOnly = false,
     this.hintText,
     this.controller,
@@ -61,7 +59,6 @@ class _RestaurantSearchBarState extends State<RestaurantSearchBar> {
             child: TextField(
               controller: _controller,
               readOnly: widget.readOnly,
-              onTap: widget.onTap,
               onChanged: (value) {
                 setState(() {}); // Update UI for clear button
                 if (widget.onSearch != null) widget.onSearch!(value);

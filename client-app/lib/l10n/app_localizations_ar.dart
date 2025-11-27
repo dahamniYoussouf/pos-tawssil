@@ -580,4 +580,34 @@ class AppLocalizationsAr extends AppLocalizations {
   String errorOrderLoad(String error) {
     return 'خطأ في تحميل الطلب: $error';
   }
+
+  @override
+  String get searching => 'جاري البحث...';
+
+  @override
+  String get searchingFor => 'البحث عن';
+
+  @override
+  String get searchError => 'خطأ في البحث';
+
+  @override
+  String get noResults => 'لا توجد نتائج';
+
+  @override
+  String get noRestaurantFoundFor => 'لم يتم العثور على مطعم لـ';
+
+  @override
+  String get tryDifferentSearchTerm => 'جرب مصطلح بحث مختلف';
+
+  @override
+  String get searchRestaurants => 'البحث عن المطاعم';
+
+  @override
+  String get searchRestaurantsHint => 'اكتب اسم مطعم أو طبق لبدء البحث';
+
+  @override
+  String get promoBannerTitle => 'توصيل مجاني في طلبك الثالث!';
+
+  @override
+  String get promoBannerDescription => 'بعد طلبين، توصيل طلبك الثالث مجاني.';
 }

@@ -1,3 +1,4 @@
+import 'package:client_app/src/features/restaurant/cubit/category_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/l10n/app_localizations.dart';
@@ -8,6 +9,7 @@ import 'package:client_app/src/features/restaurant/pages/restaurant_details_page
 import 'restaurant_search_page.dart';
 import 'restaurant_category_page.dart';
 import '../cubit/restaurant_cubit.dart';
+import '../cubit/restaurant_state.dart';
 import '../cubit/category_cubit.dart';
 import '../widgets/restaurant_suggestion_header.dart';
 import '../widgets/promo_banner.dart';
@@ -29,8 +31,12 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
       context.read<UserCubit>().fetchProfile();
       final restaurantCubit = context.read<RestaurantCubit>();
       final categoryCubit = context.read<CategoryCubit>();
-      restaurantCubit.loadNearbyRestaurants(radius: 5000);
-      categoryCubit.loadCategories();
+      if (restaurantCubit.state is! RestaurantLoaded) {
+        restaurantCubit.loadNearbyRestaurants(radius: 5000);
+      }
+      if (categoryCubit.state is! CategoryLoaded) {
+        categoryCubit.loadCategories();
+      }
     });
   }
 
@@ -82,14 +88,6 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
                       children: [
                         RestaurantSuggestionHeader(
                           userLocation: state.userLocation,
-                          onSearchTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RestaurantSearchPage(),
-                              ),
-                            );
-                          },
                         ),
                         PromoBanner(),
                         BlocBuilder<CategoryCubit, CategoryState>(

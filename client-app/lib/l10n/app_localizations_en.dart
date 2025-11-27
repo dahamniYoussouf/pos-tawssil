@@ -591,4 +591,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String errorOrderLoad(String error) {
     return 'Error loading order: $error';
   }
+
+  @override
+  String get searching => 'Searching...';
+
+  @override
+  String get searchingFor => 'Searching for';
+
+  @override
+  String get searchError => 'Search error';
+
+  @override
+  String get noResults => 'No results';
+
+  @override
+  String get noRestaurantFoundFor => 'No restaurant found for';
+
+  @override
+  String get tryDifferentSearchTerm => 'Try a different search term';
+
+  @override
+  String get searchRestaurants => 'Search restaurants';
+
+  @override
+  String get searchRestaurantsHint =>
+      'Type the name of a restaurant or dish to start your search';
+
+  @override
+  String get promoBannerTitle => 'Free Delivery on Your 3rd Order!';
+
+  @override
+  String get promoBannerDescription =>
+      'After two orders, the delivery of your third order is free.';
 }
