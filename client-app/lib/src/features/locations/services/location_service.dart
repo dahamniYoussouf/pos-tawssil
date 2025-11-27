@@ -1,11 +1,7 @@
-import 'package:client_app/src/core/services/token_storage_service.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
-import '../../../core/config/api_config.dart';
-import 'dart:convert';
 import 'package:geocoding/geocoding.dart' as geocoding;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:client_app/src/core/utils/dependency_injection.dart';
 import '../../../core/services/base_api_service.dart';
 
 class LocationService extends BaseApiService {

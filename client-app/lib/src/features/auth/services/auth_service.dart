@@ -59,11 +59,13 @@ class AuthService extends BaseApiService {
         };
       }
     } on DioException catch (e) {
+      print("error : ${e.toString()}");
       return {
         'success': false,
         'message': 'Erreur de connexion. Veuillez réessayer.',
       };
     } catch (e) {
+      print("error : ${e.toString()}");
       return {
         'success': false,
         'message': 'Erreur lors de l\'envoi du code',
@@ -244,6 +246,7 @@ class AuthService extends BaseApiService {
         };
       }
     } on DioException catch (e) {
+      print("error : ${e.toString()}");
       return {
         'success': false,
         'message': 'Erreur de connexion. Veuillez réessayer.',
@@ -284,6 +287,7 @@ class AuthService extends BaseApiService {
         };
       }
     } on DioException catch (e) {
+      print("error : ${e.toString()}");
       return {
         'success': false,
         'message': 'Erreur de connexion. Veuillez réessayer.',
