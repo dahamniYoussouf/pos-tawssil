@@ -23,18 +23,16 @@ class RestaurantLoaded extends RestaurantState {
   final List<CategoryModel> categories;
   final String? searchQuery;
   final String? selectedCategory;
-  final UserLocation? userLocation;
 
   const RestaurantLoaded({
     required this.restaurants,
     required this.categories,
     this.searchQuery,
     this.selectedCategory,
-    this.userLocation,
   });
 
   @override
-  List<Object?> get props => [restaurants, categories, searchQuery, selectedCategory, userLocation];
+  List<Object?> get props => [restaurants, categories, searchQuery, selectedCategory];
 
   RestaurantLoaded copyWith({
     List<RestaurantModel>? restaurants,
@@ -49,7 +47,6 @@ class RestaurantLoaded extends RestaurantState {
       categories: categories ?? this.categories,
       searchQuery: searchQuery ?? this.searchQuery,
       selectedCategory: selectedCategory ?? this.selectedCategory,
-      userLocation: userLocation ?? this.userLocation,
     );
   }
 }

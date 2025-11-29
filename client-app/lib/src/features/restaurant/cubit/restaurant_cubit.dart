@@ -1,18 +1,17 @@
+import 'package:client_app/src/core/utils/dependency_injection.dart';
+import 'package:client_app/src/features/locations/cubit/location_cubit.dart';
+import 'package:client_app/src/features/locations/cubit/location_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../repositories/restaurant_repository.dart';
-import '../../auth/services/user_service.dart';
 import 'restaurant_state.dart';
 
 // Restaurant Cubit
 class RestaurantCubit extends Cubit<RestaurantState> {
   final RestaurantRepository _restaurantRepository;
-  final UserService _userService;
 
   RestaurantCubit({
     RestaurantRepository? restaurantRepository,
-    UserService? userService,
   })  : _restaurantRepository = restaurantRepository ?? RestaurantRepository(),
-        _userService = userService ?? UserService(),
         super(RestaurantInitial());
 
   Future<void> loadNearbyRestaurants({int radius = 5000}) async {
@@ -21,17 +20,28 @@ class RestaurantCubit extends Cubit<RestaurantState> {
 
     try {
       // Get user coordinates
-      final coords = await _userService.getCurrentCoordinates();
+      // Get location from LocationCubit if available
+      await locator<LocationCubit>().loadSavedLocation();
+      final locationState = locator<LocationCubit>().state;
+      double? lat;
+      double? lng;
 
+      if (locationState is LocationSuccess) {
+        // use only coordinates if available
+        if (locationState.latitude != null && locationState.longitude != null) {
+          lat = locationState.latitude;
+          lng = locationState.longitude;
+        }
+      }
       if (isClosed) return;
-      if (coords == null) {
+      if (lat == null || lng == null) {
         emit(const RestaurantError(message: 'Unable to get location. Please enable location services.'));
         return;
       }
 
       final result = await _restaurantRepository.getNearbyRestaurants(
-        lat: coords['lat'],
-        lng: coords['lng'],
+        lat: lat,
+        lng: lng,
         radius: radius,
       );
 
@@ -42,12 +52,10 @@ class RestaurantCubit extends Cubit<RestaurantState> {
         },
         (restaurants) async {
           final categories = _restaurantRepository.getStaticCategories();
-          final userLocation = await _userService.getCurrentLocation();
           if (!isClosed) {
             emit(RestaurantLoaded(
               restaurants: restaurants,
               categories: categories,
-              userLocation: userLocation,
             ));
           }
         },
@@ -123,50 +131,6 @@ class RestaurantCubit extends Cubit<RestaurantState> {
         }
       },
     );
-  }
-
-  Future<void> searchRestaurants(String query, {int maxResults = 50}) async {
-    if (isClosed) return;
-    if (query.trim().isEmpty) {
-      if (!isClosed) emit(RestaurantInitial());
-      return;
-    }
-
-    emit(RestaurantSearchLoading());
-
-    try {
-      // Get user coordinates for location-based search
-      final coords = await _userService.getCurrentCoordinates();
-
-      if (isClosed) return;
-      final result = await _restaurantRepository.getNearbyRestaurants(
-        lat: coords?['lat'],
-        lng: coords?['lng'],
-        radius: 5000,
-        q: query.trim(),
-        pageSize: maxResults,
-      );
-
-      if (isClosed) return;
-      result.fold(
-        (error) {
-          if (!isClosed) emit(RestaurantError(message: error));
-        },
-        (restaurants) {
-          if (!isClosed) {
-            emit(RestaurantSearchResults(
-              restaurants: restaurants,
-              searchQuery: query.trim(),
-              hasMore: restaurants.length >= maxResults,
-            ));
-          }
-        },
-      );
-    } catch (e) {
-      if (!isClosed) {
-        emit(RestaurantError(message: 'errorSearchRestaurants|${e.toString()}'));
-      }
-    }
   }
 
   void clearError() {

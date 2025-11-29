@@ -85,9 +85,7 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
                     physics: AlwaysScrollableScrollPhysics(),
                     child: Column(
                       children: [
-                        RestaurantSuggestionHeader(
-                          userLocation: state.userLocation,
-                        ),
+                        RestaurantSuggestionHeader(),
                         PromoBanner(),
                         BlocBuilder<CategoryCubit, CategoryState>(
                           builder: (context, categoryState) {

@@ -1,4 +1,6 @@
 import 'package:client_app/src/features/auth/pages/phone_number_page.dart';
+import 'package:client_app/src/features/locations/cubit/location_cubit.dart';
+import 'package:client_app/src/features/locations/cubit/location_state.dart';
 import 'package:client_app/src/features/restaurant/pages/restaurant_search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -10,9 +12,7 @@ import '../../auth/services/user_service.dart';
 import 'restaurant_search_bar.dart';
 
 class RestaurantSuggestionHeader extends StatelessWidget {
-  final UserLocation? userLocation;
-
-  const RestaurantSuggestionHeader({Key? key, this.userLocation}) : super(key: key);
+  const RestaurantSuggestionHeader({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -40,14 +40,20 @@ class RestaurantSuggestionHeader extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 4),
-                  if (userLocation != null)
-                    Text(
-                      '${userLocation!.area}, ${userLocation!.city}',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                      ),
-                    ),
+                  BlocBuilder<LocationCubit, LocationState>(
+                    builder: (context, locationState) {
+                      if (locationState is LocationSuccess) {
+                        return Text(
+                          '${locationState.fullAddress}',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[600],
+                          ),
+                        );
+                      }
+                      return SizedBox.shrink();
+                    },
+                  ),
                 ],
               )),
               Row(

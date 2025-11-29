@@ -76,12 +76,10 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
     final locationState = context.read<LocationCubit>().state;
     double? lat;
     double? lng;
-    String? address;
 
     if (locationState is LocationSuccess) {
-      if (locationState.fullAddress.isNotEmpty) {
-        address = locationState.fullAddress;
-      } else if (locationState.latitude != null && locationState.longitude != null) {
+      // use only coordinates if available
+      if (locationState.latitude != null && locationState.longitude != null) {
         lat = locationState.latitude;
         lng = locationState.longitude;
       }
@@ -91,7 +89,6 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
           query: query.trim(),
           lat: lat,
           lng: lng,
-          address: address,
           pageSize: _maxResults,
         );
   }
@@ -196,7 +193,7 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
                         const SizedBox(height: 4),
                         if (locationState is LocationSuccess)
                           Text(
-                            '${locationState.area}, ${locationState.city}',
+                            '${locationState.fullAddress}',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey[600],
