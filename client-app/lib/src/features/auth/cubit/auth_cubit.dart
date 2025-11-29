@@ -1,4 +1,5 @@
 import 'package:client_app/src/features/auth/models/profile_model.dart';
+import 'package:client_app/src/features/locations/cubit/location_cubit.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import '../services/auth_service.dart';
 import 'auth_state.dart';
@@ -239,6 +240,7 @@ class AuthCubit extends HydratedCubit<AuthState> {
 
   Future<bool> logout() async {
     try {
+      await locator<LocationCubit>().clearSavedLocation();
       final success = await _authService.logout();
       if (success) {
         emit(AuthInitial());

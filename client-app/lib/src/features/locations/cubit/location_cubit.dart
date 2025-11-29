@@ -114,6 +114,11 @@ class LocationCubit extends Cubit<LocationState> {
     }
   }
 
+  Future<void> clearSavedLocation() async {
+    await _locationRepository.clearLocation();
+    emit(LocationInitial());
+  }
+
   void openLocationSettings() {
     Geolocator.openLocationSettings();
   }
