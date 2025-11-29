@@ -5,8 +5,10 @@ import 'package:client_app/src/features/order/widgets/cubit/order_tracking_map_c
 import 'package:client_app/src/features/restaurant/cubit/category_cubit.dart';
 import 'package:client_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'package:client_app/src/features/restaurant/cubit/restaurant_search_cubit.dart';
+import 'package:client_app/src/features/restaurant/cubit/restaurant_details_cubit.dart';
 import 'package:client_app/src/features/restaurant/services/restaurant_service.dart';
 import 'package:client_app/src/features/restaurant/repositories/restaurant_repository.dart';
+import 'package:client_app/src/features/cart/services/cart_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:client_app/src/core/localization/locale_cubit.dart';
@@ -50,6 +52,9 @@ void setupLocator() {
 
   locator.registerLazySingleton<OrderCubit>(() => OrderCubit(orderService: locator<OrderService>()));
 
+  // Cart services
+  locator.registerLazySingleton<CartService>(() => CartService());
+
   locator.registerLazySingleton<OrderTrackingMapCubit>(() => OrderTrackingMapCubit());
 
   // Restaurant services
@@ -66,5 +71,6 @@ void setupLocator() {
   locator.registerLazySingleton<CategoryCubit>(() => CategoryCubit(restaurantRepository: locator<RestaurantRepository>()));
 
   locator.registerLazySingleton<RestaurantSearchCubit>(() => RestaurantSearchCubit(restaurantRepository: locator<RestaurantRepository>()));
+  locator.registerFactory<RestaurantDetailsCubit>(() => RestaurantDetailsCubit(repository: locator<RestaurantRepository>()));
   locator.registerLazySingleton<LocationCubit>(() => LocationCubit());
 }

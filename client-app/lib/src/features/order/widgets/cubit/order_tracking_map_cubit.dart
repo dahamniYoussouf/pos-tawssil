@@ -38,6 +38,8 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
         super(OrderTrackingMapState.initial(fallbackCenter ?? _defaultFallbackCenter));
 
   void updateOrder(OrderModel order) {
+    if (isClosed) return;
+
     if (!_hasRequiredCoordinates(order)) {
       emit(OrderTrackingMapState(
         markers: const <Marker>[],
@@ -53,6 +55,8 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
     final List<LatLng> boundPoints = <LatLng>[restaurantLatLng, deliveryLatLng];
     final List<Marker> markers = _buildMarkers(order, restaurantLatLng, deliveryLatLng, boundPoints);
     final List<Polyline> polylines = <Polyline>[_buildRoutePolyline(restaurantLatLng, deliveryLatLng)];
+
+    if (isClosed) return;
 
     emit(OrderTrackingMapState(
       markers: List<Marker>.unmodifiable(markers),

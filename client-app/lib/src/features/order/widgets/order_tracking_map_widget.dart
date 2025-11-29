@@ -29,19 +29,26 @@ class _OrderTrackingMapState extends State<OrderTrackingMap> {
   void initState() {
     super.initState();
     _mapController = MapController();
-    locator<OrderTrackingMapCubit>().updateOrder(widget.order);
+    final cubit = locator<OrderTrackingMapCubit>();
+    if (!cubit.isClosed) {
+      cubit.updateOrder(widget.order);
+    }
   }
 
   @override
   void dispose() {
-    locator<OrderTrackingMapCubit>().close();
+    _mapController.dispose();
     super.dispose();
   }
 
   @override
   void didUpdateWidget(covariant OrderTrackingMap oldWidget) {
     super.didUpdateWidget(oldWidget);
-    locator<OrderTrackingMapCubit>().updateOrder(widget.order);
+    if (!mounted) return;
+    final cubit = locator<OrderTrackingMapCubit>();
+    if (!cubit.isClosed) {
+      cubit.updateOrder(widget.order);
+    }
   }
 
   @override

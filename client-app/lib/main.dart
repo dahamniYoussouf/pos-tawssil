@@ -62,7 +62,7 @@ class MyApp extends StatelessWidget {
           create: (context) => LocationCubit(),
         ),
         BlocProvider<CartCubit>(
-          create: (context) => CartCubit(cartService: CartService()),
+          create: (context) => CartCubit(cartService: locator<CartService>()),
         ),
         BlocProvider<UserCubit>(
           create: (context) => locator<UserCubit>(),

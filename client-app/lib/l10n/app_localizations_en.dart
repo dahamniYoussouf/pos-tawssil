@@ -623,4 +623,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get promoBannerDescription =>
       'After two orders, the delivery of your third order is free.';
+
+  @override
+  String get noMenuItemsAvailable => 'No menu items available';
+
+  @override
+  String get failedToLoadMenuItems =>
+      'Failed to load menu items. Please try again.';
 }

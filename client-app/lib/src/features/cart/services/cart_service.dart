@@ -102,13 +102,9 @@ class CartService extends ChangeNotifier {
     return _items.containsKey(menuItemId);
   }
 
-  void clear() {
+  void clearCart() {
     _items.clear();
     notifyListeners();
-  }
-
-  void clearCart() {
-    clear();
   }
 
   CartItem? getItem(String menuItemId) {

@@ -70,14 +70,6 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  void clearCart() {
-    try {
-      _cartService.clearCart();
-    } catch (e) {
-      emit(CartError(message: 'Erreur lors de la suppression du panier: ${e.toString()}'));
-    }
-  }
-
   CartItem? getItem(String menuItemId) {
     return _cartService.getItem(menuItemId);
   }

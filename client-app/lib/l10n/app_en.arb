@@ -818,6 +818,14 @@
   "promoBannerDescription": "After two orders, the delivery of your third order is free.",
   "@promoBannerDescription": {
     "description": "Promo banner description"
+  },
+  "noMenuItemsAvailable": "No menu items available",
+  "@noMenuItemsAvailable": {
+    "description": "No menu items available message"
+  },
+  "failedToLoadMenuItems": "Failed to load menu items. Please try again.",
+  "@failedToLoadMenuItems": {
+    "description": "Failed to load menu items error message"
   }
 }
 

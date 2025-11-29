@@ -30,6 +30,13 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
   @override
   void initState() {
     super.initState();
+    final orderCubit = locator<OrderCubit>();
+    // Stop any existing polling and reset state before starting new one
+    orderCubit.stopPolling();
+    // Only reset if cubit is not closed (shouldn't happen with singleton, but safety check)
+    if (!orderCubit.isClosed) {
+      orderCubit.reset();
+    }
     _executeInitialLoad();
   }
 
@@ -40,17 +47,24 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
   }
 
   void _executeInitialLoad() {
-    locator<OrderCubit>().fetchOrder(widget.orderId);
-    locator<OrderCubit>().startPolling();
+    final orderCubit = locator<OrderCubit>();
+    if (!orderCubit.isClosed) {
+      orderCubit.fetchOrder(widget.orderId);
+      orderCubit.startPolling();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final AppLocalizations localization = AppLocalizations.of(context)!;
+    final orderCubit = locator<OrderCubit>();
     return Scaffold(
-      body: BlocConsumer<OrderCubit, OrderState>(
-        listener: (BuildContext context, OrderState state) => _handleStateListener(context, state, localization),
-        builder: (BuildContext context, OrderState state) => _buildStateBody(context, state, localization),
+      body: BlocProvider<OrderCubit>.value(
+        value: orderCubit,
+        child: BlocConsumer<OrderCubit, OrderState>(
+          listener: (BuildContext context, OrderState state) => _handleStateListener(context, state, localization),
+          builder: (BuildContext context, OrderState state) => _buildStateBody(context, state, localization),
+        ),
       ),
     );
   }

@@ -1215,6 +1215,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'After two orders, the delivery of your third order is free.'**
   String get promoBannerDescription;
+
+  /// No menu items available message
+  ///
+  /// In en, this message translates to:
+  /// **'No menu items available'**
+  String get noMenuItemsAvailable;
+
+  /// Failed to load menu items error message
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load menu items. Please try again.'**
+  String get failedToLoadMenuItems;
 }
 
 class _AppLocalizationsDelegate

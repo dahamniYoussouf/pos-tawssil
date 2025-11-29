@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'package:client_app/src/core/utils/dependency_injection.dart';
+import 'package:client_app/src/features/cart/services/cart_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../services/order_service.dart';
 import 'order_state.dart';
@@ -13,25 +15,42 @@ class OrderCubit extends Cubit<OrderState> {
   })  : _orderService = orderService ?? OrderService(),
         super(OrderInitial());
 
+  /// Reset cubit state (useful when starting a new order tracking session)
+  void reset() {
+    if (isClosed) return;
+    _stopPolling();
+    _currentOrderId = null;
+    emit(OrderInitial());
+  }
+
   /// Fetch order by ID
   Future<void> fetchOrder(String orderId) async {
+    if (isClosed) return;
     _currentOrderId = orderId;
     await _loadOrder(orderId);
   }
 
   /// Load order from API
   Future<void> _loadOrder(String orderId) async {
+    if (isClosed) return;
+
     try {
       emit(OrderLoading());
       final response = await _orderService.getOrder(orderId);
+
+      if (isClosed) return;
 
       if (response['success'] == true || response['id'] != null || response['_id'] != null) {
         final order = _orderService.parseOrder(response);
 
         if (order == null) {
-          emit(OrderError(message: 'errorOrderNotFound'));
+          if (!isClosed) {
+            emit(OrderError(message: 'errorOrderNotFound'));
+          }
           return;
         }
+
+        if (isClosed) return;
 
         // Check for special statuses
         if (order.isRefused) {
@@ -48,22 +67,32 @@ class OrderCubit extends Cubit<OrderState> {
           emit(OrderLoaded(order: order));
         }
       } else {
-        emit(OrderError(
-          message: response['message'] ?? 'errorOrderLoadFailed',
-        ));
+        if (!isClosed) {
+          emit(OrderError(
+            message: response['message'] ?? 'errorOrderLoadFailed',
+          ));
+        }
       }
     } catch (e) {
-      emit(OrderError(message: 'errorOrderLoad|${e.toString()}'));
+      if (!isClosed) {
+        emit(OrderError(message: 'errorOrderLoad|${e.toString()}'));
+      }
     }
   }
 
   /// Start polling for order updates
   void startPolling({Duration interval = const Duration(seconds: 5)}) {
+    if (isClosed) return;
+
     _stopPolling(); // Stop any existing timer
 
     if (_currentOrderId == null) return;
 
     _pollingTimer = Timer.periodic(interval, (timer) {
+      if (isClosed) {
+        timer.cancel();
+        return;
+      }
       if (_currentOrderId != null) {
         _silentLoadOrder(_currentOrderId!);
       }
@@ -72,8 +101,12 @@ class OrderCubit extends Cubit<OrderState> {
 
   /// Load order silently without showing loading state (for polling)
   Future<void> _silentLoadOrder(String orderId) async {
+    if (isClosed) return;
+
     try {
       final response = await _orderService.getOrder(orderId);
+
+      if (isClosed) return;
 
       if (response['success'] == true || response['id'] != null || response['_id'] != null) {
         final order = _orderService.parseOrder(response);
@@ -81,6 +114,8 @@ class OrderCubit extends Cubit<OrderState> {
         if (order == null) {
           return; // Don't emit error during silent polling
         }
+
+        if (isClosed) return;
 
         // Check for special statuses and emit appropriate state
         if (order.isRefused) {
@@ -132,6 +167,8 @@ class OrderCubit extends Cubit<OrderState> {
     String? deliveryInstructions,
     required List<Map<String, dynamic>> items,
   }) async {
+    if (isClosed) return;
+
     try {
       emit(OrderCreating());
       final normalizedOrderType = _normalizeOrderType(orderType);
@@ -148,23 +185,35 @@ class OrderCubit extends Cubit<OrderState> {
         items: sanitizedItems,
       );
 
+      if (isClosed) return;
+
       if (response['success'] == true || response['id'] != null || response['_id'] != null) {
+        // Clear cart after successful order creation
+        locator<CartService>().clearCart();
         final order = _orderService.parseOrder(response);
 
         if (order == null) {
-          emit(OrderError(message: 'errorOrderCreationFailed'));
+          if (!isClosed) {
+            emit(OrderError(message: 'errorOrderCreationFailed'));
+          }
           return;
         }
+
+        if (isClosed) return;
 
         _currentOrderId = order.id;
         emit(OrderCreated(order: order));
       } else {
-        final errorMessage = _extractErrorMessage(response);
-        emit(OrderError(message: errorMessage));
+        if (!isClosed) {
+          final errorMessage = _extractErrorMessage(response);
+          emit(OrderError(message: errorMessage));
+        }
       }
     } catch (e) {
-      final errorMessage = _extractErrorMessageFromException(e);
-      emit(OrderError(message: errorMessage));
+      if (!isClosed) {
+        final errorMessage = _extractErrorMessageFromException(e);
+        emit(OrderError(message: errorMessage));
+      }
     }
   }
 
