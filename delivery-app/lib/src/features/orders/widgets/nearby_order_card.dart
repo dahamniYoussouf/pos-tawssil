@@ -34,7 +34,12 @@ class NearbyOrderCard extends StatelessWidget {
     final double restaurantDistance = order.deliveryDistance != null ? order.deliveryDistance! : 2.5;
     final int restaurantTime = (order.deliveryTimeMinutes != null ? order.deliveryTimeMinutes! / 3.0 : 12).round();
     final double totalDistance = order.deliveryDistance ?? 7.8;
-    final int totalTime = order.estimatedDeliveryTime != null ? (order.estimatedDeliveryTime!.difference(DateTime.now()).inMinutes).round() : 35;
+    final int totalTime = order.estimatedDeliveryTime != null
+        ? () {
+            final minutes = (order.estimatedDeliveryTime!.difference(DateTime.now()).inMinutes).round();
+            return minutes < 0 ? 0 : minutes;
+          }()
+        : 0;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
