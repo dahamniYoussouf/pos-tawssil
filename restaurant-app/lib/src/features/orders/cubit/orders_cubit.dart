@@ -58,7 +58,10 @@ class OrdersCubit extends Cubit<OrdersState> {
       (orders) {
         if (loadMore && state is OrdersLoaded) {
           final currentState = state as OrdersLoaded;
-          final updatedOrders = [...currentState.orders, ...orders];
+          // Filter out duplicate orders by ID
+          final existingOrderIds = currentState.orders.map((order) => order.id).toSet();
+          final newOrders = orders.where((order) => !existingOrderIds.contains(order.id)).toList();
+          final updatedOrders = [...currentState.orders, ...newOrders];
           emit(OrdersLoaded(
             orders: updatedOrders,
             hasMore: orders.length >= limit,

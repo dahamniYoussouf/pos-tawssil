@@ -20,6 +20,8 @@ class OrdersPage extends StatefulWidget {
 
 class _OrdersPageState extends State<OrdersPage> {
   final ScrollController _scrollController = ScrollController();
+  bool _isLoadingMore = false;
+  bool _lastKnownHasMore = false;
 
   @override
   void initState() {
@@ -40,9 +42,23 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   void _onScroll() {
+    if (_isLoadingMore) return;
+
     final currentState = context.read<OrdersCubit>().state;
+    if (currentState is! OrdersLoaded) return;
+    if (!currentState.hasMore) return;
+
     if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.8) {
-      context.read<OrdersCubit>().loadMoreOrders(status: currentState.selectedStatus);
+      _isLoadingMore = true;
+      context.read<OrdersCubit>().loadMoreOrders(status: currentState.selectedStatus).then((_) {
+        if (mounted) {
+          _isLoadingMore = false;
+        }
+      }).catchError((_) {
+        if (mounted) {
+          _isLoadingMore = false;
+        }
+      });
     }
   }
 
@@ -70,6 +86,13 @@ class _OrdersPageState extends State<OrdersPage> {
 
   void _handleStateChanges(BuildContext context, OrdersState state) {
     final localizations = AppLocalizations.of(context)!;
+    // Track hasMore from OrdersLoaded state
+    if (state is OrdersLoaded) {
+      _lastKnownHasMore = state.hasMore;
+      _isLoadingMore = false;
+    } else if (state is OrdersError) {
+      _isLoadingMore = false;
+    }
     if (state is OrderActionError) {
       _showErrorSnackBar(context, _translateErrorMessage(state.message, localizations));
     } else if (state is OrderActionSuccess) {
@@ -90,27 +113,33 @@ class _OrdersPageState extends State<OrdersPage> {
       if (state.orders.isEmpty) {
         return _buildEmptyState();
       }
+      // Use last known hasMore value to prevent index out of bounds
       return _buildOrdersList(OrdersLoaded(
         orders: state.orders,
         selectedStatus: state.selectedStatus,
+        hasMore: _lastKnownHasMore,
       ));
     } else if (state is OrderActionSuccess) {
       // Show orders list after successful action (will be refreshed)
       if (state.orders.isEmpty) {
         return _buildEmptyState();
       }
+      // Use last known hasMore value to prevent index out of bounds
       return _buildOrdersList(OrdersLoaded(
         orders: state.orders,
         selectedStatus: state.selectedStatus,
+        hasMore: _lastKnownHasMore,
       ));
     } else if (state is OrderActionError) {
       // Show orders list even when action fails
       if (state.orders.isEmpty) {
         return _buildEmptyState();
       }
+      // Use last known hasMore value to prevent index out of bounds
       return _buildOrdersList(OrdersLoaded(
         orders: state.orders,
         selectedStatus: state.selectedStatus,
+        hasMore: _lastKnownHasMore,
       ));
     } else if (state is OrdersError) {
       return _buildErrorState(state.message);
@@ -126,8 +155,14 @@ class _OrdersPageState extends State<OrdersPage> {
         padding: const EdgeInsets.symmetric(vertical: 8),
         itemCount: state.orders.length + (state.hasMore ? 1 : 0),
         itemBuilder: (context, index) {
-          if (index >= state.orders.length) {
-            return _buildLoadingIndicator();
+          // Safety check: ensure index is within bounds before accessing the list
+          if (index < 0 || index >= state.orders.length) {
+            // If index is beyond orders list, show loading indicator for pagination
+            if (index >= state.orders.length) {
+              return _buildLoadingIndicator();
+            }
+            // Return empty widget for invalid negative index (defensive programming)
+            return const SizedBox.shrink();
           }
           return _buildOrderCard(state.orders[index]);
         },
