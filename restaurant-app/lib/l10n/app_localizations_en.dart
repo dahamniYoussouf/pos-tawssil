@@ -92,7 +92,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get description => 'Description';
 
   @override
-  String get descriptionHint => 'Tell customers about your restaurant';
+  String get descriptionHint => 'Enter description';
 
   @override
   String get address => 'Address';
@@ -258,4 +258,257 @@ class AppLocalizationsEn extends AppLocalizations {
   String errorRefusingOrder(String error) {
     return 'Error refusing order: $error';
   }
+
+  @override
+  String get statisticsTitle => 'Statistics';
+
+  @override
+  String get statistics => 'Statistics';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get thisWeek => 'This week';
+
+  @override
+  String get thisMonth => 'This month';
+
+  @override
+  String get custom => 'Custom';
+
+  @override
+  String get reset => 'Reset';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get statusLabel => 'Status:';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get accepted => 'Accepted';
+
+  @override
+  String get preparing => 'Preparing';
+
+  @override
+  String get delivering => 'Delivering';
+
+  @override
+  String get delivered => 'Delivered';
+
+  @override
+  String get pickedUp => 'Picked-up';
+
+  @override
+  String get priceRangeLabel => 'Price range:';
+
+  @override
+  String get minPrice => 'Min (DA)';
+
+  @override
+  String get maxPrice => 'Max (DA)';
+
+  @override
+  String get totalOrders => 'Total Orders';
+
+  @override
+  String get totalRevenue => 'Total Revenue';
+
+  @override
+  String get averageValue => 'Average Value';
+
+  @override
+  String get deliveredOrders => 'Delivered Orders';
+
+  @override
+  String get ordersByStatus => 'Orders by Status';
+
+  @override
+  String get revenueByStatus => 'Revenue by Status';
+
+  @override
+  String get noDataAvailable => 'No data available';
+
+  @override
+  String get errorDateRangeRequired => 'Please select a date range';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String get restaurantDetails => 'Restaurant Details';
+
+  @override
+  String get restaurantInformation => 'Restaurant Information';
+
+  @override
+  String get restaurantInfoPlaceholder =>
+      'Your restaurant information will be displayed here';
+
+  @override
+  String get categories => 'Categories';
+
+  @override
+  String get createCategory => 'Create Category';
+
+  @override
+  String get editCategory => 'Edit Category';
+
+  @override
+  String get createMenuItem => 'Create Menu Item';
+
+  @override
+  String get categoryName => 'Category Name';
+
+  @override
+  String get categoryNameHint => 'Enter category name';
+
+  @override
+  String get categoryNameRequired => 'Category name is required';
+
+  @override
+  String get descriptionRequired => 'Description is required';
+
+  @override
+  String get iconUrl => 'Icon URL';
+
+  @override
+  String get iconUrlHint => 'Enter icon URL';
+
+  @override
+  String get iconUrlRequired => 'Icon URL is required';
+
+  @override
+  String get invalidUrl => 'Invalid URL format';
+
+  @override
+  String get displayOrder => 'Display Order';
+
+  @override
+  String get displayOrderHint => 'Enter display order';
+
+  @override
+  String get displayOrderRequired => 'Display order is required';
+
+  @override
+  String get invalidDisplayOrder => 'Display order must be a positive number';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get update => 'Update';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get deleteCategory => 'Delete Category';
+
+  @override
+  String get deleteCategoryConfirmation =>
+      'Are you sure you want to delete this category?';
+
+  @override
+  String get noCategories => 'No categories available';
+
+  @override
+  String get searchHint => 'Search here...';
+
+  @override
+  String get menuItems => 'Menu Items';
+
+  @override
+  String get noMenuItems => 'No menu items available';
+
+  @override
+  String get editMenuItem => 'Edit Menu Item';
+
+  @override
+  String get itemName => 'Item Name';
+
+  @override
+  String get itemNameHint => 'Enter item name';
+
+  @override
+  String get itemNameRequired => 'Item name is required';
+
+  @override
+  String get price => 'Price';
+
+  @override
+  String get priceHint => 'Enter price';
+
+  @override
+  String get priceRequired => 'Price is required';
+
+  @override
+  String get invalidPrice => 'Price must be a positive number';
+
+  @override
+  String get preparationTime => 'Preparation Time (minutes)';
+
+  @override
+  String get preparationTimeHint => 'Enter preparation time in minutes';
+
+  @override
+  String get preparationTimeRequired => 'Preparation time is required';
+
+  @override
+  String get invalidPreparationTime =>
+      'Preparation time must be a positive number';
+
+  @override
+  String get ingredients => 'Ingredients';
+
+  @override
+  String get ingredientsHint => 'Enter ingredients (optional)';
+
+  @override
+  String get allergens => 'Allergens';
+
+  @override
+  String get allergensHint => 'Enter allergens (optional)';
+
+  @override
+  String get category => 'Category';
+
+  @override
+  String get categoryHint => 'Select category';
+
+  @override
+  String get categoryRequired => 'Category is required';
+
+  @override
+  String get selectImage => 'Select Image';
+
+  @override
+  String get uploadImage => 'Upload Image';
+
+  @override
+  String get imageUploading => 'Uploading image...';
+
+  @override
+  String get imageUploadSuccess => 'Image uploaded successfully';
+
+  @override
+  String get imageUploadError => 'Failed to upload image';
+
+  @override
+  String get available => 'Available';
+
+  @override
+  String get deleteMenuItem => 'Delete Menu Item';
+
+  @override
+  String get deleteMenuItemConfirmation =>
+      'Are you sure you want to delete this menu item?';
 }

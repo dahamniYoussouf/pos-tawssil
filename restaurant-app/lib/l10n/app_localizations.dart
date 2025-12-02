@@ -265,7 +265,7 @@ abstract class AppLocalizations {
   /// No description provided for @descriptionHint.
   ///
   /// In en, this message translates to:
-  /// **'Tell customers about your restaurant'**
+  /// **'Enter description'**
   String get descriptionHint;
 
   /// No description provided for @address.
@@ -579,6 +579,504 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error refusing order: {error}'**
   String errorRefusingOrder(String error);
+
+  /// No description provided for @statisticsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get statisticsTitle;
+
+  /// No description provided for @statistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get statistics;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @thisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get thisWeek;
+
+  /// No description provided for @thisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get thisMonth;
+
+  /// No description provided for @custom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get custom;
+
+  /// No description provided for @reset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get reset;
+
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
+
+  /// No description provided for @statusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status:'**
+  String get statusLabel;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @accepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted'**
+  String get accepted;
+
+  /// No description provided for @preparing.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing'**
+  String get preparing;
+
+  /// No description provided for @delivering.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivering'**
+  String get delivering;
+
+  /// No description provided for @delivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get delivered;
+
+  /// No description provided for @pickedUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Picked-up'**
+  String get pickedUp;
+
+  /// No description provided for @priceRangeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Price range:'**
+  String get priceRangeLabel;
+
+  /// No description provided for @minPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Min (DA)'**
+  String get minPrice;
+
+  /// No description provided for @maxPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Max (DA)'**
+  String get maxPrice;
+
+  /// No description provided for @totalOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Orders'**
+  String get totalOrders;
+
+  /// No description provided for @totalRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Revenue'**
+  String get totalRevenue;
+
+  /// No description provided for @averageValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Average Value'**
+  String get averageValue;
+
+  /// No description provided for @deliveredOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered Orders'**
+  String get deliveredOrders;
+
+  /// No description provided for @ordersByStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders by Status'**
+  String get ordersByStatus;
+
+  /// No description provided for @revenueByStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue by Status'**
+  String get revenueByStatus;
+
+  /// No description provided for @noDataAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No data available'**
+  String get noDataAvailable;
+
+  /// No description provided for @errorDateRangeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a date range'**
+  String get errorDateRangeRequired;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logout;
+
+  /// No description provided for @restaurantDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant Details'**
+  String get restaurantDetails;
+
+  /// No description provided for @restaurantInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant Information'**
+  String get restaurantInformation;
+
+  /// No description provided for @restaurantInfoPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Your restaurant information will be displayed here'**
+  String get restaurantInfoPlaceholder;
+
+  /// No description provided for @categories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get categories;
+
+  /// No description provided for @createCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Category'**
+  String get createCategory;
+
+  /// No description provided for @editCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Category'**
+  String get editCategory;
+
+  /// No description provided for @createMenuItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Menu Item'**
+  String get createMenuItem;
+
+  /// No description provided for @categoryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Category Name'**
+  String get categoryName;
+
+  /// No description provided for @categoryNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter category name'**
+  String get categoryNameHint;
+
+  /// No description provided for @categoryNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Category name is required'**
+  String get categoryNameRequired;
+
+  /// No description provided for @descriptionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Description is required'**
+  String get descriptionRequired;
+
+  /// No description provided for @iconUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon URL'**
+  String get iconUrl;
+
+  /// No description provided for @iconUrlHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter icon URL'**
+  String get iconUrlHint;
+
+  /// No description provided for @iconUrlRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon URL is required'**
+  String get iconUrlRequired;
+
+  /// No description provided for @invalidUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid URL format'**
+  String get invalidUrl;
+
+  /// No description provided for @displayOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Display Order'**
+  String get displayOrder;
+
+  /// No description provided for @displayOrderHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter display order'**
+  String get displayOrderHint;
+
+  /// No description provided for @displayOrderRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Display order is required'**
+  String get displayOrderRequired;
+
+  /// No description provided for @invalidDisplayOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Display order must be a positive number'**
+  String get invalidDisplayOrder;
+
+  /// No description provided for @create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
+
+  /// No description provided for @update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get update;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @deleteCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Category'**
+  String get deleteCategory;
+
+  /// No description provided for @deleteCategoryConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this category?'**
+  String get deleteCategoryConfirmation;
+
+  /// No description provided for @noCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'No categories available'**
+  String get noCategories;
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search here...'**
+  String get searchHint;
+
+  /// No description provided for @menuItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu Items'**
+  String get menuItems;
+
+  /// No description provided for @noMenuItems.
+  ///
+  /// In en, this message translates to:
+  /// **'No menu items available'**
+  String get noMenuItems;
+
+  /// No description provided for @editMenuItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Menu Item'**
+  String get editMenuItem;
+
+  /// No description provided for @itemName.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Name'**
+  String get itemName;
+
+  /// No description provided for @itemNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter item name'**
+  String get itemNameHint;
+
+  /// No description provided for @itemNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Item name is required'**
+  String get itemNameRequired;
+
+  /// No description provided for @price.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get price;
+
+  /// No description provided for @priceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter price'**
+  String get priceHint;
+
+  /// No description provided for @priceRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Price is required'**
+  String get priceRequired;
+
+  /// No description provided for @invalidPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price must be a positive number'**
+  String get invalidPrice;
+
+  /// No description provided for @preparationTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparation Time (minutes)'**
+  String get preparationTime;
+
+  /// No description provided for @preparationTimeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter preparation time in minutes'**
+  String get preparationTimeHint;
+
+  /// No description provided for @preparationTimeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparation time is required'**
+  String get preparationTimeRequired;
+
+  /// No description provided for @invalidPreparationTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparation time must be a positive number'**
+  String get invalidPreparationTime;
+
+  /// No description provided for @ingredients.
+  ///
+  /// In en, this message translates to:
+  /// **'Ingredients'**
+  String get ingredients;
+
+  /// No description provided for @ingredientsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter ingredients (optional)'**
+  String get ingredientsHint;
+
+  /// No description provided for @allergens.
+  ///
+  /// In en, this message translates to:
+  /// **'Allergens'**
+  String get allergens;
+
+  /// No description provided for @allergensHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter allergens (optional)'**
+  String get allergensHint;
+
+  /// No description provided for @category.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get category;
+
+  /// No description provided for @categoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select category'**
+  String get categoryHint;
+
+  /// No description provided for @categoryRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Category is required'**
+  String get categoryRequired;
+
+  /// No description provided for @selectImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Image'**
+  String get selectImage;
+
+  /// No description provided for @uploadImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Image'**
+  String get uploadImage;
+
+  /// No description provided for @imageUploading.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading image...'**
+  String get imageUploading;
+
+  /// No description provided for @imageUploadSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Image uploaded successfully'**
+  String get imageUploadSuccess;
+
+  /// No description provided for @imageUploadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload image'**
+  String get imageUploadError;
+
+  /// No description provided for @available.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get available;
+
+  /// No description provided for @deleteMenuItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Menu Item'**
+  String get deleteMenuItem;
+
+  /// No description provided for @deleteMenuItemConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this menu item?'**
+  String get deleteMenuItemConfirmation;
 }
 
 class _AppLocalizationsDelegate

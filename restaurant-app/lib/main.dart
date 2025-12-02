@@ -12,9 +12,12 @@ import 'package:restaurant_app/src/features/auth/cubit/auth_state.dart';
 import 'package:restaurant_app/src/features/auth/services/auth_service.dart';
 import 'package:restaurant_app/src/features/auth/pages/login_page.dart';
 import 'package:restaurant_app/src/features/auth/pages/signup_page.dart';
+import 'package:restaurant_app/src/features/categories/cubit/category_cubit.dart';
 import 'package:restaurant_app/src/features/home/pages/home_page.dart';
 import 'package:restaurant_app/src/features/orders/cubit/orders_cubit.dart';
 import 'package:restaurant_app/src/features/notifications/cubit/notifications_cubit.dart';
+import 'package:restaurant_app/src/features/statistics/cubit/statistics_cubit.dart';
+import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'package:restaurant_app/l10n/app_localizations.dart';
 
 void main() async {
@@ -53,6 +56,15 @@ class MyApp extends StatelessWidget {
             final notificationsCubit = context.read<NotificationsCubit>();
             return OrdersCubit(notificationsCubit: notificationsCubit);
           },
+        ),
+        BlocProvider<StatisticsCubit>(
+          create: (context) => StatisticsCubit(),
+        ),
+        BlocProvider<CategoryCubit>(
+          create: (context) => locator<CategoryCubit>(),
+        ),
+        BlocProvider<RestaurantCubit>(
+          create: (context) => locator<RestaurantCubit>(),
         ),
       ],
       child: MaterialApp(

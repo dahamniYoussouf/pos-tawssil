@@ -39,7 +39,10 @@ class BaseApiService {
   Map<String, dynamic> _handleError(DioException e) {
     late int status;
 
-    if (e.error is SocketException || e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.sendTimeout || e.type == DioExceptionType.receiveTimeout) {
+    if (e.error is SocketException ||
+        e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.sendTimeout ||
+        e.type == DioExceptionType.receiveTimeout) {
       status = -3;
     } else if (e.response?.statusCode == 401) {
       status = -1;
@@ -58,7 +61,8 @@ class BaseApiService {
       if (responseData.containsKey('errors')) {
         errorResponse['errors'] = responseData['errors'];
       }
-      if (responseData.containsKey('message') && responseData['message'] != null) {
+      if (responseData.containsKey('message') &&
+          responseData['message'] != null) {
         errorResponse['message'] = responseData['message'];
       }
     }
@@ -182,8 +186,58 @@ class BaseApiService {
     }
   }
 
+  Future<Map<String, dynamic>> uploadMultipartFile(
+    String endpoint, {
+    required File file,
+    String fileFieldName = 'file',
+    Map<String, dynamic>? additionalFields,
+    bool includeAuth = true,
+    String? baseUrl,
+  }) async {
+    try {
+      final token = includeAuth ? await _tokenStorage.getAccessToken() : null;
+      final fileName = file.path.split('/').last;
+
+      final formData = FormData.fromMap({
+        fileFieldName: await MultipartFile.fromFile(
+          file.path,
+          filename: fileName,
+        ),
+        if (additionalFields != null) ...additionalFields,
+      });
+
+      final headers = <String, dynamic>{};
+      if (token != null) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+
+      dio.options.headers = headers;
+      final url = baseUrl ?? '${ApiConfig.baseUrl}$endpoint';
+      final response = await dio.post(
+        url,
+        data: formData,
+        options: Options(
+          headers: headers,
+          contentType: 'multipart/form-data',
+        ),
+      );
+
+      return _processResponse(response);
+    } on DioException catch (e) {
+      return _handleError(e);
+    } catch (e) {
+      return {
+        'status': -2,
+        'success': false,
+        'message': 'An unexpected error occurred: ${e.toString()}',
+      };
+    }
+  }
+
   Map<String, dynamic> _processResponse(Response response) {
-    if (response.statusCode != null && response.statusCode! >= 200 && response.statusCode! < 300) {
+    if (response.statusCode != null &&
+        response.statusCode! >= 200 &&
+        response.statusCode! < 300) {
       final data = response.data;
 
       if (data is Map<String, dynamic>) {
@@ -210,4 +264,3 @@ class BaseApiService {
     };
   }
 }
-

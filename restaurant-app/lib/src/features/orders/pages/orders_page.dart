@@ -28,7 +28,11 @@ class _OrdersPageState extends State<OrdersPage> {
     super.initState();
     _scrollController.addListener(_onScroll);
     final initialStatus = OrderStatus.pending;
-    context.read<OrdersCubit>().fetchOrders(status: initialStatus);
+    // Only fetch if not already loaded with the same status
+    final currentState = context.read<OrdersCubit>().state;
+    if (currentState is! OrdersLoaded || currentState.selectedStatus != initialStatus) {
+      context.read<OrdersCubit>().fetchOrders(status: initialStatus);
+    }
   }
 
   @override

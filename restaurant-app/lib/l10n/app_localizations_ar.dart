@@ -93,7 +93,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get description => 'الوصف';
 
   @override
-  String get descriptionHint => 'صف مطعمك';
+  String get descriptionHint => 'أدخل الوصف';
 
   @override
   String get address => 'العنوان';
@@ -257,4 +257,254 @@ class AppLocalizationsAr extends AppLocalizations {
   String errorRefusingOrder(String error) {
     return 'خطأ في رفض الطلب: $error';
   }
+
+  @override
+  String get statisticsTitle => 'الإحصائيات';
+
+  @override
+  String get statistics => 'الإحصائيات';
+
+  @override
+  String get today => 'اليوم';
+
+  @override
+  String get thisWeek => 'هذا الأسبوع';
+
+  @override
+  String get thisMonth => 'هذا الشهر';
+
+  @override
+  String get custom => 'مخصص';
+
+  @override
+  String get reset => 'إعادة تعيين';
+
+  @override
+  String get apply => 'تطبيق';
+
+  @override
+  String get statusLabel => 'الحالة:';
+
+  @override
+  String get all => 'الكل';
+
+  @override
+  String get accepted => 'مقبول';
+
+  @override
+  String get preparing => 'قيد التحضير';
+
+  @override
+  String get delivering => 'قيد التوصيل';
+
+  @override
+  String get delivered => 'تم التوصيل';
+
+  @override
+  String get pickedUp => 'تم الاستلام';
+
+  @override
+  String get priceRangeLabel => 'نطاق السعر:';
+
+  @override
+  String get minPrice => 'الحد الأدنى (دج)';
+
+  @override
+  String get maxPrice => 'الحد الأقصى (دج)';
+
+  @override
+  String get totalOrders => 'إجمالي الطلبات';
+
+  @override
+  String get totalRevenue => 'إجمالي الإيرادات';
+
+  @override
+  String get averageValue => 'القيمة المتوسطة';
+
+  @override
+  String get deliveredOrders => 'الطلبات المسلمة';
+
+  @override
+  String get ordersByStatus => 'الطلبات حسب الحالة';
+
+  @override
+  String get revenueByStatus => 'الإيرادات حسب الحالة';
+
+  @override
+  String get noDataAvailable => 'لا توجد بيانات متاحة';
+
+  @override
+  String get errorDateRangeRequired => 'يرجى تحديد نطاق تاريخ';
+
+  @override
+  String get logout => 'تسجيل الخروج';
+
+  @override
+  String get restaurantDetails => 'تفاصيل المطعم';
+
+  @override
+  String get restaurantInformation => 'معلومات المطعم';
+
+  @override
+  String get restaurantInfoPlaceholder => 'ستظهر معلومات مطعمك هنا';
+
+  @override
+  String get categories => 'الفئات';
+
+  @override
+  String get createCategory => 'إنشاء فئة';
+
+  @override
+  String get editCategory => 'تعديل الفئة';
+
+  @override
+  String get createMenuItem => 'إنشاء عنصر قائمة';
+
+  @override
+  String get categoryName => 'اسم الفئة';
+
+  @override
+  String get categoryNameHint => 'أدخل اسم الفئة';
+
+  @override
+  String get categoryNameRequired => 'اسم الفئة مطلوب';
+
+  @override
+  String get descriptionRequired => 'الوصف مطلوب';
+
+  @override
+  String get iconUrl => 'رابط الأيقونة';
+
+  @override
+  String get iconUrlHint => 'أدخل رابط الأيقونة';
+
+  @override
+  String get iconUrlRequired => 'رابط الأيقونة مطلوب';
+
+  @override
+  String get invalidUrl => 'تنسيق رابط غير صالح';
+
+  @override
+  String get displayOrder => 'ترتيب العرض';
+
+  @override
+  String get displayOrderHint => 'أدخل ترتيب العرض';
+
+  @override
+  String get displayOrderRequired => 'ترتيب العرض مطلوب';
+
+  @override
+  String get invalidDisplayOrder => 'يجب أن يكون ترتيب العرض رقماً موجباً';
+
+  @override
+  String get create => 'إنشاء';
+
+  @override
+  String get update => 'تحديث';
+
+  @override
+  String get delete => 'حذف';
+
+  @override
+  String get cancel => 'إلغاء';
+
+  @override
+  String get deleteCategory => 'حذف الفئة';
+
+  @override
+  String get deleteCategoryConfirmation => 'هل أنت متأكد من حذف هذه الفئة؟';
+
+  @override
+  String get noCategories => 'لا توجد فئات متاحة';
+
+  @override
+  String get searchHint => 'ابحث هنا...';
+
+  @override
+  String get menuItems => 'عناصر القائمة';
+
+  @override
+  String get noMenuItems => 'لا توجد عناصر قائمة متاحة';
+
+  @override
+  String get editMenuItem => 'تعديل عنصر القائمة';
+
+  @override
+  String get itemName => 'اسم العنصر';
+
+  @override
+  String get itemNameHint => 'أدخل اسم العنصر';
+
+  @override
+  String get itemNameRequired => 'اسم العنصر مطلوب';
+
+  @override
+  String get price => 'السعر';
+
+  @override
+  String get priceHint => 'أدخل السعر';
+
+  @override
+  String get priceRequired => 'السعر مطلوب';
+
+  @override
+  String get invalidPrice => 'يجب أن يكون السعر رقماً موجباً';
+
+  @override
+  String get preparationTime => 'وقت التحضير (دقيقة)';
+
+  @override
+  String get preparationTimeHint => 'أدخل وقت التحضير بالدقائق';
+
+  @override
+  String get preparationTimeRequired => 'وقت التحضير مطلوب';
+
+  @override
+  String get invalidPreparationTime => 'يجب أن يكون وقت التحضير رقماً موجباً';
+
+  @override
+  String get ingredients => 'المكونات';
+
+  @override
+  String get ingredientsHint => 'أدخل المكونات (اختياري)';
+
+  @override
+  String get allergens => 'مسببات الحساسية';
+
+  @override
+  String get allergensHint => 'أدخل مسببات الحساسية (اختياري)';
+
+  @override
+  String get category => 'الفئة';
+
+  @override
+  String get categoryHint => 'اختر الفئة';
+
+  @override
+  String get categoryRequired => 'الفئة مطلوبة';
+
+  @override
+  String get selectImage => 'اختر الصورة';
+
+  @override
+  String get uploadImage => 'رفع الصورة';
+
+  @override
+  String get imageUploading => 'جاري رفع الصورة...';
+
+  @override
+  String get imageUploadSuccess => 'تم رفع الصورة بنجاح';
+
+  @override
+  String get imageUploadError => 'فشل رفع الصورة';
+
+  @override
+  String get available => 'متاح';
+
+  @override
+  String get deleteMenuItem => 'حذف عنصر القائمة';
+
+  @override
+  String get deleteMenuItemConfirmation =>
+      'هل أنت متأكد من حذف عنصر القائمة هذا?';
 }
