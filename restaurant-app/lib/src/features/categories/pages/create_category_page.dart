@@ -58,15 +58,8 @@ class _CreateCategoryPageState extends State<CreateCategoryPage> {
       ),
       body: BlocListener<CategoryCubit, CategoryState>(
         listener: (context, state) {
-          if (state is CategoryActionSuccess) {
-            Navigator.pop(context);
-          } else if (state is CategoryActionError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
-              ),
-            );
+          if (state is CategorySuccess) {
+            Navigator.pop(context, true);
           } else if (state is CategoryError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -128,7 +121,6 @@ class _CreateCategoryPageState extends State<CreateCategoryPage> {
                   },
                 ),
                 const SizedBox(height: 16),
-                const SizedBox(height: 16),
                 TextFormField(
                   controller: _showOrderController,
                   decoration: InputDecoration(
@@ -157,9 +149,7 @@ class _CreateCategoryPageState extends State<CreateCategoryPage> {
                 ),
                 const SizedBox(height: 32),
                 BlocSelector<CategoryCubit, CategoryState, bool>(
-                  selector: (state) =>
-                      state is CategoryActionLoading ||
-                      state is CategoryLoading,
+                  selector: (state) => state is CategoryLoading,
                   builder: (context, isLoading) {
                     return ElevatedButton(
                       onPressed: isLoading ? null : _handleSubmit,
@@ -196,9 +186,7 @@ class _CreateCategoryPageState extends State<CreateCategoryPage> {
                 if (isEdit) ...[
                   const SizedBox(height: 16),
                   BlocSelector<CategoryCubit, CategoryState, bool>(
-                    selector: (state) =>
-                        state is CategoryActionLoading ||
-                        state is CategoryLoading,
+                    selector: (state) => state is CategoryLoading,
                     builder: (context, isLoading) {
                       return ElevatedButton(
                         onPressed: isLoading ? null : _handleDelete,

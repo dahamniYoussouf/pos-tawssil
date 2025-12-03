@@ -1,4 +1,4 @@
-import 'package:restaurant_app/src/features/orders/models/order_model.dart';
+import 'package:restaurant_app/src/features/menu_items/models/menu_item_model.dart';
 
 class CategoryModel {
   final String id;
@@ -6,7 +6,7 @@ class CategoryModel {
   final String description;
   final String? iconeUrl;
   final int ordreAffichage;
-  final List<MenuItem> items;
+  final List<MenuItemModel> items;
   final int itemsCount;
 
   CategoryModel({
@@ -22,7 +22,7 @@ class CategoryModel {
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
     final itemsJson = json['items'] as List<dynamic>? ?? [];
     final items = itemsJson
-        .map((item) => MenuItem.fromJson(item as Map<String, dynamic>?))
+        .map((item) => MenuItemModel.fromJson(item as Map<String, dynamic>?))
         .toList();
 
     return CategoryModel(
@@ -51,7 +51,7 @@ class CategoryModel {
                 'prix': item.price,
                 'photo_url': item.photoUrl,
                 'is_available': item.isAvailable,
-                'temps_preparation': item.preparationTimeMinutes,
+                'temps_preparation': item.preparationTime,
                 'created_at': item.createdAt?.toIso8601String(),
                 'updated_at': item.updatedAt?.toIso8601String(),
                 'restaurant_id': item.restaurantId,
@@ -67,7 +67,7 @@ class CategoryModel {
     String? description,
     String? iconeUrl,
     int? ordreAffichage,
-    List<MenuItem>? items,
+    List<MenuItemModel>? items,
     int? itemsCount,
   }) {
     return CategoryModel(

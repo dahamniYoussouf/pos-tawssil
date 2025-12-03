@@ -22,7 +22,7 @@ class MenuItemService extends BaseApiService {
     required bool isAvailable,
   }) async {
     return await postRequest(
-      '/api/menuitem/create',
+      '/menuitem/create',
       data: {
         'category_id': categoryId,
         'nom': name,
@@ -50,7 +50,7 @@ class MenuItemService extends BaseApiService {
     required bool isAvailable,
   }) async {
     return await putRequest(
-      '/api/menuitem/update/$id',
+      '/menuitem/update/$id',
       data: {
         'category_id': categoryId,
         'nom': name,
@@ -66,6 +66,6 @@ class MenuItemService extends BaseApiService {
   }
 
   Future<Map<String, dynamic>> deleteMenuItem(String id) async {
-    return await deleteRequest('/api/menuitem/delete/$id');
+    return await deleteRequest('/menuitem/delete/$id');
   }
 }

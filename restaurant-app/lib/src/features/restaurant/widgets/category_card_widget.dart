@@ -5,17 +5,20 @@ import 'package:restaurant_app/src/features/categories/models/category_model.dar
 class CategoryCardWidget extends StatelessWidget {
   final CategoryModel category;
   final VoidCallback? onTap;
+  final VoidCallback? onDoubleTap;
 
   const CategoryCardWidget({
     super.key,
     required this.category,
     this.onTap,
+    this.onDoubleTap,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      onDoubleTap: onDoubleTap,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),

@@ -14,6 +14,7 @@ import 'package:restaurant_app/src/features/categories/cubit/category_cubit.dart
 import 'package:restaurant_app/src/features/restaurant/services/restaurant_service.dart';
 import 'package:restaurant_app/src/features/restaurant/repositories/restaurant_repository.dart';
 import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_cubit.dart';
+import 'package:restaurant_app/src/features/restaurant/cubit/category_selection_cubit.dart';
 import 'package:restaurant_app/src/features/menu_items/services/menu_item_service.dart';
 import 'package:restaurant_app/src/features/menu_items/repositories/menu_item_repository.dart';
 import 'package:restaurant_app/src/features/menu_items/cubit/menu_item_cubit.dart';
@@ -86,5 +87,8 @@ void setupLocator() {
   );
   locator.registerFactory<MenuItemCubit>(
     () => MenuItemCubit(menuItemRepository: locator<MenuItemRepository>()),
+  );
+  locator.registerLazySingleton<CategorySelectionCubit>(
+    () => CategorySelectionCubit(),
   );
 }

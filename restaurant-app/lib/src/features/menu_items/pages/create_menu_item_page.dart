@@ -32,11 +32,10 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
   final _ingredientsController = TextEditingController();
   final _allergensController = TextEditingController();
 
-  String? _selectedCategoryId;
-  File? _selectedImage;
-  String? _uploadedImageUrl;
-  bool _isAvailable = true;
-  bool _isImageUploading = false;
+  final _selectedCategoryIdNotifier = ValueNotifier<String?>(null);
+  final _selectedImageNotifier = ValueNotifier<File?>(null);
+  final _isAvailableNotifier = ValueNotifier<bool>(true);
+  String? _initialUploadedImageUrl;
 
   @override
   void initState() {
@@ -49,9 +48,9 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
           widget.menuItem!.preparationTime?.toString() ?? '';
       _ingredientsController.text = widget.menuItem!.ingredients ?? '';
       _allergensController.text = widget.menuItem!.allergens ?? '';
-      _selectedCategoryId = widget.menuItem!.categoryId;
-      _uploadedImageUrl = widget.menuItem!.photoUrl;
-      _isAvailable = widget.menuItem!.isAvailable;
+      _selectedCategoryIdNotifier.value = widget.menuItem!.categoryId;
+      _initialUploadedImageUrl = widget.menuItem!.photoUrl;
+      _isAvailableNotifier.value = widget.menuItem!.isAvailable;
     }
   }
 
@@ -63,6 +62,9 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
     _preparationTimeController.dispose();
     _ingredientsController.dispose();
     _allergensController.dispose();
+    _selectedCategoryIdNotifier.dispose();
+    _selectedImageNotifier.dispose();
+    _isAvailableNotifier.dispose();
     super.dispose();
   }
 
@@ -71,10 +73,9 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
       if (pickedFile != null) {
-        setState(() {
-          _selectedImage = File(pickedFile.path);
-          _uploadedImageUrl = null;
-        });
+        _selectedImageNotifier.value = File(pickedFile.path);
+        // Reset uploaded image URL when new image is selected
+        context.read<MenuItemCubit>().reset();
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -87,18 +88,16 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
   }
 
   Future<void> _uploadImage() async {
-    if (_selectedImage == null) return;
+    final selectedImage = _selectedImageNotifier.value;
+    if (selectedImage == null) return;
 
-    setState(() {
-      _isImageUploading = true;
-    });
-
-    context.read<MenuItemCubit>().uploadImage(_selectedImage!);
+    context.read<MenuItemCubit>().uploadImage(selectedImage);
   }
 
-  void _handleSubmit() {
+  void _handleSubmit(BuildContext context) {
     if (!_formKey.currentState!.validate()) return;
-    if (_selectedCategoryId == null) {
+    final selectedCategoryId = _selectedCategoryIdNotifier.value;
+    if (selectedCategoryId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(AppLocalizations.of(context)!.categoryRequired),
@@ -108,7 +107,18 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
       return;
     }
 
-    if (_selectedImage != null && _uploadedImageUrl == null) {
+    // Get the uploaded image URL from cubit state or use initial value
+    final cubit = context.read<MenuItemCubit>();
+    final state = cubit.state;
+    String? uploadedImageUrl;
+    if (state is MenuItemImageUploadSuccess) {
+      uploadedImageUrl = state.imageUrl;
+    } else {
+      uploadedImageUrl = _initialUploadedImageUrl;
+    }
+
+    final selectedImage = _selectedImageNotifier.value;
+    if (selectedImage != null && uploadedImageUrl == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please upload the image first'),
@@ -118,13 +128,18 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
       return;
     }
 
+    // Use uploaded URL if available, otherwise keep initial URL
+    final finalImageUrl = selectedImage != null
+        ? uploadedImageUrl
+        : (_initialUploadedImageUrl ?? uploadedImageUrl);
+
     final price = double.parse(_priceController.text.trim());
     final preparationTime = int.parse(_preparationTimeController.text.trim());
 
     if (widget.menuItem != null) {
       context.read<MenuItemCubit>().updateMenuItem(
             id: widget.menuItem!.id,
-            categoryId: _selectedCategoryId!,
+            categoryId: selectedCategoryId,
             name: _nameController.text.trim(),
             description: _descriptionController.text.trim(),
             price: price,
@@ -135,12 +150,12 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
             allergens: _allergensController.text.trim().isEmpty
                 ? null
                 : _allergensController.text.trim(),
-            photoUrl: _uploadedImageUrl,
-            isAvailable: _isAvailable,
+            photoUrl: finalImageUrl,
+            isAvailable: _isAvailableNotifier.value,
           );
     } else {
       context.read<MenuItemCubit>().createMenuItem(
-            categoryId: _selectedCategoryId!,
+            categoryId: selectedCategoryId,
             name: _nameController.text.trim(),
             description: _descriptionController.text.trim(),
             price: price,
@@ -151,8 +166,8 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
             allergens: _allergensController.text.trim().isEmpty
                 ? null
                 : _allergensController.text.trim(),
-            photoUrl: _uploadedImageUrl,
-            isAvailable: _isAvailable,
+            photoUrl: finalImageUrl,
+            isAvailable: _isAvailableNotifier.value,
           );
     }
   }
@@ -161,28 +176,56 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
     final localizations = AppLocalizations.of(context)!;
     showDialog(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(localizations.deleteMenuItem),
-          content: Text(localizations.deleteMenuItemConfirmation),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(localizations.cancel),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                if (widget.menuItem != null) {
-                  context
-                      .read<MenuItemCubit>()
-                      .deleteMenuItem(widget.menuItem!.id);
-                }
+      barrierDismissible: false,
+      builder: (BuildContext deleteDialogContext) {
+        return BlocProvider.value(
+          value: context.read<MenuItemCubit>(),
+          child: BlocListener<MenuItemCubit, MenuItemState>(
+            listener: (context, state) {
+              if (state is MenuItemActionSuccess) {
+                Navigator.of(deleteDialogContext).pop();
+              }
+            },
+            child: BlocBuilder<MenuItemCubit, MenuItemState>(
+              builder: (context, state) {
+                final isLoading = state is MenuItemActionLoading;
+                return AlertDialog(
+                  title: Text(localizations.deleteMenuItem),
+                  content: isLoading
+                      ? Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const CircularProgressIndicator(),
+                            const SizedBox(height: 16),
+                            Text(localizations.deleteMenuItemConfirmation),
+                          ],
+                        )
+                      : Text(localizations.deleteMenuItemConfirmation),
+                  actions: [
+                    TextButton(
+                      onPressed: isLoading
+                          ? null
+                          : () => Navigator.of(deleteDialogContext).pop(),
+                      child: Text(localizations.cancel),
+                    ),
+                    TextButton(
+                      onPressed: isLoading
+                          ? null
+                          : () {
+                              if (widget.menuItem != null) {
+                                context
+                                    .read<MenuItemCubit>()
+                                    .deleteMenuItem(widget.menuItem!.id);
+                              }
+                            },
+                      style: TextButton.styleFrom(foregroundColor: Colors.red),
+                      child: Text(localizations.delete),
+                    ),
+                  ],
+                );
               },
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
-              child: Text(localizations.delete),
             ),
-          ],
+          ),
         );
       },
     );
@@ -196,10 +239,6 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
     return BlocListener<MenuItemCubit, MenuItemState>(
       listener: (context, state) {
         if (state is MenuItemImageUploadSuccess) {
-          setState(() {
-            _uploadedImageUrl = state.imageUrl;
-            _isImageUploading = false;
-          });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(localizations.imageUploadSuccess),
@@ -207,9 +246,6 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
             ),
           );
         } else if (state is MenuItemImageUploadError) {
-          setState(() {
-            _isImageUploading = false;
-          });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
@@ -217,6 +253,7 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
             ),
           );
         } else if (state is MenuItemActionSuccess) {
+          // Close the page (delete dialog closes itself)
           Navigator.pop(context);
         } else if (state is MenuItemActionError) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -245,21 +282,45 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _MenuItemImagePicker(
-                  selectedImage: _selectedImage,
-                  imageUrl: _uploadedImageUrl,
-                  isUploading: _isImageUploading,
-                  onPickImage: _pickImage,
-                  onUploadImage: _uploadImage,
+                ValueListenableBuilder<File?>(
+                  valueListenable: _selectedImageNotifier,
+                  builder: (context, selectedImage, _) {
+                    return BlocSelector<MenuItemCubit, MenuItemState, bool>(
+                      selector: (state) => state is MenuItemImageUploading,
+                      builder: (context, isUploading) {
+                        return BlocSelector<MenuItemCubit, MenuItemState,
+                            String?>(
+                          selector: (state) {
+                            if (state is MenuItemImageUploadSuccess) {
+                              return state.imageUrl;
+                            }
+                            return _initialUploadedImageUrl;
+                          },
+                          builder: (context, uploadedImageUrl) {
+                            return _MenuItemImagePicker(
+                              selectedImage: selectedImage,
+                              imageUrl: uploadedImageUrl,
+                              isUploading: isUploading,
+                              onPickImage: _pickImage,
+                              onUploadImage: _uploadImage,
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
                 ),
                 const SizedBox(height: 24),
-                _CategoryDropdown(
-                  categories: widget.categories,
-                  selectedCategoryId: _selectedCategoryId,
-                  onCategorySelected: (categoryId) {
-                    setState(() {
-                      _selectedCategoryId = categoryId;
-                    });
+                ValueListenableBuilder<String?>(
+                  valueListenable: _selectedCategoryIdNotifier,
+                  builder: (context, selectedCategoryId, _) {
+                    return _CategoryDropdown(
+                      categories: widget.categories,
+                      selectedCategoryId: selectedCategoryId,
+                      onCategorySelected: (categoryId) {
+                        _selectedCategoryIdNotifier.value = categoryId;
+                      },
+                    );
                   },
                 ),
                 const SizedBox(height: 16),
@@ -344,12 +405,15 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
                   maxLines: 2,
                 ),
                 const SizedBox(height: 16),
-                _AvailabilitySwitch(
-                  isAvailable: _isAvailable,
-                  onChanged: (value) {
-                    setState(() {
-                      _isAvailable = value;
-                    });
+                ValueListenableBuilder<bool>(
+                  valueListenable: _isAvailableNotifier,
+                  builder: (context, isAvailable, _) {
+                    return _AvailabilitySwitch(
+                      isAvailable: isAvailable,
+                      onChanged: (value) {
+                        _isAvailableNotifier.value = value;
+                      },
+                    );
                   },
                 ),
                 const SizedBox(height: 32),
@@ -357,7 +421,7 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
                   isEdit: isEdit,
                   isLoading: context.watch<MenuItemCubit>().state
                       is MenuItemActionLoading,
-                  onPressed: _handleSubmit,
+                  onPressed: () => _handleSubmit(context),
                 ),
                 if (isEdit) ...[
                   const SizedBox(height: 16),

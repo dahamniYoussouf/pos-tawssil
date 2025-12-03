@@ -2,19 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_app/l10n/app_localizations.dart';
 import 'package:restaurant_app/src/core/res/color_app.dart';
+import 'package:restaurant_app/src/core/utils/dependency_injection.dart';
 import 'package:restaurant_app/src/features/categories/cubit/category_cubit.dart';
 import 'package:restaurant_app/src/features/categories/cubit/category_state.dart';
-import 'package:restaurant_app/src/features/categories/models/category_model.dart';
 import 'package:restaurant_app/src/features/categories/pages/create_category_page.dart';
-import 'package:restaurant_app/src/features/orders/models/order_model.dart';
+import 'package:restaurant_app/src/features/menu_items/cubit/menu_item_cubit.dart';
+import 'package:restaurant_app/src/features/menu_items/pages/create_menu_item_page.dart';
+import 'package:restaurant_app/src/features/restaurant/cubit/category_selection_cubit.dart';
 import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_state.dart';
 import 'package:restaurant_app/src/features/restaurant/widgets/categories_section_widget.dart';
-import 'package:restaurant_app/src/features/restaurant/widgets/menu_items_section_widget.dart';
-import 'package:restaurant_app/src/features/restaurant/widgets/search_bar_widget.dart';
-import 'package:restaurant_app/src/core/utils/dependency_injection.dart';
-import 'package:restaurant_app/src/features/menu_items/cubit/menu_item_cubit.dart';
-import 'package:restaurant_app/src/features/menu_items/pages/create_menu_item_page.dart';
 
 class RestaurantDetailsPage extends StatefulWidget {
   const RestaurantDetailsPage({super.key});
@@ -24,8 +21,6 @@ class RestaurantDetailsPage extends StatefulWidget {
 }
 
 class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
-  final TextEditingController _searchController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
@@ -34,12 +29,6 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
     if (currentState is! RestaurantLoaded) {
       context.read<RestaurantCubit>().fetchRestaurantDetails();
     }
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
   }
 
   @override
@@ -56,52 +45,53 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
           style: const TextStyle(color: AppColors.primaryColor),
         ),
       ),
-      body: MultiBlocListener(
-        listeners: [
-          BlocListener<CategoryCubit, CategoryState>(
-            listener: (context, state) {
-              if (state is CategoryActionError) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: Colors.red,
-                  ),
+      body: BlocProvider.value(
+        value: locator<CategorySelectionCubit>(),
+        child: MultiBlocListener(
+          listeners: [
+            BlocListener<CategoryCubit, CategoryState>(
+              listener: (context, state) {
+                if (state is CategoryError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.message),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                } else if (state is CategorySuccess) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.message ?? 'Success'),
+                      backgroundColor: AppColors.primaryColor,
+                    ),
+                  );
+                  context.read<RestaurantCubit>().fetchRestaurantDetails();
+                }
+              },
+            ),
+            BlocListener<RestaurantCubit, RestaurantState>(
+              listener: (context, state) {
+                if (state is RestaurantError) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(state.message),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+          child: BlocBuilder<RestaurantCubit, RestaurantState>(
+            builder: (context, restaurantState) {
+              if (restaurantState is RestaurantLoaded) {
+                return CategoriesSectionWidget(
+                  categories: restaurantState.restaurant.categories ?? [],
                 );
-              } else if (state is CategoryActionSuccess) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: AppColors.primaryColor,
-                  ),
-                );
-                context.read<RestaurantCubit>().fetchRestaurantDetails();
               }
+              return const SizedBox.shrink();
             },
           ),
-          BlocListener<RestaurantCubit, RestaurantState>(
-            listener: (context, state) {
-              if (state is RestaurantError) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              }
-            },
-          ),
-        ],
-        child: BlocBuilder<RestaurantCubit, RestaurantState>(
-          builder: (context, restaurantState) {
-            if (restaurantState is RestaurantLoaded) {
-              return RestaurantDetailsContent(
-                searchController: _searchController,
-                categories: restaurantState.restaurant.categories ?? [],
-                menuItems: const [],
-              );
-            }
-            return const SizedBox.shrink();
-          },
         ),
       ),
       floatingActionButton: Column(
@@ -115,7 +105,9 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
                 MaterialPageRoute(
                   builder: (context) => const CreateCategoryPage(),
                 ),
-              );
+              ).then((_) {
+                context.read<RestaurantCubit>().fetchRestaurantDetails();
+              });
             },
             backgroundColor: AppColors.primaryColor,
             icon: const Icon(Icons.add, color: AppColors.white),
@@ -160,35 +152,6 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
               style: const TextStyle(color: AppColors.white),
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class RestaurantDetailsContent extends StatelessWidget {
-  final TextEditingController searchController;
-  final List<CategoryModel> categories;
-  final List<MenuItem> menuItems;
-
-  const RestaurantDetailsContent({
-    super.key,
-    required this.searchController,
-    required this.categories,
-    required this.menuItems,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          const SizedBox(height: 16),
-          SearchBarWidget(controller: searchController),
-          const SizedBox(height: 16),
-          CategoriesSectionWidget(categories: categories),
-          const SizedBox(height: 16),
-          MenuItemsSectionWidget(menuItems: menuItems),
         ],
       ),
     );
