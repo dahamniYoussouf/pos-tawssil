@@ -1,4 +1,4 @@
-// lib/main.dart - Version mise à jour avec le thème Tawsil
+// lib/main.dart - Version corrigée avec Provider configuré correctement
 import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart';
@@ -38,13 +38,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => OrderProvider()),
-        Provider(create: (_) => SyncService()),
+        // ✅ OrderProvider avec ChangeNotifierProvider
+        ChangeNotifierProvider(
+          create: (_) => OrderProvider(),
+        ),
+        // ✅ SyncService avec Provider simple (pas de ChangeNotifier)
+        Provider(
+          create: (_) => SyncService(),
+        ),
       ],
       child: MaterialApp(
         title: 'POS Tawsil',
         debugShowCheckedModeBanner: false,
-        theme: TawsilTheme.lightTheme, // ✅ Utiliser le thème Tawsil
+        theme: TawsilTheme.lightTheme,
         home: const LoginScreen(),
       ),
     );

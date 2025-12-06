@@ -255,7 +255,8 @@ class ApiService {
       
       final orderData = {
         'restaurant_id': restaurantId,
-        'cashier_id': cashierId, // ✅ Inclure cashier_id
+        'cashier_id': cashierId, 
+        'created_by_cashier_id': cashierId, 
         'order_type': 'pickup',
         'payment_method': order.paymentMethod,
         'items': order.items.map((item) => {
