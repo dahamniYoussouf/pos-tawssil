@@ -7,6 +7,7 @@ import 'package:restaurant_app/src/features/auth/cubit/auth_cubit.dart';
 import 'package:restaurant_app/src/features/categories/cubit/category_cubit.dart';
 import 'package:restaurant_app/src/features/restaurant/pages/restaurant_details_page.dart';
 import 'package:restaurant_app/src/features/orders/pages/orders_page.dart';
+import 'package:restaurant_app/src/features/orders/pages/order_history_page.dart';
 import 'package:restaurant_app/src/features/statistics/pages/statistics_page.dart';
 import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_state.dart';
@@ -72,7 +73,7 @@ class _HomePageState extends State<HomePage> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
+            DrawerHeader(
               decoration: BoxDecoration(
                 color: AppColors.primaryColor,
               ),
@@ -81,7 +82,7 @@ class _HomePageState extends State<HomePage> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Text(
-                    'Tawsil Restaurant',
+                    localizations.appTitle,
                     style: TextStyle(
                       color: AppColors.white,
                       fontSize: 24,
@@ -94,9 +95,22 @@ class _HomePageState extends State<HomePage> {
             ListTile(
               leading: const Icon(Icons.shopping_cart,
                   color: AppColors.primaryColor),
-              title: const Text('Commandes'),
+              title: Text(localizations.orders),
               onTap: () {
                 Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.history, color: AppColors.primaryColor),
+              title: Text(localizations.orderHistory),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const OrderHistoryPage(),
+                  ),
+                );
               },
             ),
             ListTile(

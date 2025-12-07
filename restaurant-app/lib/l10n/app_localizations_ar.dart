@@ -507,4 +507,47 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get deleteMenuItemConfirmation =>
       'هل أنت متأكد من حذف عنصر القائمة هذا?';
+
+  @override
+  String get orderHistory => 'سجل الطلبات';
+
+  @override
+  String get noOrdersFound => 'لم يتم العثور على طلبات';
+
+  @override
+  String get noOrdersFoundWithFilters =>
+      'لم يتم العثور على طلبات تطابق المرشحات المحددة';
+
+  @override
+  String get filters => 'المرشحات';
+
+  @override
+  String get orderTypeLabel => 'نوع الطلب';
+
+  @override
+  String get dateRangeLabel => 'الفترة';
+
+  @override
+  String get dateFromLabel => 'من';
+
+  @override
+  String get dateToLabel => 'إلى';
+
+  @override
+  String get priceLabel => 'السعر';
+
+  @override
+  String get deliveryOrderType => 'توصيل';
+
+  @override
+  String get pickupOrderType => 'استلام';
+
+  @override
+  String get unknownClient => 'عميل غير معروف';
+
+  @override
+  String get details => 'تفاصيل';
+
+  @override
+  String get contact => 'اتصل';
 }

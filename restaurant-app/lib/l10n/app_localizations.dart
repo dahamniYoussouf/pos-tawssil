@@ -1077,6 +1077,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to delete this menu item?'**
   String get deleteMenuItemConfirmation;
+
+  /// No description provided for @orderHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Order History'**
+  String get orderHistory;
+
+  /// No description provided for @noOrdersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No orders found'**
+  String get noOrdersFound;
+
+  /// No description provided for @noOrdersFoundWithFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'No orders found matching your filters'**
+  String get noOrdersFoundWithFilters;
+
+  /// No description provided for @filters.
+  ///
+  /// In en, this message translates to:
+  /// **'Filters'**
+  String get filters;
+
+  /// No description provided for @orderTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Type'**
+  String get orderTypeLabel;
+
+  /// No description provided for @dateRangeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Range'**
+  String get dateRangeLabel;
+
+  /// No description provided for @dateFromLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'From'**
+  String get dateFromLabel;
+
+  /// No description provided for @dateToLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'To'**
+  String get dateToLabel;
+
+  /// No description provided for @priceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get priceLabel;
+
+  /// No description provided for @deliveryOrderType.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery'**
+  String get deliveryOrderType;
+
+  /// No description provided for @pickupOrderType.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup'**
+  String get pickupOrderType;
+
+  /// No description provided for @unknownClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown client'**
+  String get unknownClient;
+
+  /// No description provided for @details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
+
+  /// No description provided for @contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get contact;
 }
 
 class _AppLocalizationsDelegate

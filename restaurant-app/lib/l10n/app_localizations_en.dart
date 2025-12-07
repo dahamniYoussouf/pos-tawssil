@@ -511,4 +511,47 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteMenuItemConfirmation =>
       'Are you sure you want to delete this menu item?';
+
+  @override
+  String get orderHistory => 'Order History';
+
+  @override
+  String get noOrdersFound => 'No orders found';
+
+  @override
+  String get noOrdersFoundWithFilters =>
+      'No orders found matching your filters';
+
+  @override
+  String get filters => 'Filters';
+
+  @override
+  String get orderTypeLabel => 'Order Type';
+
+  @override
+  String get dateRangeLabel => 'Date Range';
+
+  @override
+  String get dateFromLabel => 'From';
+
+  @override
+  String get dateToLabel => 'To';
+
+  @override
+  String get priceLabel => 'Price';
+
+  @override
+  String get deliveryOrderType => 'Delivery';
+
+  @override
+  String get pickupOrderType => 'Pickup';
+
+  @override
+  String get unknownClient => 'Unknown client';
+
+  @override
+  String get details => 'Details';
+
+  @override
+  String get contact => 'Contact';
 }

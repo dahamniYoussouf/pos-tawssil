@@ -1,3 +1,5 @@
+import 'client_model.dart';
+
 class OrderStatus {
   static const String pending = 'pending';
   static const String accepted = 'accepted';
@@ -309,6 +311,7 @@ class OrderModel {
   final double? deliveryDistance;
   final int? deliveryTimeMinutes;
   final double? deliveryPrice;
+  final ClientModel? client;
 
   OrderModel({
     required this.id,
@@ -335,6 +338,7 @@ class OrderModel {
     this.deliveryDistance,
     this.deliveryTimeMinutes,
     this.deliveryPrice,
+    this.client,
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
@@ -479,6 +483,17 @@ class OrderModel {
       return 0.0;
     }
 
+    ClientModel? client;
+    if (json['client'] != null) {
+      client = ClientModel.fromJson(
+        json['client'] as Map<String, dynamic>?,
+      );
+    } else if (json['user'] != null) {
+      client = ClientModel.fromJson(
+        json['user'] as Map<String, dynamic>?,
+      );
+    }
+
     return OrderModel(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
       orderNumber:
@@ -523,6 +538,7 @@ class OrderModel {
           : json['delivery_fee'] != null
               ? parseDouble(json['delivery_fee'])
               : null,
+      client: client,
     );
   }
 

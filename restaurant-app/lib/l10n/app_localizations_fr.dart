@@ -518,4 +518,47 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get deleteMenuItemConfirmation =>
       'Êtes-vous sûr de vouloir supprimer cet article du menu?';
+
+  @override
+  String get orderHistory => 'Historique des commandes';
+
+  @override
+  String get noOrdersFound => 'Aucune commande trouvée';
+
+  @override
+  String get noOrdersFoundWithFilters =>
+      'Aucune commande trouvée correspondant à vos filtres';
+
+  @override
+  String get filters => 'Filtres';
+
+  @override
+  String get orderTypeLabel => 'Type de commande';
+
+  @override
+  String get dateRangeLabel => 'Période';
+
+  @override
+  String get dateFromLabel => 'De';
+
+  @override
+  String get dateToLabel => 'À';
+
+  @override
+  String get priceLabel => 'Prix';
+
+  @override
+  String get deliveryOrderType => 'Livraison';
+
+  @override
+  String get pickupOrderType => 'À emporter';
+
+  @override
+  String get unknownClient => 'Client inconnu';
+
+  @override
+  String get details => 'Détails';
+
+  @override
+  String get contact => 'Contacter';
 }

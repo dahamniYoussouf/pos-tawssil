@@ -184,6 +184,20 @@
   "imageUploadError": "فشل رفع الصورة",
   "available": "متاح",
   "deleteMenuItem": "حذف عنصر القائمة",
-  "deleteMenuItemConfirmation": "هل أنت متأكد من حذف عنصر القائمة هذا?"
+  "deleteMenuItemConfirmation": "هل أنت متأكد من حذف عنصر القائمة هذا?",
+  "orderHistory": "سجل الطلبات",
+  "noOrdersFound": "لم يتم العثور على طلبات",
+  "noOrdersFoundWithFilters": "لم يتم العثور على طلبات تطابق المرشحات المحددة",
+  "filters": "المرشحات",
+  "orderTypeLabel": "نوع الطلب",
+  "dateRangeLabel": "الفترة",
+  "dateFromLabel": "من",
+  "dateToLabel": "إلى",
+  "priceLabel": "السعر",
+  "deliveryOrderType": "توصيل",
+  "pickupOrderType": "استلام",
+  "unknownClient": "عميل غير معروف",
+  "details": "تفاصيل",
+  "contact": "اتصل"
 }
 

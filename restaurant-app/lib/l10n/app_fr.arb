@@ -184,6 +184,20 @@
   "imageUploadError": "Échec du téléchargement de l'image",
   "available": "Disponible",
   "deleteMenuItem": "Supprimer l'Article du Menu",
-  "deleteMenuItemConfirmation": "Êtes-vous sûr de vouloir supprimer cet article du menu?"
+  "deleteMenuItemConfirmation": "Êtes-vous sûr de vouloir supprimer cet article du menu?",
+  "orderHistory": "Historique des commandes",
+  "noOrdersFound": "Aucune commande trouvée",
+  "noOrdersFoundWithFilters": "Aucune commande trouvée correspondant à vos filtres",
+  "filters": "Filtres",
+  "orderTypeLabel": "Type de commande",
+  "dateRangeLabel": "Période",
+  "dateFromLabel": "De",
+  "dateToLabel": "À",
+  "priceLabel": "Prix",
+  "deliveryOrderType": "Livraison",
+  "pickupOrderType": "À emporter",
+  "unknownClient": "Client inconnu",
+  "details": "Détails",
+  "contact": "Contacter"
 }
 

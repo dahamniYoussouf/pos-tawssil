@@ -6,6 +6,8 @@ import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:restaurant_app/src/features/auth/services/location_geocoding_service.dart';
 import 'package:restaurant_app/src/features/orders/repositories/order_repository.dart';
+import 'package:restaurant_app/src/features/orders/repositories/order_history_repository.dart';
+import 'package:restaurant_app/src/features/orders/cubit/order_history_cubit.dart';
 import 'package:restaurant_app/src/features/notifications/services/notification_service.dart';
 import 'package:restaurant_app/src/features/statistics/repositories/statistics_repository.dart';
 import 'package:restaurant_app/src/features/categories/services/category_service.dart';
@@ -90,5 +92,11 @@ void setupLocator() {
   );
   locator.registerLazySingleton<CategorySelectionCubit>(
     () => CategorySelectionCubit(),
+  );
+  locator.registerLazySingleton<OrderHistoryRepository>(
+    () => OrderHistoryRepository(),
+  );
+  locator.registerFactory<OrderHistoryCubit>(
+    () => OrderHistoryCubit(repository: locator<OrderHistoryRepository>()),
   );
 }
