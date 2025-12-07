@@ -466,7 +466,9 @@ class _MenuItemCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            '${menuItem.prix.toStringAsFixed(0)} DA',
+                            menuItem.prix.isFinite
+                                ? '${menuItem.prix.toStringAsFixed(0)} DA'
+                                : '-- DA',
                             style: TawsilTextStyles.priceMedium,
                           ),
                           if (availableAdditions.isNotEmpty)

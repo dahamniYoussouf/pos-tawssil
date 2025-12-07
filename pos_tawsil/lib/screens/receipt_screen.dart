@@ -67,7 +67,6 @@ class ReceiptScreen extends StatelessWidget {
   Widget _buildHeader() {
     return Column(
       children: [
-        // Logo ou nom du restaurant
         Container(
           padding: const EdgeInsets.all(TawsilSpacing.md),
           decoration: BoxDecoration(
@@ -165,7 +164,6 @@ class ReceiptScreen extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Quantité
           Container(
             width: 32,
             height: 32,
@@ -184,38 +182,67 @@ class ReceiptScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(width: TawsilSpacing.sm),
-          
-          // Nom et instructions
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  item.menuItemName,
-                  style: TawsilTextStyles.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                if (item.instructionsSpeciales != null && 
-                    item.instructionsSpeciales.isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  Text(
-                    'Note: ${item.instructionsSpeciales}',
-                    style: TawsilTextStyles.bodySmall.copyWith(
-                      fontStyle: FontStyle.italic,
-                      color: TawsilColors.textSecondary,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (item.photoUrl != null && (item.photoUrl as String).isNotEmpty) ...[
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(TawsilBorderRadius.sm),
+                        child: Image.network(
+                          item.photoUrl,
+                          width: 52,
+                          height: 52,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => Container(
+                            width: 52,
+                            height: 52,
+                            color: TawsilColors.background,
+                            child: const Icon(Icons.fastfood, size: 20, color: Colors.grey),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            item.menuItemName?.isNotEmpty == true ? item.menuItemName : 'Article',
+                            style: TawsilTextStyles.bodyMedium.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          if (item.instructionsSpeciales != null &&
+                              item.instructionsSpeciales.isNotEmpty) ...[
+                            const SizedBox(height: 4),
+                            Text(
+                              'Note: ${item.instructionsSpeciales}',
+                              style: TawsilTextStyles.bodySmall.copyWith(
+                                fontStyle: FontStyle.italic,
+                                color: TawsilColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
                 if (item.additions.isNotEmpty) ...[
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   Wrap(
                     spacing: 6,
                     runSpacing: 4,
                     children: item.additions.map<Widget>((add) {
+                      final addName = (add.nom as String?)?.isNotEmpty == true ? add.nom : 'Supplément';
                       return Chip(
                         label: Text(
-                          '${add.nom} x${add.quantity} (+${add.total.toStringAsFixed(0)} DA)',
+                          '$addName x${add.quantity} (+${add.total.toStringAsFixed(0)} DA)',
                           style: TawsilTextStyles.bodySmall,
                         ),
                         backgroundColor: TawsilColors.background,
@@ -234,8 +261,6 @@ class ReceiptScreen extends StatelessWidget {
               ],
             ),
           ),
-          
-          // Prix total
           Text(
             '${item.prixTotal.toStringAsFixed(2)} DA',
             style: TawsilTextStyles.bodyMedium.copyWith(
@@ -333,7 +358,7 @@ class ReceiptScreen extends StatelessWidget {
 
   String _formatDateTime(DateTime date) {
     return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year} '
-           'à ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+        'à ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
   }
 
   String _formatPaymentMethod(String method) {
@@ -370,7 +395,6 @@ class ReceiptScreen extends StatelessWidget {
     try {
       final printer = PrintService();
       await printer.printOrder(order);
-      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Row(
@@ -398,12 +422,8 @@ class ReceiptScreen extends StatelessWidget {
   }
 
   Future<void> _shareReceipt(BuildContext context) async {
-    // Créer un texte formaté du reçu
     final receiptText = _generateReceiptText();
-    
-    // Copier dans le presse-papiers
     await Clipboard.setData(ClipboardData(text: receiptText));
-    
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Row(
@@ -424,41 +444,35 @@ class ReceiptScreen extends StatelessWidget {
 
   String _generateReceiptText() {
     final buffer = StringBuffer();
-    
-    buffer.writeln('═══════════════════════════');
+    buffer.writeln('-----------------------------');
     buffer.writeln('       POS TAWSIL');
     buffer.writeln('       Restaurant');
-    buffer.writeln('═══════════════════════════');
+    buffer.writeln('-----------------------------');
     buffer.writeln();
     buffer.writeln('Commande: ${order.orderNumber}');
     buffer.writeln('Date: ${_formatDateTime(order.createdAt)}');
     buffer.writeln('Type: ${order.orderType == 'pickup' ? 'Sur place' : 'Livraison'}');
     buffer.writeln('Paiement: ${_formatPaymentMethod(order.paymentMethod)}');
     buffer.writeln();
-    buffer.writeln('───────────────────────────');
     buffer.writeln('ARTICLES');
-    buffer.writeln('───────────────────────────');
-    
+    buffer.writeln('-----------------------------');
     for (var item in order.items) {
       buffer.writeln();
       buffer.writeln('${item.quantite}× ${item.menuItemName}');
-      if (item.instructionsSpeciales != null ) {
+      if (item.instructionsSpeciales != null && item.instructionsSpeciales!.isNotEmpty) {
         buffer.writeln('   Note: ${item.instructionsSpeciales}');
+      }
+      for (var add in item.additions) {
+        buffer.writeln('   + ${add.nom} x${add.quantity} (${add.total.toStringAsFixed(0)} DA)');
       }
       buffer.writeln('   ${item.prixUnitaire.toStringAsFixed(2)} DA × ${item.quantite} = ${item.prixTotal.toStringAsFixed(2)} DA');
     }
-    
     buffer.writeln();
-    buffer.writeln('───────────────────────────');
     buffer.writeln('Sous-total: ${order.subtotal.toStringAsFixed(2)} DA');
-    buffer.writeln('═══════════════════════════');
     buffer.writeln('TOTAL: ${order.totalAmount.toStringAsFixed(2)} DA');
-    buffer.writeln('═══════════════════════════');
-    buffer.writeln();
-    buffer.writeln('   Merci de votre visite !');
-    buffer.writeln('        À bientôt');
-    buffer.writeln();
-    
+    buffer.writeln('-----------------------------');
+    buffer.writeln('Merci de votre visite !');
+    buffer.writeln('À bientôt');
     return buffer.toString();
   }
 }

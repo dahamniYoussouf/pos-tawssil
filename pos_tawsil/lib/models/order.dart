@@ -128,6 +128,8 @@ class Order {
   }
 
   factory Order.fromJson(Map<String, dynamic> json) {
+    final rawItems = (json['items'] ?? json['order_items']) as List<dynamic>? ?? [];
+
     return Order(
       id: json['id'],
       orderNumber: json['order_number'] ?? '',
@@ -138,9 +140,7 @@ class Order {
       totalAmount: _toDouble(json['total_amount']),
       paymentMethod: json['payment_method'],
       status: json['status'] ?? 'pending',
-      items: (json['items'] as List<dynamic>? ?? [])
-          .map((item) => OrderItem.fromJson(item))
-          .toList(),
+      items: rawItems.map((item) => OrderItem.fromJson(item)).toList(),
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
       synced: true,
