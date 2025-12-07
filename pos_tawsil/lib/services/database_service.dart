@@ -106,6 +106,44 @@ class DatabaseService {
     return rows.map((r) => Addition.fromMap(r)).toList();
   }
 
+  // ========== FOOD CATEGORIES ==========
+  
+  Future<List<Map<String, dynamic>>> getFoodCategories() async {
+    final db = await DatabaseConfig.database;
+    return await db.query('food_categories', orderBy: 'ordre_affichage ASC, nom ASC');
+  }
+
+  Future<void> insertFoodCategory(Map<String, dynamic> category) async {
+    final db = await DatabaseConfig.database;
+    await db.insert(
+      'food_categories',
+      {
+        'id': category['id'],
+        'restaurant_id': category['restaurant_id'],
+        'nom': category['nom'],
+        'description': category['description'],
+        'icone_url': category['icone_url'],
+        'ordre_affichage': category['ordre_affichage'],
+        'created_at': category['created_at'],
+        'updated_at': category['updated_at'],
+        'synced': 1,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<String?> getCategoryName(String categoryId) async {
+    final db = await DatabaseConfig.database;
+    final result = await db.query(
+      'food_categories',
+      where: 'id = ?',
+      whereArgs: [categoryId],
+      limit: 1,
+    );
+    if (result.isEmpty) return null;
+    return result.first['nom'] as String?;
+  }
+
   // ========== ORDERS ==========
   
   Future<void> insertOrder(Order order) async {

@@ -1,9 +1,7 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:pos_tawsil/models/menu_item.dart';
 import 'database_service.dart';
 import 'api_service.dart';
-import 'dart:convert';
 
 
 class SyncService {
@@ -55,6 +53,26 @@ class SyncService {
         message: 'Synchronisation du menu...',
       ));
 
+      // Sync categories first
+      try {
+        final categories = await _api.fetchFoodCategories();
+        for (var category in categories) {
+          await _db.insertFoodCategory({
+            'id': category.id,
+            'restaurant_id': category.restaurantId,
+            'nom': category.nom,
+            'description': category.description,
+            'icone_url': category.iconeUrl,
+            'ordre_affichage': category.ordreAffichage,
+            'created_at': category.createdAt.toIso8601String(),
+            'updated_at': category.updatedAt.toIso8601String(),
+          });
+        }
+      } catch (e) {
+        print('⚠️ Failed to sync categories: $e');
+      }
+
+      // Then sync menu items
       final menuItems = await _api.fetchMenuItems();
       
       for (var item in menuItems) {
@@ -176,9 +194,8 @@ class SyncService {
       
       for (var item in queue) {
         try {
-          final data = jsonDecode(item['data']);
-          
-         
+          // Process sync queue item if needed
+          // final data = jsonDecode(item['data']);
           
           await _db.removeSyncQueueItem(item['id']);
         } catch (e) {

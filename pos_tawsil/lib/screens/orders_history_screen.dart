@@ -17,14 +17,71 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
   final DatabaseService _db = DatabaseService();
   final ApiService _api = ApiService();
   List<Order> _orders = [];
+  List<Order> _filteredOrders = [];
   bool _isLoading = true;
   String? _errorMessage;
   String _selectedFilter = 'all'; // all, today, week, month
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
     _loadOrders();
+    _searchController.addListener(_onSearchChanged);
+  }
+
+  @override
+  void dispose() {
+    _searchController.removeListener(_onSearchChanged);
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged() {
+    setState(() {
+      _searchQuery = _searchController.text;
+    });
+    _applyFilters();
+  }
+
+  void _applyFilters() {
+    setState(() {
+      _filteredOrders = _orders.where((order) {
+        // Search filter
+        final matchesSearch = _searchQuery.isEmpty ||
+            order.orderNumber.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+            order.items.any((item) => 
+              item.menuItemName.toLowerCase().contains(_searchQuery.toLowerCase())
+            );
+        
+        // Date filter
+        final now = DateTime.now();
+        if (_selectedFilter == 'today') {
+          final orderDate = order.createdAt;
+          if (orderDate.year != now.year || 
+              orderDate.month != now.month || 
+              orderDate.day != now.day) {
+            return false;
+          }
+        } else if (_selectedFilter == 'week') {
+          final weekAgo = now.subtract(const Duration(days: 7));
+          if (!order.createdAt.isAfter(weekAgo)) {
+            return false;
+          }
+        } else if (_selectedFilter == 'month') {
+          if (order.createdAt.year != now.year || 
+              order.createdAt.month != now.month) {
+            return false;
+          }
+        }
+        
+        return matchesSearch;
+      }).toList();
+      
+      // Sort by date (most recent first)
+      _filteredOrders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    });
   }
 
   Future<void> _loadOrders() async {
@@ -63,13 +120,14 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
         }).toList();
       }
 
-      // Trier par date (plus r?cent en premier)
+      // Trier par date (plus récent en premier)
       filteredOrders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
       setState(() {
         _orders = filteredOrders;
         _isLoading = false;
       });
+      _applyFilters();
     } catch (e) {
       setState(() {
         _errorMessage = 'Erreur: ${e.toString()}';
@@ -83,7 +141,21 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
     setState(() {
       _selectedFilter = filter;
     });
-    _loadOrders();
+    _applyFilters();
+  }
+
+  double _calculateTotalRevenue() {
+    return _filteredOrders.fold<double>(
+      0,
+      (sum, order) => sum + order.totalAmount,
+    );
+  }
+
+  int _calculateTotalItems() {
+    return _filteredOrders.fold<int>(
+      0,
+      (sum, order) => sum + order.items.length,
+    );
   }
 
   @override
@@ -103,12 +175,186 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
       ),
       body: Column(
         children: [
+          // Statistics Bar
+          if (!_isLoading && _orders.isNotEmpty) _buildStatisticsBar(),
+          
+          // Search Bar
+          if (!_isLoading && _orders.isNotEmpty) _buildSearchBar(),
+          
           // Filtres
           _buildFilterBar(),
           
           // Liste des commandes
           Expanded(
             child: _buildOrdersList(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatisticsBar() {
+    final totalRevenue = _calculateTotalRevenue();
+    final totalItems = _calculateTotalItems();
+    final avgOrderValue = _filteredOrders.isEmpty 
+        ? 0.0 
+        : totalRevenue / _filteredOrders.length;
+
+    return Container(
+      padding: const EdgeInsets.all(TawsilSpacing.md),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            TawsilColors.primary,
+            TawsilColors.primaryDark,
+          ],
+        ),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _buildStatCard(
+              icon: Icons.receipt_long_rounded,
+              label: 'Commandes',
+              value: '${_filteredOrders.length}',
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(width: TawsilSpacing.md),
+          Expanded(
+            child: _buildStatCard(
+              icon: Icons.attach_money_rounded,
+              label: 'Chiffre d\'affaires',
+              value: '${totalRevenue.toStringAsFixed(0)} DA',
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(width: TawsilSpacing.md),
+          Expanded(
+            child: _buildStatCard(
+              icon: Icons.shopping_bag_rounded,
+              label: 'Articles vendus',
+              value: '$totalItems',
+              color: Colors.white,
+            ),
+          ),
+          const SizedBox(width: TawsilSpacing.md),
+          Expanded(
+            child: _buildStatCard(
+              icon: Icons.trending_up_rounded,
+              label: 'Panier moyen',
+              value: '${avgOrderValue.toStringAsFixed(0)} DA',
+              color: Colors.white,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatCard({
+    required IconData icon,
+    required String label,
+    required String value,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(TawsilSpacing.md),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(TawsilBorderRadius.md),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: TawsilSpacing.sm),
+          Text(
+            value,
+            style: TawsilTextStyles.headingMedium.copyWith(
+              color: color,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TawsilTextStyles.bodySmall.copyWith(
+              color: color.withOpacity(0.9),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: TawsilSpacing.md,
+        vertical: TawsilSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: TawsilColors.background,
+                borderRadius: BorderRadius.circular(TawsilBorderRadius.md),
+              ),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Rechercher par numéro de commande ou article...',
+                  prefixIcon: Icon(Icons.search, color: TawsilColors.textSecondary),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: Icon(Icons.clear, color: TawsilColors.textSecondary),
+                          onPressed: () {
+                            _searchController.clear();
+                          },
+                        )
+                      : null,
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: TawsilSpacing.md,
+                    vertical: TawsilSpacing.sm,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: TawsilSpacing.md),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: TawsilSpacing.md,
+              vertical: TawsilSpacing.sm,
+            ),
+            decoration: BoxDecoration(
+              color: TawsilColors.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(TawsilBorderRadius.md),
+            ),
+            child: Text(
+              '${_filteredOrders.length} résultat${_filteredOrders.length > 1 ? 's' : ''}',
+              style: TawsilTextStyles.bodySmall.copyWith(
+                color: TawsilColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -207,26 +453,33 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
       );
     }
 
-    if (_orders.isEmpty) {
+
+    if (_filteredOrders.isEmpty && !_isLoading) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              Icons.receipt_long_outlined,
+              _searchQuery.isNotEmpty || _selectedFilter != 'all'
+                  ? Icons.search_off_rounded
+                  : Icons.receipt_long_outlined,
               size: 64,
               color: TawsilColors.textSecondary.withOpacity(0.5),
             ),
             const SizedBox(height: TawsilSpacing.md),
             Text(
-              'Aucune commande',
+              _searchQuery.isNotEmpty || _selectedFilter != 'all'
+                  ? 'Aucune commande trouvée'
+                  : 'Aucune commande',
               style: TawsilTextStyles.headingMedium.copyWith(
                 color: TawsilColors.textSecondary,
               ),
             ),
             const SizedBox(height: TawsilSpacing.xs),
             Text(
-              'Les commandes apparaîtront ici',
+              _searchQuery.isNotEmpty || _selectedFilter != 'all'
+                  ? 'Essayez de modifier vos critères de recherche'
+                  : 'Les commandes apparaîtront ici',
               style: TawsilTextStyles.bodySmall,
             ),
           ],
@@ -236,10 +489,10 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
 
     return ListView.separated(
       padding: const EdgeInsets.all(TawsilSpacing.md),
-      itemCount: _orders.length,
+      itemCount: _filteredOrders.length,
       separatorBuilder: (_, __) => const SizedBox(height: TawsilSpacing.md),
       itemBuilder: (context, index) {
-        final order = _orders[index];
+        final order = _filteredOrders[index];
         return _OrderCard(
           order: order,
           onTap: () => _viewReceipt(order),
@@ -276,103 +529,203 @@ class _OrderCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(TawsilBorderRadius.lg),
-        child: Padding(
-          padding: const EdgeInsets.all(TawsilSpacing.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header: Numéro de commande et date
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Text(
-                      order.orderNumber,
-                      style: TawsilTextStyles.headingSmall.copyWith(
-                        color: TawsilColors.primary,
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(TawsilBorderRadius.lg),
+            border: Border.all(
+              color: TawsilColors.border.withOpacity(0.5),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(TawsilSpacing.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header: Numéro de commande et date
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: TawsilColors.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(TawsilBorderRadius.sm),
+                            ),
+                            child: Icon(
+                              Icons.receipt_long_rounded,
+                              size: 20,
+                              color: TawsilColors.primary,
+                            ),
+                          ),
+                          const SizedBox(width: TawsilSpacing.sm),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  order.orderNumber,
+                                  style: TawsilTextStyles.headingSmall.copyWith(
+                                    color: TawsilColors.primary,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.access_time_rounded,
+                                      size: 14,
+                                      color: TawsilColors.textSecondary,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      '${_formatDate(order.createdAt)} à ${_formatTime(order.createdAt)}',
+                                      style: TawsilTextStyles.bodySmall.copyWith(
+                                        color: TawsilColors.textSecondary,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ),
-                  Text(
-                    _formatDate(order.createdAt),
-                    style: TawsilTextStyles.bodySmall,
-                  ),
-                ],
-              ),
-              const SizedBox(height: TawsilSpacing.sm),
-              
-              // Heure
-              Row(
-                children: [
-                  Icon(
-                    Icons.access_time_rounded,
-                    size: 16,
-                    color: TawsilColors.textSecondary,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    _formatTime(order.createdAt),
-                    style: TawsilTextStyles.bodySmall,
-                  ),
-                ],
-              ),
-              
-              const Divider(height: TawsilSpacing.lg),
-              
-              // Nombre d'articles
-              Row(
-                children: [
-                  Icon(
-                    Icons.shopping_bag_outlined,
-                    size: 18,
-                    color: TawsilColors.textSecondary,
-                  ),
-                  const SizedBox(width: TawsilSpacing.sm),
-                  Text(
-                    '${order.items.length} article(s)',
-                    style: TawsilTextStyles.bodyMedium,
-                  ),
-                ],
-              ),
-              const SizedBox(height: TawsilSpacing.sm),
-              
-              // Montant total
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Total',
-                    style: TawsilTextStyles.bodyMedium.copyWith(
-                      fontWeight: FontWeight.w600,
+                    // Status badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: TawsilSpacing.sm,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getStatusColor(order.status).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(TawsilBorderRadius.full),
+                      ),
+                      child: Text(
+                        order.status.toUpperCase(),
+                        style: TawsilTextStyles.bodySmall.copyWith(
+                          color: _getStatusColor(order.status),
+                          fontWeight: FontWeight.w600,
+                          fontSize: 10,
+                        ),
+                      ),
                     ),
-                  ),
-                  Text(
-                    '${order.totalAmount.toStringAsFixed(2)} DA',
-                    style: TawsilTextStyles.priceMedium,
-                  ),
-                ],
-              ),
-              const SizedBox(height: TawsilSpacing.md),
-              
-              // Bouton voir reçu
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  TextButton.icon(
-                    onPressed: onTap,
-                    icon: const Icon(Icons.receipt_outlined, size: 18),
-                    label: const Text('Voir le reçu'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: TawsilColors.primary,
+                  ],
+                ),
+                const SizedBox(height: TawsilSpacing.md),
+                const Divider(height: 1),
+                const SizedBox(height: TawsilSpacing.md),
+                
+                // Items preview
+                if (order.items.isNotEmpty) ...[
+                  ...order.items.take(2).map((item) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: TawsilSpacing.xs),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 4,
+                            height: 4,
+                            decoration: BoxDecoration(
+                              color: TawsilColors.primary,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: TawsilSpacing.sm),
+                          Expanded(
+                            child: Text(
+                              '${item.quantite}x ${item.menuItemName}',
+                              style: TawsilTextStyles.bodySmall,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                  if (order.items.length > 2)
+                    Padding(
+                      padding: const EdgeInsets.only(top: TawsilSpacing.xs),
+                      child: Text(
+                        '+ ${order.items.length - 2} autre(s) article(s)',
+                        style: TawsilTextStyles.bodySmall.copyWith(
+                          color: TawsilColors.textSecondary,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
                     ),
-                  ),
+                  const SizedBox(height: TawsilSpacing.md),
                 ],
-              ),
-            ],
+                
+                // Footer: Total and action
+                Container(
+                  padding: const EdgeInsets.all(TawsilSpacing.sm),
+                  decoration: BoxDecoration(
+                    color: TawsilColors.primary.withOpacity(0.05),
+                    borderRadius: BorderRadius.circular(TawsilBorderRadius.md),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Total',
+                            style: TawsilTextStyles.bodySmall.copyWith(
+                              color: TawsilColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '${order.totalAmount.toStringAsFixed(2)} DA',
+                            style: TawsilTextStyles.priceMedium.copyWith(
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                      ElevatedButton.icon(
+                        onPressed: onTap,
+                        icon: const Icon(Icons.receipt_outlined, size: 18),
+                        label: const Text('Voir le reçu'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: TawsilColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: TawsilSpacing.md,
+                            vertical: TawsilSpacing.sm,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'completed':
+      case 'delivered':
+        return TawsilColors.success;
+      case 'pending':
+        return TawsilColors.warning;
+      case 'cancelled':
+        return TawsilColors.error;
+      default:
+        return TawsilColors.info;
+    }
   }
 
   String _formatDate(DateTime date) {

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../config/app_theme.dart';
 import '../services/api_service.dart';
-import '../screens/order_screen.dart'; // ✅ Aller directement à l'écran commande
+import '../screens/order_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -10,7 +11,7 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -18,7 +19,10 @@ class _LoginScreenState extends State<LoginScreen> {
   
   bool _isLoading = false;
   bool _obscurePassword = true;
+  bool _rememberMe = false;
   String? _errorMessage;
+  late AnimationController _animationController;
+  late Animation<double> _fadeAnimation;
 
   @override
   void initState() {
@@ -26,16 +30,44 @@ class _LoginScreenState extends State<LoginScreen> {
     // Prefill with a cashier test account from the seed data
     _emailController.text = 'cashier1@example.com';
     _passwordController.text = 'password123';
+    
+    // Initialize animation
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
+    _animationController.forward();
+    
     _checkExistingSession();
+    _loadRememberedCredentials();
+  }
+
+  Future<void> _loadRememberedCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final rememberedEmail = prefs.getString('remembered_email');
+    final rememberedPassword = prefs.getString('remembered_password');
+    final shouldRemember = prefs.getBool('remember_me') ?? false;
+    
+    if (shouldRemember && rememberedEmail != null) {
+      setState(() {
+        _rememberMe = true;
+        _emailController.text = rememberedEmail;
+        if (rememberedPassword != null) {
+          _passwordController.text = rememberedPassword;
+        }
+      });
+    }
   }
 
   Future<void> _checkExistingSession() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('auth_token');
-    final cashierId = prefs.getString('cashier_id'); // ✅ Vérifier cashier_id
+    final cashierId = prefs.getString('cashier_id');
     
     if (token != null && cashierId != null && mounted) {
-      // ✅ Aller directement à l'écran de commande
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const OrderScreen()),
       );
@@ -56,8 +88,19 @@ class _LoginScreenState extends State<LoginScreen> {
         _passwordController.text,
       );
 
+      // Save credentials if remember me is checked
+      final prefs = await SharedPreferences.getInstance();
+      if (_rememberMe) {
+        await prefs.setString('remembered_email', _emailController.text.trim());
+        await prefs.setString('remembered_password', _passwordController.text);
+        await prefs.setBool('remember_me', true);
+      } else {
+        await prefs.remove('remembered_email');
+        await prefs.remove('remembered_password');
+        await prefs.setBool('remember_me', false);
+      }
+
       if (mounted) {
-        // ✅ Aller directement à l'écran de commande (pas de sélection de caissier)
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const OrderScreen()),
         );
@@ -75,6 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   void dispose() {
+    _animationController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
@@ -82,12 +126,31 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final isSmallScreen = size.width < 900;
+
     return Scaffold(
-      body: Row(
-        children: [
-          // Left side - Image with text overlay
-          Expanded(
-            flex: 1,
+      body: isSmallScreen ? _buildMobileLayout() : _buildDesktopLayout(),
+    );
+  }
+
+  Widget _buildDesktopLayout() {
+    return Row(
+      children: [
+        // Left side - Branding with gradient
+        Expanded(
+          flex: 1,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  TawsilColors.primary,
+                  TawsilColors.primaryDark,
+                ],
+              ),
+            ),
             child: Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
@@ -95,271 +158,461 @@ class _LoginScreenState extends State<LoginScreen> {
                     'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80',
                   ),
                   fit: BoxFit.cover,
+                  opacity: 0.15,
                 ),
               ),
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0xFF00A859).withOpacity(0.8),
-                      Color(0xFF008545).withOpacity(0.85),
+              child: SafeArea(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(48),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Logo
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Image.asset(
+                          'assets/images/logo_green.webp',
+                          height: 56,
+                          width: 56,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) => const Icon(
+                            Icons.point_of_sale,
+                            size: 48,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 40),
+                      const Text(
+                        'Point de vente\nTawsil',
+                        style: TextStyle(
+                          fontSize: 48,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          height: 1.2,
+                          letterSpacing: -1,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'Système de gestion de point de vente moderne et intuitif pour votre restaurant.',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white.withOpacity(0.9),
+                          height: 1.5,
+                        ),
+                      ),
+                      const SizedBox(height: 36),
+                      _buildFeatureItem(Icons.speed, 'Performance optimale'),
+                      const SizedBox(height: 12),
+                      _buildFeatureItem(Icons.security, 'Sécurisé et fiable'),
+                      const SizedBox(height: 12),
+                      _buildFeatureItem(Icons.sync, 'Synchronisation automatique'),
                     ],
                   ),
-                ),
-                padding: const EdgeInsets.all(48),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Point de vente Tawsil', // ✅ Texte adapté pour caissier
-                      style: TextStyle(
-                        fontSize: 48,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        height: 1.2,
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-                    const Text(
-                      'Connectez-vous avec votre compte caissier pour commencer à prendre des commandes.', // ✅ Texte caissier
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                        height: 1.5,
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ),
           ),
+        ),
 
-          // Right side - Login form
-          Expanded(
-            flex: 1,
-            child: Container(
-              color: Colors.grey[50],
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(48),
+        // Right side - Login form
+        Expanded(
+          flex: 1,
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  TawsilColors.background,
+                  Colors.white,
+                ],
+              ),
+            ),
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(48),
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
                   child: Container(
-                    constraints: const BoxConstraints(maxWidth: 450),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          // Logo
-                          Image.network(
-                            'assets/images/logo_green.webp',
-                            height: 60,
-                            fit: BoxFit.contain,
-                            alignment: Alignment.centerLeft,
-                            errorBuilder: (_, __, ___) => const Icon(
-                              Icons.restaurant,
-                              size: 60,
-                              color: Color(0xFF00A859),
-                            ),
-                          ),
-                          const SizedBox(height: 24),
+                    constraints: const BoxConstraints(maxWidth: 480),
+                    child: _buildLoginForm(),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
-                          // Title
-                          const Text(
-                            'Connexion Caissier', // ✅ Titre caissier
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.w600,
-                              color: Color.fromARGB(255, 121, 120, 120),
-                            ),
-                          ),
-                          const SizedBox(height: 48),
-
-                          // Error Message
-                          if (_errorMessage != null)
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              margin: const EdgeInsets.only(bottom: 24),
-                              decoration: BoxDecoration(
-                                color: Colors.red[50],
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.red[200]!),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.error_outline, color: Colors.red[700]),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      _errorMessage!,
-                                      style: TextStyle(color: Colors.red[700]),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                          // Email Label
-                          const Text(
-                            'Email',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-
-                          // Email Field
-                          TextFormField(
-                            controller: _emailController,
-                            keyboardType: TextInputType.emailAddress,
-                            style: const TextStyle(fontSize: 16),
-                            decoration: InputDecoration(
-                              hintText: 'votre@email.com',
-                              prefixIcon: Icon(Icons.email_outlined, color: Colors.grey[600]),
-                              filled: true,
-                              fillColor: Colors.white,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.grey[300]!),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.grey[300]!),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: Color(0xFF00A859), width: 2),
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 16,
-                              ),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Veuillez entrer votre email';
-                              }
-                              if (!value.contains('@')) {
-                                return 'Email invalide';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 24),
-
-                          // Password Label
-                          const Text(
-                            'Mot de passe',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-
-                          // Password Field
-                          TextFormField(
-                            controller: _passwordController,
-                            obscureText: _obscurePassword,
-                            style: const TextStyle(fontSize: 16),
-                            decoration: InputDecoration(
-                              hintText: '••••••••',
-                              prefixIcon: Icon(Icons.lock_outlined, color: Colors.grey[600]),
-                              filled: true,
-                              fillColor: Colors.white,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.grey[300]!),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide(color: Colors.grey[300]!),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(color: Color(0xFF00A859), width: 2),
-                              ),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscurePassword
-                                      ? Icons.visibility_outlined
-                                      : Icons.visibility_off_outlined,
-                                  color: Colors.grey[600],
-                                ),
-                                onPressed: () {
-                                  setState(() => _obscurePassword = !_obscurePassword);
-                                },
-                              ),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 16,
-                              ),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Veuillez entrer votre mot de passe';
-                              }
-                              return null;
-                            },
-                            onFieldSubmitted: (_) => _login(),
-                          ),
-                          const SizedBox(height: 32),
-
-                          // Login Button
-                          SizedBox(
-                            height: 56,
-                            child: ElevatedButton(
-                              onPressed: _isLoading ? null : _login,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF00A859),
-                                foregroundColor: Colors.white,
-                                elevation: 0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                disabledBackgroundColor: const Color(0xFF00A859).withOpacity(0.6),
-                              ),
-                              child: _isLoading
-                                  ? const SizedBox(
-                                      height: 24,
-                                      width: 24,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2.5,
-                                        color: Colors.white,
-                                      ),
-                                    )
-                                  : const Text(
-                                      'Se connecter',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                            ),
-                          ),
-                          const SizedBox(height: 48),
-
-                          // Footer
-                          Center(
-                            child: Text(
-                              '© 2024 Tawsil POS. Tous droits réservés.',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ),
-                        ],
+  Widget _buildMobileLayout() {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [
+            TawsilColors.primary.withOpacity(0.1),
+            Colors.white,
+          ],
+        ),
+      ),
+      child: SafeArea(
+        child: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: Column(
+                children: [
+                  const SizedBox(height: 40),
+                  // Logo
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    decoration: BoxDecoration(
+                      color: TawsilColors.primary,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: TawsilColors.primary.withOpacity(0.3),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: Image.asset(
+                      'assets/images/logo_green.webp',
+                      height: 48,
+                      width: 48,
+                      fit: BoxFit.contain,
+                      errorBuilder: (_, __, ___) => const Icon(
+                        Icons.point_of_sale,
+                        size: 48,
+                        color: Colors.white,
                       ),
                     ),
                   ),
+                  const SizedBox(height: 32),
+                  const Text(
+                    'Point de vente Tawsil',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: TawsilColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Connexion caissier',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: TawsilColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 48),
+                  Container(
+                    constraints: const BoxConstraints(maxWidth: 400),
+                    child: _buildLoginForm(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeatureItem(IconData icon, String text) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.2),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: Colors.white, size: 20),
+        ),
+        const SizedBox(width: 16),
+        Text(
+          text,
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.white.withOpacity(0.9),
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLoginForm() {
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Welcome text
+          const Text(
+            'Bienvenue',
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: TawsilColors.textPrimary,
+              letterSpacing: -0.5,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Connectez-vous pour accéder au système',
+            style: TextStyle(
+              fontSize: 16,
+              color: TawsilColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 40),
+
+          // Error Message
+          if (_errorMessage != null)
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              padding: const EdgeInsets.all(16),
+              margin: const EdgeInsets.only(bottom: 24),
+              decoration: BoxDecoration(
+                color: TawsilColors.error.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: TawsilColors.error.withOpacity(0.3)),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.error_outline, color: TawsilColors.error, size: 24),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      _errorMessage!,
+                      style: TextStyle(
+                        color: TawsilColors.error,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+          // Email Field
+          Text(
+            'Email',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: TawsilColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: _emailController,
+            keyboardType: TextInputType.emailAddress,
+            style: const TextStyle(fontSize: 16),
+            decoration: InputDecoration(
+              hintText: 'votre@email.com',
+              hintStyle: TextStyle(color: TawsilColors.textHint),
+              prefixIcon: Icon(Icons.email_outlined, color: TawsilColors.textSecondary),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: TawsilColors.border),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: TawsilColors.border),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: TawsilColors.primary, width: 2),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: TawsilColors.error),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: TawsilColors.error, width: 2),
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Veuillez entrer votre email';
+              }
+              if (!value.contains('@') || !value.contains('.')) {
+                return 'Email invalide';
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 24),
+
+          // Password Field
+          Text(
+            'Mot de passe',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: TawsilColors.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: _passwordController,
+            obscureText: _obscurePassword,
+            style: const TextStyle(fontSize: 16),
+            decoration: InputDecoration(
+              hintText: '••••••••',
+              hintStyle: TextStyle(color: TawsilColors.textHint),
+              prefixIcon: Icon(Icons.lock_outlined, color: TawsilColors.textSecondary),
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: TawsilColors.border),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide(color: TawsilColors.border),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: TawsilColors.primary, width: 2),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: TawsilColors.error),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: const BorderSide(color: TawsilColors.error, width: 2),
+              ),
+              suffixIcon: IconButton(
+                icon: Icon(
+                  _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                  color: TawsilColors.textSecondary,
                 ),
+                onPressed: () {
+                  setState(() => _obscurePassword = !_obscurePassword);
+                },
+              ),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+            ),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Veuillez entrer votre mot de passe';
+              }
+              if (value.length < 6) {
+                return 'Le mot de passe doit contenir au moins 6 caractères';
+              }
+              return null;
+            },
+            onFieldSubmitted: (_) => _login(),
+          ),
+          const SizedBox(height: 16),
+
+          // Remember Me
+          Row(
+            children: [
+              Checkbox(
+                value: _rememberMe,
+                onChanged: (value) {
+                  setState(() => _rememberMe = value ?? false);
+                },
+                activeColor: TawsilColors.primary,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              Text(
+                'Se souvenir de moi',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: TawsilColors.textSecondary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+
+          // Login Button
+          SizedBox(
+            height: 56,
+            child: ElevatedButton(
+              onPressed: _isLoading ? null : _login,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: TawsilColors.primary,
+                foregroundColor: Colors.white,
+                elevation: 0,
+                shadowColor: TawsilColors.primary.withOpacity(0.3),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                disabledBackgroundColor: TawsilColors.primary.withOpacity(0.6),
+              ).copyWith(
+                elevation: MaterialStateProperty.resolveWith<double>(
+                  (Set<MaterialState> states) {
+                    if (states.contains(MaterialState.pressed)) {
+                      return 0;
+                    }
+                    return 4;
+                  },
+                ),
+              ),
+              child: _isLoading
+                  ? const SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: Colors.white,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    )
+                  : const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          'Se connecter',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Icon(Icons.arrow_forward, size: 20),
+                      ],
+                    ),
+            ),
+          ),
+          const SizedBox(height: 32),
+
+          // Footer
+          Center(
+            child: Text(
+              '© 2024 Tawsil POS. Tous droits réservés.',
+              style: TextStyle(
+                fontSize: 12,
+                color: TawsilColors.textHint,
               ),
             ),
           ),

@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../providers/order_provider.dart';
 import '../services/database_service.dart';
 import '../services/sync_service.dart';
+import '../services/api_service.dart';
 import '../models/menu_item.dart';
 import '../models/order_item_addition.dart';
 import '../config/app_theme.dart';
@@ -22,9 +23,14 @@ class OrderScreen extends StatefulWidget {
 class _OrderScreenState extends State<OrderScreen> {
   final DatabaseService _db = DatabaseService();
   List<MenuItem> _menuItems = [];
+  List<MenuItem> _filteredMenuItems = [];
   bool _isLoading = true;
   String? _errorMessage;
   StreamSubscription<SyncStatus>? _syncSub;
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  String? _selectedCategoryId;
+  Map<String, String> _categoryNames = {}; // Map categoryId -> nom
 
   @override
   void initState() {
@@ -33,25 +39,141 @@ class _OrderScreenState extends State<OrderScreen> {
     final syncService = context.read<SyncService>();
     _syncSub = syncService.statusStream.listen((status) async {
       if (status.success && !status.isSyncing) {
+        // Always reload categories when sync completes
+        await _loadCategories();
         final items = await _db.getMenuItems();
         if (!mounted) return;
         setState(() {
           _menuItems = items;
+          _filteredMenuItems = items;
           _isLoading = false;
           _errorMessage = items.isEmpty
-              ? 'Aucun article trouv?. V?rifiez votre connexion API.'
+              ? 'Aucun article trouvé. Vérifiez votre connexion API.'
               : null;
         });
+        _filterMenuItems();
       }
     });
 
     _syncAndLoadMenuItems();
   }
 
+  String _getCategoryDisplayName(String categoryId) {
+    // Try to get a readable name from the ID (last part of UUID)
+    if (categoryId.length > 8) {
+      return 'Catégorie ${categoryId.substring(0, 8)}...';
+    }
+    return 'Catégorie';
+  }
+
+  Future<void> _fetchCategoryNameAsync(String categoryId) async {
+    try {
+      final name = await _db.getCategoryName(categoryId);
+      if (name != null && mounted) {
+        setState(() {
+          _categoryNames[categoryId] = name;
+        });
+      }
+    } catch (e) {
+      print('⚠️ Failed to fetch category name for $categoryId: $e');
+    }
+  }
+
+  Future<void> _loadCategories() async {
+    try {
+      // 1. Try to load from database first
+      final categories = await _db.getFoodCategories();
+      final categoryMap = <String, String>{};
+      
+      if (categories.isNotEmpty) {
+        for (var cat in categories) {
+          final id = cat['id'] as String?;
+          final nom = cat['nom'] as String?;
+          if (id != null && nom != null) {
+            categoryMap[id] = nom;
+          }
+        }
+      }
+      
+      // 2. If no categories in DB, try to fetch from API
+      if (categoryMap.isEmpty) {
+        try {
+          final apiService = ApiService();
+          final apiCategories = await apiService.fetchFoodCategories();
+          for (var cat in apiCategories) {
+            categoryMap[cat.id] = cat.nom;
+            // Also save to database for next time
+            await _db.insertFoodCategory({
+              'id': cat.id,
+              'restaurant_id': cat.restaurantId,
+              'nom': cat.nom,
+              'description': cat.description,
+              'icone_url': cat.iconeUrl,
+              'ordre_affichage': cat.ordreAffichage,
+              'created_at': cat.createdAt.toIso8601String(),
+              'updated_at': cat.updatedAt.toIso8601String(),
+            });
+          }
+          print('✅ Fetched ${apiCategories.length} categories from API');
+        } catch (e) {
+          print('⚠️ Failed to fetch categories from API: $e');
+        }
+      }
+      
+      // 3. Check if we have categories for all menu items
+      final menuItems = await _db.getMenuItems();
+      final menuCategoryIds = menuItems.map((item) => item.categoryId).toSet();
+      final missingCategoryIds = menuCategoryIds.where((id) => !categoryMap.containsKey(id)).toList();
+      
+      // Try to fetch missing category names individually
+      if (missingCategoryIds.isNotEmpty) {
+        for (var catId in missingCategoryIds) {
+          try {
+            final name = await _db.getCategoryName(catId);
+            if (name != null) {
+              categoryMap[catId] = name;
+            }
+          } catch (e) {
+            print('⚠️ Could not get name for category $catId: $e');
+          }
+        }
+      }
+      
+      // 3. Update state
+      if (mounted) {
+        setState(() {
+          _categoryNames = categoryMap;
+        });
+      }
+      
+      print('✅ Loaded ${categoryMap.length} categories');
+    } catch (e) {
+      print('⚠️ Failed to load categories: $e');
+    }
+  }
+
   @override
   void dispose() {
     _syncSub?.cancel();
+    _searchController.dispose();
     super.dispose();
+  }
+
+  void _filterMenuItems() {
+    setState(() {
+      _filteredMenuItems = _menuItems.where((item) {
+        // Filter by search query
+        final matchesSearch = _searchQuery.isEmpty ||
+            item.nom.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+            (item.description?.toLowerCase().contains(_searchQuery.toLowerCase()) ?? false);
+        
+        // Filter by category
+        final matchesCategory = _selectedCategoryId == null || item.categoryId == _selectedCategoryId;
+        
+        // Only show available items
+        return item.isAvailable && matchesSearch && matchesCategory;
+      }).toList();
+    });
   }
 
   Future<void> _syncAndLoadMenuItems() async {
@@ -60,14 +182,17 @@ class _OrderScreenState extends State<OrderScreen> {
       _errorMessage = null;
     });
 
-    // 1) Charger imm?diatement le cache local pour afficher les items sans action manuelle
+      // 1) Charger immédiatement le cache local pour afficher les items sans action manuelle
     try {
+      await _loadCategories();
       final cached = await _db.getMenuItems();
       if (mounted && cached.isNotEmpty) {
         setState(() {
           _menuItems = cached;
+          _filteredMenuItems = cached;
           _isLoading = false;
         });
+        _filterMenuItems();
       }
     } catch (_) {
       // ignore cache read errors, we will try after sync
@@ -80,13 +205,16 @@ class _OrderScreenState extends State<OrderScreen> {
       
       final items = await _db.getMenuItems();
       if (!mounted) return;
+      await _loadCategories();
       setState(() {
         _menuItems = items;
+        _filteredMenuItems = items;
         _isLoading = false;
         if (items.isEmpty) {
-          _errorMessage = 'Aucun article trouv?. V?rifiez votre connexion API.';
+          _errorMessage = 'Aucun article trouvé. Vérifiez votre connexion API.';
         }
       });
+      _filterMenuItems();
     } catch (e) {
       if (!mounted) return;
       setState(() {
@@ -202,6 +330,8 @@ class _OrderScreenState extends State<OrderScreen> {
       body: Column(
         children: [
           const _SyncStatusBanner(),
+          // Search and Filter Bar
+          if (!_isLoading && _menuItems.isNotEmpty) _buildSearchAndFilterBar(),
           Expanded(
             child: Row(
               children: [
@@ -224,6 +354,157 @@ class _OrderScreenState extends State<OrderScreen> {
                   ),
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchAndFilterBar() {
+    final categoryIds = _menuItems.map((item) => item.categoryId).toSet().toList();
+    
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: TawsilSpacing.md,
+        vertical: TawsilSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          // Search Field
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: TawsilColors.background,
+                borderRadius: BorderRadius.circular(TawsilBorderRadius.md),
+              ),
+              child: TextField(
+                controller: _searchController,
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value;
+                  });
+                  _filterMenuItems();
+                },
+                decoration: InputDecoration(
+                  hintText: 'Rechercher un article...',
+                  prefixIcon: Icon(Icons.search, color: TawsilColors.textSecondary),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: Icon(Icons.clear, color: TawsilColors.textSecondary),
+                          onPressed: () {
+                            _searchController.clear();
+                            setState(() {
+                              _searchQuery = '';
+                            });
+                            _filterMenuItems();
+                          },
+                        )
+                      : null,
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: TawsilSpacing.md,
+                    vertical: TawsilSpacing.sm,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: TawsilSpacing.md),
+          // Category Filter
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: TawsilSpacing.sm),
+            decoration: BoxDecoration(
+              color: _selectedCategoryId == null
+                  ? TawsilColors.primary
+                  : TawsilColors.background,
+              borderRadius: BorderRadius.circular(TawsilBorderRadius.md),
+              border: Border.all(
+                color: _selectedCategoryId == null
+                    ? TawsilColors.primary
+                    : TawsilColors.border,
+              ),
+            ),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: _selectedCategoryId,
+                hint: Text(
+                  'Toutes catégories',
+                  style: TextStyle(
+                    color: _selectedCategoryId == null
+                        ? Colors.white
+                        : TawsilColors.textPrimary,
+                  ),
+                ),
+                icon: Icon(
+                  Icons.filter_list,
+                  color: _selectedCategoryId == null
+                      ? Colors.white
+                      : TawsilColors.textSecondary,
+                ),
+                items: [
+                  DropdownMenuItem<String>(
+                    value: null,
+                    child: Text(
+                      'Toutes catégories',
+                      style: TextStyle(color: TawsilColors.textPrimary),
+                    ),
+                  ),
+                  ...categoryIds.map((catId) {
+                    final categoryName = _categoryNames[catId];
+                    // If name not found, show a short version of the ID or fetch it
+                    final displayName = categoryName ?? _getCategoryDisplayName(catId);
+                    
+                    // If name is missing, try to fetch it asynchronously
+                    if (categoryName == null) {
+                      _fetchCategoryNameAsync(catId);
+                    }
+                    
+                    return DropdownMenuItem<String>(
+                      value: catId,
+                      child: Text(
+                        displayName,
+                        style: TextStyle(color: TawsilColors.textPrimary),
+                      ),
+                    );
+                  }),
+                ],
+                onChanged: (value) {
+                  setState(() {
+                    _selectedCategoryId = value;
+                  });
+                  _filterMenuItems();
+                },
+              ),
+            ),
+          ),
+          // Results count
+          const SizedBox(width: TawsilSpacing.sm),
+          Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: TawsilSpacing.md,
+              vertical: TawsilSpacing.sm,
+            ),
+            decoration: BoxDecoration(
+              color: TawsilColors.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(TawsilBorderRadius.md),
+            ),
+            child: Text(
+              '${_filteredMenuItems.length} article${_filteredMenuItems.length > 1 ? 's' : ''}',
+              style: TawsilTextStyles.bodySmall.copyWith(
+                color: TawsilColors.primary,
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
         ],
@@ -314,6 +595,33 @@ class _OrderScreenState extends State<OrderScreen> {
       );
     }
 
+    if (_filteredMenuItems.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.search_off_rounded,
+              size: 64,
+              color: TawsilColors.textSecondary.withOpacity(0.5),
+            ),
+            const SizedBox(height: TawsilSpacing.md),
+            Text(
+              'Aucun article trouvé',
+              style: TawsilTextStyles.headingMedium.copyWith(
+                color: TawsilColors.textSecondary,
+              ),
+            ),
+            const SizedBox(height: TawsilSpacing.xs),
+            Text(
+              'Essayez de modifier votre recherche',
+              style: TawsilTextStyles.bodySmall,
+            ),
+          ],
+        ),
+      );
+    }
+
     return GridView.builder(
       padding: const EdgeInsets.all(TawsilSpacing.md),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -322,9 +630,9 @@ class _OrderScreenState extends State<OrderScreen> {
         crossAxisSpacing: TawsilSpacing.md,
         childAspectRatio: 0.62,
       ),
-      itemCount: _menuItems.length,
+      itemCount: _filteredMenuItems.length,
       itemBuilder: (context, index) {
-        final item = _menuItems[index];
+        final item = _filteredMenuItems[index];
         return _MenuItemCard(menuItem: item);
       },
     );
