@@ -175,7 +175,7 @@ class ReceiptScreen extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                '${item.quantite}×',
+                'x${item.quantite}',
                 style: TawsilTextStyles.bodyMedium.copyWith(
                   fontWeight: FontWeight.w600,
                   color: TawsilColors.primary,
@@ -200,11 +200,28 @@ class ReceiptScreen extends StatelessWidget {
                     item.instructionsSpeciales.isNotEmpty) ...[
                   const SizedBox(height: 4),
                   Text(
-                    '📝 ${item.instructionsSpeciales}',
+                    'Note: ${item.instructionsSpeciales}',
                     style: TawsilTextStyles.bodySmall.copyWith(
                       fontStyle: FontStyle.italic,
                       color: TawsilColors.textSecondary,
                     ),
+                  ),
+                ],
+                if (item.additions.isNotEmpty) ...[
+                  const SizedBox(height: 4),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    children: item.additions.map<Widget>((add) {
+                      return Chip(
+                        label: Text(
+                          '${add.nom} x${add.quantity} (+${add.total.toStringAsFixed(0)} DA)',
+                          style: TawsilTextStyles.bodySmall,
+                        ),
+                        backgroundColor: TawsilColors.background,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      );
+                    }).toList(),
                   ),
                 ],
                 const SizedBox(height: 4),

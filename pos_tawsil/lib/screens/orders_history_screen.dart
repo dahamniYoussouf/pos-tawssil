@@ -2,8 +2,9 @@
 import 'package:flutter/material.dart';
 import '../config/app_theme.dart';
 import '../services/database_service.dart';
+import '../services/api_service.dart';
 import '../models/order.dart';
-import 'receipt_screen.dart'; // ✅ Import du ReceiptScreen
+import 'receipt_screen.dart'; // ?. Import du ReceiptScreen
 
 class OrdersHistoryScreen extends StatefulWidget {
   const OrdersHistoryScreen({Key? key}) : super(key: key);
@@ -14,6 +15,7 @@ class OrdersHistoryScreen extends StatefulWidget {
 
 class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
   final DatabaseService _db = DatabaseService();
+  final ApiService _api = ApiService();
   List<Order> _orders = [];
   bool _isLoading = true;
   String? _errorMessage;
@@ -32,9 +34,13 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
     });
 
     try {
-      final orders = await _db.getAllOrders();
+      // Prendre l'historique depuis le backend (restaurant du caissier)
+      final remoteOrders = await _api.fetchOrdersHistory();
+      final orders = remoteOrders.isNotEmpty
+          ? remoteOrders
+          : await _db.getAllOrders(); // fallback offline
       
-      // Filtrer selon la période sélectionnée
+      // Filtrer selon la p?riode s?lectionn?e
       List<Order> filteredOrders = orders;
       final now = DateTime.now();
       
@@ -57,7 +63,7 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
         }).toList();
       }
 
-      // Trier par date (plus récent en premier)
+      // Trier par date (plus r?cent en premier)
       filteredOrders.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
       setState(() {
@@ -71,6 +77,7 @@ class _OrdersHistoryScreenState extends State<OrdersHistoryScreen> {
       });
     }
   }
+
 
   void _changeFilter(String filter) {
     setState(() {

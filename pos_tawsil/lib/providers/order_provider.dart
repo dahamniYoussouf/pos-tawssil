@@ -1,17 +1,19 @@
 // lib/providers/order_provider.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/order.dart';
 import '../models/order_item.dart';
 import '../models/menu_item.dart';
+import '../models/order_item_addition.dart';
 import '../services/database_service.dart';
 import '../services/sync_service.dart';
 import '../services/print_service.dart';
 
 class OrderProvider with ChangeNotifier {
   final DatabaseService _db = DatabaseService();
-  final SyncService _sync = SyncService();
+  final SyncService _sync;
   final PrintService _printer = PrintService();
 
   Order? _currentOrder;
@@ -34,6 +36,8 @@ class OrderProvider with ChangeNotifier {
     print('📊 itemCount: $count');
     return count;
   }
+
+  OrderProvider({required SyncService syncService}) : _sync = syncService;
 
   // ========== INITIALIZATION ==========
   
@@ -91,7 +95,7 @@ class OrderProvider with ChangeNotifier {
 
   // ========== ORDER MANAGEMENT ==========
   
-  void addItem(MenuItem menuItem, {int quantity = 1, String? specialInstructions}) async {
+  void addItem(MenuItem menuItem, {int quantity = 1, String? specialInstructions, List<OrderItemAddition> additions = const []}) async {
     print('🔵 addItem called: ${menuItem.nom}');
     
     // ✅ Si pas de commande en cours, en créer une automatiquement
@@ -103,10 +107,18 @@ class OrderProvider with ChangeNotifier {
     final uuid = Uuid();
     final now = DateTime.now();
 
-    // Check if item already exists
-    final existingIndex = _currentOrder!.items.indexWhere(
-      (item) => item.menuItemId == menuItem.id &&
-                item.instructionsSpeciales == specialInstructions,
+    // Check if item already exists with the same additions and instructions
+    final additionKey = additions.map((a) => '${a.additionId}:${a.quantity}').toList()..sort();
+    final existingIndex = _currentOrder!.items.indexWhere((item) {
+      final itemKey = item.additions.map((a) => '${a.additionId}:${a.quantity}').toList()..sort();
+      return item.menuItemId == menuItem.id &&
+          item.instructionsSpeciales == specialInstructions &&
+          listEquals(itemKey, additionKey);
+    });
+
+    final additionsPerUnit = additions.fold<double>(
+      0,
+      (double sum, OrderItemAddition add) => sum + (add.prix * add.quantity),
     );
 
     if (existingIndex != -1) {
@@ -115,7 +127,9 @@ class OrderProvider with ChangeNotifier {
       final existing = _currentOrder!.items[existingIndex];
       _currentOrder!.items[existingIndex] = existing.copyWith(
         quantite: existing.quantite + quantity,
-        prixTotal: (existing.quantite + quantity) * existing.prixUnitaire,
+        prixTotal: ((existing.quantite + quantity) * existing.prixUnitaire) +
+            additionsPerUnit * (existing.quantite + quantity),
+        additionsTotal: additionsPerUnit * (existing.quantite + quantity),
         updatedAt: now,
       );
     } else {
@@ -128,7 +142,9 @@ class OrderProvider with ChangeNotifier {
         menuItemName: menuItem.nom,
         quantite: quantity,
         prixUnitaire: menuItem.prix,
-        prixTotal: menuItem.prix * quantity,
+        prixTotal: (menuItem.prix * quantity) + (additionsPerUnit * quantity),
+        additionsTotal: additionsPerUnit * quantity,
+        additions: additions,
         instructionsSpeciales: specialInstructions,
         createdAt: now,
         updatedAt: now,
@@ -165,9 +181,14 @@ class OrderProvider with ChangeNotifier {
     final index = _currentOrder!.items.indexWhere((item) => item.id == itemId);
     if (index != -1) {
       final item = _currentOrder!.items[index];
+      final additionsPerUnit = item.additions.fold<double>(
+        0,
+        (double sum, OrderItemAddition add) => sum + (add.prix * add.quantity),
+      );
       _currentOrder!.items[index] = item.copyWith(
         quantite: newQuantity,
-        prixTotal: item.prixUnitaire * newQuantity,
+        prixTotal: (item.prixUnitaire * newQuantity) + (additionsPerUnit * newQuantity),
+        additionsTotal: additionsPerUnit * newQuantity,
         updatedAt: DateTime.now(),
       );
       
@@ -182,10 +203,14 @@ class OrderProvider with ChangeNotifier {
     
     double subtotal = 0;
     for (var item in _currentOrder!.items) {
-      subtotal += item.prixTotal;
+      final additionsSum = item.additions.fold<double>(
+        0,
+        (double sum, OrderItemAddition add) => sum + add.total,
+      );
+      subtotal += (item.prixUnitaire * item.quantite) + additionsSum;
     }
 
-    print('🧮 Recalculating total: $subtotal DA');
+    print('Recalculating total: $subtotal DA');
 
     _currentOrder = _currentOrder!.copyWith(
       subtotal: subtotal,

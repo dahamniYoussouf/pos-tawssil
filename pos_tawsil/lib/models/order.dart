@@ -58,8 +58,8 @@ class Order {
       cashierId: orderMap['cashier_id'],
       restaurantId: orderMap['restaurant_id'],
       orderType: orderMap['order_type'],
-      subtotal: (orderMap['subtotal'] as num).toDouble(),
-      totalAmount: (orderMap['total_amount'] as num).toDouble(),
+      subtotal: _toDouble(orderMap['subtotal']),
+      totalAmount: _toDouble(orderMap['total_amount']),
       paymentMethod: orderMap['payment_method'],
       status: orderMap['status'],
       items: itemMaps.map((m) => OrderItem.fromMap(m)).toList(),
@@ -70,17 +70,30 @@ class Order {
   }
 
   Map<String, dynamic> toJson() {
-  return {
-    'restaurant_id': restaurantId,
-    'order_type': 'pickup',
-    'payment_method': paymentMethod,
-    'items': items.map((item) => {
-      'menu_item_id': item.menuItemId,
-      'quantity': item.quantite,
-      'special_instructions': item.instructionsSpeciales,
-    }).toList(),
-  };
-}
+    return {
+      'restaurant_id': restaurantId,
+      'order_type': 'pickup',
+      'payment_method': paymentMethod,
+      'items': items.map((item) {
+        final data = <String, dynamic>{
+          'menu_item_id': item.menuItemId,
+          'menu_item_name': item.menuItemName,
+          'unit_price': item.prixUnitaire,
+          'quantity': item.quantite,
+          'additions': item.additions
+              .map((a) => {
+                    'addition_id': a.additionId,
+                    'quantity': a.quantity,
+                  })
+              .toList(),
+        };
+        if (item.instructionsSpeciales != null && item.instructionsSpeciales!.isNotEmpty) {
+          data['special_instructions'] = item.instructionsSpeciales;
+        }
+        return data;
+      }).toList(),
+    };
+  }
 
   Order copyWith({
     String? id,
@@ -115,23 +128,32 @@ class Order {
   }
 
   factory Order.fromJson(Map<String, dynamic> json) {
-  return Order(
-    id: json['id'],
-    orderNumber: json['order_number'] ?? '',
-    cashierId: json['cashier_id'] ?? '',
-    restaurantId: json['restaurant_id'],
-    orderType: json['order_type'] ?? 'pickup',
-    subtotal: (json['subtotal'] as num).toDouble(),
-    totalAmount: (json['total_amount'] as num).toDouble(),
-    paymentMethod: json['payment_method'],
-    status: json['status'] ?? 'pending',
-    items: (json['items'] as List<dynamic>)
-        .map((item) => OrderItem.fromJson(item))
-        .toList(),
-    createdAt: DateTime.parse(json['created_at']),
-    updatedAt: DateTime.parse(json['updated_at']),
-    synced: true,
-  );
-}
+    return Order(
+      id: json['id'],
+      orderNumber: json['order_number'] ?? '',
+      cashierId: json['cashier_id'] ?? '',
+      restaurantId: json['restaurant_id'],
+      orderType: json['order_type'] ?? 'pickup',
+      subtotal: _toDouble(json['subtotal']),
+      totalAmount: _toDouble(json['total_amount']),
+      paymentMethod: json['payment_method'],
+      status: json['status'] ?? 'pending',
+      items: (json['items'] as List<dynamic>? ?? [])
+          .map((item) => OrderItem.fromJson(item))
+          .toList(),
+      createdAt: DateTime.parse(json['created_at']),
+      updatedAt: DateTime.parse(json['updated_at']),
+      synced: true,
+    );
+  }
+
+  static double _toDouble(dynamic value) {
+    if (value == null) return 0;
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      return double.tryParse(value) ?? 0;
+    }
+    return 0;
+  }
 
 }

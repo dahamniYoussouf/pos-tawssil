@@ -70,6 +70,14 @@ class PrintService {
           styles: PosStyles(fontType: PosFontType.fontB),
         );
       }
+      if (item.additions.isNotEmpty) {
+        for (final add in item.additions) {
+          printer.text(
+            '  + ${add.nom} x${add.quantity} (${add.total.toStringAsFixed(0)} DA)',
+            styles: PosStyles(fontType: PosFontType.fontB),
+          );
+        }
+      }
     }
 
     printer.hr();

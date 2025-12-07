@@ -2,6 +2,7 @@ import 'package:sqflite/sqflite.dart';
 import '../config/database_config.dart';
 import '../models/menu_item.dart';
 import '../models/order.dart';
+import '../models/addition.dart';
 import 'dart:convert';
 
 
@@ -11,7 +12,10 @@ class DatabaseService {
   Future<List<MenuItem>> getMenuItems() async {
     final db = await DatabaseConfig.database;
     final List<Map<String, dynamic>> maps = await db.query('menu_items');
-    return maps.map((map) => MenuItem.fromMap(map)).toList();
+    return Future.wait(maps.map((map) async {
+      final additions = await _getAdditionsForMenuItem(map['id']);
+      return MenuItem.fromMap(map).copyWith(additions: additions);
+    }));
   }
 
   Future<List<MenuItem>> getMenuItemsByCategory(String categoryId) async {
@@ -21,7 +25,10 @@ class DatabaseService {
       where: 'category_id = ?',
       whereArgs: [categoryId],
     );
-    return maps.map((map) => MenuItem.fromMap(map)).toList();
+    return Future.wait(maps.map((map) async {
+      final additions = await _getAdditionsForMenuItem(map['id']);
+      return MenuItem.fromMap(map).copyWith(additions: additions);
+    }));
   }
 
   Future<void> insertMenuItem(MenuItem item) async {
@@ -31,6 +38,23 @@ class DatabaseService {
       item.toMap(),
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
+
+    // Store additions
+    await db.delete(
+      'additions',
+      where: 'menu_item_id = ?',
+      whereArgs: [item.id],
+    );
+
+    for (final addition in item.additions) {
+      final additionMap = addition.toMap();
+      additionMap['menu_item_id'] = item.id; // ensure linkage even if API omits it
+      await db.insert(
+        'additions',
+        additionMap,
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
   }
 
   Future<void> updateMenuItem(MenuItem item) async {
@@ -41,15 +65,45 @@ class DatabaseService {
       where: 'id = ?',
       whereArgs: [item.id],
     );
+
+    await db.delete(
+      'additions',
+      where: 'menu_item_id = ?',
+      whereArgs: [item.id],
+    );
+    for (final addition in item.additions) {
+      final additionMap = addition.toMap();
+      additionMap['menu_item_id'] = item.id; // ensure linkage even if missing in payload
+      await db.insert(
+        'additions',
+        additionMap,
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+    }
   }
 
   Future<void> deleteMenuItem(String id) async {
     final db = await DatabaseConfig.database;
     await db.delete(
+      'additions',
+      where: 'menu_item_id = ?',
+      whereArgs: [id],
+    );
+    await db.delete(
       'menu_items',
       where: 'id = ?',
       whereArgs: [id],
     );
+  }
+
+  Future<List<Addition>> _getAdditionsForMenuItem(String menuItemId) async {
+    final db = await DatabaseConfig.database;
+    final rows = await db.query(
+      'additions',
+      where: 'menu_item_id = ?',
+      whereArgs: [menuItemId],
+    );
+    return rows.map((r) => Addition.fromMap(r)).toList();
   }
 
   // ========== ORDERS ==========
@@ -66,11 +120,13 @@ class DatabaseService {
       
       // Insert order items
       for (var item in order.items) {
-        await txn.insert(
-          'order_items',
-          item.toMap(),
-          conflictAlgorithm: ConflictAlgorithm.replace,
-        );
+      await txn.insert(
+        'order_items',
+        item.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+
+        // Store additions JSON for readability (already inside toMap)
       }
     });
   }

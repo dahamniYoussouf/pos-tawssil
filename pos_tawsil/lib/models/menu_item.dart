@@ -1,3 +1,5 @@
+import 'addition.dart';
+
 class MenuItem {
   final String id;
   final String categoryId;
@@ -10,6 +12,7 @@ class MenuItem {
   final DateTime createdAt;
   final DateTime updatedAt;
   final bool synced;
+  final List<Addition> additions;
 
   MenuItem({
     required this.id,
@@ -23,6 +26,7 @@ class MenuItem {
     required this.createdAt,
     required this.updatedAt,
     this.synced = false,
+    this.additions = const [],
   });
 
   Map<String, dynamic> toMap() {
@@ -54,6 +58,7 @@ class MenuItem {
       createdAt: DateTime.parse(map['created_at']),
       updatedAt: DateTime.parse(map['updated_at']),
       synced: map['synced'] == 1,
+      additions: const [],
     );
   }
 
@@ -70,6 +75,10 @@ class MenuItem {
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
       synced: true,
+      additions: (json['additions'] as List<dynamic>?)
+              ?.map((a) => Addition.fromJson(a))
+              .toList() ??
+          const [],
     );
   }
 
@@ -85,6 +94,7 @@ class MenuItem {
     DateTime? createdAt,
     DateTime? updatedAt,
     bool? synced,
+    List<Addition>? additions,
   }) {
     return MenuItem(
       id: id ?? this.id,
@@ -98,6 +108,7 @@ class MenuItem {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       synced: synced ?? this.synced,
+      additions: additions ?? this.additions,
     );
   }
 

@@ -11,15 +11,25 @@ class SyncService {
   final ApiService _api = ApiService();
   
   bool _isSyncing = false;
+  bool _isOnline = false;
+  bool _pendingSync = false;
   StreamController<SyncStatus> _statusController = StreamController.broadcast();
   
   Stream<SyncStatus> get statusStream => _statusController.stream;
+  bool get isOnline => _isOnline;
 
   SyncService() {
     // Listen to connectivity changes
     Connectivity().onConnectivityChanged.listen((result) {
-      if (result != ConnectivityResult.none) {
+      _isOnline = result != ConnectivityResult.none;
+      if (_isOnline) {
         syncAll();
+      } else {
+        _updateStatus(SyncStatus(
+          isSyncing: false,
+          message: 'Hors ligne - les actions seront synchronisAes plus tard',
+          success: false,
+        ));
       }
     });
   }
@@ -28,6 +38,15 @@ class SyncService {
   
   Future<void> syncMenuFromApi() async {
     if (_isSyncing) return;
+    if (!_isOnline) {
+      _pendingSync = true;
+      _updateStatus(SyncStatus(
+        isSyncing: false,
+        message: 'Hors ligne - synchronisation menu en attente',
+        success: false,
+      ));
+      return;
+    }
     
     try {
       _isSyncing = true;
@@ -63,6 +82,15 @@ class SyncService {
   
   Future<void> syncOrdersToApi() async {
     if (_isSyncing) return;
+    if (!_isOnline) {
+      _pendingSync = true;
+      _updateStatus(SyncStatus(
+        isSyncing: false,
+        message: 'Hors ligne - synchronisation des commandes en attente',
+        success: false,
+      ));
+      return;
+    }
     
     try {
       _isSyncing = true;
@@ -114,6 +142,7 @@ class SyncService {
   Future<void> syncAll() async {
     final connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.none) {
+      _isOnline = false;
       _updateStatus(SyncStatus(
         isSyncing: false,
         message: 'Pas de connexion Internet',
@@ -121,6 +150,8 @@ class SyncService {
       ));
       return;
     }
+    _isOnline = true;
+    _pendingSync = false;
 
     await syncMenuFromApi();
     await syncOrdersToApi();
@@ -130,6 +161,15 @@ class SyncService {
   
   Future<void> processSyncQueue() async {
     if (_isSyncing) return;
+    if (!_isOnline) {
+      _pendingSync = true;
+      _updateStatus(SyncStatus(
+        isSyncing: false,
+        message: 'Hors ligne - file de synchronisation en attente',
+        success: false,
+      ));
+      return;
+    }
     
     try {
       final queue = await _db.getSyncQueue();
@@ -154,6 +194,16 @@ class SyncService {
     if (!_statusController.isClosed) {
       _statusController.add(status);
     }
+  }
+
+  SyncStatus currentStatus() {
+    return SyncStatus(
+      isSyncing: _isSyncing,
+      message: _pendingSync && !_isOnline
+          ? 'Hors ligne - synchronisation en attente'
+          : (_isOnline ? 'ConnectA' : 'Hors ligne'),
+      success: _isOnline && !_pendingSync,
+    );
   }
 
   void dispose() {

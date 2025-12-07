@@ -38,13 +38,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        // ✅ OrderProvider avec ChangeNotifierProvider
-        ChangeNotifierProvider(
-          create: (_) => OrderProvider(),
-        ),
-        // ✅ SyncService avec Provider simple (pas de ChangeNotifier)
+        // ✅ SyncService shared instance
         Provider(
           create: (_) => SyncService(),
+        ),
+        // ✅ OrderProvider relies on SyncService
+        ChangeNotifierProvider(
+          create: (context) => OrderProvider(
+            syncService: context.read<SyncService>(),
+          ),
         ),
       ],
       child: MaterialApp(

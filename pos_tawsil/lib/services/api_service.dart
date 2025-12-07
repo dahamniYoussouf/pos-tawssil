@@ -3,6 +3,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_config.dart';
 import '../models/menu_item.dart';
 import '../models/order.dart';
+import '../models/order_item.dart';
+import '../models/order_item_addition.dart';
 
 class ApiService {
   late Dio _dio;
@@ -254,16 +256,10 @@ class ApiService {
       print('📤 Creating order as cashier...');
       
       final orderData = {
+        ...order.toJson(),
         'restaurant_id': restaurantId,
         'cashier_id': cashierId, 
         'created_by_cashier_id': cashierId, 
-        'order_type': 'pickup',
-        'payment_method': order.paymentMethod,
-        'items': order.items.map((item) => {
-          'menu_item_id': item.menuItemId,
-          'quantity': item.quantite,
-          'special_instructions': item.instructionsSpeciales ?? "",
-        }).toList(),
       };
       
       print('📤 Order data: $orderData');
@@ -310,6 +306,40 @@ class ApiService {
       throw Exception('Erreur: ${e.response?.data?['message'] ?? e.message}');
     } catch (e) {
       print('❌ Unexpected error: $e');
+      rethrow;
+    }
+  }
+
+  // Fetch orders history for the cashier (backend-derived)
+  Future<List<Order>> fetchOrdersHistory() async {
+    try {
+      final restaurantId = await getRestaurantId();
+      if (restaurantId == null) {
+        throw Exception('Restaurant ID not found. Please login again.');
+      }
+
+      print('📥 Fetching orders history for restaurant: $restaurantId');
+      final response = await _dio.get('/order/cashier/history');
+
+      if (response.data == null) {
+        throw Exception('No response data');
+      }
+
+      final dataList = response.data['data'] as List<dynamic>?;
+      if (dataList == null) {
+        throw Exception('No orders data in response');
+      }
+
+      print('✅ History fetched: ${dataList.length} orders');
+      return dataList.map((json) => Order.fromJson(json)).toList();
+    } on DioException catch (e) {
+      print('❌ Orders history fetch error: ${e.response?.statusCode} - ${e.response?.data ?? e.message}');
+      if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
+        throw Exception('Non autorisé. Veuillez vous reconnecter.');
+      }
+      throw Exception('Erreur: ${e.response?.data?['message'] ?? e.message}');
+    } catch (e) {
+      print('❌ Unexpected error fetching orders history: $e');
       rethrow;
     }
   }

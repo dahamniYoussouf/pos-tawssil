@@ -23,6 +23,9 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    // Prefill with a cashier test account from the seed data
+    _emailController.text = 'cashier1@example.com';
+    _passwordController.text = 'password123';
     _checkExistingSession();
   }
 
@@ -152,7 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         children: [
                           // Logo
                           Image.network(
-                            'https://i.imgur.com/9KX5ZqH.png',
+                            'assets/images/logo_green.webp',
                             height: 60,
                             fit: BoxFit.contain,
                             alignment: Alignment.centerLeft,

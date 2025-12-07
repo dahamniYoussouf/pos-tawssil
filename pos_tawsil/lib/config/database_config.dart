@@ -4,7 +4,7 @@ import 'package:path/path.dart';
 class DatabaseConfig {
   static Database? _database;
   static const String dbName = 'pos_tawsil.db';
-  static const int dbVersion = 1;
+  static const int dbVersion = 2;
 
   static Future<Database> get database async {
     if (_database != null) return _database!;
@@ -20,7 +20,30 @@ class DatabaseConfig {
       path,
       version: dbVersion,
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
+  }
+
+  static Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('''
+        CREATE TABLE additions (
+          id TEXT PRIMARY KEY,
+          menu_item_id TEXT NOT NULL,
+          nom TEXT NOT NULL,
+          description TEXT,
+          prix REAL NOT NULL,
+          is_available INTEGER DEFAULT 1,
+          created_at TEXT,
+          updated_at TEXT,
+          synced INTEGER DEFAULT 0,
+          FOREIGN KEY (menu_item_id) REFERENCES menu_items (id)
+        )
+      ''');
+
+      await db.execute('ALTER TABLE order_items ADD COLUMN additions_total REAL DEFAULT 0');
+      await db.execute('ALTER TABLE order_items ADD COLUMN additions_json TEXT');
+    }
   }
 
   static Future<void> _onCreate(Database db, int version) async {
@@ -69,6 +92,22 @@ class DatabaseConfig {
       )
     ''');
 
+    // Additions
+    await db.execute('''
+      CREATE TABLE additions (
+        id TEXT PRIMARY KEY,
+        menu_item_id TEXT NOT NULL,
+        nom TEXT NOT NULL,
+        description TEXT,
+        prix REAL NOT NULL,
+        is_available INTEGER DEFAULT 1,
+        created_at TEXT,
+        updated_at TEXT,
+        synced INTEGER DEFAULT 0,
+        FOREIGN KEY (menu_item_id) REFERENCES menu_items (id)
+      )
+    ''');
+
     // Orders
     await db.execute('''
       CREATE TABLE orders (
@@ -98,6 +137,8 @@ class DatabaseConfig {
         quantite INTEGER NOT NULL,
         prix_unitaire REAL NOT NULL,
         prix_total REAL NOT NULL,
+        additions_total REAL DEFAULT 0,
+        additions_json TEXT,
         instructions_speciales TEXT,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL,
