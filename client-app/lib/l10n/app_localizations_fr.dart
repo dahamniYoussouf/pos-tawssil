@@ -192,10 +192,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Tawsil utilise votre localisation pour trouver des établissements près de chez vous et livrer précisément à votre adresse';
 
   @override
-  String get shareLocationButton => 'Partagez votre localisation';
+  String get shareLocationButton => 'Accès à la localisation';
 
   @override
-  String get addAddressButton => 'Ajoutez une adresse';
+  String get addAddressButton => 'Ajoutez une adresse manuellement';
 
   @override
   String get validateOrder => 'Valider la commande';
@@ -264,6 +264,17 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get weSentCode => 'Nous avons envoyé un code à';
+
+  @override
+  String get codeSentTo => 'Un code de vérification a été envoyé à';
+
+  @override
+  String resendCodeIn(int seconds) {
+    return 'Vous pourrez renvoyer le code dans $seconds secondes';
+  }
+
+  @override
+  String get modifyNumber => 'Modifier le numéro';
 
   @override
   String get codeComplete => 'Veuillez entrer le code complet (6 chiffres).';
@@ -638,4 +649,23 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get failedToLoadMenuItems =>
       'Failed to load menu items. Please try again.';
+
+  @override
+  String get or => 'Ou';
+
+  @override
+  String get apple => 'Apple';
+
+  @override
+  String get google => 'Google';
+
+  @override
+  String get acceptTerms =>
+      'Vous Acceptez Les Conditions D\'utilisation De Tawsil.';
+
+  @override
+  String get termsOfUse => 'Conditions d\'utilisation';
+
+  @override
+  String get privacyPolicy => 'Politique de confidentialité';
 }

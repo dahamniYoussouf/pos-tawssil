@@ -3,9 +3,12 @@ import 'dart:ui';
 class ColorApp {
   const ColorApp._();
 
-  static const Color primary = Color(0xFF006C4A);
+  static const Color primary = Color(0xFF059669);
+  // #059669
   static const Color black = Color(0xFF424242);
   static const Color grey = Color(0xFF757575);
+  static const Color grey2 = Color(0xFFF2F4F7);
+  static const Color greyBorder = Color(0xFFE2E8F0);
   static const Color greyMedium = Color(0xFF9E9E9E);
   static const Color greyLight = Color(0xFFB0B0B0);
   static const Color greyDark = Color(0xFFF4F4F4);

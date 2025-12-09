@@ -55,8 +55,8 @@
   "english": "Anglais",
   "shareLocationTitle": "Partagez votre localisation avec nous",
   "shareLocationDescription": "Tawsil utilise votre localisation pour trouver des établissements près de chez vous et livrer précisément à votre adresse",
-  "shareLocationButton": "Partagez votre localisation",
-  "addAddressButton": "Ajoutez une adresse",
+  "shareLocationButton": "Accès à la localisation",
+  "addAddressButton": "Ajoutez une adresse manuellement",
   "validateOrder": "Valider la commande",
   "pickupPoint": "Point de récupération",
   "restaurant": "Restaurant",
@@ -79,6 +79,9 @@
   "verification": "Vérification",
   "enterVerificationCode": "Entrez le code de vérification",
   "weSentCode": "Nous avons envoyé un code à",
+  "codeSentTo": "Un code de vérification a été envoyé à",
+  "resendCodeIn": "Vous pourrez renvoyer le code dans {seconds} secondes",
+  "modifyNumber": "Modifier le numéro",
   "codeComplete": "Veuillez entrer le code complet (6 chiffres).",
   "verificationErrorMsg": "Erreur lors de la vérification:",
   "devOtp": "OTP de test:",
@@ -232,6 +235,30 @@
   "promoBannerDescription": "après deux commandes, la livraison de votre troisième commande est offerte.",
   "@promoBannerDescription": {
     "description": "Description de la bannière promotionnelle"
+  },
+  "or": "Ou",
+  "@or": {
+    "description": "Texte du séparateur Ou"
+  },
+  "apple": "Apple",
+  "@apple": {
+    "description": "Texte du bouton de connexion Apple"
+  },
+  "google": "Google",
+  "@google": {
+    "description": "Texte du bouton de connexion Google"
+  },
+  "acceptTerms": "Vous Acceptez Les Conditions D'utilisation De Tawsil.",
+  "@acceptTerms": {
+    "description": "Texte d'acceptation des conditions"
+  },
+  "termsOfUse": "Conditions d'utilisation",
+  "@termsOfUse": {
+    "description": "Texte du lien Conditions d'utilisation"
+  },
+  "privacyPolicy": "Politique de confidentialité",
+  "@privacyPolicy": {
+    "description": "Texte du lien Politique de confidentialité"
   }
 }
 

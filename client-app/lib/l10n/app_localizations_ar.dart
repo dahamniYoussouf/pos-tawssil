@@ -187,10 +187,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'توسيل يستخدم موقعك للعثور على المؤسسات القريبة منك وتوصيل الطلبات بدقة إلى عنوانك';
 
   @override
-  String get shareLocationButton => 'شارك موقعك';
+  String get shareLocationButton => 'الوصول إلى الموقع';
 
   @override
-  String get addAddressButton => 'أضف عنوانًا';
+  String get addAddressButton => 'أضف عنوانًا يدويًا';
 
   @override
   String get validateOrder => 'التحقق من الطلب';
@@ -259,6 +259,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get weSentCode => 'أرسلنا رمزًا إلى';
+
+  @override
+  String get codeSentTo => 'تم إرسال رمز التحقق إلى';
+
+  @override
+  String resendCodeIn(int seconds) {
+    return 'يمكنك إعادة إرسال الرمز خلال $seconds ثانية';
+  }
+
+  @override
+  String get modifyNumber => 'تعديل الرقم';
 
   @override
   String get codeComplete => 'يرجى إدخال الرمز الكامل (6 أرقام).';
@@ -617,4 +628,22 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get failedToLoadMenuItems =>
       'Failed to load menu items. Please try again.';
+
+  @override
+  String get or => 'أو';
+
+  @override
+  String get apple => 'أبل';
+
+  @override
+  String get google => 'جوجل';
+
+  @override
+  String get acceptTerms => 'أنت تقبل شروط استخدام توسيل.';
+
+  @override
+  String get termsOfUse => 'شروط الاستخدام';
+
+  @override
+  String get privacyPolicy => 'سياسة الخصوصية';
 }

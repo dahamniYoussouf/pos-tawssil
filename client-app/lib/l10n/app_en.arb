@@ -230,11 +230,11 @@
   "@shareLocationDescription": {
     "description": "Share location screen description"
   },
-  "shareLocationButton": "Share your location",
+  "shareLocationButton": "Access to location",
   "@shareLocationButton": {
     "description": "Share location button text"
   },
-  "addAddressButton": "Add an address",
+  "addAddressButton": "Add an address manually",
   "@addAddressButton": {
     "description": "Add address button text"
   },
@@ -330,6 +330,23 @@
   "weSentCode": "We sent a code to",
   "@weSentCode": {
     "description": "We sent a code message"
+  },
+  "codeSentTo": "A verification code has been sent to",
+  "@codeSentTo": {
+    "description": "A verification code has been sent to message"
+  },
+  "resendCodeIn": "You can resend the code in {seconds} seconds",
+  "@resendCodeIn": {
+    "description": "Resend code countdown message",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "modifyNumber": "Modify the number",
+  "@modifyNumber": {
+    "description": "Modify phone number button text"
   },
   "codeComplete": "Veuillez entrer le code complet (6 chiffres).",
   "@codeComplete": {
@@ -826,6 +843,30 @@
   "failedToLoadMenuItems": "Failed to load menu items. Please try again.",
   "@failedToLoadMenuItems": {
     "description": "Failed to load menu items error message"
+  },
+  "or": "Or",
+  "@or": {
+    "description": "Or separator text"
+  },
+  "apple": "Apple",
+  "@apple": {
+    "description": "Apple login button text"
+  },
+  "google": "Google",
+  "@google": {
+    "description": "Google login button text"
+  },
+  "acceptTerms": "You Accept The Terms of Use Of Tawsil.",
+  "@acceptTerms": {
+    "description": "Terms acceptance text"
+  },
+  "termsOfUse": "Terms of use",
+  "@termsOfUse": {
+    "description": "Terms of use link text"
+  },
+  "privacyPolicy": "Privacy policy",
+  "@privacyPolicy": {
+    "description": "Privacy policy link text"
   }
 }
 

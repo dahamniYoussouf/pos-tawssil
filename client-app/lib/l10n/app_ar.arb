@@ -55,8 +55,8 @@
   "english": "الإنجليزية",
   "shareLocationTitle": "شارك موقعك معنا",
   "shareLocationDescription": "توسيل يستخدم موقعك للعثور على المؤسسات القريبة منك وتوصيل الطلبات بدقة إلى عنوانك",
-  "shareLocationButton": "شارك موقعك",
-  "addAddressButton": "أضف عنوانًا",
+  "shareLocationButton": "الوصول إلى الموقع",
+  "addAddressButton": "أضف عنوانًا يدويًا",
   "validateOrder": "التحقق من الطلب",
   "pickupPoint": "نقطة الاستلام",
   "restaurant": "المطعم",
@@ -79,6 +79,9 @@
   "verification": "التحقق",
   "enterVerificationCode": "أدخل رمز التحقق",
   "weSentCode": "أرسلنا رمزًا إلى",
+  "codeSentTo": "تم إرسال رمز التحقق إلى",
+  "resendCodeIn": "يمكنك إعادة إرسال الرمز خلال {seconds} ثانية",
+  "modifyNumber": "تعديل الرقم",
   "codeComplete": "يرجى إدخال الرمز الكامل (6 أرقام).",
   "verificationErrorMsg": "خطأ أثناء التحقق:",
   "devOtp": "رمز OTP للاختبار:",
@@ -232,6 +235,30 @@
   "promoBannerDescription": "بعد طلبين، توصيل طلبك الثالث مجاني.",
   "@promoBannerDescription": {
     "description": "وصف البانر الترويجي"
+  },
+  "or": "أو",
+  "@or": {
+    "description": "نص فاصل أو"
+  },
+  "apple": "أبل",
+  "@apple": {
+    "description": "نص زر تسجيل الدخول بأبل"
+  },
+  "google": "جوجل",
+  "@google": {
+    "description": "نص زر تسجيل الدخول بجوجل"
+  },
+  "acceptTerms": "أنت تقبل شروط استخدام توسيل.",
+  "@acceptTerms": {
+    "description": "نص قبول الشروط"
+  },
+  "termsOfUse": "شروط الاستخدام",
+  "@termsOfUse": {
+    "description": "نص رابط شروط الاستخدام"
+  },
+  "privacyPolicy": "سياسة الخصوصية",
+  "@privacyPolicy": {
+    "description": "نص رابط سياسة الخصوصية"
   }
 }
 

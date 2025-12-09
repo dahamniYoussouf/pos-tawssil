@@ -433,13 +433,13 @@ abstract class AppLocalizations {
   /// Share location button text
   ///
   /// In en, this message translates to:
-  /// **'Share your location'**
+  /// **'Access to location'**
   String get shareLocationButton;
 
   /// Add address button text
   ///
   /// In en, this message translates to:
-  /// **'Add an address'**
+  /// **'Add an address manually'**
   String get addAddressButton;
 
   /// Validate order page title
@@ -573,6 +573,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We sent a code to'**
   String get weSentCode;
+
+  /// A verification code has been sent to message
+  ///
+  /// In en, this message translates to:
+  /// **'A verification code has been sent to'**
+  String get codeSentTo;
+
+  /// Resend code countdown message
+  ///
+  /// In en, this message translates to:
+  /// **'You can resend the code in {seconds} seconds'**
+  String resendCodeIn(int seconds);
+
+  /// Modify phone number button text
+  ///
+  /// In en, this message translates to:
+  /// **'Modify the number'**
+  String get modifyNumber;
 
   /// Complete code message
   ///
@@ -1227,6 +1245,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to load menu items. Please try again.'**
   String get failedToLoadMenuItems;
+
+  /// Or separator text
+  ///
+  /// In en, this message translates to:
+  /// **'Or'**
+  String get or;
+
+  /// Apple login button text
+  ///
+  /// In en, this message translates to:
+  /// **'Apple'**
+  String get apple;
+
+  /// Google login button text
+  ///
+  /// In en, this message translates to:
+  /// **'Google'**
+  String get google;
+
+  /// Terms acceptance text
+  ///
+  /// In en, this message translates to:
+  /// **'You Accept The Terms of Use Of Tawsil.'**
+  String get acceptTerms;
+
+  /// Terms of use link text
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of use'**
+  String get termsOfUse;
+
+  /// Privacy policy link text
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy policy'**
+  String get privacyPolicy;
 }
 
 class _AppLocalizationsDelegate

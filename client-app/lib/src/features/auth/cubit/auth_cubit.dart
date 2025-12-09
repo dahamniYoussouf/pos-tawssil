@@ -6,18 +6,27 @@ import 'auth_state.dart';
 import 'package:client_app/src/core/services/token_storage_service.dart';
 import 'package:client_app/src/core/utils/dependency_injection.dart';
 import '../services/user_service.dart';
+import 'dart:async';
 
 // Auth Cubit
 class AuthCubit extends HydratedCubit<AuthState> {
   final AuthService _authService;
   final TokenStorageService _tokenStorageService;
+  Timer? _resendTimer;
 
   AuthCubit({
     AuthService? authService,
     TokenStorageService? tokenStorageService,
   })  : _authService = authService ?? AuthService(),
-        _tokenStorageService = tokenStorageService ?? locator<TokenStorageService>(),
+        _tokenStorageService =
+            tokenStorageService ?? locator<TokenStorageService>(),
         super(const AuthInitial());
+
+  @override
+  Future<void> close() {
+    _resendTimer?.cancel();
+    return super.close();
+  }
 
   @override
   AuthState? fromJson(Map<String, dynamic> json) {
@@ -54,6 +63,8 @@ class AuthCubit extends HydratedCubit<AuthState> {
   }
 
   void resetAuth() {
+    _resendTimer?.cancel();
+    _resendTimer = null;
     emit(const AuthInitial());
   }
 
@@ -71,8 +82,10 @@ class AuthCubit extends HydratedCubit<AuthState> {
       }
       final result = await _authService.getProfile();
       if (result['success'] == true) {
-        final profile = ProfileModel.fromJson(result['profile'] as Map<String, dynamic>);
-        final needsUserInfo = profile.firstName.trim().isEmpty || profile.lastName.trim().isEmpty;
+        final profile =
+            ProfileModel.fromJson(result['profile'] as Map<String, dynamic>);
+        final needsUserInfo =
+            profile.firstName.trim().isEmpty || profile.lastName.trim().isEmpty;
         final needsLocation = await _checkLocationStatus();
         emit(AuthSuccess(
           userId: profile.id,
@@ -101,7 +114,9 @@ class AuthCubit extends HydratedCubit<AuthState> {
   /// For Algeria (+213), removes leading 0 from phone number
   String _normalizePhoneNumber(String phoneNumber, String countryCode) {
     // For Algeria (+213), remove leading 0 if present
-    if (countryCode == '+213' && phoneNumber.isNotEmpty && phoneNumber.startsWith('0')) {
+    if (countryCode == '+213' &&
+        phoneNumber.isNotEmpty &&
+        phoneNumber.startsWith('0')) {
       return phoneNumber.substring(1);
     }
     return phoneNumber;
@@ -113,19 +128,23 @@ class AuthCubit extends HydratedCubit<AuthState> {
     return (countryCode + normalizedPhone).replaceAll('+', '');
   }
 
-  Future<void> sendVerificationCode(String phoneNumber, String countryCode) async {
+  Future<bool> sendVerificationCode(
+      String phoneNumber, String countryCode) async {
     try {
-      emit(AuthLoading());
+      // Clear any previous error state by emitting loading first
+      _resendTimer?.cancel();
+      _resendTimer = null;
+      emit(const AuthLoading());
 
       // Validate phone number
       if (phoneNumber.isEmpty) {
         emit(const AuthError(message: 'errorPhoneNumberRequired'));
-        return;
+        return false;
       }
 
       if (!RegExp(r'^[0-9]+$').hasMatch(phoneNumber)) {
         emit(const AuthError(message: 'errorPhoneNumberInvalid'));
-        return;
+        return false;
       }
 
       // Normalize phone number (remove leading 0 for Algeria)
@@ -133,24 +152,32 @@ class AuthCubit extends HydratedCubit<AuthState> {
 
       if (normalizedPhone.length < 8) {
         emit(const AuthError(message: 'errorPhoneNumberMinLength'));
-        return;
+        return false;
       }
 
       // Format phone number for API (strip '+' for backend)
       String formattedPhone = _formatPhoneForApi(phoneNumber, countryCode);
       final result = await _authService.sendVerificationCode(formattedPhone);
-
+      print("fouad : result: ${result}");
+      print("fouad : result['dev_otp']: ${result['dev_otp']}");
       if (result['success'] == true) {
-        // Store normalized phone number in state
+        // Store normalized phone number in state and start resend timer
         emit(AuthCodeSent(
           phoneNumber: normalizedPhone,
-          verificationId: result['verificationId'] ?? '',
+          verificationId: result['dev_otp']?.toString() ?? '',
+          resendCountdown: 60,
+          canResend: false,
+          isNewUser: result['is_new_user'] as bool? ?? false,
         ));
+        _startResendTimer();
+        return true;
       } else {
         emit(AuthError(message: result['message'] ?? 'errorCodeSendFailed'));
+        return false;
       }
     } catch (e) {
       emit(AuthError(message: 'errorConnection|${e.toString()}'));
+      return false;
     }
   }
 
@@ -179,9 +206,11 @@ class AuthCubit extends HydratedCubit<AuthState> {
           }
         }
 
-        final ProfileModel profile = ProfileModel.fromJson(result['profile'] as Map<String, dynamic>);
+        final ProfileModel profile =
+            ProfileModel.fromJson(result['profile'] as Map<String, dynamic>);
         await _authService.saveUserId(profile.id);
-        final needsUserInfo = profile.firstName.trim().isEmpty || profile.lastName.trim().isEmpty;
+        final needsUserInfo =
+            profile.firstName.trim().isEmpty || profile.lastName.trim().isEmpty;
         final needsLocation = await _checkLocationStatus();
         emit(AuthSuccess(
           userId: profile.id,
@@ -229,9 +258,11 @@ class AuthCubit extends HydratedCubit<AuthState> {
 
       if (result['success'] == true) {
         final needsLocation = await _checkLocationStatus();
-        emit(AuthSuccess(userId: userId, isNewUser: false, needsLocation: needsLocation));
+        emit(AuthSuccess(
+            userId: userId, isNewUser: false, needsLocation: needsLocation));
       } else {
-        emit(AuthError(message: result['message'] ?? 'errorProfileUpdateFailed'));
+        emit(AuthError(
+            message: result['message'] ?? 'errorProfileUpdateFailed'));
       }
     } catch (e) {
       emit(AuthError(message: 'errorProfileUpdate|${e.toString()}'));
@@ -243,6 +274,7 @@ class AuthCubit extends HydratedCubit<AuthState> {
       await locator<LocationCubit>().clearSavedLocation();
       final success = await _authService.logout();
       if (success) {
+        _resendTimer?.cancel();
         emit(AuthInitial());
         return true;
       } else {
@@ -250,6 +282,82 @@ class AuthCubit extends HydratedCubit<AuthState> {
       }
     } catch (e) {
       return false;
+    }
+  }
+
+  void _startResendTimer() {
+    _resendTimer?.cancel();
+    _resendTimer = null;
+
+    // If current state is AuthCodeSent, update it
+    if (state is AuthCodeSent) {
+      final currentState = state as AuthCodeSent;
+      emit(currentState.copyWith(
+        resendCountdown: 60,
+        canResend: false,
+      ));
+
+      _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        if (state is AuthCodeSent) {
+          final currentState = state as AuthCodeSent;
+          if (currentState.resendCountdown > 0) {
+            emit(currentState.copyWith(
+              resendCountdown: currentState.resendCountdown - 1,
+            ));
+          } else {
+            emit(currentState.copyWith(
+              canResend: true,
+            ));
+            timer.cancel();
+            _resendTimer = null;
+          }
+        } else {
+          timer.cancel();
+          _resendTimer = null;
+        }
+      });
+    }
+  }
+
+  void inistResendTimer() {
+    if (state is AuthCodeSent) {
+      final currentState = state as AuthCodeSent;
+      emit(currentState.copyWith(
+        resendCountdown: 60,
+        canResend: false,
+      ));
+    }
+  }
+
+  /// Ensures the resend timer is running if we're in AuthCodeSent state
+  /// This is useful when navigating to the verification page
+  void ensureResendTimer() {
+    if (state is AuthCodeSent) {
+      final currentState = state as AuthCodeSent;
+      // Only start timer if countdown is still active and timer isn't running
+      if (currentState.resendCountdown > 0 &&
+          !currentState.canResend &&
+          _resendTimer == null) {
+        _resendTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+          if (state is AuthCodeSent) {
+            final currentState = state as AuthCodeSent;
+            if (currentState.resendCountdown > 0) {
+              emit(currentState.copyWith(
+                resendCountdown: currentState.resendCountdown - 1,
+              ));
+            } else {
+              emit(currentState.copyWith(
+                canResend: true,
+              ));
+              timer.cancel();
+              _resendTimer = null;
+            }
+          } else {
+            timer.cancel();
+            _resendTimer = null;
+          }
+        });
+      }
     }
   }
 }

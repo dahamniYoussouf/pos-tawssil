@@ -17,77 +17,42 @@ class LocationPage extends StatefulWidget {
 }
 
 class _LocationPageState extends State<LocationPage> {
-  bool _isDialogOpen = false;
-
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => LocationCubit(),
-      child: BlocListener<LocationCubit, LocationState>(
-        listener: (context, state) {
-          if (state is LocationSuccess) {
-            if (!_isDialogOpen) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                if (context.mounted) {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (context) => HomePage()),
-                    (route) => false,
-                  );
-                }
-              });
-            }
-          } else if (state is LocationError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: ColorApp.redColor,
-              ),
+    return BlocListener<LocationCubit, LocationState>(
+      listener: (context, state) {
+        if (state is LocationError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: ColorApp.redColor,
+            ),
+          );
+        }
+      },
+      child: BlocBuilder<LocationCubit, LocationState>(
+        builder: (context, state) {
+          if (state is LocationInitial ||
+              state is LocationPermissionRequesting) {
+            return PermissionPage(
+              onAuthorized: () =>
+                  context.read<LocationCubit>().requestLocationPermission(),
+              onDenied: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content:
+                        Text(AppLocalizations.of(context)!.permissionDenied),
+                    backgroundColor: ColorApp.redColor,
+                  ),
+                );
+              },
             );
-          }
-        },
-        child: BlocBuilder<LocationCubit, LocationState>(
-          builder: (context, state) {
-            if (state is LocationInitial || state is LocationPermissionRequesting) {
-              return PermissionPage(
-                onAuthorized: () => context.read<LocationCubit>().requestLocationPermission(),
-                onDenied: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(AppLocalizations.of(context)!.permissionDenied),
-                      backgroundColor: ColorApp.redColor,
-                    ),
-                  );
-                },
-              );
-            } else if (state is LocationPermissionGranted || state is LocationGpsDisabled) {
-              if (state is LocationGpsDisabled) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _showGpsDisabledPopup(context);
-                });
-              }
-              return SharingScreen(
-                onShareLocation: () {
-                  FocusScope.of(context).unfocus();
-                  context.read<LocationCubit>().getGpsLocation();
-                },
-                onAddAddress: () {
-                  FocusScope.of(context).unfocus();
-                  _showAddressDialog(context);
-                },
-                isLoading: state is LocationLoading,
-              );
-            } else if (state is LocationPermissionDenied) {
-              return PermissionPage(
-                onAuthorized: () => context.read<LocationCubit>().requestLocationPermission(),
-                onDenied: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(AppLocalizations.of(context)!.permissionDenied),
-                      backgroundColor: ColorApp.redColor,
-                    ),
-                  );
-                },
-              );
+          } else if (state is LocationPermissionGranted ||
+              state is LocationGpsDisabled) {
+            if (state is LocationGpsDisabled) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                _showGpsDisabledPopup(context);
+              });
             }
             return SharingScreen(
               onShareLocation: () {
@@ -100,8 +65,36 @@ class _LocationPageState extends State<LocationPage> {
               },
               isLoading: state is LocationLoading,
             );
-          },
-        ),
+          } else if (state is LocationPermissionDenied) {
+            return PermissionPage(
+              onAuthorized: () =>
+                  context.read<LocationCubit>().requestLocationPermission(),
+              onDenied: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content:
+                        Text(AppLocalizations.of(context)!.permissionDenied),
+                    backgroundColor: ColorApp.redColor,
+                  ),
+                );
+              },
+            );
+          }
+          return SharingScreen(
+            onShareLocation: () {
+              FocusScope.of(context).unfocus();
+              context
+                  .read<LocationCubit>()
+                  .getGpsLocation()
+                  .whenComplete(() => _navigateToHome(context, context));
+            },
+            onAddAddress: () {
+              FocusScope.of(context).unfocus();
+              _showAddressDialog(context);
+            },
+            isLoading: state is LocationLoading,
+          );
+        },
       ),
     );
   }
@@ -109,29 +102,14 @@ class _LocationPageState extends State<LocationPage> {
   void _showAddressDialog(BuildContext context) {
     final TextEditingController addressController = TextEditingController();
     final BuildContext pageContext = context;
-    setState(() {
-      _isDialogOpen = true;
-    });
+
     showDialog(
       context: context,
       barrierDismissible: true,
       builder: (dialogContext) => BlocBuilder<LocationCubit, LocationState>(
         builder: (builderContext, state) {
           final bool isLoading = state is LocationLoading;
-          if (state is LocationSuccess) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              Navigator.of(dialogContext).pop();
-              setState(() {
-                _isDialogOpen = false;
-              });
-              if (pageContext.mounted) {
-                Navigator.of(pageContext).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => HomePage()),
-                  (route) => false,
-                );
-              }
-            });
-          }
+
           return Dialog(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),
@@ -199,7 +177,8 @@ class _LocationPageState extends State<LocationPage> {
                         color: ColorApp.black,
                       ),
                       decoration: InputDecoration(
-                        hintText: AppLocalizations.of(builderContext)!.addressHint,
+                        hintText:
+                            AppLocalizations.of(builderContext)!.addressHint,
                         hintStyle: const TextStyle(
                           color: ColorApp.greyMedium,
                           fontSize: 15,
@@ -217,7 +196,13 @@ class _LocationPageState extends State<LocationPage> {
                       ),
                       onSubmitted: (value) {
                         if (value.trim().isNotEmpty && !isLoading) {
-                          builderContext.read<LocationCubit>().saveManualAddress(value.trim());
+                          builderContext
+                              .read<LocationCubit>()
+                              .saveManualAddress(value.trim())
+                              .whenComplete(
+                                () =>
+                                    _navigateToHome(dialogContext, pageContext),
+                              );
                         }
                       },
                     ),
@@ -227,7 +212,9 @@ class _LocationPageState extends State<LocationPage> {
                     children: [
                       Expanded(
                         child: TextButton(
-                          onPressed: isLoading ? null : () => Navigator.pop(dialogContext),
+                          onPressed: isLoading
+                              ? null
+                              : () => Navigator.pop(dialogContext),
                           style: TextButton.styleFrom(
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
@@ -252,7 +239,13 @@ class _LocationPageState extends State<LocationPage> {
                               : () {
                                   final value = addressController.text.trim();
                                   if (value.isNotEmpty) {
-                                    builderContext.read<LocationCubit>().saveManualAddress(value);
+                                    builderContext
+                                        .read<LocationCubit>()
+                                        .saveManualAddress(value)
+                                        .whenComplete(
+                                          () => _navigateToHome(
+                                              dialogContext, pageContext),
+                                        );
                                   }
                                 },
                           style: ElevatedButton.styleFrom(
@@ -270,7 +263,8 @@ class _LocationPageState extends State<LocationPage> {
                                   height: 20,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    valueColor: AlwaysStoppedAnimation<Color>(ColorApp.white),
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        ColorApp.white),
                                   ),
                                 )
                               : Text(
@@ -290,13 +284,19 @@ class _LocationPageState extends State<LocationPage> {
           );
         },
       ),
-    ).then((_) {
-      if (mounted) {
-        setState(() {
-          _isDialogOpen = false;
-        });
-      }
-    });
+    );
+  }
+
+  void _navigateToHome(BuildContext dialogContext, BuildContext pageContext) {
+    final state = context.read<LocationCubit>().state;
+    // check if the state is not LocationSuccess
+    if (state is LocationSuccess) {
+      Navigator.of(dialogContext).pop();
+      Navigator.of(pageContext).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => HomePage()),
+        (route) => false,
+      );
+    }
   }
 
   void _showGpsDisabledPopup(BuildContext context) {

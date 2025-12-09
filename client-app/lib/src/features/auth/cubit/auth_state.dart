@@ -68,19 +68,45 @@ class AuthPhoneNumberEntered extends AuthState {
 class AuthCodeSent extends AuthState {
   final String phoneNumber;
   final String verificationId;
+  final int resendCountdown;
+  final bool canResend;
+  final bool isNewUser;
 
   const AuthCodeSent({
     required this.phoneNumber,
     required this.verificationId,
+    this.resendCountdown = 60,
+    this.canResend = false,
+    this.isNewUser = false,
   });
 
   @override
-  List<Object?> get props => [phoneNumber, verificationId];
+  List<Object?> get props =>
+      [phoneNumber, verificationId, resendCountdown, canResend, isNewUser];
+
+  AuthCodeSent copyWith({
+    String? phoneNumber,
+    String? verificationId,
+    int? resendCountdown,
+    bool? canResend,
+    bool? isNewUser,
+  }) {
+    return AuthCodeSent(
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      verificationId: verificationId ?? this.verificationId,
+      resendCountdown: resendCountdown ?? this.resendCountdown,
+      canResend: canResend ?? this.canResend,
+      isNewUser: isNewUser ?? this.isNewUser,
+    );
+  }
 
   factory AuthCodeSent.fromJson(Map<String, dynamic> json) {
     return AuthCodeSent(
       phoneNumber: json['phoneNumber'] as String,
-      verificationId: json['verificationId'] as String,
+      verificationId: json['dev_otp'] as String,
+      resendCountdown: json['resendCountdown'] as int? ?? 60,
+      canResend: json['canResend'] as bool? ?? false,
+      isNewUser: json['is_new_user'] as bool? ?? false,
     );
   }
 
@@ -89,7 +115,10 @@ class AuthCodeSent extends AuthState {
     return {
       'type': 'AuthCodeSent',
       'phoneNumber': phoneNumber,
-      'verificationId': verificationId,
+      'dev_otp': verificationId,
+      'resendCountdown': resendCountdown,
+      'canResend': canResend,
+      'is_new_user': isNewUser,
     };
   }
 }
@@ -137,7 +166,7 @@ class AuthSuccess extends AuthState {
   factory AuthSuccess.fromJson(Map<String, dynamic> json) {
     return AuthSuccess(
       userId: json['userId'] as String,
-      isNewUser: json['isNewUser'] as bool? ?? false,
+      isNewUser: json['is_new_user'] as bool? ?? false,
       needsLocation: json['needsLocation'] as bool? ?? false,
     );
   }
@@ -147,7 +176,7 @@ class AuthSuccess extends AuthState {
     return {
       'type': 'AuthSuccess',
       'userId': userId,
-      'isNewUser': isNewUser,
+      'is_new_user': isNewUser,
       'needsLocation': needsLocation,
     };
   }
