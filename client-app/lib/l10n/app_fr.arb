@@ -103,6 +103,8 @@
   "premiumLabel": "PREMIUM",
   "loadingRestaurants": "Chargement des restaurants...",
   "categories": "Catégories",
+  "showAll": "Afficher tout",
+  "recommendations": "Recommandations",
   "newToDiscover": "Nouveautés à découvrir ({count})",
   "noRestaurantFound": "Aucun restaurant trouvé",
   "reload": "Recharger",

@@ -1,4 +1,7 @@
+import 'package:client_app/src/core/res/color_app.dart';
+import 'package:client_app/src/core/res/media_res.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import '../models/restaurant_model.dart';
 
 class RestaurantCard extends StatelessWidget {
@@ -21,7 +24,8 @@ class RestaurantCard extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: restaurant.isPremium ? Color(0xFFFFD700) : Color(0xFF006C4A),
+            color:
+                restaurant.isPremium ? ColorApp.premiumColor : ColorApp.primary,
             width: restaurant.isPremium ? 2.0 : 1.2,
           ),
           boxShadow: [
@@ -37,7 +41,7 @@ class RestaurantCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              flex: 3,
+              flex: 1,
               child: Stack(
                 children: [
                   ClipRRect(
@@ -59,7 +63,7 @@ class RestaurantCard extends StatelessWidget {
                                   ? loadingProgress.cumulativeBytesLoaded /
                                       loadingProgress.expectedTotalBytes!
                                   : null,
-                              color: Color(0xFF006C4A),
+                              color: ColorApp.primary,
                             ),
                           );
                         },
@@ -81,10 +85,14 @@ class RestaurantCard extends StatelessWidget {
                       top: 8,
                       right: 8,
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+                            colors: [
+                              ColorApp.premiumColor,
+                              ColorApp.orangeColor
+                            ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
@@ -120,7 +128,7 @@ class RestaurantCard extends StatelessWidget {
               ),
             ),
             Expanded(
-              flex: 2,
+              flex: 1,
               child: Padding(
                 padding: EdgeInsets.all(8),
                 child: Column(
@@ -133,13 +141,31 @@ class RestaurantCard extends StatelessWidget {
                       children: [
                         Row(
                           children: [
+                            SvgPicture.asset(MediaRes.timeIcon,
+                                width: 14, height: 14, color: ColorApp.grey),
+                            SizedBox(width: 2),
+                            Text(
+                              '${restaurant.distance?.toStringAsFixed(1)} km',
+                              style:
+                                  TextStyle(fontSize: 12, color: ColorApp.grey),
+                            ),
+                            SizedBox(width: 2),
+                            Text(
+                              '${restaurant.deliveryMin}-${restaurant.deliveryMax} min',
+                              style:
+                                  TextStyle(fontSize: 12, color: ColorApp.grey),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          children: [
                             Expanded(
                               child: Text(
                                 restaurant.name,
                                 style: TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.black87,
+                                  color: ColorApp.black,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -148,7 +174,8 @@ class RestaurantCard extends StatelessWidget {
                             if (restaurant.isPremium)
                               Container(
                                 margin: EdgeInsets.only(left: 4),
-                                child: Icon(Icons.verified, size: 14, color: Color(0xFFFFD700)),
+                                child: Icon(Icons.verified,
+                                    size: 14, color: ColorApp.premiumColor),
                               ),
                           ],
                         ),
@@ -156,36 +183,29 @@ class RestaurantCard extends StatelessWidget {
                         Text(
                           restaurant.description,
                           style: TextStyle(
-                            fontSize: 9,
-                            color: Colors.grey[600],
+                            fontSize: 12,
+                            color: ColorApp.grey,
                           ),
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
                     SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Icon(Icons.star, size: 12, color: Colors.amber),
-                        SizedBox(width: 2),
-                        Text(
-                          restaurant.rating.toStringAsFixed(1),
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        SizedBox(width: 8),
-                        Icon(Icons.delivery_dining, size: 12, color: Colors.grey[600]),
-                        SizedBox(width: 2),
-                        Text(
-                          '${restaurant.deliveryMin}-${restaurant.deliveryMax} min',
-                          style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                        ),
-                      ],
-                    ),
+                    // Row(
+                    //   children: [
+                    //     Icon(Icons.star, size: 12, color: Colors.amber),
+                    //     SizedBox(width: 2),
+                    //     Text(
+                    //       restaurant.rating.toStringAsFixed(1),
+                    //       style: TextStyle(
+                    //         fontSize: 11,
+                    //         fontWeight: FontWeight.w600,
+                    //         color: ColorApp.black,
+                    //       ),
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ),
@@ -196,4 +216,3 @@ class RestaurantCard extends StatelessWidget {
     );
   }
 }
-

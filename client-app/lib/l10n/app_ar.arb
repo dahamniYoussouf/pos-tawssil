@@ -103,6 +103,8 @@
   "premiumLabel": "بريميوم",
   "loadingRestaurants": "جاري تحميل المطاعم...",
   "categories": "الفئات",
+  "showAll": "عرض الكل",
+  "recommendations": "التوصيات",
   "newToDiscover": "جديد لاكتشافه ({count})",
   "noRestaurantFound": "لم يتم العثور على مطعم",
   "reload": "إعادة التحميل",

@@ -22,4 +22,18 @@ class MediaRes {
   static const algeriaFlagIcon = '$_baseImage/alg.png';
   static const googleIcon = '$_baseImage/google_icon.png';
   static const appleIcon = '$_baseImage/apple_icon.png';
+
+  static const locationIcon = '$_baseImageIcon/location_icon.svg';
+
+  static const pizzaIcon = '$_baseImage/pizza_icon.png';
+  static const burgerIcon = '$_baseImage/burger_icon.png';
+  static const sandwishIcon = '$_baseImage/sandwish_icon.png';
+  static const tacosIcon = '$_baseImage/tacos_icon.png';
+  static const saladIcon = '$_baseImage/salad_icon.png';
+
+  static const promoBannerImage = '$_baseImage/promo_banner_image.png';
+
+  static const searchIcon = '$_baseImageIcon/search_icon.svg';
+
+  static const timeIcon = '$_baseImageIcon/time_icon.svg';
 }

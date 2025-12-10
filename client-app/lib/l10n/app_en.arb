@@ -437,6 +437,14 @@
   "@categories": {
     "description": "Categories title"
   },
+  "showAll": "Show All",
+  "@showAll": {
+    "description": "Show all button text"
+  },
+  "recommendations": "Recommendations",
+  "@recommendations": {
+    "description": "Recommendations section title"
+  },
   "newToDiscover": "Nouveautés à découvrir ({count})",
   "@newToDiscover": {
     "description": "New to discover title",

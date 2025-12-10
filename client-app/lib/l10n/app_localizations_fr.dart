@@ -342,6 +342,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get categories => 'Catégories';
 
   @override
+  String get showAll => 'Afficher tout';
+
+  @override
+  String get recommendations => 'Recommandations';
+
+  @override
   String newToDiscover(int count) {
     return 'Nouveautés à découvrir ($count)';
   }

@@ -1,3 +1,4 @@
+import 'package:client_app/src/core/res/color_app.dart';
 import 'package:flutter/material.dart';
 import '../models/restaurant_model.dart';
 import 'restaurant_card.dart';
@@ -22,24 +23,37 @@ class RestaurantGrid extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            AppLocalizations.of(context)!.newToDiscover(restaurants.length),
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                AppLocalizations.of(context)!.recommendations,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  color: ColorApp.black,
+                ),
+              ),
+              Text(
+                AppLocalizations.of(context)!.showAll,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                  color: ColorApp.primary,
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 16),
           if (restaurants.isEmpty)
             Center(
               child: Column(
                 children: [
-                  Icon(Icons.restaurant, size: 48, color: Colors.grey),
+                  Icon(Icons.restaurant, size: 48, color: ColorApp.grey),
                   SizedBox(height: 16),
                   Text(
                     AppLocalizations.of(context)!.noRestaurantFound,
-                    style: const TextStyle(color: Colors.grey),
+                    style: const TextStyle(color: ColorApp.grey),
                   ),
                   if (onReload != null) ...[
                     SizedBox(height: 16),
@@ -47,8 +61,8 @@ class RestaurantGrid extends StatelessWidget {
                       onPressed: onReload,
                       child: Text(AppLocalizations.of(context)!.reload),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF006C4A),
-                        foregroundColor: Colors.white,
+                        backgroundColor: ColorApp.primary,
+                        foregroundColor: ColorApp.white,
                       ),
                     ),
                   ],
@@ -79,4 +93,3 @@ class RestaurantGrid extends StatelessWidget {
     );
   }
 }
-

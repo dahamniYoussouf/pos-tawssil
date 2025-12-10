@@ -1,9 +1,12 @@
+import 'package:client_app/src/core/res/media_res.dart';
+
 import '../models/category_model.dart';
 import '../../../core/services/base_api_service.dart';
 
 class RestaurantService extends BaseApiService {
   /// Fetch menu items for a specific restaurant by restaurant ID
-  Future<Map<String, dynamic>> getRestaurantMenuItems(String restaurantId) async {
+  Future<Map<String, dynamic>> getRestaurantMenuItems(
+      String restaurantId) async {
     return await getRequest('/menuitem/byrestaurant/$restaurantId');
   }
 
@@ -59,10 +62,13 @@ class RestaurantService extends BaseApiService {
   /// Get static categories (UI-only, not from API)
   List<CategoryModel> getStaticCategories() {
     return [
-      CategoryModel(id: 'pizza', name: 'Pizza', iconPath: 'assets/icons/pizza.png'),
-      CategoryModel(id: 'burger', name: 'Burger', iconPath: 'assets/icons/burger.png'),
-      CategoryModel(id: 'tacos', name: 'Tacos', iconPath: 'assets/icons/tacos.png'),
-      CategoryModel(id: 'sandwish', name: 'Sandwich', iconPath: 'assets/icons/sandwich.png'),
+      CategoryModel(
+          id: 'burger', name: 'Burger', iconPath: MediaRes.burgerIcon),
+      CategoryModel(id: 'tacos', name: 'Tacos', iconPath: MediaRes.tacosIcon),
+      CategoryModel(id: 'pizza', name: 'Pizza', iconPath: MediaRes.pizzaIcon),
+      CategoryModel(
+          id: 'sandwish', name: 'Sandwich', iconPath: MediaRes.sandwishIcon),
+      CategoryModel(id: 'salad', name: 'Salad', iconPath: MediaRes.saladIcon),
     ];
   }
 }

@@ -142,7 +142,7 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
                           const SizedBox(height: 25),
                           Container(
                             decoration: BoxDecoration(
-                              color: ColorApp.grey2,
+                              color: ColorApp.backgroundGrey,
                               borderRadius: BorderRadius.circular(24),
                               border: Border.all(
                                 color: errorMessage.isNotEmpty

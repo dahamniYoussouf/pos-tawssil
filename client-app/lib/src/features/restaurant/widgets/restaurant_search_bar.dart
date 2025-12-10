@@ -1,5 +1,8 @@
+import 'package:client_app/src/core/res/color_app.dart';
+import 'package:client_app/src/core/res/media_res.dart';
 import 'package:flutter/material.dart';
 import 'package:client_app/l10n/app_localizations.dart';
+import 'package:flutter_svg/svg.dart';
 
 class RestaurantSearchBar extends StatefulWidget {
   final Function(String)? onSearch;
@@ -20,7 +23,8 @@ class RestaurantSearchBar extends StatefulWidget {
 }
 
 class _RestaurantSearchBarState extends State<RestaurantSearchBar> {
-  late final TextEditingController _controller = widget.controller ?? TextEditingController();
+  late final TextEditingController _controller =
+      widget.controller ?? TextEditingController();
 
   @override
   void initState() {
@@ -43,17 +47,17 @@ class _RestaurantSearchBarState extends State<RestaurantSearchBar> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[50],
-        borderRadius: BorderRadius.circular(12),
+        color: ColorApp.backgroundGrey,
+        borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: Color(0xFF006C4A),
+          color: ColorApp.greyBorder,
           width: 1.5,
         ),
       ),
       padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Row(
         children: [
-          Icon(Icons.search, color: Colors.black, size: 26),
+          SvgPicture.asset(MediaRes.searchIcon, height: 20, width: 20),
           SizedBox(width: 12),
           Expanded(
             child: TextField(
@@ -71,12 +75,14 @@ class _RestaurantSearchBarState extends State<RestaurantSearchBar> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
-                color: Colors.black87,
+                color: ColorApp.black,
               ),
               decoration: InputDecoration(
-                hintText: widget.hintText ?? AppLocalizations.of(context)?.searchRestaurantPlaceholder ?? 'Rechercher des restaurant...',
+                hintText: widget.hintText ??
+                    AppLocalizations.of(context)?.searchRestaurantPlaceholder ??
+                    'Rechercher des restaurant...',
                 hintStyle: TextStyle(
-                  color: Colors.grey[500],
+                  color: ColorApp.greyLight,
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                 ),

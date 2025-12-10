@@ -718,6 +718,18 @@ abstract class AppLocalizations {
   /// **'Catégories'**
   String get categories;
 
+  /// Show all button text
+  ///
+  /// In en, this message translates to:
+  /// **'Show All'**
+  String get showAll;
+
+  /// Recommendations section title
+  ///
+  /// In en, this message translates to:
+  /// **'Recommendations'**
+  String get recommendations;
+
   /// New to discover title
   ///
   /// In en, this message translates to:

@@ -317,7 +317,7 @@ class _ContentSection extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
-                    disabledBackgroundColor: ColorApp.grey2,
+                    disabledBackgroundColor: ColorApp.backgroundGrey,
                   ),
                   child: isLoading
                       ? const SizedBox(
@@ -439,9 +439,9 @@ class _OtpInputSection extends StatelessWidget {
         shape: PinCodeFieldShape.circle,
         fieldHeight: 55,
         fieldWidth: 55,
-        activeFillColor: ColorApp.grey2,
-        inactiveFillColor: ColorApp.grey2,
-        selectedFillColor: ColorApp.grey2,
+        activeFillColor: ColorApp.backgroundGrey,
+        inactiveFillColor: ColorApp.backgroundGrey,
+        selectedFillColor: ColorApp.backgroundGrey,
         inactiveColor: ColorApp.greyBorder,
         selectedColor: ColorApp.greyBorder,
         borderWidth: 0.1,

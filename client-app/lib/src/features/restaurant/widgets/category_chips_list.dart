@@ -1,3 +1,4 @@
+import 'package:client_app/src/core/res/color_app.dart';
 import 'package:flutter/material.dart';
 import '../models/category_model.dart';
 import 'package:client_app/l10n/app_localizations.dart';
@@ -20,19 +21,34 @@ class CategoryChipsList extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            AppLocalizations.of(context)!.categories,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                AppLocalizations.of(context)!.categories,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                  color: ColorApp.black,
+                ),
+              ),
+              Text(
+                AppLocalizations.of(context)!.showAll,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w900,
+                  color: ColorApp.primary,
+                ),
+              ),
+            ],
           ),
           SizedBox(height: 15),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
-              children: categories.map((category) => _buildCategoryChip(category)).toList(),
+              children: categories
+                  .map((category) => _buildCategoryChip(category))
+                  .toList(),
             ),
           ),
         ],
@@ -47,25 +63,21 @@ class CategoryChipsList extends StatelessWidget {
         margin: EdgeInsets.only(right: 12),
         padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(
-            color: Color(0xFF006C4A),
-            width: 1,
-          ),
+          color: ColorApp.white,
           borderRadius: BorderRadius.circular(25),
         ),
-        child: Row(
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: Image.asset(
                 category.iconPath,
-                width: 28,
-                height: 28,
+                width: 55,
+                height: 55,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
-                  return Icon(Icons.restaurant, size: 28, color: Colors.grey);
+                  return Icon(Icons.restaurant, size: 55, color: Colors.grey);
                 },
               ),
             ),
@@ -73,9 +85,9 @@ class CategoryChipsList extends StatelessWidget {
             Text(
               category.name,
               style: TextStyle(
-                color: Colors.grey[800],
+                color: ColorApp.black,
                 fontSize: 14,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w900,
               ),
             ),
           ],

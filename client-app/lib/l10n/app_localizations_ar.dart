@@ -337,6 +337,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get categories => 'الفئات';
 
   @override
+  String get showAll => 'عرض الكل';
+
+  @override
+  String get recommendations => 'التوصيات';
+
+  @override
   String newToDiscover(int count) {
     return 'جديد لاكتشافه ($count)';
   }

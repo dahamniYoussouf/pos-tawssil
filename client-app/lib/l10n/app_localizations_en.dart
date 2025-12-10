@@ -341,6 +341,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get categories => 'Catégories';
 
   @override
+  String get showAll => 'Show All';
+
+  @override
+  String get recommendations => 'Recommendations';
+
+  @override
   String newToDiscover(int count) {
     return 'Nouveautés à découvrir ($count)';
   }

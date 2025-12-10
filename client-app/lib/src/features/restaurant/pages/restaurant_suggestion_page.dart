@@ -1,3 +1,4 @@
+import 'package:client_app/src/features/locations/cubit/location_cubit.dart';
 import 'package:client_app/src/features/restaurant/cubit/category_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,7 +20,8 @@ class RestaurantSuggestionPage extends StatefulWidget {
   const RestaurantSuggestionPage({Key? key}) : super(key: key);
 
   @override
-  State<RestaurantSuggestionPage> createState() => _RestaurantSuggestionPageState();
+  State<RestaurantSuggestionPage> createState() =>
+      _RestaurantSuggestionPageState();
 }
 
 class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
@@ -28,6 +30,7 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<UserCubit>().fetchProfile();
+      context.read<LocationCubit>().loadSavedLocation();
       final restaurantCubit = context.read<RestaurantCubit>();
       final categoryCubit = context.read<CategoryCubit>();
       if (restaurantCubit.state is! RestaurantLoaded) {
@@ -43,7 +46,8 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorApp.white,
-      body: SafeArea(child: BlocBuilder<UserCubit, UserState>(builder: (context, state) {
+      body: SafeArea(
+          child: BlocBuilder<UserCubit, UserState>(builder: (context, state) {
         if (state is UserLoading) {
           return _buildLoadingState(context);
         }
@@ -64,7 +68,9 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
                 return _buildErrorState(
                   context,
                   state.message,
-                  onRetry: () => context.read<RestaurantCubit>().loadNearbyRestaurants(radius: 5000),
+                  onRetry: () => context
+                      .read<RestaurantCubit>()
+                      .loadNearbyRestaurants(radius: 5000),
                 );
               }
               if (state is RestaurantLoaded) {
@@ -77,7 +83,9 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
                   triggerMode: RefreshIndicatorTriggerMode.onEdge,
                   onRefresh: () async {
                     await Future.wait([
-                      context.read<RestaurantCubit>().loadNearbyRestaurants(radius: 5000),
+                      context
+                          .read<RestaurantCubit>()
+                          .loadNearbyRestaurants(radius: 5000),
                       context.read<CategoryCubit>().loadCategories(),
                     ]);
                   },
@@ -86,7 +94,6 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
                     child: Column(
                       children: [
                         RestaurantSuggestionHeader(),
-                        PromoBanner(),
                         BlocBuilder<CategoryCubit, CategoryState>(
                           builder: (context, categoryState) {
                             if (categoryState is CategoryLoaded) {
@@ -109,13 +116,15 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
                               return SizedBox(
                                 height: 100,
                                 child: Center(
-                                  child: CircularProgressIndicator(color: ColorApp.primary),
+                                  child: CircularProgressIndicator(
+                                      color: ColorApp.primary),
                                 ),
                               );
                             }
                             return SizedBox.shrink();
                           },
                         ),
+                        PromoBanner(),
                         SizedBox(height: 20),
                         RestaurantGrid(
                           restaurants: state.restaurants,
@@ -123,11 +132,14 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => RestaurantDetailsPage(restaurant: restaurant),
+                                builder: (context) => RestaurantDetailsPage(
+                                    restaurant: restaurant),
                               ),
                             );
                           },
-                          onReload: () => context.read<RestaurantCubit>().loadNearbyRestaurants(radius: 5000),
+                          onReload: () => context
+                              .read<RestaurantCubit>()
+                              .loadNearbyRestaurants(radius: 5000),
                         ),
                       ],
                     ),
@@ -156,7 +168,8 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
     );
   }
 
-  Widget _buildErrorState(BuildContext context, String message, {VoidCallback? onRetry}) {
+  Widget _buildErrorState(BuildContext context, String message,
+      {VoidCallback? onRetry}) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -170,7 +183,10 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
           ),
           SizedBox(height: 16),
           ElevatedButton(
-            onPressed: onRetry ?? () => context.read<RestaurantCubit>().loadNearbyRestaurants(radius: 5000),
+            onPressed: onRetry ??
+                () => context
+                    .read<RestaurantCubit>()
+                    .loadNearbyRestaurants(radius: 5000),
             child: Text(AppLocalizations.of(context)!.reload),
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorApp.primary,
