@@ -36,4 +36,9 @@ class MediaRes {
   static const searchIcon = '$_baseImageIcon/search_icon.svg';
 
   static const timeIcon = '$_baseImageIcon/time_icon.svg';
+  static const cartIcon = '$_baseImageIcon/cart_icon.svg';
+  static const noteIcon = '$_baseImageIcon/note_icon.svg';
+  static const closeIcon = '$_baseImageIcon/close_icon.svg';
+  static const editIcon = '$_baseImageIcon/edit_icon.svg';
+  static const pickUpIcon = '$_baseImageIcon/pick_up_icon.svg';
 }
