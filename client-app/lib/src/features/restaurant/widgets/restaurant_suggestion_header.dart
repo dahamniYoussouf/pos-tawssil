@@ -54,14 +54,16 @@ class RestaurantSuggestionHeader extends StatelessWidget {
                               width: 20,
                             ),
                             SizedBox(width: 4),
-                            Text(
-                              '${locationState.fullAddress}',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: ColorApp.greyLight,
+                            Flexible(
+                              child: Text(
+                                '${locationState.fullAddress}',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: ColorApp.greyLight,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
                             ),
                             Icon(
                               Icons.keyboard_arrow_down_rounded,

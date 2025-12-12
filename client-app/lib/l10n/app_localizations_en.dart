@@ -43,6 +43,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cartTitle => 'Cart';
 
   @override
+  String get orderSummary => 'Order summary';
+
+  @override
+  String get addItem => 'Add item';
+
+  @override
   String get deliveryAddress => 'Delivery address';
 
   @override

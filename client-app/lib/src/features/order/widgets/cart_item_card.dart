@@ -11,6 +11,7 @@ class CartItemCard extends StatelessWidget {
   final VoidCallback onQuantityDecrease;
   final VoidCallback onQuantityIncrease;
   final VoidCallback onRemove;
+  final VoidCallback onEdit;
 
   const CartItemCard({
     Key? key,
@@ -18,6 +19,7 @@ class CartItemCard extends StatelessWidget {
     required this.onQuantityDecrease,
     required this.onQuantityIncrease,
     required this.onRemove,
+    required this.onEdit,
   }) : super(key: key);
 
   @override
@@ -189,7 +191,7 @@ class CartItemCard extends StatelessWidget {
         top: 0,
         right: 25,
         child: IconButton(
-          onPressed: onRemove,
+          onPressed: onEdit,
           icon: SvgPicture.asset(MediaRes.editIcon, width: 20, height: 20),
         ),
       ),

@@ -289,22 +289,22 @@ class _ContentSection extends StatelessWidget {
                 ),
               ),
               _DevOtpSection(),
-              const SizedBox(height: 40),
+              const SizedBox(height: 32),
               _OtpInputSection(
                 otpController: otpController,
                 onCodeChanged: onCodeChanged,
                 onVerify: onVerify,
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
               if (errorMessage.isNotEmpty) ...[
                 _ErrorMessageSection(errorMessage: errorMessage),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
               ],
               _ResendCodeSection(
                 resendCountdown: resendCountdown,
                 onResend: onResend,
               ),
-              const SizedBox(height: 32),
+              const SizedBox(height: 12),
               SizedBox(
                 width: double.infinity,
                 height: 56,
@@ -382,7 +382,6 @@ class _DevOtpSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, state) {
-        print("fouad : _DevOtpSection state: ${state}");
         if (state is AuthCodeSent) {
           return Container(
             padding: const EdgeInsets.all(12),
@@ -437,8 +436,8 @@ class _OtpInputSection extends StatelessWidget {
       onCompleted: (value) => onVerify(),
       pinTheme: PinTheme(
         shape: PinCodeFieldShape.circle,
-        fieldHeight: 55,
-        fieldWidth: 55,
+        fieldHeight: 35,
+        fieldWidth: 35,
         activeFillColor: ColorApp.backgroundGrey,
         inactiveFillColor: ColorApp.backgroundGrey,
         selectedFillColor: ColorApp.backgroundGrey,
@@ -447,7 +446,7 @@ class _OtpInputSection extends StatelessWidget {
         borderWidth: 0.1,
       ),
       textStyle: const TextStyle(
-        fontSize: 18,
+        fontSize: 14,
         fontWeight: FontWeight.bold,
       ),
       keyboardType: TextInputType.number,

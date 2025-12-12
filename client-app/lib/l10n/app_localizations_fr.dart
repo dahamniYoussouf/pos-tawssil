@@ -43,6 +43,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cartTitle => 'Panier';
 
   @override
+  String get orderSummary => 'Récapitulatif de commande';
+
+  @override
+  String get addItem => 'Ajouter article';
+
+  @override
   String get deliveryAddress => 'Adresse de livraison';
 
   @override

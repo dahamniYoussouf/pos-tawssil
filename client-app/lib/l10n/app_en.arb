@@ -44,6 +44,14 @@
   "@cartTitle": {
     "description": "Cart page title"
   },
+  "orderSummary": "Order summary",
+  "@orderSummary": {
+    "description": "Order summary title"
+  },
+  "addItem": "Add item",
+  "@addItem": {
+    "description": "Add item button text"
+  },
   "deliveryAddress": "Delivery address",
   "@deliveryAddress": {
     "description": "Delivery address label"

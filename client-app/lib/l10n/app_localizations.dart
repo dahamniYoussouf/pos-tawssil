@@ -166,6 +166,18 @@ abstract class AppLocalizations {
   /// **'Cart'**
   String get cartTitle;
 
+  /// Order summary title
+  ///
+  /// In en, this message translates to:
+  /// **'Order summary'**
+  String get orderSummary;
+
+  /// Add item button text
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get addItem;
+
   /// Delivery address label
   ///
   /// In en, this message translates to:

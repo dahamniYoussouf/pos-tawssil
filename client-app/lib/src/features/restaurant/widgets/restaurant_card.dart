@@ -148,13 +148,19 @@ class RestaurantCard extends StatelessWidget {
                               '${restaurant.distance?.toStringAsFixed(1)} km',
                               style:
                                   TextStyle(fontSize: 12, color: ColorApp.grey),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                             SizedBox(width: 2),
-                            Text(
-                              '${restaurant.deliveryMin}-${restaurant.deliveryMax} min',
-                              style:
-                                  TextStyle(fontSize: 12, color: ColorApp.grey),
-                            ),
+                            Flexible(
+                              child: Text(
+                                '${restaurant.deliveryMin}-${restaurant.deliveryMax} min',
+                                style: TextStyle(
+                                    fontSize: 12, color: ColorApp.grey),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            )
                           ],
                         ),
                         Row(
@@ -180,32 +186,21 @@ class RestaurantCard extends StatelessWidget {
                           ],
                         ),
                         SizedBox(height: 2),
-                        Text(
-                          restaurant.description,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: ColorApp.grey,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                        Row(children: [
+                          Flexible(
+                            child: Text(
+                              restaurant.description,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: ColorApp.grey,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                        ])
                       ],
                     ),
-                    SizedBox(height: 4),
-                    // Row(
-                    //   children: [
-                    //     Icon(Icons.star, size: 12, color: Colors.amber),
-                    //     SizedBox(width: 2),
-                    //     Text(
-                    //       restaurant.rating.toStringAsFixed(1),
-                    //       style: TextStyle(
-                    //         fontSize: 11,
-                    //         fontWeight: FontWeight.w600,
-                    //         color: ColorApp.black,
-                    //       ),
-                    //     ),
-                    //   ],
-                    // ),
                   ],
                 ),
               ),

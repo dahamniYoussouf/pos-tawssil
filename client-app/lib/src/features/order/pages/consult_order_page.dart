@@ -7,7 +7,7 @@ import 'package:client_app/l10n/app_localizations.dart';
 import 'package:client_app/src/core/res/media_res.dart';
 import '../../cart/services/cart_service.dart';
 import 'validate_order_page.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:latlong2/latlong.dart';
 
 class ConsultOrderPage extends StatefulWidget {
   final String? restaurantName;
@@ -87,6 +87,45 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          AppLocalizations.of(context)!.orderSummary,
+                          style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w900,
+                              color: ColorApp.black),
+                        ),
+                        GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: Container(
+                                decoration: BoxDecoration(
+                                  color: ColorApp.white,
+                                  borderRadius: BorderRadius.circular(24),
+                                  border: Border.all(color: ColorApp.primary),
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16, vertical: 8),
+                                child: Flexible(
+                                  child: Text(
+                                    AppLocalizations.of(context)!.addItem,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w900,
+                                      color: ColorApp.primary,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                )))
+                      ],
+                    )),
                 if (widget.restaurantName != null)
                   _RestaurantNameSection(name: widget.restaurantName!),
                 const SizedBox(height: 12),
@@ -105,6 +144,7 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
                             item.menuItemId, item.quantity + 1);
                       },
                       onRemove: () => _showRemoveItemDialog(item),
+                      onEdit: () {},
                     )),
                 const SizedBox(height: 12),
                 DeliveryOptionSection(
@@ -214,26 +254,30 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
           'bank_transfer': l10n.bankTransfer,
         }[selectedPaymentMethod] ??
         l10n.cash;
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ValidateOrderPage(
-          deliveryAddress: widget.deliveryAddress ?? '',
-          estimatedTime: _estimatedDeliveryTime,
-          orderNumber: orderNumber,
-          totalPrice: _total,
-          paymentMethod: paymentMethodLabel,
-          paymentMethodCode: selectedPaymentMethod,
-          orderItems: orderItems,
-          orderType: orderType,
-          deliveryFee: _actualDeliveryFee,
-          pickupLocation: widget.restaurantLocation,
-          deliveryLocation: widget.deliveryLocation,
-          restaurantName: widget.restaurantName,
-          restaurantId: widget.restaurantId,
-        ),
-      ),
-    );
+
+    showModalBottomSheet<void>(
+        context: context,
+        isScrollControlled: true,
+        builder: (BuildContext context) {
+          return FractionallySizedBox(
+            heightFactor: 0.95,
+            child: ValidateOrderPage(
+              deliveryAddress: widget.deliveryAddress ?? '',
+              estimatedTime: _estimatedDeliveryTime,
+              orderNumber: orderNumber,
+              totalPrice: _total,
+              paymentMethod: paymentMethodLabel,
+              paymentMethodCode: selectedPaymentMethod,
+              orderItems: orderItems,
+              orderType: orderType,
+              deliveryFee: _actualDeliveryFee,
+              pickupLocation: widget.restaurantLocation!,
+              deliveryLocation: widget.deliveryLocation!,
+              restaurantName: widget.restaurantName,
+              restaurantId: widget.restaurantId,
+            ),
+          );
+        });
   }
 }
 
@@ -494,7 +538,7 @@ class _OrderDetailsSection extends StatelessWidget {
           const SizedBox(height: 12),
           PriceRowWidget(
             label: AppLocalizations.of(context)!.total,
-            price: '${total.toStringAsFixed(0)} DA',
+            price: '${total.toDouble().toStringAsFixed(0)} DA',
             isTotal: true,
           ),
         ],
@@ -672,53 +716,50 @@ class _VerifyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      margin: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
-      color: ColorApp.primary,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Container(
-        width: double.infinity,
-        child: ElevatedButton(
-            onPressed: onPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorApp.white,
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+    return GestureDetector(
+        onTap: onPressed,
+        child: Card(
+          elevation: 5,
+          margin: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+          color: ColorApp.primary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+                color: ColorApp.white,
               ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  '${total.toStringAsFixed(2)} DA',
-                  style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                      color: Colors.black),
-                ),
-                const SizedBox(width: 32),
-                Container(
-                  decoration: BoxDecoration(
-                    color: ColorApp.primary,
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Text(
-                    AppLocalizations.of(context)!.verifyAndFinalize,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '${total.toDouble().toStringAsFixed(2)} DA',
                     style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
-                        color: Colors.white),
+                        color: Colors.black),
                   ),
-                )
-              ],
-            )),
-      ),
-    );
+                  const SizedBox(width: 32),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: ColorApp.primary,
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    child: Text(
+                      AppLocalizations.of(context)!.verifyAndFinalize,
+                      style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: Colors.white),
+                    ),
+                  )
+                ],
+              )),
+        ));
   }
 }

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/src/features/locations/cubit/location_cubit.dart';
 import 'package:client_app/src/features/locations/cubit/location_state.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import '../models/restaurant_model.dart';
 import '../models/menu_model.dart';
@@ -20,16 +19,19 @@ import '../widgets/premium_banner.dart';
 import '../widgets/menu_category_chips.dart';
 import '../widgets/menu_list_view.dart';
 import '../widgets/floating_cart_button.dart';
+import 'package:latlong2/latlong.dart' as latlong;
 
 class RestaurantDetailsPage extends StatelessWidget {
   final RestaurantModel restaurant;
 
-  const RestaurantDetailsPage({Key? key, required this.restaurant}) : super(key: key);
+  const RestaurantDetailsPage({Key? key, required this.restaurant})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => RestaurantDetailsCubit()..loadMenuItems(restaurant.id),
+      create: (context) =>
+          RestaurantDetailsCubit()..loadMenuItems(restaurant.id),
       child: _RestaurantDetailsView(restaurant: restaurant),
     );
   }
@@ -40,7 +42,8 @@ class _RestaurantDetailsView extends StatelessWidget {
 
   const _RestaurantDetailsView({required this.restaurant});
 
-  Future<void> _navigateToMenuItemDetail(BuildContext context, MenuModel item) async {
+  Future<void> _navigateToMenuItemDetail(
+      BuildContext context, MenuModel item) async {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -97,7 +100,9 @@ class _RestaurantDetailsView extends StatelessWidget {
       String deliveryAddress = locationState.fullAddress;
       double latitude = locationState.latitude ?? 0.0;
       double longitude = locationState.longitude ?? 0.0;
-      LatLng deliveryLocation = LatLng(latitude, longitude);
+      latlong.LatLng? deliveryLocation = latlong.LatLng(latitude, longitude);
+      latlong.LatLng? restaurantLocation =
+          latlong.LatLng(restaurant.lat ?? 0.0, restaurant.lng ?? 0.0);
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -105,10 +110,7 @@ class _RestaurantDetailsView extends StatelessWidget {
             restaurantName: restaurant.name,
             restaurantId: restaurant.id,
             deliveryAddress: deliveryAddress,
-            restaurantLocation: LatLng(
-              restaurant.lat ?? 0.0,
-              restaurant.lng ?? 0.0,
-            ),
+            restaurantLocation: restaurantLocation,
             deliveryLocation: deliveryLocation,
           ),
         ),
@@ -136,7 +138,8 @@ class _RestaurantDetailsView extends StatelessWidget {
     return state.menuItems.where((item) {
       final selectedId = state.selectedCategoryId!;
       // Find the normalized key for the selected display id
-      final nameKey = displayIdToKey[selectedId] ?? selectedId.toLowerCase().trim();
+      final nameKey =
+          displayIdToKey[selectedId] ?? selectedId.toLowerCase().trim();
       final allowedIds = categoryIdMap[nameKey] ?? <String>{};
 
       // Accept if item.categoryId is in allowedIds
@@ -147,7 +150,8 @@ class _RestaurantDetailsView extends StatelessWidget {
       if (itemCatName.isNotEmpty && itemCatName == nameKey) return true;
 
       // If backend didn't provide categoryId, accept when selectedId equals the display key
-      if (item.categoryId.isEmpty && selectedId.toLowerCase().trim() == nameKey) return true;
+      if (item.categoryId.isEmpty && selectedId.toLowerCase().trim() == nameKey)
+        return true;
 
       return false;
     }).toList();
@@ -161,9 +165,12 @@ class _RestaurantDetailsView extends StatelessWidget {
         builder: (context, state) {
           return BlocBuilder<CartCubit, CartState>(
             builder: (context, cartState) {
-              final totalItems = cartState is CartUpdated ? cartState.totalItems : 0;
-              final totalPrice = cartState is CartUpdated ? cartState.totalPrice : 0.0;
-              final isEmpty = cartState is CartUpdated ? cartState.isEmpty : true;
+              final totalItems =
+                  cartState is CartUpdated ? cartState.totalItems : 0;
+              final totalPrice =
+                  cartState is CartUpdated ? cartState.totalPrice : 0.0;
+              final isEmpty =
+                  cartState is CartUpdated ? cartState.isEmpty : true;
 
               // Build cart quantities map
               final cartQuantities = <String, int>{};
@@ -199,15 +206,19 @@ class _RestaurantDetailsView extends StatelessWidget {
                                 categories: state.categories,
                                 selectedCategoryId: state.selectedCategoryId,
                                 onCategorySelected: (categoryId) {
-                                  context.read<RestaurantDetailsCubit>().selectCategory(categoryId);
+                                  context
+                                      .read<RestaurantDetailsCubit>()
+                                      .selectCategory(categoryId);
                                 },
                               ),
                             ],
                             Container(
                               constraints: BoxConstraints(
-                                minHeight: MediaQuery.of(context).size.height * 0.4,
+                                minHeight:
+                                    MediaQuery.of(context).size.height * 0.4,
                               ),
-                              padding: EdgeInsets.only(bottom: !isEmpty ? 80 : 20),
+                              padding:
+                                  EdgeInsets.only(bottom: !isEmpty ? 80 : 20),
                               child: _buildMenuContent(
                                 context,
                                 state,
@@ -264,7 +275,9 @@ class _RestaurantDetailsView extends StatelessWidget {
               SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
-                  context.read<RestaurantDetailsCubit>().loadMenuItems(restaurant.id);
+                  context
+                      .read<RestaurantDetailsCubit>()
+                      .loadMenuItems(restaurant.id);
                 },
                 child: Text(AppLocalizations.of(context)!.retryAction),
               ),

@@ -15,8 +15,10 @@ class LocationCubit extends Cubit<LocationState> {
     GetGpsLocationUseCase? getGpsLocationUseCase,
     SaveManualAddressUseCase? saveManualAddressUseCase,
   })  : _locationRepository = locationRepository ?? LocationRepository(),
-        _getGpsLocationUseCase = getGpsLocationUseCase ?? GetGpsLocationUseCase(),
-        _saveManualAddressUseCase = saveManualAddressUseCase ?? SaveManualAddressUseCase(),
+        _getGpsLocationUseCase =
+            getGpsLocationUseCase ?? GetGpsLocationUseCase(),
+        _saveManualAddressUseCase =
+            saveManualAddressUseCase ?? SaveManualAddressUseCase(),
         super(LocationInitial());
 
   Future<void> requestLocationPermission() async {
@@ -27,16 +29,19 @@ class LocationCubit extends Cubit<LocationState> {
         permission = await Geolocator.requestPermission();
       }
       if (permission == LocationPermission.deniedForever) {
-        emit(const LocationPermissionDenied(message: 'Location permissions are permanently denied.'));
+        emit(const LocationPermissionDenied(
+            message: 'Location permissions are permanently denied.'));
         return;
       }
       if (permission == LocationPermission.denied) {
-        emit(const LocationPermissionDenied(message: 'Location permission denied.'));
+        emit(const LocationPermissionDenied(
+            message: 'Location permission denied.'));
         return;
       }
       emit(LocationPermissionGranted());
     } catch (e) {
-      emit(LocationError(message: 'Error requesting permission: ${e.toString()}'));
+      emit(LocationError(
+          message: 'Error requesting permission: ${e.toString()}'));
     }
   }
 
@@ -107,10 +112,11 @@ class LocationCubit extends Cubit<LocationState> {
           longitude: longitude,
         ));
       } else {
-        emit(const LocationError(message: 'No saved location data.'));
+        requestLocationPermission().whenComplete(() => getGpsLocation());
       }
     } catch (e) {
-      emit(LocationError(message: 'Failed to load saved location: ${e.toString()}'));
+      emit(LocationError(
+          message: 'Failed to load saved location: ${e.toString()}'));
     }
   }
 

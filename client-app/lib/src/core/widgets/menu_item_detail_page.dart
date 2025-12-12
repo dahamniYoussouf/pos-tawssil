@@ -563,15 +563,17 @@ class _MenuItemDetailPageState extends State<MenuItemDetailPage> {
                       SvgPicture.asset(MediaRes.cartIcon,
                           width: 20, height: 20, color: ColorApp.white),
                       const SizedBox(width: 8),
-                      Text(
-                        AppLocalizations.of(context)!.addToCart,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                      Flexible(
+                        child: Text(
+                          AppLocalizations.of(context)!.addToCart,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
+                      )
                     ],
                   ),
                 ),

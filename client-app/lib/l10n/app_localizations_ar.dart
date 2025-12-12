@@ -42,6 +42,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cartTitle => 'السلة';
 
   @override
+  String get orderSummary => 'ملخص الطلب';
+
+  @override
+  String get addItem => 'إضافة عنصر';
+
+  @override
   String get deliveryAddress => 'عنوان التسليم';
 
   @override
