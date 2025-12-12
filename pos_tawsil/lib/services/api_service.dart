@@ -159,16 +159,35 @@ class ApiService {
   Future<List<FoodCategory>> fetchFoodCategories() async {
     try {
       print('📥 Fetching food categories...');
-      
-      // ✅ Le cashier utilise l'endpoint restaurant car il appartient à un restaurant
-      final response = await _dio.get('/foodcategory/me');
-      
+
+      // Priorité: endpoint restaurant avec restaurant_id du caissier
+      if (_restaurantId == null) {
+        final prefs = await SharedPreferences.getInstance();
+        _restaurantId = prefs.getString('restaurant_id');
+      }
+
+      Response response;
+      try {
+        if (_restaurantId != null) {
+          response = await _dio.get('/foodcategory/restaurant/$_restaurantId');
+        } else {
+          response = await _dio.get('/foodcategory/me');
+        }
+      } on DioException catch (e) {
+        // Si 403 sur /me, retente avec /restaurant/{id}
+        if (e.response?.statusCode == 403 && _restaurantId != null) {
+          response = await _dio.get('/foodcategory/restaurant/$_restaurantId');
+        } else {
+          rethrow;
+        }
+      }
+
       print('📥 Categories Response: ${response.data}');
-      
+
       if (response.data == null) {
         throw Exception('No response data');
       }
-      
+
       final bool success = response.data['success'] == true;
       if (!success) {
         final errorMsg = response.data['message'] ?? 'Failed to fetch categories';
@@ -179,9 +198,9 @@ class ApiService {
       if (dataList == null) {
         throw Exception('No categories data in response');
       }
-      
+
       print('✅ Fetched ${dataList.length} categories');
-      
+
       return dataList.map((json) => FoodCategory.fromJson(json)).toList();
     } on DioException catch (e) {
       print('❌ Category fetch error: ${e.response?.data ?? e.message}');
@@ -398,6 +417,31 @@ class ApiService {
     } on DioException catch (e) {
       print('❌ Status update error: ${e.response?.data ?? e.message}');
       throw Exception('Erreur: ${e.response?.data?['message'] ?? e.message}');
+    }
+  }
+
+  // ========== DASHBOARD (CASHIER) ==========
+
+  Future<Map<String, dynamic>> fetchCashierDashboardToday() async {
+    try {
+      final response = await _dio.get('/cashier/dashboard/today');
+      if (response.data == null) {
+        throw Exception('No response data');
+      }
+      if (response.data['success'] != true) {
+        final msg = response.data['message'] ?? 'Failed to fetch dashboard';
+        throw Exception(msg);
+      }
+      final data = response.data['data'];
+      if (data == null) {
+        throw Exception('No dashboard data');
+      }
+      return Map<String, dynamic>.from(data);
+    } on DioException catch (e) {
+      print('❌ Dashboard fetch error: ${e.response?.statusCode} - ${e.response?.data ?? e.message}');
+      throw Exception(e.response?.data?['message'] ?? e.message);
+    } catch (e) {
+      rethrow;
     }
   }
 }

@@ -72,7 +72,7 @@ class Order {
   Map<String, dynamic> toJson() {
     return {
       'restaurant_id': restaurantId,
-      'order_type': 'pickup',
+      'order_type': orderType,
       'payment_method': paymentMethod,
       'items': items.map((item) {
         final data = <String, dynamic>{

@@ -365,11 +365,15 @@ Future<Map<String, dynamic>> getOrdersStatistics() async {
   final totalResult = await db.rawQuery('SELECT COUNT(*) as count FROM orders');
   final totalOrders = totalResult.first['count'] as int;
   
-  // Total des ventes
-  final revenueResult = await db.rawQuery(
+  // Total des ventes (toutes) et ventes synchronisées
+  final revenueAllResult = await db.rawQuery(
+    'SELECT SUM(total_amount) as total FROM orders'
+  );
+  final revenueSyncedResult = await db.rawQuery(
     'SELECT SUM(total_amount) as total FROM orders WHERE synced = 1'
   );
-  final totalRevenue = (revenueResult.first['total'] as num?)?.toDouble() ?? 0.0;
+  final totalRevenueAll = (revenueAllResult.first['total'] as num?)?.toDouble() ?? 0.0;
+  final totalRevenueSynced = (revenueSyncedResult.first['total'] as num?)?.toDouble() ?? 0.0;
   
   // Commandes du jour
   final now = DateTime.now();
@@ -388,7 +392,8 @@ Future<Map<String, dynamic>> getOrdersStatistics() async {
   
   return {
     'total_orders': totalOrders,
-    'total_revenue': totalRevenue,
+    'total_revenue': totalRevenueSynced,
+    'total_revenue_all': totalRevenueAll,
     'today_orders': todayOrders,
     'unsynced_orders': unsyncedOrders,
   };

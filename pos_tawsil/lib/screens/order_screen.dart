@@ -11,7 +11,7 @@ import '../models/menu_item.dart';
 import '../models/order_item_addition.dart';
 import '../config/app_theme.dart';
 import 'orders_history_screen.dart';
-import 'stats_screen.dart';
+
 
 class OrderScreen extends StatefulWidget {
   const OrderScreen({Key? key}) : super(key: key);
@@ -22,15 +22,20 @@ class OrderScreen extends StatefulWidget {
 
 class _OrderScreenState extends State<OrderScreen> {
   final DatabaseService _db = DatabaseService();
+  final ApiService _apiService = ApiService();
   List<MenuItem> _menuItems = [];
   List<MenuItem> _filteredMenuItems = [];
   bool _isLoading = true;
+  bool _isLoadingDashboard = true;
+  String? _dashboardError;
+  Map<String, dynamic>? _dashboardData;
   String? _errorMessage;
   StreamSubscription<SyncStatus>? _syncSub;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String? _selectedCategoryId;
   Map<String, String> _categoryNames = {}; // Map categoryId -> nom
+  String _serviceType = 'dinein'; // dinein, takeout, delivery
 
   @override
   void initState() {
@@ -56,8 +61,111 @@ class _OrderScreenState extends State<OrderScreen> {
     });
 
     _syncAndLoadMenuItems();
+    _loadDashboard();
   }
 
+  Widget _buildSidebar() {
+    // Build category list from known names or fallback to IDs present in menu
+    final categoryEntries = <MapEntry<String?, String>>[
+      const MapEntry(null, 'Toutes catégories')
+    ];
+    categoryEntries.addAll(_categoryNames.entries);
+    if (categoryEntries.isEmpty && _menuItems.isNotEmpty) {
+      final ids = _menuItems.map((e) => e.categoryId).toSet().toList();
+      for (var i = 0; i < ids.length; i++) {
+        categoryEntries.add(MapEntry(ids[i], _getCategoryDisplayName(ids[i])));
+      }
+    }
+    return Container(
+      width: 110,
+      color: const Color(0xFF0E2E1D),
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Column(
+              children: [
+                FractionallySizedBox(
+                  widthFactor: 0.9,
+                  child: Image.asset(
+                    'assets/images/logo_green.webp',
+                    height: 32,
+                    color: Colors.white,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                // Small sync indicator
+                const SizedBox(height: 4),
+                const _SyncStatusBanner(compact: true),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Scrollbar(
+              thumbVisibility: true,
+              child: ListView(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                children: [
+                  // Nav shortcuts
+                  _SidebarNavButton(
+                    icon: Icons.receipt_long,
+                    label: 'Commandes',
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const OrdersHistoryScreen()),
+                      );
+                    },
+                  ),
+                  const Divider(color: Colors.white24),
+                  ...categoryEntries.map((entry) {
+                    final isSelected = entry.key == _selectedCategoryId;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 6),
+                      child: Column(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.restaurant_menu),
+                            color: isSelected ? Colors.white : Colors.white70,
+                            onPressed: () {
+                              setState(() {
+                                _selectedCategoryId = entry.key;
+                              });
+                              _filterMenuItems();
+                            },
+                          ),
+                          Text(
+                            entry.value,
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: isSelected ? Colors.white : Colors.white70,
+                              fontSize: 12,
+                              height: 1.1,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ],
+              ),
+            ),
+          ),
+          _SidebarNavButton(
+            icon: Icons.logout,
+            label: 'Logout',
+            onTap: () => _logout(context),
+          ),
+          const SizedBox(height: 12),
+        ],
+      ),
+    );
+  }
+
+  // Top bar, KPI row, and trending removed per request.
   String _getCategoryDisplayName(String categoryId) {
     // Try to get a readable name from the ID (last part of UUID)
     if (categoryId.length > 8) {
@@ -149,6 +257,27 @@ class _OrderScreenState extends State<OrderScreen> {
       print('✅ Loaded ${categoryMap.length} categories');
     } catch (e) {
       print('⚠️ Failed to load categories: $e');
+    }
+  }
+
+  Future<void> _loadDashboard() async {
+    setState(() {
+      _isLoadingDashboard = true;
+      _dashboardError = null;
+    });
+    try {
+      final data = await _apiService.fetchCashierDashboardToday();
+      if (!mounted) return;
+      setState(() {
+        _dashboardData = data;
+        _isLoadingDashboard = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _dashboardError = e.toString();
+        _isLoadingDashboard = false;
+      });
     }
   }
 
@@ -274,96 +403,38 @@ class _OrderScreenState extends State<OrderScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F6F4),
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF00A859),
-        elevation: 0,
-        title: Row(
+      backgroundColor: const Color(0xFFF7F8FA),
+      body: SafeArea(
+        child: Row(
           children: [
-            Image.network(
-              'https://i.imgur.com/9KX5ZqH.png',
-              height: 32,
-              fit: BoxFit.contain,
-              color: Colors.white,
+            _buildSidebar(),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (!_isLoading && _menuItems.isNotEmpty) _buildSearchAndFilterBar(),
+                  Expanded(child: _buildMenuSection()),
+                ],
+              ),
             ),
-            const SizedBox(width: 12),
-            const Text('Nouvelle Commande'),
+            const Padding(
+              padding: EdgeInsets.only(
+                right: TawsilSpacing.md,
+                top: TawsilSpacing.md,
+                bottom: TawsilSpacing.md,
+              ),
+              child: SizedBox(
+                width: 380,
+                child: _OrderSummary(),
+              ),
+            ),
           ],
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.history_rounded),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const OrdersHistoryScreen(),
-                ),
-              );
-            },
-            tooltip: 'Historique',
-          ),
-          IconButton(
-            icon: const Icon(Icons.query_stats_rounded),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const StatsScreen(),
-                ),
-              );
-            },
-            tooltip: 'Statistiques',
-          ),
-          IconButton(
-            icon: const Icon(Icons.sync_rounded),
-            onPressed: _syncOrdersOnly,
-            tooltip: 'Sync commandes',
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => _logout(context),
-            tooltip: 'D?connexion',
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          const _SyncStatusBanner(),
-          // Search and Filter Bar
-          if (!_isLoading && _menuItems.isNotEmpty) _buildSearchAndFilterBar(),
-          Expanded(
-            child: Row(
-              children: [
-                // Menu Items (Left)
-                Expanded(
-                  flex: 3,
-                  child: _buildMenuSection(),
-                ),
-                
-                // Order Summary (Right)
-                const Padding(
-                  padding: EdgeInsets.only(
-                    right: TawsilSpacing.md,
-                    top: TawsilSpacing.md,
-                    bottom: TawsilSpacing.md,
-                  ),
-                  child: SizedBox(
-                    width: 380,
-                    child: _OrderSummary(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }
 
   Widget _buildSearchAndFilterBar() {
-    final categoryIds = _menuItems.map((item) => item.categoryId).toSet().toList();
-    
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: TawsilSpacing.md,
@@ -381,7 +452,6 @@ class _OrderScreenState extends State<OrderScreen> {
       ),
       child: Row(
         children: [
-          // Search Field
           Expanded(
             child: Container(
               decoration: BoxDecoration(
@@ -417,93 +487,6 @@ class _OrderScreenState extends State<OrderScreen> {
                     vertical: TawsilSpacing.sm,
                   ),
                 ),
-              ),
-            ),
-          ),
-          const SizedBox(width: TawsilSpacing.md),
-          // Category Filter
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: TawsilSpacing.sm),
-            decoration: BoxDecoration(
-              color: _selectedCategoryId == null
-                  ? TawsilColors.primary
-                  : TawsilColors.background,
-              borderRadius: BorderRadius.circular(TawsilBorderRadius.md),
-              border: Border.all(
-                color: _selectedCategoryId == null
-                    ? TawsilColors.primary
-                    : TawsilColors.border,
-              ),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                value: _selectedCategoryId,
-                hint: Text(
-                  'Toutes catégories',
-                  style: TextStyle(
-                    color: _selectedCategoryId == null
-                        ? Colors.white
-                        : TawsilColors.textPrimary,
-                  ),
-                ),
-                icon: Icon(
-                  Icons.filter_list,
-                  color: _selectedCategoryId == null
-                      ? Colors.white
-                      : TawsilColors.textSecondary,
-                ),
-                items: [
-                  DropdownMenuItem<String>(
-                    value: null,
-                    child: Text(
-                      'Toutes catégories',
-                      style: TextStyle(color: TawsilColors.textPrimary),
-                    ),
-                  ),
-                  ...categoryIds.map((catId) {
-                    final categoryName = _categoryNames[catId];
-                    // If name not found, show a short version of the ID or fetch it
-                    final displayName = categoryName ?? _getCategoryDisplayName(catId);
-                    
-                    // If name is missing, try to fetch it asynchronously
-                    if (categoryName == null) {
-                      _fetchCategoryNameAsync(catId);
-                    }
-                    
-                    return DropdownMenuItem<String>(
-                      value: catId,
-                      child: Text(
-                        displayName,
-                        style: TextStyle(color: TawsilColors.textPrimary),
-                      ),
-                    );
-                  }),
-                ],
-                onChanged: (value) {
-                  setState(() {
-                    _selectedCategoryId = value;
-                  });
-                  _filterMenuItems();
-                },
-              ),
-            ),
-          ),
-          // Results count
-          const SizedBox(width: TawsilSpacing.sm),
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: TawsilSpacing.md,
-              vertical: TawsilSpacing.sm,
-            ),
-            decoration: BoxDecoration(
-              color: TawsilColors.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(TawsilBorderRadius.md),
-            ),
-            child: Text(
-              '${_filteredMenuItems.length} article${_filteredMenuItems.length > 1 ? 's' : ''}',
-              style: TawsilTextStyles.bodySmall.copyWith(
-                color: TawsilColors.primary,
-                fontWeight: FontWeight.w600,
               ),
             ),
           ),
@@ -625,10 +608,11 @@ class _OrderScreenState extends State<OrderScreen> {
     return GridView.builder(
       padding: const EdgeInsets.all(TawsilSpacing.md),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: MediaQuery.of(context).size.width > 1200 ? 4 : 3,
+        crossAxisCount: MediaQuery.of(context).size.width > 1400 ? 4 : 3,
         mainAxisSpacing: TawsilSpacing.md,
         crossAxisSpacing: TawsilSpacing.md,
-        childAspectRatio: 0.62,
+        // Ratio ajusté pour laisser plus de hauteur au contenu
+        childAspectRatio: 0.8,
       ),
       itemCount: _filteredMenuItems.length,
       itemBuilder: (context, index) {
@@ -649,174 +633,128 @@ class _MenuItemCard extends StatelessWidget {
     final availableAdditions =
         menuItem.additions.where((a) => a.isAvailable).toList();
 
-    return Card(
-      elevation: TawsilElevation.sm,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(TawsilBorderRadius.lg),
-      ),
-      child: InkWell(
-        onTap: () => _handleAdd(context),
-        borderRadius: BorderRadius.circular(TawsilBorderRadius.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(TawsilBorderRadius.lg),
-                topRight: Radius.circular(TawsilBorderRadius.lg),
-              ),
-              child: Stack(
-                children: [
-                  AspectRatio(
-                    aspectRatio: 4 / 3,
-                    child: menuItem.photoUrl != null
-                        ? Image.network(
-                            menuItem.photoUrl!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => _buildPlaceholder(),
-                          )
-                        : _buildPlaceholder(),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Card(
+          elevation: TawsilElevation.sm,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(TawsilBorderRadius.lg),
+          ),
+          child: InkWell(
+            onTap: () => _handleAdd(context),
+            borderRadius: BorderRadius.circular(TawsilBorderRadius.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(TawsilBorderRadius.lg),
+                    topRight: Radius.circular(TawsilBorderRadius.lg),
                   ),
-                  if (availableAdditions.isNotEmpty)
-                    Positioned(
-                      top: 10,
-                      left: 10,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF00A859),
-                          borderRadius: BorderRadius.circular(TawsilBorderRadius.full),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
-                              blurRadius: 6,
-                              offset: const Offset(0, 3),
+                  child: Stack(
+                    children: [
+                      AspectRatio(
+                        aspectRatio: 4 / 3,
+                        child: menuItem.photoUrl != null
+                            ? Image.network(
+                                menuItem.photoUrl!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                              )
+                            : _buildPlaceholder(),
+                      ),
+                      if (availableAdditions.isNotEmpty)
+                        Positioned(
+                          top: 10,
+                          left: 10,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF00A859),
+                              borderRadius: BorderRadius.circular(TawsilBorderRadius.full),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.08),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
                             ),
-                          ],
+                            child: Text(
+                              '+${availableAdditions.length} extras',
+                              style: TawsilTextStyles.bodySmall.copyWith(
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ),
                         ),
-                        child: Text(
-                          '+${availableAdditions.length} extras',
-                          style: TawsilTextStyles.bodySmall.copyWith(
-                            color: Colors.white,
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(TawsilSpacing.sm),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          menuItem.nom,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TawsilTextStyles.bodyMedium.copyWith(
                             fontWeight: FontWeight.w700,
                           ),
                         ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(TawsilSpacing.sm),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    menuItem.nom,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TawsilTextStyles.bodyMedium.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  if (availableAdditions.isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: [
-                        ...availableAdditions.take(3).map((add) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
+                        const Spacer(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  menuItem.prix.isFinite
+                                      ? '${menuItem.prix.toStringAsFixed(0)} DA'
+                                      : '-- DA',
+                                  style: TawsilTextStyles.priceMedium,
+                                ),
+                                // Keep price only
+                              ],
                             ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(TawsilBorderRadius.full),
-                              border: Border.all(color: TawsilColors.border),
-                              color: TawsilColors.background,
-                            ),
-                            child: Text(
-                              add.nom,
-                              style: TawsilTextStyles.bodySmall,
-                            ),
-                          );
-                        }),
-                        if (availableAdditions.length > 3)
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(TawsilBorderRadius.full),
-                              color: TawsilColors.background,
-                              border: Border.all(color: TawsilColors.border),
-                            ),
-                            child: Text(
-                              '+${menuItem.additions.length - 3} autres',
-                              style: TawsilTextStyles.bodySmall.copyWith(
-                                color: TawsilColors.textSecondary,
+                            Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF00A859),
+                                borderRadius: BorderRadius.circular(TawsilBorderRadius.full),
+                              ),
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () => _handleAdd(context),
+                                  borderRadius: BorderRadius.circular(TawsilBorderRadius.full),
+                                  child: const Padding(
+                                    padding: EdgeInsets.all(10),
+                                    child: Icon(
+                                      Icons.add_rounded,
+                                      size: 20,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                          ],
+                        ),
                       ],
                     ),
-                  ],
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            menuItem.prix.isFinite
-                                ? '${menuItem.prix.toStringAsFixed(0)} DA'
-                                : '-- DA',
-                            style: TawsilTextStyles.priceMedium,
-                          ),
-                          if (availableAdditions.isNotEmpty)
-                            Text(
-                              'Extras disponibles',
-                              style: TawsilTextStyles.bodySmall.copyWith(
-                                color: TawsilColors.textSecondary,
-                              ),
-                            ),
-                        ],
-                      ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF00A859),
-                          borderRadius: BorderRadius.circular(TawsilBorderRadius.full),
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () => _handleAdd(context),
-                            borderRadius: BorderRadius.circular(TawsilBorderRadius.full),
-                            child: const Padding(
-                              padding: EdgeInsets.all(10),
-                              child: Icon(
-                                Icons.add_rounded,
-                                size: 20,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -854,6 +792,126 @@ class _MenuItemCard extends StatelessWidget {
           Icons.fastfood_rounded,
           size: 48,
           color: Color(0xFF00A859),
+        ),
+      ),
+    );
+  }
+}
+
+class _KpiCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+
+  const _KpiCard({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(TawsilBorderRadius.lg),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: const Color(0xFFE7F7EE),
+              child: Icon(icon, color: const Color(0xFF10A05C)),
+            ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: TawsilTextStyles.bodySmall.copyWith(color: TawsilColors.textSecondary)),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: TawsilTextStyles.headingMedium.copyWith(fontWeight: FontWeight.w700),
+                ),
+              ],
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TrendingItem {
+  final String? id;
+  final String name;
+  final double price;
+  final String? photoUrl;
+  final int? quantity;
+
+  _TrendingItem({
+    this.id,
+    required this.name,
+    required this.price,
+    this.photoUrl,
+    this.quantity,
+  });
+
+  factory _TrendingItem.fromMap(Map<String, dynamic> map) {
+    return _TrendingItem(
+      id: map['id']?.toString(),
+      name: map['name'] ?? 'Article',
+      price: (map['price'] is num) ? (map['price'] as num).toDouble() : 0.0,
+      photoUrl: map['photo_url'] as String?,
+      quantity: map['quantity'] is num ? (map['quantity'] as num).toInt() : null,
+    );
+  }
+}
+
+class _SidebarNavButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _SidebarNavButton({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.06),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Column(
+            children: [
+              Icon(icon, color: Colors.white, size: 20),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white70, fontSize: 11, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -1583,7 +1641,8 @@ class _AdditionSelection {
 }
 
 class _SyncStatusBanner extends StatelessWidget {
-  const _SyncStatusBanner();
+  final bool compact;
+  const _SyncStatusBanner({this.compact = false});
 
   @override
   Widget build(BuildContext context) {
@@ -1607,39 +1666,45 @@ class _SyncStatusBanner extends StatelessWidget {
             ? Icons.sync_rounded
             : (isWarning ? Icons.wifi_off_rounded : Icons.check_circle_rounded);
 
+        final padding = compact
+            ? const EdgeInsets.symmetric(horizontal: 8, vertical: 6)
+            : const EdgeInsets.symmetric(horizontal: TawsilSpacing.md, vertical: TawsilSpacing.sm);
         return Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(
-            horizontal: TawsilSpacing.md,
-            vertical: TawsilSpacing.sm,
-          ),
+          padding: padding,
           decoration: BoxDecoration(
             color: bgColor,
-            border: Border(
-              bottom: BorderSide(color: TawsilColors.border),
-            ),
+            border: compact
+                ? null
+                : Border(
+                    bottom: BorderSide(color: TawsilColors.border),
+                  ),
           ),
           child: Row(
             children: [
-              Icon(icon, color: iconColor, size: 18),
-              const SizedBox(width: TawsilSpacing.sm),
+              Icon(icon, color: iconColor, size: compact ? 16 : 18),
+              const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   status.message,
+                  maxLines: compact ? 1 : 2,
+                  overflow: TextOverflow.ellipsis,
                   style: TawsilTextStyles.bodySmall.copyWith(
                     color: iconColor,
                     fontWeight: FontWeight.w700,
+                    fontSize: compact ? 11 : TawsilTextStyles.bodySmall.fontSize,
                   ),
                 ),
               ),
-              TextButton.icon(
-                onPressed: status.isSyncing ? null : () => syncService.syncAll(),
-                icon: const Icon(Icons.refresh_rounded, size: 16),
-                label: const Text('Sync'),
-                style: TextButton.styleFrom(
-                  foregroundColor: iconColor,
+              if (!compact)
+                TextButton.icon(
+                  onPressed: status.isSyncing ? null : () => syncService.syncAll(),
+                  icon: const Icon(Icons.refresh_rounded, size: 16),
+                  label: const Text('Sync'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: iconColor,
+                  ),
                 ),
-              ),
             ],
           ),
         );
@@ -1647,5 +1712,3 @@ class _SyncStatusBanner extends StatelessWidget {
     );
   }
 }
-
-

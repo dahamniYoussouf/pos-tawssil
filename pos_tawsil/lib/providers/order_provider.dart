@@ -221,6 +221,12 @@ class OrderProvider with ChangeNotifier {
 
   // ========== ORDER COMPLETION ==========
   
+  void setOrderType(String orderType) {
+    if (_currentOrder == null) return;
+    _currentOrder = _currentOrder!.copyWith(orderType: orderType);
+    notifyListeners();
+  }
+  
   Future<void> completeOrder({
     required String paymentMethod,
     bool printTicket = true,

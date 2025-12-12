@@ -4,7 +4,7 @@ import 'package:path/path.dart';
 class DatabaseConfig {
   static Database? _database;
   static const String dbName = 'pos_tawsil.db';
-  static const int dbVersion = 2;
+  static const int dbVersion = 4;
 
   static Future<Database> get database async {
     if (_database != null) return _database!;
@@ -43,6 +43,15 @@ class DatabaseConfig {
 
       await db.execute('ALTER TABLE order_items ADD COLUMN additions_total REAL DEFAULT 0');
       await db.execute('ALTER TABLE order_items ADD COLUMN additions_json TEXT');
+    }
+
+    if (oldVersion < 3) {
+      await db.execute("ALTER TABLE order_items ADD COLUMN photo_url TEXT");
+    }
+
+    if (oldVersion < 4) {
+      // Ensure photo_url exists (idempotent in case migration 3 was skipped)
+      await db.execute("ALTER TABLE order_items ADD COLUMN photo_url TEXT");
     }
   }
 
@@ -134,6 +143,7 @@ class DatabaseConfig {
         order_id TEXT NOT NULL,
         menu_item_id TEXT NOT NULL,
         menu_item_name TEXT NOT NULL,
+        photo_url TEXT,
         quantite INTEGER NOT NULL,
         prix_unitaire REAL NOT NULL,
         prix_total REAL NOT NULL,

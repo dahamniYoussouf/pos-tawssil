@@ -83,6 +83,11 @@ class _StatsScreenState extends State<StatsScreen> {
                             color: Colors.blue,
                           ),
                           _StatCard(
+                            label: 'CA total (local)',
+                            value: '${(_stats['total_revenue_all'] ?? 0).toStringAsFixed(0)} DA',
+                            color: Colors.blue,
+                          ),
+                          _StatCard(
                             label: 'Commandes du jour',
                             value: '${_stats['today_orders'] ?? 0}',
                             color: Colors.orange,
