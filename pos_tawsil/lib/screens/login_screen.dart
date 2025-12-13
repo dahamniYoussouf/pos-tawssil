@@ -11,12 +11,13 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _apiService = ApiService();
-  
+
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _rememberMe = false;
@@ -30,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     // Prefill with a cashier test account from the seed data
     _emailController.text = 'cashier1@example.com';
     _passwordController.text = 'password123';
-    
+
     // Initialize animation
     _animationController = AnimationController(
       vsync: this,
@@ -40,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
     _animationController.forward();
-    
+
     _checkExistingSession();
     _loadRememberedCredentials();
   }
@@ -50,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     final rememberedEmail = prefs.getString('remembered_email');
     final rememberedPassword = prefs.getString('remembered_password');
     final shouldRemember = prefs.getBool('remember_me') ?? false;
-    
+
     if (shouldRemember && rememberedEmail != null) {
       setState(() {
         _rememberMe = true;
@@ -66,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('auth_token');
     final cashierId = prefs.getString('cashier_id');
-    
+
     if (token != null && cashierId != null && mounted) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const OrderScreen()),
@@ -151,77 +152,132 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                 ],
               ),
             ),
-            child: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(
-                    'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&q=80',
+            child: Stack(
+              children: [
+                Positioned(
+                  bottom: 32,
+                  right: -12,
+                  child: Opacity(
+                    opacity: 0.08,
+                    child: Text(
+                      'TAWSIL',
+                      style: TextStyle(
+                        fontSize: 110,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        letterSpacing: -4,
+                      ),
+                    ),
                   ),
-                  fit: BoxFit.cover,
-                  opacity: 0.15,
                 ),
-              ),
-              child: SafeArea(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(48),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // Logo
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(16),
+                SafeArea(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(48),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              height: 72,
+                              width: 72,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: LinearGradient(
+                                  colors: [
+                                    Colors.white.withOpacity(0.28),
+                                    Colors.white.withOpacity(0.08),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.3),
+                                  width: 1.2,
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.1),
+                                    blurRadius: 18,
+                                    offset: Offset(0, 10),
+                                  ),
+                                ],
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Image.asset(
+                                  'assets/images/logo_green.webp',
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (_, __, ___) => const Icon(
+                                    Icons.point_of_sale,
+                                    size: 32,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 14),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Tawsil POS',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.white.withOpacity(0.95),
+                                  ),
+                                ),
+                                Text(
+                                  'Interface caissier',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.white.withOpacity(0.85),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                        child: Image.asset(
-                          'assets/images/logo_green.webp',
-                          height: 56,
-                          width: 56,
-                          fit: BoxFit.contain,
-                          errorBuilder: (_, __, ___) => const Icon(
-                            Icons.point_of_sale,
-                            size: 48,
+                        const SizedBox(height: 32),
+                        const Text(
+                          'Point de vente\nTawsil',
+                          style: TextStyle(
+                            fontSize: 48,
+                            fontWeight: FontWeight.bold,
                             color: Colors.white,
+                            height: 1.2,
+                            letterSpacing: -1,
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 40),
-                      const Text(
-                        'Point de vente\nTawsil',
-                        style: TextStyle(
-                          fontSize: 48,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          height: 1.2,
-                          letterSpacing: -1,
+                        const SizedBox(height: 18),
+                        Text(
+                          'Systeme de gestion de point de vente moderne et intuitif pour votre restaurant.',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white.withOpacity(0.9),
+                            height: 1.5,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        'Système de gestion de point de vente moderne et intuitif pour votre restaurant.',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white.withOpacity(0.9),
-                          height: 1.5,
+                        const SizedBox(height: 28),
+                        _buildFeatureItem(Icons.speed, 'Performance optimale'),
+                        const SizedBox(height: 12),
+                        _buildFeatureItem(Icons.security, 'Securise et fiable'),
+                        const SizedBox(height: 12),
+                        _buildFeatureItem(
+                          Icons.sync,
+                          'Synchronisation automatique',
                         ),
-                      ),
-                      const SizedBox(height: 36),
-                      _buildFeatureItem(Icons.speed, 'Performance optimale'),
-                      const SizedBox(height: 12),
-                      _buildFeatureItem(Icons.security, 'Sécurisé et fiable'),
-                      const SizedBox(height: 12),
-                      _buildFeatureItem(Icons.sync, 'Synchronisation automatique'),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
+              ],
             ),
           ),
         ),
-
         // Right side - Login form
         Expanded(
           flex: 1,
@@ -332,30 +388,6 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildFeatureItem(IconData icon, String text) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Icon(icon, color: Colors.white, size: 20),
-        ),
-        const SizedBox(width: 16),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.white.withOpacity(0.9),
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildLoginForm() {
     return Form(
       key: _formKey,
@@ -374,13 +406,35 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
           ),
           const SizedBox(height: 8),
           Text(
-            'Connectez-vous pour accéder au système',
+            'Connectez-vous pour acceder au systeme',
             style: TextStyle(
               fontSize: 16,
               color: TawsilColors.textSecondary,
             ),
           ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: const [
+              _LoginBadge(
+                label: 'Support 24/7',
+                icon: Icons.headset_mic_outlined,
+                color: TawsilColors.primary,
+              ),
+              _LoginBadge(
+                label: 'Securise SSL',
+                icon: Icons.shield_outlined,
+                color: TawsilColors.accent,
+              ),
+              _LoginBadge(
+                label: 'POS v1.0.0',
+                icon: Icons.offline_bolt_outlined,
+                color: TawsilColors.primaryDark,
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
 
           // Error Message
           if (_errorMessage != null)
@@ -395,7 +449,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
               ),
               child: Row(
                 children: [
-                  Icon(Icons.error_outline, color: TawsilColors.error, size: 24),
+                  Icon(Icons.error_outline,
+                      color: TawsilColors.error, size: 24),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -428,7 +483,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             decoration: InputDecoration(
               hintText: 'votre@email.com',
               hintStyle: TextStyle(color: TawsilColors.textHint),
-              prefixIcon: Icon(Icons.email_outlined, color: TawsilColors.textSecondary),
+              prefixIcon:
+                  Icon(Icons.email_outlined, color: TawsilColors.textSecondary),
               filled: true,
               fillColor: Colors.white,
               border: OutlineInputBorder(
@@ -441,7 +497,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: TawsilColors.primary, width: 2),
+                borderSide:
+                    const BorderSide(color: TawsilColors.primary, width: 2),
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -449,9 +506,11 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
               ),
               focusedErrorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: TawsilColors.error, width: 2),
+                borderSide:
+                    const BorderSide(color: TawsilColors.error, width: 2),
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -482,7 +541,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
             decoration: InputDecoration(
               hintText: '••••••••',
               hintStyle: TextStyle(color: TawsilColors.textHint),
-              prefixIcon: Icon(Icons.lock_outlined, color: TawsilColors.textSecondary),
+              prefixIcon:
+                  Icon(Icons.lock_outlined, color: TawsilColors.textSecondary),
               filled: true,
               fillColor: Colors.white,
               border: OutlineInputBorder(
@@ -495,7 +555,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: TawsilColors.primary, width: 2),
+                borderSide:
+                    const BorderSide(color: TawsilColors.primary, width: 2),
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
@@ -503,18 +564,22 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
               ),
               focusedErrorBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: TawsilColors.error, width: 2),
+                borderSide:
+                    const BorderSide(color: TawsilColors.error, width: 2),
               ),
               suffixIcon: IconButton(
                 icon: Icon(
-                  _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                  _obscurePassword
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
                   color: TawsilColors.textSecondary,
                 ),
                 onPressed: () {
                   setState(() => _obscurePassword = !_obscurePassword);
                 },
               ),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -609,11 +674,76 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
           // Footer
           Center(
             child: Text(
-              '© 2024 Tawsil POS. Tous droits réservés.',
+              '(c) 2024 Tawsil POS. Tous droits reserves.',
               style: TextStyle(
                 fontSize: 12,
                 color: TawsilColors.textHint,
               ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureItem(IconData icon, String text) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.25),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(icon, color: Colors.white, size: 24),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Text(
+            text,
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.white.withOpacity(0.9),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LoginBadge extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+
+  const _LoginBadge({
+    required this.label,
+    required this.icon,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withOpacity(0.4)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 16, color: color),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: color,
             ),
           ),
         ],
