@@ -1,3 +1,4 @@
+import 'package:client_app/src/core/res/color_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -69,10 +70,13 @@ class _UserInfoViewState extends State<UserInfoView> {
       builder: (context, state) {
         final isLoading = state is AuthUpdatingProfile;
         final errorMessageRaw = state is AuthError ? state.message : '';
-        final errorMessage = errorMessageRaw.isNotEmpty ? AppLocalizations.of(context)!.translateErrorMessage(errorMessageRaw) : '';
+        final errorMessage = errorMessageRaw.isNotEmpty
+            ? AppLocalizations.of(context)!
+                .translateErrorMessage(errorMessageRaw)
+            : '';
 
         return Scaffold(
-          backgroundColor: const Color(0xFF006C4A), // Tawsil green
+          backgroundColor: ColorApp.primary,
           body: SafeArea(
             child: Column(
               children: [
@@ -81,7 +85,7 @@ class _UserInfoViewState extends State<UserInfoView> {
                   flex: 35,
                   child: Container(
                     width: double.infinity,
-                    color: const Color(0xFF006C4A),
+                    color: ColorApp.primary,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -142,7 +146,9 @@ class _UserInfoViewState extends State<UserInfoView> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: errorMessage.isNotEmpty ? Colors.red : const Color(0xFFD1D5DB),
+                                color: errorMessage.isNotEmpty
+                                    ? Colors.red
+                                    : const Color(0xFFD1D5DB),
                                 width: 1,
                               ),
                             ),
@@ -156,10 +162,12 @@ class _UserInfoViewState extends State<UserInfoView> {
                                 fontWeight: FontWeight.w500,
                               ),
                               inputFormatters: [
-                                FilteringTextInputFormatter.allow(RegExp(r'[a-zA-ZÀ-ÿ\s]')),
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'[a-zA-ZÀ-ÿ\s]')),
                               ],
                               decoration: InputDecoration(
-                                hintText: AppLocalizations.of(context)!.firstNameHint,
+                                hintText:
+                                    AppLocalizations.of(context)!.firstNameHint,
                                 hintStyle: const TextStyle(
                                   color: Color(0xFF9CA3AF),
                                   fontSize: 14,
@@ -187,7 +195,9 @@ class _UserInfoViewState extends State<UserInfoView> {
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: errorMessage.isNotEmpty ? Colors.red : const Color(0xFFD1D5DB),
+                                color: errorMessage.isNotEmpty
+                                    ? Colors.red
+                                    : const Color(0xFFD1D5DB),
                                 width: 1,
                               ),
                             ),
@@ -201,10 +211,12 @@ class _UserInfoViewState extends State<UserInfoView> {
                                 fontWeight: FontWeight.w500,
                               ),
                               inputFormatters: [
-                                FilteringTextInputFormatter.allow(RegExp(r'[a-zA-ZÀ-ÿ\s]')),
+                                FilteringTextInputFormatter.allow(
+                                    RegExp(r'[a-zA-ZÀ-ÿ\s]')),
                               ],
                               decoration: InputDecoration(
-                                hintText: AppLocalizations.of(context)!.lastNameHint,
+                                hintText:
+                                    AppLocalizations.of(context)!.lastNameHint,
                                 hintStyle: const TextStyle(
                                   color: Color(0xFF9CA3AF),
                                   fontSize: 14,
@@ -257,8 +269,7 @@ class _UserInfoViewState extends State<UserInfoView> {
                             child: ElevatedButton(
                               onPressed: isLoading ? null : _handleSave,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF006C4A),
-                                disabledBackgroundColor: const Color(0xFF006C4A).withOpacity(0.6),
+                                backgroundColor: ColorApp.primary,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -270,7 +281,8 @@ class _UserInfoViewState extends State<UserInfoView> {
                                       height: 20,
                                       child: CircularProgressIndicator(
                                         strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                        valueColor:
+                                            AlwaysStoppedAnimation<Color>(
                                           Colors.white,
                                         ),
                                       ),
