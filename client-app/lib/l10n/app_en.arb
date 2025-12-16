@@ -883,6 +883,46 @@
   "privacyPolicy": "Privacy policy",
   "@privacyPolicy": {
     "description": "Privacy policy link text"
+  },
+  "myLocations": "My Locations",
+  "@myLocations": {
+    "description": "My locations menu item"
+  },
+  "myPromotions": "My Promotions",
+  "@myPromotions": {
+    "description": "My promotions menu item"
+  },
+  "paymentMethods": "Payment Methods",
+  "@paymentMethods": {
+    "description": "Payment methods menu item"
+  },
+  "messages": "Messages",
+  "@messages": {
+    "description": "Messages menu item"
+  },
+  "inviteFriends": "Invite Friends",
+  "@inviteFriends": {
+    "description": "Invite friends menu item"
+  },
+  "security": "Security",
+  "@security": {
+    "description": "Security menu item"
+  },
+  "helpCenter": "Help Center",
+  "@helpCenter": {
+    "description": "Help center menu item"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout menu item"
+  },
+  "logoutConfirmation": "Are you sure you want to logout?",
+  "@logoutConfirmation": {
+    "description": "Logout confirmation message"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
   }
 }
 

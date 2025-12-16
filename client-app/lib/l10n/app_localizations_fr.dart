@@ -680,4 +680,32 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get privacyPolicy => 'Politique de confidentialité';
+
+  @override
+  String get myLocations => 'Mes Adresses';
+
+  @override
+  String get myPromotions => 'Mes Promotions';
+
+  @override
+  String get paymentMethods => 'Méthodes de Paiement';
+
+  @override
+  String get messages => 'Messages';
+
+  @override
+  String get inviteFriends => 'Inviter des Amis';
+
+  @override
+  String get security => 'Sécurité';
+
+  @override
+  String get helpCenter => 'Centre d\'Aide';
+
+  @override
+  String get logout => 'Déconnexion';
+
+  @override
+  String get logoutConfirmation =>
+      'Êtes-vous sûr de vouloir vous déconnecter ?';
 }

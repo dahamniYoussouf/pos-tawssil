@@ -41,4 +41,14 @@ class MediaRes {
   static const closeIcon = '$_baseImageIcon/close_icon.svg';
   static const editIcon = '$_baseImageIcon/edit_icon.svg';
   static const pickUpIcon = '$_baseImageIcon/pick_up_icon.svg';
+  static const arrowRightIcon = '$_baseImageIcon/arrow_right_icon.svg';
+  static const helpIcon = '$_baseImageIcon/help_icon.svg';
+  static const locationProfileIcon =
+      '$_baseImageIcon/location_profile_icon.svg';
+  static const promotionIcon = '$_baseImageIcon/promotion_icon.svg';
+  static const usersIcon = '$_baseImageIcon/users_icon.svg';
+  static const messageIcon = '$_baseImageIcon/message_icon.svg';
+  static const inviteIcon = '$_baseImageIcon/invite_icon.svg';
+  static const walletIcon = '$_baseImageIcon/wallet_icon.svg';
+  static const logoutIcon = '$_baseImageIcon/logOut_icon.svg';
 }

@@ -298,7 +298,7 @@ abstract class AppLocalizations {
   /// **'Do you want to remove \"{productName}\" from the cart?'**
   String removeProductConfirmation(String productName);
 
-  /// Cancel button
+  /// Cancel button text
   ///
   /// In en, this message translates to:
   /// **'Cancel'**
@@ -1305,6 +1305,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Privacy policy'**
   String get privacyPolicy;
+
+  /// My locations menu item
+  ///
+  /// In en, this message translates to:
+  /// **'My Locations'**
+  String get myLocations;
+
+  /// My promotions menu item
+  ///
+  /// In en, this message translates to:
+  /// **'My Promotions'**
+  String get myPromotions;
+
+  /// Payment methods menu item
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Methods'**
+  String get paymentMethods;
+
+  /// Messages menu item
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get messages;
+
+  /// Invite friends menu item
+  ///
+  /// In en, this message translates to:
+  /// **'Invite Friends'**
+  String get inviteFriends;
+
+  /// Security menu item
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get security;
+
+  /// Help center menu item
+  ///
+  /// In en, this message translates to:
+  /// **'Help Center'**
+  String get helpCenter;
+
+  /// Logout menu item
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logout;
+
+  /// Logout confirmation message
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to logout?'**
+  String get logoutConfirmation;
 }
 
 class _AppLocalizationsDelegate

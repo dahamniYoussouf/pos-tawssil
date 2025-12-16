@@ -20,6 +20,8 @@ class ColorApp {
   static const Color orangeColor = Color(0xFFFFA000);
   static const Color blue = Color(0xFF87CEEB);
 
+  static const Color greyDivider = Color(0xFFF3F4F6);
+
   static const Color premiumColor = Color(0xFFFFD700);
 
   static const Color transparent = Color(0x00000000);

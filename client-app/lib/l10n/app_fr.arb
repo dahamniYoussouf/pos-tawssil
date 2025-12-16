@@ -263,6 +263,42 @@
   "privacyPolicy": "Politique de confidentialité",
   "@privacyPolicy": {
     "description": "Texte du lien Politique de confidentialité"
+  },
+  "myLocations": "Mes Adresses",
+  "@myLocations": {
+    "description": "Élément de menu Mes adresses"
+  },
+  "myPromotions": "Mes Promotions",
+  "@myPromotions": {
+    "description": "Élément de menu Mes promotions"
+  },
+  "paymentMethods": "Méthodes de Paiement",
+  "@paymentMethods": {
+    "description": "Élément de menu Méthodes de paiement"
+  },
+  "messages": "Messages",
+  "@messages": {
+    "description": "Élément de menu Messages"
+  },
+  "inviteFriends": "Inviter des Amis",
+  "@inviteFriends": {
+    "description": "Élément de menu Inviter des amis"
+  },
+  "security": "Sécurité",
+  "@security": {
+    "description": "Élément de menu Sécurité"
+  },
+  "helpCenter": "Centre d'Aide",
+  "@helpCenter": {
+    "description": "Élément de menu Centre d'aide"
+  },
+  "logout": "Déconnexion",
+  "@logout": {
+    "description": "Élément de menu Déconnexion"
+  },
+  "logoutConfirmation": "Êtes-vous sûr de vouloir vous déconnecter ?",
+  "@logoutConfirmation": {
+    "description": "Message de confirmation de déconnexion"
   }
 }
 

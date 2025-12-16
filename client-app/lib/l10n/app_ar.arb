@@ -263,6 +263,42 @@
   "privacyPolicy": "سياسة الخصوصية",
   "@privacyPolicy": {
     "description": "نص رابط سياسة الخصوصية"
+  },
+  "myLocations": "عنواني",
+  "@myLocations": {
+    "description": "عنصر قائمة عنواني"
+  },
+  "myPromotions": "عروضي",
+  "@myPromotions": {
+    "description": "عنصر قائمة عروضي"
+  },
+  "paymentMethods": "طرق الدفع",
+  "@paymentMethods": {
+    "description": "عنصر قائمة طرق الدفع"
+  },
+  "messages": "الرسائل",
+  "@messages": {
+    "description": "عنصر قائمة الرسائل"
+  },
+  "inviteFriends": "دعوة الأصدقاء",
+  "@inviteFriends": {
+    "description": "عنصر قائمة دعوة الأصدقاء"
+  },
+  "security": "الأمان",
+  "@security": {
+    "description": "عنصر قائمة الأمان"
+  },
+  "helpCenter": "مركز المساعدة",
+  "@helpCenter": {
+    "description": "عنصر قائمة مركز المساعدة"
+  },
+  "logout": "تسجيل الخروج",
+  "@logout": {
+    "description": "عنصر قائمة تسجيل الخروج"
+  },
+  "logoutConfirmation": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+  "@logoutConfirmation": {
+    "description": "رسالة تأكيد تسجيل الخروج"
   }
 }
 

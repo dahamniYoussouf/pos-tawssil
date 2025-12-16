@@ -671,4 +671,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get privacyPolicy => 'Privacy policy';
+
+  @override
+  String get myLocations => 'My Locations';
+
+  @override
+  String get myPromotions => 'My Promotions';
+
+  @override
+  String get paymentMethods => 'Payment Methods';
+
+  @override
+  String get messages => 'Messages';
+
+  @override
+  String get inviteFriends => 'Invite Friends';
+
+  @override
+  String get security => 'Security';
+
+  @override
+  String get helpCenter => 'Help Center';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String get logoutConfirmation => 'Are you sure you want to logout?';
 }

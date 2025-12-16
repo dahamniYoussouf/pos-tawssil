@@ -50,12 +50,14 @@ void setupLocator() {
   );
   locator.registerLazySingleton<OrderService>(() => OrderService());
 
-  locator.registerLazySingleton<OrderCubit>(() => OrderCubit(orderService: locator<OrderService>()));
+  locator.registerLazySingleton<OrderCubit>(
+      () => OrderCubit(orderService: locator<OrderService>()));
 
   // Cart services
   locator.registerLazySingleton<CartService>(() => CartService());
 
-  locator.registerLazySingleton<OrderTrackingMapCubit>(() => OrderTrackingMapCubit());
+  locator.registerLazySingleton<OrderTrackingMapCubit>(
+      () => OrderTrackingMapCubit());
 
   // Restaurant services
   locator.registerLazySingleton<RestaurantService>(() => RestaurantService());
@@ -66,11 +68,16 @@ void setupLocator() {
 
   locator.registerLazySingleton<UserCubit>(() => UserCubit());
 
-  locator.registerLazySingleton<RestaurantCubit>(() => RestaurantCubit(restaurantRepository: locator<RestaurantRepository>()));
+  locator.registerLazySingleton<RestaurantCubit>(() =>
+      RestaurantCubit(restaurantRepository: locator<RestaurantRepository>()));
 
-  locator.registerLazySingleton<CategoryCubit>(() => CategoryCubit(restaurantRepository: locator<RestaurantRepository>()));
+  locator.registerLazySingleton<CategoryCubit>(() =>
+      CategoryCubit(restaurantRepository: locator<RestaurantRepository>()));
 
-  locator.registerLazySingleton<RestaurantSearchCubit>(() => RestaurantSearchCubit(restaurantRepository: locator<RestaurantRepository>()));
-  locator.registerFactory<RestaurantDetailsCubit>(() => RestaurantDetailsCubit(repository: locator<RestaurantRepository>()));
+  locator.registerLazySingleton<RestaurantSearchCubit>(() =>
+      RestaurantSearchCubit(
+          restaurantRepository: locator<RestaurantRepository>()));
+  locator.registerFactory<RestaurantDetailsCubit>(() =>
+      RestaurantDetailsCubit(repository: locator<RestaurantRepository>()));
   locator.registerLazySingleton<LocationCubit>(() => LocationCubit());
 }

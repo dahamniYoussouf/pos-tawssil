@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/src/features/restaurant/pages/restaurant_suggestion_page.dart';
 import 'package:client_app/src/features/restaurant/widgets/custom_bottom_navigation_bar.dart';
+import 'package:client_app/src/features/profile/pages/profile_page.dart';
+import 'package:client_app/src/core/utils/dependency_injection.dart';
+import 'package:client_app/src/features/auth/cubit/user_cubit.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -29,10 +33,9 @@ class _HomePageState extends State<HomePage> {
       title: 'Cart',
       subtitle: 'Items you add will be available here.',
     ),
-    const _PlaceholderView(
-      icon: Icons.person_outline,
-      title: 'Profile',
-      subtitle: 'Manage your account details shortly.',
+    BlocProvider(
+      create: (context) => locator<UserCubit>(),
+      child: const ProfilePage(),
     ),
   ];
 

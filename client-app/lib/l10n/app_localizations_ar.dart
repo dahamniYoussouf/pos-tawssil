@@ -658,4 +658,31 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get privacyPolicy => 'سياسة الخصوصية';
+
+  @override
+  String get myLocations => 'عنواني';
+
+  @override
+  String get myPromotions => 'عروضي';
+
+  @override
+  String get paymentMethods => 'طرق الدفع';
+
+  @override
+  String get messages => 'الرسائل';
+
+  @override
+  String get inviteFriends => 'دعوة الأصدقاء';
+
+  @override
+  String get security => 'الأمان';
+
+  @override
+  String get helpCenter => 'مركز المساعدة';
+
+  @override
+  String get logout => 'تسجيل الخروج';
+
+  @override
+  String get logoutConfirmation => 'هل أنت متأكد أنك تريد تسجيل الخروج؟';
 }
