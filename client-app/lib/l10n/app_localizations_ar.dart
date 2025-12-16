@@ -69,6 +69,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get estimatedTime => 'الوقت المقدر';
 
   @override
+  String get estimatedDeliveryTime => 'وقت التسليم المقدر';
+
+  @override
   String get orderDetails => 'تفاصيل الطلب';
 
   @override
@@ -685,4 +688,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get logoutConfirmation => 'هل أنت متأكد أنك تريد تسجيل الخروج؟';
+
+  @override
+  String orderedAt(String date) {
+    return 'تم الطلب في $date';
+  }
 }

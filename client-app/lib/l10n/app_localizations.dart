@@ -202,6 +202,12 @@ abstract class AppLocalizations {
   /// **'Estimated time'**
   String get estimatedTime;
 
+  /// Estimated delivery time label
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated delivery time'**
+  String get estimatedDeliveryTime;
+
   /// Order details section title
   ///
   /// In en, this message translates to:
@@ -298,7 +304,7 @@ abstract class AppLocalizations {
   /// **'Do you want to remove \"{productName}\" from the cart?'**
   String removeProductConfirmation(String productName);
 
-  /// Cancel button text
+  /// Cancel button
   ///
   /// In en, this message translates to:
   /// **'Cancel'**
@@ -1359,6 +1365,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to logout?'**
   String get logoutConfirmation;
+
+  /// Order date label with formatted date
+  ///
+  /// In en, this message translates to:
+  /// **'Ordered at {date}'**
+  String orderedAt(String date);
 }
 
 class _AppLocalizationsDelegate

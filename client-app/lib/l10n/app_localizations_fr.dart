@@ -70,6 +70,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get estimatedTime => 'Temps estimé';
 
   @override
+  String get estimatedDeliveryTime => 'Temps de livraison estimé';
+
+  @override
   String get orderDetails => 'Détails de la commande';
 
   @override
@@ -708,4 +711,9 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get logoutConfirmation =>
       'Êtes-vous sûr de vouloir vous déconnecter ?';
+
+  @override
+  String orderedAt(String date) {
+    return 'Commandé le $date';
+  }
 }

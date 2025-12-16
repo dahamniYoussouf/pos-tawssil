@@ -73,6 +73,10 @@
   "@estimatedTime": {
     "description": "Estimated time label"
   },
+  "estimatedDeliveryTime": "Estimated delivery time",
+  "@estimatedDeliveryTime": {
+    "description": "Estimated delivery time label"
+  },
   "orderDetails": "Order details",
   "@orderDetails": {
     "description": "Order details section title"
@@ -920,9 +924,15 @@
   "@logoutConfirmation": {
     "description": "Logout confirmation message"
   },
-  "cancel": "Cancel",
-  "@cancel": {
-    "description": "Cancel button text"
+ 
+  "orderedAt": "Ordered at {date}",
+  "@orderedAt": {
+    "description": "Order date label with formatted date",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
   }
 }
 

@@ -51,4 +51,10 @@ class MediaRes {
   static const inviteIcon = '$_baseImageIcon/invite_icon.svg';
   static const walletIcon = '$_baseImageIcon/wallet_icon.svg';
   static const logoutIcon = '$_baseImageIcon/logOut_icon.svg';
+
+  static const orderComingSoonIcon =
+      '$_baseImageIcon/order_coming_soon_icon.svg';
+  static const pickUpOrderIcon = '$_baseImageIcon/pick_up_order_icon.svg';
+  static const preparingIcon = '$_baseImageIcon/preparing_icon.svg';
+  static const receivedIcon = '$_baseImageIcon/received_icon.svg';
 }
