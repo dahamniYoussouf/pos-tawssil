@@ -177,7 +177,7 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
           Icon(Icons.error_outline, size: 64, color: ColorApp.redColor),
           SizedBox(height: 16),
           Text(
-            message,
+            AppLocalizations.of(context)!.error,
             style: TextStyle(color: ColorApp.redColor),
             textAlign: TextAlign.center,
           ),
@@ -187,7 +187,7 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
                 () => context
                     .read<RestaurantCubit>()
                     .loadNearbyRestaurants(radius: 5000),
-            child: Text(AppLocalizations.of(context)!.reload),
+            child: Text(AppLocalizations.of(context)!.retry),
             style: ElevatedButton.styleFrom(
               backgroundColor: ColorApp.primary,
               foregroundColor: ColorApp.white,

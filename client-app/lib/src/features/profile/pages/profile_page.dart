@@ -1,3 +1,5 @@
+import 'package:client_app/l10n/app_localizations.dart';
+import 'package:client_app/src/core/res/color_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/src/features/auth/cubit/user_cubit.dart';
@@ -22,6 +24,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final localizations = AppLocalizations.of(context)!;
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -30,7 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
             if (state is UserLoading) {
               return const Center(
                 child: CircularProgressIndicator(
-                  color: Color(0xFF006C4A),
+                  color: ColorApp.primary,
                 ),
               );
             }
@@ -46,7 +49,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      state.message,
+                      localizations.error,
                       style: const TextStyle(
                         fontSize: 16,
                         color: Colors.black87,
@@ -59,10 +62,13 @@ class _ProfilePageState extends State<ProfilePage> {
                         context.read<UserCubit>().fetchProfile();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF006C4A),
+                        backgroundColor: ColorApp.primary,
                       ),
-                      child: const Text('Retry'),
-                    ),
+                      child: Text(
+                        localizations.retry,
+                        style: const TextStyle(color: ColorApp.white),
+                      ),
+                    )
                   ],
                 ),
               );
