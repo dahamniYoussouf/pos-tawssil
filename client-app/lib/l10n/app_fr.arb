@@ -309,6 +309,46 @@
         "type": "String"
       }
     }
+  },
+  "deliverySuccessful": "Livraison réussie",
+  "@deliverySuccessful": {
+    "description": "Titre de la boîte de dialogue de succès de livraison"
+  },
+  "enjoyYourMeal": "Bon appétit !",
+  "@enjoyYourMeal": {
+    "description": "Message bon appétit"
+  },
+  "seeYouNextOrder": "À bientôt pour votre prochaine commande !",
+  "@seeYouNextOrder": {
+    "description": "Message à bientôt pour la prochaine commande"
+  },
+  "ok": "Ok",
+  "@ok": {
+    "description": "Texte du bouton Ok"
+  },
+  "orderRating": "Évaluation de la commande",
+  "@orderRating": {
+    "description": "Titre de la page d'évaluation de commande"
+  },
+  "deliveryEvaluation": "Évaluation de la livraison",
+  "@deliveryEvaluation": {
+    "description": "Sous-titre d'évaluation de livraison"
+  },
+  "restaurantEvaluation": "Évaluation du restaurant",
+  "@restaurantEvaluation": {
+    "description": "Sous-titre d'évaluation du restaurant"
+  },
+  "typeYourReview": "Tapez votre avis...",
+  "@typeYourReview": {
+    "description": "Indication du champ de texte d'avis"
+  },
+  "skip": "Passer",
+  "@skip": {
+    "description": "Texte du bouton Passer"
+  },
+  "submit": "Soumettre",
+  "@submit": {
+    "description": "Texte du bouton Soumettre"
   }
 }
 

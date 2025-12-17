@@ -693,4 +693,34 @@ class AppLocalizationsAr extends AppLocalizations {
   String orderedAt(String date) {
     return 'تم الطلب في $date';
   }
+
+  @override
+  String get deliverySuccessful => 'تم التسليم بنجاح';
+
+  @override
+  String get enjoyYourMeal => 'استمتع بوجبتك!';
+
+  @override
+  String get seeYouNextOrder => 'نراك في الطلب القادم!';
+
+  @override
+  String get ok => 'حسناً';
+
+  @override
+  String get orderRating => 'تقييم الطلب';
+
+  @override
+  String get deliveryEvaluation => 'تقييم التسليم';
+
+  @override
+  String get restaurantEvaluation => 'تقييم المطعم';
+
+  @override
+  String get typeYourReview => 'اكتب تقييمك...';
+
+  @override
+  String get skip => 'تخطي';
+
+  @override
+  String get submit => 'إرسال';
 }

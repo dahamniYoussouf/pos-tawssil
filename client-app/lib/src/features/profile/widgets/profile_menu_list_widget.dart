@@ -64,23 +64,73 @@ class ProfileMenuListWidget extends StatelessWidget {
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.logout),
-        content: Text(l10n.logoutConfirmation),
+        backgroundColor: ColorApp.white,
+        title: Text(
+          l10n.logout,
+          style: const TextStyle(color: ColorApp.black),
+          textAlign: TextAlign.center,
+        ),
+        content: Text(l10n.logoutConfirmation,
+            style: const TextStyle(color: ColorApp.grey)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(l10n.cancel),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(dialogContext);
-              context.read<AuthCubit>().logout();
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: Colors.red,
-            ),
-            child: Text(l10n.logout),
-          ),
+          Row(
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorApp.white,
+                  foregroundColor: ColorApp.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 16,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  elevation: 0,
+                  disabledBackgroundColor: ColorApp.greyLight,
+                ),
+                child: Text(
+                  l10n.cancel,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: ColorApp.grey,
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(dialogContext);
+                  context.read<AuthCubit>().logout();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: ColorApp.redColorLight,
+                  foregroundColor: ColorApp.white,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 32,
+                    vertical: 16,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  disabledBackgroundColor: ColorApp.greyLight,
+                ),
+                child: Text(
+                  l10n.logout,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          )
         ],
       ),
     );

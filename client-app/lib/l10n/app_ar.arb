@@ -309,6 +309,46 @@
         "type": "String"
       }
     }
+  },
+  "deliverySuccessful": "تم التسليم بنجاح",
+  "@deliverySuccessful": {
+    "description": "عنوان مربع حوار نجاح التسليم"
+  },
+  "enjoyYourMeal": "استمتع بوجبتك!",
+  "@enjoyYourMeal": {
+    "description": "رسالة استمتع بوجبتك"
+  },
+  "seeYouNextOrder": "نراك في الطلب القادم!",
+  "@seeYouNextOrder": {
+    "description": "رسالة نراك في الطلب القادم"
+  },
+  "ok": "حسناً",
+  "@ok": {
+    "description": "نص زر حسناً"
+  },
+  "orderRating": "تقييم الطلب",
+  "@orderRating": {
+    "description": "عنوان صفحة تقييم الطلب"
+  },
+  "deliveryEvaluation": "تقييم التسليم",
+  "@deliveryEvaluation": {
+    "description": "عنوان فرعي لتقييم التسليم"
+  },
+  "restaurantEvaluation": "تقييم المطعم",
+  "@restaurantEvaluation": {
+    "description": "عنوان فرعي لتقييم المطعم"
+  },
+  "typeYourReview": "اكتب تقييمك...",
+  "@typeYourReview": {
+    "description": "نص تلميح حقل نص التقييم"
+  },
+  "skip": "تخطي",
+  "@skip": {
+    "description": "نص زر التخطي"
+  },
+  "submit": "إرسال",
+  "@submit": {
+    "description": "نص زر الإرسال"
   }
 }
 

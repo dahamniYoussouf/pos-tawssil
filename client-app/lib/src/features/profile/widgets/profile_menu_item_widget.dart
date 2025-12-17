@@ -1,3 +1,4 @@
+import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/core/res/media_res.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -24,14 +25,14 @@ class ProfileMenuItemWidget extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: ColorApp.white,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
             SvgPicture.asset(
               icon,
-              color: isDestructive ? Colors.red : Colors.grey[700],
+              color: isDestructive ? ColorApp.redColor : ColorApp.grey,
               height: 24,
               width: 24,
             ),
@@ -42,13 +43,13 @@ class ProfileMenuItemWidget extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
-                  color: isDestructive ? Colors.red : Colors.black87,
+                  color: isDestructive ? ColorApp.redColor : ColorApp.black,
                 ),
               ),
             ),
             SvgPicture.asset(
               MediaRes.arrowRightIcon,
-              color: isDestructive ? Colors.red : Colors.black,
+              color: isDestructive ? ColorApp.redColor : ColorApp.black,
               height: 24,
               width: 24,
             ),

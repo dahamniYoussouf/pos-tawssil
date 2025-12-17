@@ -12,6 +12,7 @@ import 'package:client_app/src/features/order/widgets/restaurant_info_card_widge
 import 'package:client_app/src/features/order/widgets/status_card_widget.dart';
 import 'package:client_app/src/features/order/widgets/validate_order_button_widget.dart';
 import 'package:client_app/src/features/order/widgets/declined_order_widget.dart';
+import 'package:client_app/src/features/review/index.dart';
 import '../cubit/order_cubit.dart';
 import '../cubit/order_state.dart';
 import '../models/order_model.dart';
@@ -26,6 +27,7 @@ class OrderTrackingPage extends StatefulWidget {
 class _OrderTrackingPageState extends State<OrderTrackingPage> {
   OrderModel? _currentOrder;
   bool _isInitialLoad = true;
+  bool _hasShownSuccessDialog = false;
 
   @override
   void initState() {
@@ -62,20 +64,33 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
       body: BlocProvider<OrderCubit>.value(
         value: orderCubit,
         child: BlocConsumer<OrderCubit, OrderState>(
-          listener: (BuildContext context, OrderState state) => _handleStateListener(context, state, localization),
-          builder: (BuildContext context, OrderState state) => _buildStateBody(context, state, localization),
+          listener: (BuildContext context, OrderState state) =>
+              _handleStateListener(context, state, localization),
+          builder: (BuildContext context, OrderState state) =>
+              _buildStateBody(context, state, localization),
         ),
       ),
     );
   }
 
-  void _handleStateListener(BuildContext context, OrderState state, AppLocalizations localization) {
-    if (state is OrderLoaded || state is OrderRefused || state is OrderDelayed) {
+  void _handleStateListener(
+      BuildContext context, OrderState state, AppLocalizations localization) {
+    if (state is OrderLoaded ||
+        state is OrderRefused ||
+        state is OrderDelayed) {
       final OrderModel order = _extractOrderFromState(state);
       if (_isInitialLoad) {
         _isInitialLoad = false;
       }
       _handleOrderUpdate(order);
+
+      // Show success dialog when order is delivered for the first time
+      if (order.isPending && !_hasShownSuccessDialog) {
+        _hasShownSuccessDialog = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showDeliverySuccessDialog(context, order.id);
+        });
+      }
     }
     if (state is OrderError && _isInitialLoad) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -105,7 +120,8 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     }
   }
 
-  Widget _buildStateBody(BuildContext context, OrderState state, AppLocalizations localization) {
+  Widget _buildStateBody(
+      BuildContext context, OrderState state, AppLocalizations localization) {
     if ((state is OrderLoading || state is OrderInitial) && _isInitialLoad) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -116,7 +132,8 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     if (state is OrderRefused) {
       return DeclinedOrderWidget(refusalReason: state.reason);
     }
-    final OrderModel? order = _extractOrderFromStateOrNull(state) ?? _currentOrder;
+    final OrderModel? order =
+        _extractOrderFromStateOrNull(state) ?? _currentOrder;
     if (order != null) {
       // Also check if order status is declined
       if (order.isRefused) {
@@ -127,7 +144,8 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     return const Center(child: CircularProgressIndicator());
   }
 
-  Widget _buildInitialError(BuildContext context, OrderError state, AppLocalizations localization) {
+  Widget _buildInitialError(
+      BuildContext context, OrderError state, AppLocalizations localization) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -175,7 +193,8 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     return null;
   }
 
-  Widget _buildOrderTrackingContent(BuildContext context, OrderModel order, AppLocalizations localization) {
+  Widget _buildOrderTrackingContent(
+      BuildContext context, OrderModel order, AppLocalizations localization) {
     final bool isDelivery = order.orderType == "delivery";
     return Stack(
       children: [
@@ -188,7 +207,8 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
           ),
         ],
         _buildBackButton(context),
-        _buildContentSheet(context, order, localization, isDelivery: isDelivery),
+        _buildContentSheet(context, order, localization,
+            isDelivery: isDelivery),
       ],
     );
   }
@@ -205,7 +225,10 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
               icon: const Icon(Icons.arrow_back, color: ColorApp.black),
               onPressed: () {
                 locator<OrderCubit>().stopPolling();
-                Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => const HomePage()), (route) => false);
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const HomePage()),
+                    (route) => false);
               },
             ),
           ),
@@ -214,7 +237,9 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     );
   }
 
-  Widget _buildContentSheet(BuildContext context, OrderModel order, AppLocalizations localization, {required bool isDelivery}) {
+  Widget _buildContentSheet(
+      BuildContext context, OrderModel order, AppLocalizations localization,
+      {required bool isDelivery}) {
     if (!isDelivery) {
       // pickup order
       return Positioned.fill(
@@ -229,7 +254,8 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
                 child: Column(
                   children: [
                     _buildBackButton(context),
-                    _buildSheetContent(order, localization, includeHandle: false),
+                    _buildSheetContent(order, localization,
+                        includeHandle: false),
                   ],
                 ),
               ),
@@ -253,7 +279,8 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
               controller: scrollController,
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: _buildSheetContent(order, localization, includeHandle: true),
+                child: _buildSheetContent(order, localization,
+                    includeHandle: true),
               ),
             ),
           );
@@ -262,7 +289,8 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     }
   }
 
-  Widget _buildSheetContent(OrderModel order, AppLocalizations localization, {required bool includeHandle}) {
+  Widget _buildSheetContent(OrderModel order, AppLocalizations localization,
+      {required bool includeHandle}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -279,8 +307,11 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
             ),
           ),
         StatusCardWidget(order: order),
-        if (order.isDelivering && order.deliveryPerson != null) const SizedBox(height: 16),
-        if (order.isDelivering && order.deliveryPerson != null) DeliveryPersonCard(person: order.deliveryPerson!, localization: localization),
+        if (order.isDelivering && order.deliveryPerson != null)
+          const SizedBox(height: 16),
+        if (order.isDelivering && order.deliveryPerson != null)
+          DeliveryPersonCard(
+              person: order.deliveryPerson!, localization: localization),
         const SizedBox(height: 16),
         RestaurantInfoCard(order: order),
         const SizedBox(height: 16),
@@ -297,11 +328,28 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     final bool hasOrderChanged = _currentOrder == null ||
         _currentOrder?.status != order.status ||
         _currentOrder?.deliveryPerson?.id != order.deliveryPerson?.id ||
-        _currentOrder?.deliveryPerson?.latitude != order.deliveryPerson?.latitude ||
-        _currentOrder?.deliveryPerson?.longitude != order.deliveryPerson?.longitude ||
+        _currentOrder?.deliveryPerson?.latitude !=
+            order.deliveryPerson?.latitude ||
+        _currentOrder?.deliveryPerson?.longitude !=
+            order.deliveryPerson?.longitude ||
         _currentOrder?.estimatedDeliveryTime != order.estimatedDeliveryTime;
     if (hasOrderChanged) {
       _currentOrder = order;
     }
+  }
+
+  void _showDeliverySuccessDialog(BuildContext context, String orderId) {
+    DeliverySuccessDialog.show(
+      context,
+      () {
+        // Navigate to restaurant review page when OK is pressed
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => RestaurantReviewPage(orderId: orderId),
+          ),
+        );
+      },
+    );
   }
 }

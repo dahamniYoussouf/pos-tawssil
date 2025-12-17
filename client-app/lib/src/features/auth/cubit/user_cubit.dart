@@ -13,8 +13,10 @@ class UserCubit extends Cubit<UserState> {
 
   Future<void> fetchProfile() async {
     try {
+      if (isClosed) return;
       emit(const UserLoading());
       final result = await _authService.getProfile();
+      if (isClosed) return;
       if (result['success'] == true && result['profile'] != null) {
         final profileData = result['profile'] as Map<String, dynamic>;
         final profile = ProfileModel.fromJson(profileData);
@@ -25,6 +27,7 @@ class UserCubit extends Cubit<UserState> {
         ));
       }
     } catch (e) {
+      if (isClosed) return;
       emit(UserError(
         message: 'errorProfileFetch',
       ));
@@ -32,6 +35,7 @@ class UserCubit extends Cubit<UserState> {
   }
 
   void resetUserState() {
+    if (isClosed) return;
     emit(const UserInitial());
   }
 

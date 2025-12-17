@@ -1371,6 +1371,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ordered at {date}'**
   String orderedAt(String date);
+
+  /// Delivery success dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery Successful'**
+  String get deliverySuccessful;
+
+  /// Enjoy your meal message
+  ///
+  /// In en, this message translates to:
+  /// **'Enjoy Your Meal!'**
+  String get enjoyYourMeal;
+
+  /// See you next order message
+  ///
+  /// In en, this message translates to:
+  /// **'See You In The Next Order!'**
+  String get seeYouNextOrder;
+
+  /// Ok button text
+  ///
+  /// In en, this message translates to:
+  /// **'Ok'**
+  String get ok;
+
+  /// Order rating page title
+  ///
+  /// In en, this message translates to:
+  /// **'Order Rating'**
+  String get orderRating;
+
+  /// Delivery evaluation subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery Evaluation'**
+  String get deliveryEvaluation;
+
+  /// Restaurant evaluation subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant Evaluation'**
+  String get restaurantEvaluation;
+
+  /// Review text field hint
+  ///
+  /// In en, this message translates to:
+  /// **'Type your review...'**
+  String get typeYourReview;
+
+  /// Skip button text
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
+
+  /// Submit button text
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submit;
 }
 
 class _AppLocalizationsDelegate

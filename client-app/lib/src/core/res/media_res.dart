@@ -57,4 +57,9 @@ class MediaRes {
   static const pickUpOrderIcon = '$_baseImageIcon/pick_up_order_icon.svg';
   static const preparingIcon = '$_baseImageIcon/preparing_icon.svg';
   static const receivedIcon = '$_baseImageIcon/received_icon.svg';
+  static const successImage = '$_baseImage/success_image.png';
+  static const reviewRestaurantImage = '$_baseImage/review_restaurant.png';
+  static const orderReviewImage = '$_baseImage/order_review.png';
+  static const starImage = '$_baseImage/star.png';
+  static const starBorderImage = '$_baseImage/star_border.png';
 }

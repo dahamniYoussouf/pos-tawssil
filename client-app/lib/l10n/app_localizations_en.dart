@@ -706,4 +706,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String orderedAt(String date) {
     return 'Ordered at $date';
   }
+
+  @override
+  String get deliverySuccessful => 'Delivery Successful';
+
+  @override
+  String get enjoyYourMeal => 'Enjoy Your Meal!';
+
+  @override
+  String get seeYouNextOrder => 'See You In The Next Order!';
+
+  @override
+  String get ok => 'Ok';
+
+  @override
+  String get orderRating => 'Order Rating';
+
+  @override
+  String get deliveryEvaluation => 'Delivery Evaluation';
+
+  @override
+  String get restaurantEvaluation => 'Restaurant Evaluation';
+
+  @override
+  String get typeYourReview => 'Type your review...';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get submit => 'Submit';
 }

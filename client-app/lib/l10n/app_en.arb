@@ -933,6 +933,46 @@
         "type": "String"
       }
     }
+  },
+  "deliverySuccessful": "Delivery Successful",
+  "@deliverySuccessful": {
+    "description": "Delivery success dialog title"
+  },
+  "enjoyYourMeal": "Enjoy Your Meal!",
+  "@enjoyYourMeal": {
+    "description": "Enjoy your meal message"
+  },
+  "seeYouNextOrder": "See You In The Next Order!",
+  "@seeYouNextOrder": {
+    "description": "See you next order message"
+  },
+  "ok": "Ok",
+  "@ok": {
+    "description": "Ok button text"
+  },
+  "orderRating": "Order Rating",
+  "@orderRating": {
+    "description": "Order rating page title"
+  },
+  "deliveryEvaluation": "Delivery Evaluation",
+  "@deliveryEvaluation": {
+    "description": "Delivery evaluation subtitle"
+  },
+  "restaurantEvaluation": "Restaurant Evaluation",
+  "@restaurantEvaluation": {
+    "description": "Restaurant evaluation subtitle"
+  },
+  "typeYourReview": "Type your review...",
+  "@typeYourReview": {
+    "description": "Review text field hint"
+  },
+  "skip": "Skip",
+  "@skip": {
+    "description": "Skip button text"
+  },
+  "submit": "Submit",
+  "@submit": {
+    "description": "Submit button text"
   }
 }
 

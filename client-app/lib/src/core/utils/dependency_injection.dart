@@ -2,6 +2,7 @@ import 'package:client_app/src/features/auth/cubit/user_cubit.dart';
 import 'package:client_app/src/features/locations/cubit/location_cubit.dart';
 import 'package:client_app/src/features/order/index.dart';
 import 'package:client_app/src/features/order/widgets/cubit/order_tracking_map_cubit.dart';
+import 'package:client_app/src/features/review/index.dart';
 import 'package:client_app/src/features/restaurant/cubit/category_cubit.dart';
 import 'package:client_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'package:client_app/src/features/restaurant/cubit/restaurant_search_cubit.dart';
@@ -80,4 +81,10 @@ void setupLocator() {
   locator.registerFactory<RestaurantDetailsCubit>(() =>
       RestaurantDetailsCubit(repository: locator<RestaurantRepository>()));
   locator.registerLazySingleton<LocationCubit>(() => LocationCubit());
+
+  // Review services
+  locator.registerLazySingleton<ReviewService>(() => ReviewService());
+  locator.registerFactory<ReviewCubit>(
+    () => ReviewCubit(reviewService: locator<ReviewService>()),
+  );
 }

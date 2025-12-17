@@ -1,3 +1,4 @@
+import 'package:client_app/src/core/res/color_app.dart';
 import 'package:flutter/material.dart';
 import '../../auth/models/profile_model.dart';
 
@@ -19,7 +20,7 @@ class ProfileHeaderWidget extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 50,
-            backgroundColor: Colors.grey[300],
+            backgroundColor: ColorApp.greyLight,
             backgroundImage: profile.profileImageUrl != null &&
                     profile.profileImageUrl!.isNotEmpty
                 ? NetworkImage(profile.profileImageUrl!)
@@ -29,7 +30,7 @@ class ProfileHeaderWidget extends StatelessWidget {
                 ? const Icon(
                     Icons.person,
                     size: 50,
-                    color: Colors.grey,
+                    color: ColorApp.grey,
                   )
                 : null,
           ),
@@ -39,7 +40,7 @@ class ProfileHeaderWidget extends StatelessWidget {
             style: const TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Color(0xFF006C4A),
+              color: ColorApp.primary,
             ),
           ),
           const SizedBox(height: 16),
@@ -67,14 +68,14 @@ class ProfileHeaderWidget extends StatelessWidget {
         Icon(
           icon,
           size: 16,
-          color: Colors.grey[600],
+          color: ColorApp.grey,
         ),
         const SizedBox(width: 8),
         Text(
           text,
           style: TextStyle(
             fontSize: 14,
-            color: Colors.grey[700],
+            color: ColorApp.grey,
           ),
         ),
       ],
