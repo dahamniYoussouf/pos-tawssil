@@ -28,19 +28,24 @@ class RestaurantGrid extends StatelessWidget {
             children: [
               Text(
                 AppLocalizations.of(context)!.recommendations,
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
-                  color: ColorApp.black,
-                ),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 28,
+                      letterSpacing: 0.0,
+                      color: ColorApp.textBlack,
+                    ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
               Text(
                 AppLocalizations.of(context)!.showAll,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w900,
-                  color: ColorApp.primary,
-                ),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: ColorApp.primary,
+                      fontSize: 18,
+                    ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),

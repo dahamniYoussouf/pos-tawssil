@@ -82,9 +82,9 @@ class _RestaurantSearchBarState extends State<RestaurantSearchBar> {
                     AppLocalizations.of(context)?.searchRestaurantPlaceholder ??
                     'Rechercher des restaurant...',
                 hintStyle: TextStyle(
-                  color: ColorApp.greyLight,
+                  color: ColorApp.textBlack,
                   fontSize: 14,
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.w600,
                 ),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.zero,

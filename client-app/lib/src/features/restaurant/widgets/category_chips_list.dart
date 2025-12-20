@@ -19,35 +19,34 @@ class CategoryChipsList extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 AppLocalizations.of(context)!.categories,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  color: ColorApp.black,
-                ),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 28,
+                      letterSpacing: 0.0,
+                      color: ColorApp.textBlack,
+                    ),
               ),
-              Text(
-                AppLocalizations.of(context)!.showAll,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w900,
-                  color: ColorApp.primary,
-                ),
-              ),
+              Text(AppLocalizations.of(context)!.showAll,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: ColorApp.primary,
+                        fontSize: 18,
+                      )),
             ],
           ),
-          SizedBox(height: 15),
+          SizedBox(height: 8),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: Row(
               children: categories
-                  .map((category) => _buildCategoryChip(category))
+                  .map((category) => _buildCategoryChip(category, context))
                   .toList(),
             ),
           ),
@@ -56,25 +55,27 @@ class CategoryChipsList extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryChip(CategoryModel category) {
+  Widget _buildCategoryChip(CategoryModel category, BuildContext context) {
     return GestureDetector(
       onTap: () => onCategoryTap(category),
       child: Container(
+        height: 84,
         margin: EdgeInsets.only(right: 12),
-        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
         decoration: BoxDecoration(
           color: ColorApp.white,
           borderRadius: BorderRadius.circular(25),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: Image.asset(
                 category.iconPath,
-                width: 55,
-                height: 55,
+                width: 45,
+                height: 40,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Icon(Icons.restaurant, size: 55, color: Colors.grey);
@@ -84,11 +85,12 @@ class CategoryChipsList extends StatelessWidget {
             SizedBox(width: 8),
             Text(
               category.name,
-              style: TextStyle(
-                color: ColorApp.black,
-                fontSize: 14,
-                fontWeight: FontWeight.w900,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: ColorApp.textBlack,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16,
+                    letterSpacing: 0.0,
+                  ),
             ),
           ],
         ),

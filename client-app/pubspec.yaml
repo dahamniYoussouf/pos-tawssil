@@ -68,6 +68,16 @@ flutter:
     - assets/images/splash_screen_icon.png
     - assets/images/app_icon.png
     - assets/images/svg/
+  fonts:
+    - family: Gilmer
+      fonts:
+        - asset: assets/fonts/Gilmer-Regular.ttf
+          # - asset: assets/fonts/Gilmer-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Gilmer-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Gilmer-Bold.ttf
+          weight: 700
 
 flutter_launcher_icons:
   android: true

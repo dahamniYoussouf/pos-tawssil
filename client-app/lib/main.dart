@@ -6,7 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:client_app/src/core/utils/dependency_injection.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:client_app/src/core/res/app_theme.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 
 // BLoC Imports
@@ -102,13 +102,7 @@ class MyApp extends StatelessWidget {
               Locale('fr', 'FR'),
               Locale('ar', 'DZ'),
             ],
-            theme: ThemeData(
-              primarySwatch: Colors.green,
-              fontFamily: GoogleFonts.poppins().fontFamily,
-              textTheme: ThemeData.light().textTheme.apply(
-                    fontFamily: GoogleFonts.poppins().fontFamily,
-                  ),
-            ),
+            theme: AppTheme.lightTheme,
             home: AuthWrapper(),
           );
         },

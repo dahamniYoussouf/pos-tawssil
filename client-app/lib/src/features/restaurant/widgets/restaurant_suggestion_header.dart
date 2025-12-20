@@ -1,12 +1,10 @@
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/core/res/media_res.dart';
-import 'package:client_app/src/features/auth/pages/phone_number_page.dart';
 import 'package:client_app/src/features/locations/cubit/location_cubit.dart';
 import 'package:client_app/src/features/locations/cubit/location_state.dart';
 import 'package:client_app/src/features/restaurant/pages/restaurant_search_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:client_app/src/features/auth/cubit/auth_cubit.dart';
 import 'package:client_app/src/features/auth/cubit/user_cubit.dart';
 import 'package:client_app/src/features/auth/cubit/user_state.dart';
 import 'package:client_app/l10n/app_localizations.dart';
@@ -36,11 +34,9 @@ class RestaurantSuggestionHeader extends StatelessWidget {
                 children: [
                   Text(
                     '${userService.getGreetingMessage(AppLocalizations.of(context)!)}, ${userCubit.state is UserLoaded ? (userCubit.state as UserLoaded).profile.firstName : AppLocalizations.of(context)!.user}',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: ColorApp.black,
-                    ),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: ColorApp.textBlack,
+                        ),
                   ),
                   SizedBox(height: 4),
                   BlocBuilder<LocationCubit, LocationState>(
@@ -58,8 +54,8 @@ class RestaurantSuggestionHeader extends StatelessWidget {
                               child: Text(
                                 '${locationState.fullAddress}',
                                 style: TextStyle(
-                                  fontSize: 16,
-                                  color: ColorApp.greyLight,
+                                  fontSize: 13,
+                                  color: ColorApp.textGrey,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -91,25 +87,26 @@ class RestaurantSuggestionHeader extends StatelessWidget {
                       ),
                     ),
                     child: Center(
-                      child: IconButton(
-                        icon: Icon(Icons.logout_outlined,
-                            size: 22, color: ColorApp.black),
-                        onPressed: () {
-                          context.read<AuthCubit>().logout().then(
-                            (value) {
-                              Navigator.pushAndRemoveUntil(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PhoneNumberPage()),
-                                  (route) => false);
-                            },
-                          );
-                        },
-                        padding: EdgeInsets.zero,
-                      ),
+                      child: SvgPicture.asset(MediaRes.notificationIcon,
+                          height: 24, width: 24, color: ColorApp.black),
                     ),
                   ),
                   SizedBox(width: 12),
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: ColorApp.greyBorder,
+                        width: 1.5,
+                      ),
+                    ),
+                    child: Center(
+                      child: SvgPicture.asset(MediaRes.favoriteIcon,
+                          height: 20, width: 20, color: ColorApp.black),
+                    ),
+                  ),
                 ],
               ),
             ],

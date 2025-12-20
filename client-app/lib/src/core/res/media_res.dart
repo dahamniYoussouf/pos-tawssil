@@ -62,4 +62,8 @@ class MediaRes {
   static const orderReviewImage = '$_baseImage/order_review.png';
   static const starImage = '$_baseImage/star.png';
   static const starBorderImage = '$_baseImage/star_border.png';
+
+  static const notificationIcon =
+      '$_baseImageIcon/notification_icon_home_page.svg';
+  static const favoriteIcon = '$_baseImageIcon/favorite_icon_home.svg';
 }
