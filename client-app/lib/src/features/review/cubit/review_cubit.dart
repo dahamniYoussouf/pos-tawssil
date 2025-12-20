@@ -23,8 +23,8 @@ class ReviewCubit extends Cubit<ReviewState> {
       emit(ReviewLoading());
       final request = RestaurantReviewRequest(
         orderId: orderId,
-        rating: rating,
-        comment: comment,
+        restaurantRating: rating,
+        restaurantReviewComment: comment,
       );
       final response = await _reviewService.submitRestaurantReview(request);
 
@@ -58,8 +58,8 @@ class ReviewCubit extends Cubit<ReviewState> {
       emit(ReviewLoading());
       final request = OrderReviewRequest(
         orderId: orderId,
-        rating: rating,
-        comment: comment,
+        driverRating: rating,
+        driverReviewComment: comment,
       );
       final response = await _reviewService.submitOrderReview(request);
 

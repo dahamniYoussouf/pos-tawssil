@@ -23,7 +23,7 @@ class ProfileMenuItemWidget extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
         decoration: BoxDecoration(
           color: ColorApp.white,
           borderRadius: BorderRadius.circular(12),
@@ -42,7 +42,7 @@ class ProfileMenuItemWidget extends StatelessWidget {
                 title,
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w900,
                   color: isDestructive ? ColorApp.redColor : ColorApp.black,
                 ),
               ),

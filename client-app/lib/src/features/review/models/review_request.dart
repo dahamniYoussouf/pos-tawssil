@@ -1,39 +1,40 @@
 class RestaurantReviewRequest {
   final String orderId;
-  final int rating;
-  final String? comment;
+  final int restaurantRating;
+  final String? restaurantReviewComment;
 
   RestaurantReviewRequest({
     required this.orderId,
-    required this.rating,
-    this.comment,
+    required this.restaurantRating,
+    this.restaurantReviewComment,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'order_id': orderId,
-      'rating': rating,
-      if (comment != null && comment!.isNotEmpty) 'comment': comment,
+      'restaurant_rating': restaurantRating,
+      if (restaurantReviewComment != null &&
+          restaurantReviewComment!.isNotEmpty)
+        'restaurant_review_comment': restaurantReviewComment,
     };
   }
 }
 
 class OrderReviewRequest {
   final String orderId;
-  final int rating;
-  final String? comment;
+  final int driverRating;
+  final String? driverReviewComment;
 
   OrderReviewRequest({
     required this.orderId,
-    required this.rating,
-    this.comment,
+    required this.driverRating,
+    this.driverReviewComment,
   });
 
   Map<String, dynamic> toJson() {
     return {
-      'order_id': orderId,
-      'rating': rating,
-      if (comment != null && comment!.isNotEmpty) 'comment': comment,
+      'driver_rating': driverRating,
+      if (driverReviewComment != null && driverReviewComment!.isNotEmpty)
+        'driver_review_comment': driverReviewComment,
     };
   }
 }

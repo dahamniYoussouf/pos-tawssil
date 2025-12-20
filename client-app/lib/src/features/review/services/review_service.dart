@@ -11,14 +11,18 @@ class ReviewService extends BaseApiService {
   ReviewService._internal() : super();
 
   /// Submit restaurant review
-  /// Endpoint: POST /review/restaurant
-  Future<Map<String, dynamic>> submitRestaurantReview(RestaurantReviewRequest request) async {
-    return await postRequest('/review/restaurant', data: request.toJson());
+  /// Endpoint: POST /order/:id/restaurant-rating
+  Future<Map<String, dynamic>> submitRestaurantReview(
+      RestaurantReviewRequest request) async {
+    return await postRequest('/order/${request.orderId}/restaurant-rating',
+        data: request.toJson());
   }
 
-  /// Submit order/driver review
-  /// Endpoint: POST /review/order
-  Future<Map<String, dynamic>> submitOrderReview(OrderReviewRequest request) async {
-    return await postRequest('/review/order', data: request.toJson());
+  /// Submit driver review
+  /// Endpoint: POST /order/:id/driver-rating
+  Future<Map<String, dynamic>> submitOrderReview(
+      OrderReviewRequest request) async {
+    return await postRequest('/order/${request.orderId}/driver-rating',
+        data: request.toJson());
   }
 }

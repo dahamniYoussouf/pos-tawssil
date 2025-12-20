@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import 'package:client_app/src/features/auth/cubit/auth_cubit.dart';
-import 'package:client_app/src/features/locations/pages/location_page.dart';
 import 'profile_menu_item_widget.dart';
 
 class ProfileMenuListWidget extends StatelessWidget {
@@ -21,12 +20,7 @@ class ProfileMenuListWidget extends StatelessWidget {
             icon: MediaRes.locationProfileIcon,
             title: l10n.myLocations,
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LocationPage(),
-                ),
-              );
+              // TODO: Navigate to my locations page
             },
           ),
           Divider(color: ColorApp.greyDivider),

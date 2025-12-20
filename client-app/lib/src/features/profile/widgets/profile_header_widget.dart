@@ -15,7 +15,7 @@ class ProfileHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 24),
       child: Column(
         children: [
           CircleAvatar(
@@ -49,10 +49,6 @@ class ProfileHeaderWidget extends StatelessWidget {
             text: "(+213) ${profile.phoneNumber.replaceAll('213', '')}",
           ),
           const SizedBox(height: 8),
-          _buildContactInfo(
-            icon: Icons.email,
-            text: profile.email,
-          ),
         ],
       ),
     );
