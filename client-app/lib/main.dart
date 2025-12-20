@@ -1,3 +1,4 @@
+import 'package:client_app/src/features/restaurant/cubit/restaurant_details_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,7 +41,8 @@ void main() async {
 }
 
 Future<void> _init() async {
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  SystemChrome.setPreferredOrientations(
+      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   setupLocator();
 }
 
@@ -78,6 +80,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<OrderCubit>(
           create: (context) => locator<OrderCubit>(),
+        ),
+        BlocProvider<RestaurantDetailsCubit>(
+          create: (context) => locator<RestaurantDetailsCubit>(),
         ),
       ],
       child: BlocBuilder<LocaleCubit, LocaleState>(

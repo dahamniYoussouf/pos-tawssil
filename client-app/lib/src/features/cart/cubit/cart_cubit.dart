@@ -31,6 +31,7 @@ class CartCubit extends Cubit<CartState> {
     required String menuItemName,
     required double price,
     required String imageUrl,
+    int quantity = 1,
     String? note,
   }) {
     try {
@@ -39,10 +40,42 @@ class CartCubit extends Cubit<CartState> {
         menuItemName: menuItemName,
         price: price,
         imageUrl: imageUrl,
+        quantity: quantity,
         note: note,
       );
     } catch (e) {
-      emit(CartError(message: 'Erreur lors de l\'ajout au panier: ${e.toString()}'));
+      emit(CartError(
+          message: 'Erreur lors de l\'ajout au panier: ${e.toString()}'));
+    }
+  }
+
+  void addOrSetItem({
+    required String menuItemId,
+    required String menuItemName,
+    required double price,
+    required String imageUrl,
+    required int quantity,
+    String? note,
+  }) {
+    try {
+      if (_cartService.hasItem(menuItemId)) {
+        _cartService.updateQuantity(menuItemId, quantity);
+        if (note != null && note.isNotEmpty) {
+          _cartService.updateNote(menuItemId, note);
+        }
+      } else {
+        _cartService.addItem(
+          menuItemId: menuItemId,
+          menuItemName: menuItemName,
+          price: price,
+          imageUrl: imageUrl,
+          quantity: quantity,
+          note: note,
+        );
+      }
+    } catch (e) {
+      emit(CartError(
+          message: 'Erreur lors de l\'ajout au panier: ${e.toString()}'));
     }
   }
 
@@ -50,7 +83,8 @@ class CartCubit extends Cubit<CartState> {
     try {
       _cartService.removeItem(menuItemId);
     } catch (e) {
-      emit(CartError(message: 'Erreur lors de la suppression: ${e.toString()}'));
+      emit(
+          CartError(message: 'Erreur lors de la suppression: ${e.toString()}'));
     }
   }
 
@@ -58,7 +92,8 @@ class CartCubit extends Cubit<CartState> {
     try {
       _cartService.updateQuantity(menuItemId, quantity);
     } catch (e) {
-      emit(CartError(message: 'Erreur lors de la mise à jour: ${e.toString()}'));
+      emit(
+          CartError(message: 'Erreur lors de la mise à jour: ${e.toString()}'));
     }
   }
 
@@ -66,7 +101,9 @@ class CartCubit extends Cubit<CartState> {
     try {
       _cartService.updateNote(menuItemId, note);
     } catch (e) {
-      emit(CartError(message: 'Erreur lors de la mise à jour de la note: ${e.toString()}'));
+      emit(CartError(
+          message:
+              'Erreur lors de la mise à jour de la note: ${e.toString()}'));
     }
   }
 

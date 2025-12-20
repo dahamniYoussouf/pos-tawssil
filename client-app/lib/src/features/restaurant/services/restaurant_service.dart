@@ -59,6 +59,12 @@ class RestaurantService extends BaseApiService {
     return await postRequest('/menuitem/filter', data: body);
   }
 
+  /// Get restaurant details with menu items
+  Future<Map<String, dynamic>> getMenuItemsByRestaurantId(
+      String restaurantId) async {
+    return await getRequest('/restaurant/details/$restaurantId');
+  }
+
   /// Get static categories (UI-only, not from API)
   List<CategoryModel> getStaticCategories() {
     return [

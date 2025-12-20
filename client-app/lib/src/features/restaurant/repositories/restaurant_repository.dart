@@ -4,6 +4,16 @@ import '../models/category_model.dart';
 import '../models/menu_model.dart';
 import '../services/restaurant_service.dart';
 
+class RestaurantDetailsResult {
+  final List<MenuModel> menuItems;
+  final List<MenuItemCategory> categories;
+
+  RestaurantDetailsResult({
+    required this.menuItems,
+    required this.categories,
+  });
+}
+
 class RestaurantRepository {
   final RestaurantService _restaurantService;
 
@@ -59,7 +69,8 @@ class RestaurantRepository {
         return const Left('Invalid response format: data is not a list');
       }
 
-      return Left(response['message']?.toString() ?? 'Failed to fetch restaurants');
+      return Left(
+          response['message']?.toString() ?? 'Failed to fetch restaurants');
     } catch (e) {
       return Left('An unexpected error occurred: ${e.toString()}');
     }
@@ -83,7 +94,8 @@ class RestaurantRepository {
         return const Left('Invalid response format: data is not a map');
       }
 
-      return Left(response['message']?.toString() ?? 'Failed to fetch restaurant');
+      return Left(
+          response['message']?.toString() ?? 'Failed to fetch restaurant');
     } catch (e) {
       return Left('An unexpected error occurred: ${e.toString()}');
     }
@@ -110,7 +122,8 @@ class RestaurantRepository {
               if (item is Map<String, dynamic>) {
                 final menuItem = MenuModel.fromJson(item);
                 // If backend didn't populate restaurant_id, assume items belong to requested restaurant
-                if (menuItem.restaurantId.isEmpty || menuItem.restaurantId == restaurantId) {
+                if (menuItem.restaurantId.isEmpty ||
+                    menuItem.restaurantId == restaurantId) {
                   parsedItems.add(menuItem);
                 }
               }
@@ -125,16 +138,19 @@ class RestaurantRepository {
         return const Right([]);
       }
 
-      return Left(response['message']?.toString() ?? 'Failed to fetch menu items');
+      return Left(
+          response['message']?.toString() ?? 'Failed to fetch menu items');
     } catch (e) {
       return Left('An unexpected error occurred: ${e.toString()}');
     }
   }
 
   /// Get menu items for a restaurant (legacy method name)
-  Future<Either<String, List<MenuModel>>> getRestaurantMenuItems(String restaurantId) async {
+  Future<Either<String, List<MenuModel>>> getRestaurantMenuItems(
+      String restaurantId) async {
     try {
-      final response = await _restaurantService.getRestaurantMenuItems(restaurantId);
+      final response =
+          await _restaurantService.getRestaurantMenuItems(restaurantId);
 
       if (response['success'] == true && response.containsKey('data')) {
         final data = response['data'];
@@ -158,7 +174,8 @@ class RestaurantRepository {
         return const Right([]);
       }
 
-      return Left(response['message']?.toString() ?? 'Failed to fetch menu items');
+      return Left(
+          response['message']?.toString() ?? 'Failed to fetch menu items');
     } catch (e) {
       return Left('An unexpected error occurred: ${e.toString()}');
     }
@@ -189,9 +206,113 @@ class RestaurantRepository {
     }
   }
 
+  /// Get restaurant details with menu items using restaurant/details endpoint
+  Future<Either<String, List<MenuModel>>> getRestaurantDetailsWithMenu(
+      String restaurantId) async {
+    try {
+      final result = await getRestaurantDetailsWithCategories(restaurantId);
+      return result.fold(
+        (error) => Left(error),
+        (data) => Right(data.menuItems),
+      );
+    } catch (e) {
+      return Left('An unexpected error occurred: ${e.toString()}');
+    }
+  }
+
+  /// Get restaurant details with menu items and categories using restaurant/details endpoint
+  Future<Either<String, RestaurantDetailsResult>>
+      getRestaurantDetailsWithCategories(String restaurantId) async {
+    try {
+      final response =
+          await _restaurantService.getMenuItemsByRestaurantId(restaurantId);
+      if (response['success'] == true || response.containsKey('data')) {
+        final data = response['data'] ?? response;
+        final List<MenuModel> parsedItems = [];
+        final List<MenuItemCategory> parsedCategories = [];
+        if (data is Map<String, dynamic>) {
+          final categories = data['categories'] as List<dynamic>?;
+          if (categories != null && categories.isNotEmpty) {
+            for (final categoryJson in categories) {
+              if (categoryJson is Map<String, dynamic>) {
+                try {
+                  final category = MenuItemCategory.fromJson(categoryJson);
+                  parsedCategories.add(category);
+                  final categoryId = category.id;
+                  final items = categoryJson['items'] as List<dynamic>? ?? [];
+                  for (final itemJson in items) {
+                    try {
+                      if (itemJson is Map<String, dynamic>) {
+                        final itemWithCategory =
+                            Map<String, dynamic>.from(itemJson);
+                        itemWithCategory['category_id'] = categoryId;
+                        itemWithCategory['restaurant_id'] = restaurantId;
+                        itemWithCategory['category'] = {
+                          'id': category.id,
+                          'nom': category.nom,
+                        };
+                        final menuItem = MenuModel.fromJson(itemWithCategory);
+                        parsedItems.add(menuItem);
+                      }
+                    } catch (e) {
+                      continue;
+                    }
+                  }
+                } catch (e) {
+                  continue;
+                }
+              }
+            }
+            parsedCategories
+                .sort((a, b) => a.ordreAffichage.compareTo(b.ordreAffichage));
+          } else {
+            final menuItemsData = data['menu_items'] ??
+                data['menuItems'] ??
+                data['items'] ??
+                (data['menu'] is List ? data['menu'] : null);
+            if (menuItemsData != null && menuItemsData.isNotEmpty) {
+              for (final item in menuItemsData) {
+                try {
+                  if (item is Map<String, dynamic>) {
+                    final itemWithRestaurant = Map<String, dynamic>.from(item);
+                    itemWithRestaurant['restaurant_id'] = restaurantId;
+                    final menuItem = MenuModel.fromJson(itemWithRestaurant);
+                    parsedItems.add(menuItem);
+                  }
+                } catch (e) {
+                  continue;
+                }
+              }
+            }
+          }
+        } else if (data is List) {
+          for (final item in data) {
+            try {
+              if (item is Map<String, dynamic>) {
+                final itemWithRestaurant = Map<String, dynamic>.from(item);
+                itemWithRestaurant['restaurant_id'] = restaurantId;
+                final menuItem = MenuModel.fromJson(itemWithRestaurant);
+                parsedItems.add(menuItem);
+              }
+            } catch (e) {
+              continue;
+            }
+          }
+        }
+        return Right(RestaurantDetailsResult(
+          menuItems: parsedItems,
+          categories: parsedCategories,
+        ));
+      }
+      return Left(response['message']?.toString() ??
+          'Failed to fetch restaurant details');
+    } catch (e) {
+      return Left('An unexpected error occurred: ${e.toString()}');
+    }
+  }
+
   /// Get static categories (UI-only, not from API)
   List<CategoryModel> getStaticCategories() {
     return _restaurantService.getStaticCategories();
   }
 }
-
