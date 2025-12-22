@@ -888,6 +888,10 @@
   "@privacyPolicy": {
     "description": "Privacy policy link text"
   },
+  "editProfile": "Edit Profile",
+  "@editProfile": {
+    "description": "Edit profile menu item"
+  },
   "myLocations": "My Locations",
   "@myLocations": {
     "description": "My locations menu item"

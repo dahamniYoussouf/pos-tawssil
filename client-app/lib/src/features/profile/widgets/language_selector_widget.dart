@@ -103,17 +103,22 @@ class LanguageSelectorWidget extends StatelessWidget {
           children: [
             Text(
               flag,
-              style: const TextStyle(fontSize: 24),
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: ColorApp.textBlack,
+                  ),
             ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 label,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                  color: isSelected ? ColorApp.primary : ColorApp.black,
-                ),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontSize: 17,
+                      fontWeight:
+                          isSelected ? FontWeight.w700 : FontWeight.w400,
+                      color: isSelected ? ColorApp.primary : ColorApp.textBlack,
+                    ),
               ),
             ),
             if (isSelected)
@@ -146,18 +151,18 @@ class LanguageSelectorWidget extends StatelessWidget {
             children: [
               Icon(
                 Icons.language,
-                color: ColorApp.black,
+                color: ColorApp.textBlack,
                 size: 24,
               ),
               const SizedBox(width: 16),
               Expanded(
                 child: Text(
                   l10n.language,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w500,
-                    color: ColorApp.black,
-                  ),
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                        color: ColorApp.textBlack,
+                      ),
                 ),
               ),
               BlocBuilder<LocaleCubit, LocaleState>(
@@ -177,16 +182,17 @@ class LanguageSelectorWidget extends StatelessWidget {
                       children: [
                         Text(
                           _getCurrentLanguageName(context),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                            color: ColorApp.black,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w700,
+                                    color: ColorApp.textBlack,
+                                  ),
                         ),
                         const SizedBox(width: 8),
                         const Icon(
                           Icons.keyboard_arrow_down,
-                          color: ColorApp.grey,
+                          color: ColorApp.textBlack,
                           size: 20,
                         ),
                       ],

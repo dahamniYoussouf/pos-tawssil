@@ -227,10 +227,15 @@ class AuthService extends BaseApiService {
         'profile': response['data'],
       };
     } else {
+      final message =
+          response['message'] ?? 'Erreur lors de la récupération du profil';
+      // If user not found, automatically logout
+      if (message == 'User not found') {
+        await logout();
+      }
       return {
         'success': false,
-        'message':
-            response['message'] ?? 'Erreur lors de la récupération du profil',
+        'message': message,
       };
     }
   }

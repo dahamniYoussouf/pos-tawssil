@@ -663,6 +663,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get privacyPolicy => 'سياسة الخصوصية';
 
   @override
+  String get editProfile => 'تعديل الملف الشخصي';
+
+  @override
   String get myLocations => 'عنواني';
 
   @override

@@ -676,6 +676,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get privacyPolicy => 'Privacy policy';
 
   @override
+  String get editProfile => 'Edit Profile';
+
+  @override
   String get myLocations => 'My Locations';
 
   @override

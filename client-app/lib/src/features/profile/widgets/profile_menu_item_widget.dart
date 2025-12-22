@@ -32,7 +32,10 @@ class ProfileMenuItemWidget extends StatelessWidget {
           children: [
             SvgPicture.asset(
               icon,
-              color: isDestructive ? ColorApp.redColor : ColorApp.grey,
+              colorFilter: ColorFilter.mode(
+                isDestructive ? ColorApp.redColor : ColorApp.textBlack,
+                BlendMode.srcIn,
+              ),
               height: 24,
               width: 24,
             ),
@@ -40,16 +43,21 @@ class ProfileMenuItemWidget extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  color: isDestructive ? ColorApp.redColor : ColorApp.black,
-                ),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 17,
+                      color: isDestructive
+                          ? ColorApp.redColor
+                          : ColorApp.textBlack,
+                    ),
               ),
             ),
             SvgPicture.asset(
               MediaRes.arrowRightIcon,
-              color: isDestructive ? ColorApp.redColor : ColorApp.black,
+              colorFilter: ColorFilter.mode(
+                isDestructive ? ColorApp.redColor : ColorApp.textBlack,
+                BlendMode.srcIn,
+              ),
               height: 24,
               width: 24,
             ),

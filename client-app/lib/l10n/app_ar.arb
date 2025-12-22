@@ -265,6 +265,10 @@
   "@privacyPolicy": {
     "description": "نص رابط سياسة الخصوصية"
   },
+  "editProfile": "تعديل الملف الشخصي",
+  "@editProfile": {
+    "description": "عنصر قائمة تعديل الملف الشخصي"
+  },
   "myLocations": "عنواني",
   "@myLocations": {
     "description": "عنصر قائمة عنواني"

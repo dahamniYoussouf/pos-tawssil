@@ -17,6 +17,14 @@ class ProfileMenuListWidget extends StatelessWidget {
       child: Column(
         children: [
           ProfileMenuItemWidget(
+            icon: MediaRes.editIcon,
+            title: l10n.editProfile,
+            onTap: () {
+              // TODO: Navigate to my locations page
+            },
+          ),
+          Divider(color: ColorApp.greyDivider),
+          ProfileMenuItemWidget(
             icon: MediaRes.locationProfileIcon,
             title: l10n.myLocations,
             onTap: () {

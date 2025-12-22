@@ -685,6 +685,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get privacyPolicy => 'Politique de confidentialité';
 
   @override
+  String get editProfile => 'Modifier le profil';
+
+  @override
   String get myLocations => 'Mes Adresses';
 
   @override

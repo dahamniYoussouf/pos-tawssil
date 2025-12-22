@@ -265,6 +265,10 @@
   "@privacyPolicy": {
     "description": "Texte du lien Politique de confidentialité"
   },
+  "editProfile": "Modifier le profil",
+  "@editProfile": {
+    "description": "Élément de menu Modifier le profil"
+  },
   "myLocations": "Mes Adresses",
   "@myLocations": {
     "description": "Élément de menu Mes adresses"

@@ -1312,6 +1312,12 @@ abstract class AppLocalizations {
   /// **'Privacy policy'**
   String get privacyPolicy;
 
+  /// Edit profile menu item
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfile;
+
   /// My locations menu item
   ///
   /// In en, this message translates to:
