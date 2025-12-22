@@ -81,6 +81,10 @@
   "@orderDetails": {
     "description": "Order details section title"
   },
+  "orderOverview": "Order Overview",
+  "@orderOverview": {
+    "description": "Order overview title"
+  },
   "subtotal": "Subtotal",
   "@subtotal": {
     "description": "Subtotal label"

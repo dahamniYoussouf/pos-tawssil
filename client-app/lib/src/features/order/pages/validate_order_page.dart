@@ -175,14 +175,14 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
                       width: 40,
                       height: 4,
                       decoration: BoxDecoration(
-                          color: Colors.grey[300],
+                          color: ColorApp.greyBorder,
                           borderRadius: BorderRadius.circular(2))),
                   const SizedBox(height: 16),
-                  Text('Order Overview',
-                      style: const TextStyle(
+                  Text(localization.orderOverview,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87)),
+                          color: ColorApp.textBlack)),
                   const SizedBox(height: 16),
                   ValidateOrderMapCard(
                       pickupLatLng: _pickupLatLng,

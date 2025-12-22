@@ -214,6 +214,12 @@ abstract class AppLocalizations {
   /// **'Order details'**
   String get orderDetails;
 
+  /// Order overview title
+  ///
+  /// In en, this message translates to:
+  /// **'Order Overview'**
+  String get orderOverview;
+
   /// Subtotal label
   ///
   /// In en, this message translates to:

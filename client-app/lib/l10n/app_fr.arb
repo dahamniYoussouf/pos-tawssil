@@ -19,6 +19,7 @@
   "estimatedTime": "Temps estimé",
   "estimatedDeliveryTime": "Temps de livraison estimé",
   "orderDetails": "Détails de la commande",
+  "orderOverview": "Aperçu de la commande",
   "subtotal": "Sous-total",
   "platformFee": "Frais de plateforme",
   "total": "Total",

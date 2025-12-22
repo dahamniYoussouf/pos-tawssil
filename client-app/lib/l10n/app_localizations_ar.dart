@@ -75,6 +75,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get orderDetails => 'تفاصيل الطلب';
 
   @override
+  String get orderOverview => 'نظرة عامة على الطلب';
+
+  @override
   String get subtotal => 'المجموع الفرعي';
 
   @override

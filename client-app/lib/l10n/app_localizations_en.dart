@@ -76,6 +76,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orderDetails => 'Order details';
 
   @override
+  String get orderOverview => 'Order Overview';
+
+  @override
   String get subtotal => 'Subtotal';
 
   @override
