@@ -37,16 +37,17 @@ class ProfileHeaderWidget extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             fullName.isNotEmpty ? fullName : 'User',
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: ColorApp.primary,
-            ),
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: ColorApp.primary,
+                ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
           _buildContactInfo(
             icon: Icons.phone,
             text: "(+213) ${profile.phoneNumber.replaceAll('213', '')}",
+            context: context,
           ),
           const SizedBox(height: 8),
         ],
@@ -57,22 +58,24 @@ class ProfileHeaderWidget extends StatelessWidget {
   Widget _buildContactInfo({
     required IconData icon,
     required String text,
+    required BuildContext context,
   }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Icon(
           icon,
-          size: 16,
-          color: ColorApp.grey,
+          size: 12,
+          color: ColorApp.textGrey,
         ),
         const SizedBox(width: 8),
         Text(
           text,
-          style: TextStyle(
-            fontSize: 14,
-            color: ColorApp.grey,
-          ),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontSize: 12,
+                fontWeight: FontWeight.w700,
+                color: ColorApp.textGrey,
+              ),
         ),
       ],
     );
