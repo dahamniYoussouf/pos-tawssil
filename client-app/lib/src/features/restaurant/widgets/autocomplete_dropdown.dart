@@ -1,3 +1,4 @@
+import 'package:client_app/src/core/res/color_app.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:client_app/l10n/app_localizations.dart';
@@ -19,7 +20,7 @@ class AutocompleteDropdown extends StatefulWidget {
 
 class _AutocompleteDropdownState extends State<AutocompleteDropdown> {
   // Constants
-  static const _primaryColor = Color(0xFF006C4A);
+  static const _primaryColor = ColorApp.primary;
   static const _debounceDelay = Duration(milliseconds: 300);
   static const _minQueryLength = 2;
   static const _maxSuggestions = 8;
@@ -76,7 +77,8 @@ class _AutocompleteDropdownState extends State<AutocompleteDropdown> {
 
   Future<void> _fetchSuggestions(String query) async {
     try {
-      final suggestions = await _autocompleteService.getRestaurantSuggestions(query);
+      final suggestions =
+          await _autocompleteService.getRestaurantSuggestions(query);
 
       if (!mounted) return;
 
@@ -180,7 +182,8 @@ class _AutocompleteDropdownState extends State<AutocompleteDropdown> {
                     endIndent: 16,
                     color: Colors.grey.shade200,
                   ),
-                  itemBuilder: (context, index) => _buildSuggestionItem(_suggestions[index]),
+                  itemBuilder: (context, index) =>
+                      _buildSuggestionItem(_suggestions[index]),
                 ),
               ),
             ),
@@ -258,7 +261,8 @@ class _AutocompleteDropdownState extends State<AutocompleteDropdown> {
 
     while (index != -1) {
       if (index > start) {
-        spans.add(_buildTextSpan(text.substring(start, index), isHighlighted: false));
+        spans.add(
+            _buildTextSpan(text.substring(start, index), isHighlighted: false));
       }
 
       spans.add(_buildTextSpan(
@@ -347,7 +351,8 @@ class _AutocompleteDropdownState extends State<AutocompleteDropdown> {
                 height: 20,
                 child: CircularProgressIndicator(
                   strokeWidth: 2.5,
-                  valueColor: const AlwaysStoppedAnimation<Color>(_primaryColor),
+                  valueColor:
+                      const AlwaysStoppedAnimation<Color>(_primaryColor),
                 ),
               )
             else if (hasText)

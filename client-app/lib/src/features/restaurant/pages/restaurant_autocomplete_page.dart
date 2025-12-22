@@ -8,15 +8,18 @@ import '../repositories/restaurant_repository.dart';
 import '../../auth/services/user_service.dart';
 import '../widgets/restaurant_search_bar.dart';
 import 'restaurant_details_page.dart';
+import 'package:client_app/src/core/res/color_app.dart';
 
 class RestaurantAutocompletePage extends StatefulWidget {
   const RestaurantAutocompletePage({Key? key}) : super(key: key);
 
   @override
-  State<RestaurantAutocompletePage> createState() => _RestaurantAutocompletePageState();
+  State<RestaurantAutocompletePage> createState() =>
+      _RestaurantAutocompletePageState();
 }
 
-class _RestaurantAutocompletePageState extends State<RestaurantAutocompletePage> {
+class _RestaurantAutocompletePageState
+    extends State<RestaurantAutocompletePage> {
   final TextEditingController _searchController = TextEditingController();
   final RestaurantRepository _restaurantRepository = RestaurantRepository();
   final UserService _userService = UserService();
@@ -193,7 +196,7 @@ class _RestaurantAutocompletePageState extends State<RestaurantAutocompletePage>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF006C4A)),
+                valueColor: AlwaysStoppedAnimation<Color>(ColorApp.primary),
                 strokeWidth: 3,
               ),
               const SizedBox(height: 16),
@@ -252,7 +255,7 @@ class _RestaurantAutocompletePageState extends State<RestaurantAutocompletePage>
               ElevatedButton.icon(
                 onPressed: () => _performSearch(_searchController.text),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF006C4A),
+                  backgroundColor: ColorApp.primary,
                   foregroundColor: Colors.white,
                   padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                   shape: RoundedRectangleBorder(
@@ -285,13 +288,13 @@ class _RestaurantAutocompletePageState extends State<RestaurantAutocompletePage>
               Container(
                 padding: EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: Color(0xFF006C4A).withOpacity(0.1),
+                  color: ColorApp.primary.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.search_outlined,
                   size: 48,
-                  color: Color(0xFF006C4A),
+                  color: ColorApp.primary,
                 ),
               ),
               const SizedBox(height: 24),
@@ -362,7 +365,7 @@ class _RestaurantAutocompletePageState extends State<RestaurantAutocompletePage>
                       text: _searchController.text,
                       style: TextStyle(
                         fontWeight: FontWeight.w600,
-                        color: Color(0xFF006C4A),
+                        color: ColorApp.primary,
                       ),
                     ),
                     TextSpan(text: '"\nEssayez avec d\'autres mots-clés'),
@@ -397,7 +400,7 @@ class _RestaurantAutocompletePageState extends State<RestaurantAutocompletePage>
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Color(0xFF006C4A).withOpacity(0.1),
+                    color: ColorApp.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
@@ -405,7 +408,7 @@ class _RestaurantAutocompletePageState extends State<RestaurantAutocompletePage>
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: Color(0xFF006C4A),
+                      color: ColorApp.primary,
                     ),
                   ),
                 ),
@@ -477,12 +480,12 @@ class _RestaurantAutocompletePageState extends State<RestaurantAutocompletePage>
                           width: 70,
                           height: 70,
                           decoration: BoxDecoration(
-                            color: Color(0xFF006C4A).withOpacity(0.1),
+                            color: ColorApp.primary.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Icon(
                             Icons.restaurant_outlined,
-                            color: Color(0xFF006C4A),
+                            color: ColorApp.primary,
                             size: 28,
                           ),
                         );
@@ -517,10 +520,14 @@ class _RestaurantAutocompletePageState extends State<RestaurantAutocompletePage>
                           if (restaurant.isPremium) ...[
                             SizedBox(width: 8),
                             Container(
-                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 8, vertical: 3),
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
-                                  colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+                                  colors: [
+                                    Color(0xFFFFD700),
+                                    Color(0xFFFFA500)
+                                  ],
                                   begin: Alignment.topLeft,
                                   end: Alignment.bottomRight,
                                 ),
@@ -601,7 +608,8 @@ class _RestaurantAutocompletePageState extends State<RestaurantAutocompletePage>
                         children: [
                           // Rating
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
                               color: Colors.amber.shade50,
                               borderRadius: BorderRadius.circular(6),
@@ -631,9 +639,10 @@ class _RestaurantAutocompletePageState extends State<RestaurantAutocompletePage>
 
                           // Delivery Time
                           Container(
-                            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: Color(0xFF006C4A).withOpacity(0.1),
+                              color: ColorApp.primary.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(6),
                             ),
                             child: Row(
@@ -642,7 +651,7 @@ class _RestaurantAutocompletePageState extends State<RestaurantAutocompletePage>
                                 Icon(
                                   Icons.access_time_rounded,
                                   size: 12,
-                                  color: Color(0xFF006C4A),
+                                  color: ColorApp.primary,
                                 ),
                                 SizedBox(width: 3),
                                 Text(
@@ -650,7 +659,7 @@ class _RestaurantAutocompletePageState extends State<RestaurantAutocompletePage>
                                   style: TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFF006C4A),
+                                    color: ColorApp.primary,
                                   ),
                                 ),
                               ],

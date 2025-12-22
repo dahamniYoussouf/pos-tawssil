@@ -28,7 +28,7 @@ class ColorApp {
   static const Color premiumColor = Color(0xFFFFD700);
 
   static const Color transparent = Color(0x00000000);
-  static const Color greenColor = Color(0xFF006C4A);
+  static const Color greenColor = ColorApp.primary;
   static const Color blueAccentColor = Color(0xFF87CEEB);
 
   static const Color greyIconColor = Color(0xFF6B7280);

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:client_app/l10n/app_localizations.dart';
+import 'package:client_app/src/core/res/color_app.dart';
 
 class PremiumBanner extends StatelessWidget {
   final VoidCallback? onTap;
@@ -18,7 +19,7 @@ class PremiumBanner extends StatelessWidget {
         padding: EdgeInsets.all(14),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF006C4A), Color(0xFF00E676)],
+            colors: [ColorApp.primary, Color(0xFF00E676)],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
@@ -34,7 +35,8 @@ class PremiumBanner extends StatelessWidget {
                     text: TextSpan(
                       children: [
                         TextSpan(
-                          text: '${AppLocalizations.of(context)!.switchToPremium} ',
+                          text:
+                              '${AppLocalizations.of(context)!.switchToPremium} ',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 13,
@@ -73,7 +75,7 @@ class PremiumBanner extends StatelessWidget {
               child: Text(
                 'Tawsil',
                 style: TextStyle(
-                  color: Color(0xFF006C4A),
+                  color: ColorApp.primary,
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
                   letterSpacing: -0.5,
@@ -91,4 +93,3 @@ class PremiumBanner extends StatelessWidget {
     );
   }
 }
-

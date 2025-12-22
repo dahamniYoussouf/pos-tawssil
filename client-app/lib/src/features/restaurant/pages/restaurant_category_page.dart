@@ -4,6 +4,7 @@ import '../models/restaurant_model.dart';
 import '../models/category_model.dart';
 import '../../cart/widgets/cart_icon.dart';
 import 'restaurant_details_page.dart';
+import 'package:client_app/src/core/res/color_app.dart';
 
 class RestaurantListPage extends StatefulWidget {
   final CategoryModel category;
@@ -39,7 +40,10 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
           final categoryName = widget.category.name.toLowerCase();
           final restaurantName = restaurant.name.toLowerCase();
           final restaurantDesc = restaurant.description.toLowerCase();
-          return restaurantName.contains(categoryName) || restaurantDesc.contains(categoryName) || _matchesCategoryKeywords(categoryName, restaurantName, restaurantDesc);
+          return restaurantName.contains(categoryName) ||
+              restaurantDesc.contains(categoryName) ||
+              _matchesCategoryKeywords(
+                  categoryName, restaurantName, restaurantDesc);
         }).toList();
         setState(() {
           restaurants = filteredRestaurants;
@@ -67,14 +71,26 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
     }
   }
 
-  bool _matchesCategoryKeywords(String categoryName, String restaurantName, String restaurantDesc) {
+  bool _matchesCategoryKeywords(
+      String categoryName, String restaurantName, String restaurantDesc) {
     switch (categoryName) {
       case 'pizza':
-        return restaurantName.contains('pizz') || restaurantDesc.contains('pizz') || restaurantName.contains('italia') || restaurantDesc.contains('italia');
+        return restaurantName.contains('pizz') ||
+            restaurantDesc.contains('pizz') ||
+            restaurantName.contains('italia') ||
+            restaurantDesc.contains('italia');
       case 'burger':
-        return restaurantName.contains('burger') || restaurantDesc.contains('burger') || restaurantName.contains('fast') || restaurantDesc.contains('fast');
+        return restaurantName.contains('burger') ||
+            restaurantDesc.contains('burger') ||
+            restaurantName.contains('fast') ||
+            restaurantDesc.contains('fast');
       case 'sushi':
-        return restaurantName.contains('sushi') || restaurantDesc.contains('sushi') || restaurantName.contains('japan') || restaurantDesc.contains('japan') || restaurantName.contains('asia') || restaurantDesc.contains('asia');
+        return restaurantName.contains('sushi') ||
+            restaurantDesc.contains('sushi') ||
+            restaurantName.contains('japan') ||
+            restaurantDesc.contains('japan') ||
+            restaurantName.contains('asia') ||
+            restaurantDesc.contains('asia');
       case 'desserts':
       case 'dessert':
         return restaurantName.contains('dessert') ||
@@ -96,7 +112,8 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
             restaurantName.contains('café') ||
             restaurantDesc.contains('café');
       default:
-        return restaurantName.contains(categoryName) || restaurantDesc.contains(categoryName);
+        return restaurantName.contains(categoryName) ||
+            restaurantDesc.contains(categoryName);
     }
   }
 
@@ -148,7 +165,7 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                         color: Colors.grey[200],
                         child: Center(
                           child: CircularProgressIndicator(
-                            color: Color(0xFF006C4A),
+                            color: ColorApp.primary,
                             strokeWidth: 2,
                           ),
                         ),
@@ -159,7 +176,8 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                         width: 80,
                         height: 80,
                         color: Colors.grey[200],
-                        child: Icon(Icons.restaurant, size: 32, color: Colors.grey[400]),
+                        child: Icon(Icons.restaurant,
+                            size: 32, color: Colors.grey[400]),
                       );
                     },
                   ),
@@ -236,7 +254,8 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                         ),
                       ),
                       SizedBox(width: 12),
-                      Icon(Icons.access_time, size: 14, color: Colors.grey[600]),
+                      Icon(Icons.access_time,
+                          size: 14, color: Colors.grey[600]),
                       SizedBox(width: 4),
                       Text(
                         '${restaurant.deliveryMin}-${restaurant.deliveryMax} min',
@@ -298,7 +317,9 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
           CartIcon(
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(AppLocalizations.of(context)!.navigationToCart)),
+                SnackBar(
+                    content:
+                        Text(AppLocalizations.of(context)!.navigationToCart)),
               );
             },
             iconColor: Color(0xFF1F1F1F),
@@ -316,7 +337,7 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  CircularProgressIndicator(color: Color(0xFF006C4A)),
+                  CircularProgressIndicator(color: ColorApp.primary),
                   SizedBox(height: 16),
                   Text(
                     AppLocalizations.of(context)!.loadingRestaurants,
@@ -344,7 +365,7 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                         onPressed: _loadRestaurants,
                         child: Text(AppLocalizations.of(context)!.tryAgain),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color(0xFF006C4A),
+                          backgroundColor: ColorApp.primary,
                           foregroundColor: Colors.white,
                         ),
                       ),

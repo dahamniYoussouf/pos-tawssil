@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import '../services/location_service.dart';
+import 'package:client_app/src/core/res/color_app.dart';
 
 class GpsDisabledPopup extends StatelessWidget {
   final VoidCallback onRetry;
@@ -70,7 +71,7 @@ class GpsDisabledPopup extends StatelessWidget {
                       onRetry();
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF006C4A),
+                      backgroundColor: ColorApp.primary,
                       padding: const EdgeInsets.symmetric(vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),

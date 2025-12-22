@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import '../../cart/services/cart_service.dart';
+import 'package:client_app/src/core/res/color_app.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -83,12 +84,13 @@ class CustomBottomNavigationBar extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? Color(0xFF006C4A).withOpacity(0.1) : Colors.transparent,
+          color:
+              isActive ? ColorApp.primary.withOpacity(0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: Icon(
           isActive ? activeIcon : icon,
-          color: isActive ? Color(0xFF006C4A) : Colors.grey[600],
+          color: isActive ? ColorApp.primary : Colors.grey[600],
           size: 26,
         ),
       ),
@@ -104,7 +106,8 @@ class CustomBottomNavigationBar extends StatelessWidget {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
-          color: isActive ? Color(0xFF006C4A).withOpacity(0.1) : Colors.transparent,
+          color:
+              isActive ? ColorApp.primary.withOpacity(0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
         child: ListenableBuilder(
@@ -118,7 +121,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
               children: [
                 Icon(
                   isActive ? Icons.shopping_cart : Icons.shopping_cart_outlined,
-                  color: isActive ? Color(0xFF006C4A) : Colors.grey[600],
+                  color: isActive ? ColorApp.primary : Colors.grey[600],
                   size: 26,
                 ),
                 if (totalItems > 0)

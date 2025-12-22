@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import '../localization/locale_cubit.dart';
+import 'package:client_app/src/core/res/color_app.dart';
 
 class LanguageSwitcher extends StatelessWidget {
   const LanguageSwitcher({Key? key}) : super(key: key);
@@ -73,10 +74,12 @@ class LanguageSwitcher extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF006C4A).withOpacity(0.1) : Colors.transparent,
+          color: isSelected
+              ? ColorApp.primary.withOpacity(0.1)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: isSelected ? const Color(0xFF006C4A) : Colors.grey[300]!,
+            color: isSelected ? ColorApp.primary : Colors.grey[300]!,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -93,14 +96,14 @@ class LanguageSwitcher extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                  color: isSelected ? const Color(0xFF006C4A) : Colors.black87,
+                  color: isSelected ? ColorApp.primary : Colors.black87,
                 ),
               ),
             ),
             if (isSelected)
               const Icon(
                 Icons.check_circle,
-                color: Color(0xFF006C4A),
+                color: ColorApp.primary,
                 size: 20,
               ),
           ],

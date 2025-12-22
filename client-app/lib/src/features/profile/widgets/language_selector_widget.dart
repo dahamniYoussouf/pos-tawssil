@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import 'package:client_app/src/core/localization/locale_cubit.dart';
+import 'package:client_app/src/core/res/color_app.dart';
 
 class LanguageSelectorWidget extends StatelessWidget {
   const LanguageSelectorWidget({super.key});
@@ -91,7 +92,7 @@ class LanguageSelectorWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: isSelected
-              ? const Color(0xFF006C4A).withOpacity(0.1)
+              ? ColorApp.primary.withOpacity(0.1)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(

@@ -737,10 +737,10 @@ class _VerifyButton extends StatelessWidget {
                 children: [
                   Text(
                     '${total.toDouble().toStringAsFixed(2)} DA',
-                    style: const TextStyle(
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,
-                        color: Colors.black),
+                        color: ColorApp.textBlack),
                   ),
                   const SizedBox(width: 32),
                   Container(

@@ -398,7 +398,7 @@ class _DevOtpSection extends StatelessWidget {
                   child: Text(
                     '${AppLocalizations.of(context)!.devOtp} ${state.verificationId}',
                     style: const TextStyle(
-                      color: Color(0xFF006C4A),
+                      color: ColorApp.primary,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
@@ -529,7 +529,7 @@ class _ResendCodeSection extends StatelessWidget {
                       TextSpan(
                         text: localizations.resend,
                         style: const TextStyle(
-                          color: Color(0xFF006C4A),
+                          color: ColorApp.primary,
                           fontWeight: FontWeight.w600,
                         ),
                       ),

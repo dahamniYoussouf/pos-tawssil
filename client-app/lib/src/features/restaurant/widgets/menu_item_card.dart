@@ -35,7 +35,7 @@ class MenuItemCard extends StatelessWidget {
               color: Colors.white,
               border: isSelected || isInCart
                   ? Border.all(
-                      color: Color(0xFF006C4A),
+                      color: ColorApp.primary,
                       width: 2,
                     )
                   : null,
@@ -57,7 +57,8 @@ class MenuItemCard extends StatelessWidget {
                           errorBuilder: (context, error, stackTrace) {
                             return Container(
                               color: Colors.grey[200],
-                              child: Icon(Icons.restaurant, size: 30, color: Colors.grey[400]),
+                              child: Icon(Icons.restaurant,
+                                  size: 30, color: Colors.grey[400]),
                             );
                           },
                         ),
@@ -72,7 +73,9 @@ class MenuItemCard extends StatelessWidget {
                         width: 24,
                         height: 24,
                         decoration: BoxDecoration(
-                          color: item.disponible ? ColorApp.primary : ColorApp.greyLight,
+                          color: item.disponible
+                              ? ColorApp.primary
+                              : ColorApp.greyLight,
                           shape: BoxShape.circle,
                           border: Border.all(color: ColorApp.white, width: 2),
                         ),
@@ -117,7 +120,8 @@ class MenuItemCard extends StatelessWidget {
                       SizedBox(height: 4),
 
                       // Description
-                      if (item.description != null && item.description!.isNotEmpty)
+                      if (item.description != null &&
+                          item.description!.isNotEmpty)
                         Text(
                           item.description!,
                           style: TextStyle(
@@ -136,7 +140,7 @@ class MenuItemCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
-                          color: Colors.black,
+                          color: ColorApp.black,
                         ),
                       ),
 
@@ -155,16 +159,18 @@ class MenuItemCard extends StatelessWidget {
                       if (isInCart) ...[
                         SizedBox(height: 2),
                         Container(
-                          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                           decoration: BoxDecoration(
-                            color: Color(0xFF006C4A).withOpacity(0.1),
+                            color: ColorApp.primary.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(3),
                           ),
                           child: Text(
-                            AppLocalizations.of(context)!.quantityInCart(quantity),
+                            AppLocalizations.of(context)!
+                                .quantityInCart(quantity),
                             style: const TextStyle(
                               fontSize: 9,
-                              color: Color(0xFF006C4A),
+                              color: ColorApp.primary,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
@@ -203,4 +209,3 @@ class MenuItemCard extends StatelessWidget {
     );
   }
 }
-
