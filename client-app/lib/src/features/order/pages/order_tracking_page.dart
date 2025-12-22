@@ -85,7 +85,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
       _handleOrderUpdate(order);
 
       // Show success dialog when order is delivered for the first time
-      if (order.isPending && !_hasShownSuccessDialog) {
+      if (order.isDelivered && !_hasShownSuccessDialog) {
         _hasShownSuccessDialog = true;
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _showDeliverySuccessDialog(context, order.id);

@@ -213,7 +213,9 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
           ]),
           floatingActionButton: ValidateOrderActionBar(
               isLoading: _isLoading,
-              onConfirm: _showConfirmationDialog,
+              onConfirm: () {
+                _submitOrder();
+              },
               label: localization.validate,
               swipeButtonKey: _swipeButtonKey),
           floatingActionButtonLocation:
@@ -272,35 +274,6 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
         duration: _snackBarDuration,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))));
-  }
-
-  void _showConfirmationDialog() {
-    final AppLocalizations localization = AppLocalizations.of(context)!;
-    showDialog<void>(
-        context: context,
-        barrierDismissible: false,
-        builder: (BuildContext dialogContext) {
-          return ValidateOrderConfirmationDialog(
-              title: localization.confirmOrder,
-              message: localization.confirmOrderMessage,
-              totalLabel: localization.totalLabel,
-              totalValue:
-                  localization.totalValue(widget.totalPrice.toStringAsFixed(2)),
-              paymentLabel: localization.payment,
-              paymentValue: widget.paymentMethod,
-              deliveryTimeLabel: localization.deliveryTime,
-              deliveryTimeValue: widget.estimatedTime,
-              cancelLabel: localization.cancel,
-              confirmLabel: localization.confirm,
-              onCancel: () {
-                Navigator.of(dialogContext).pop();
-                _swipeButtonKey.currentState?.reset();
-              },
-              onConfirm: () {
-                Navigator.of(dialogContext).pop();
-                _submitOrder();
-              });
-        });
   }
 
   @override
