@@ -353,6 +353,14 @@
   "submit": "Soumettre",
   "@submit": {
     "description": "Texte du bouton Soumettre"
+  },
+  "recentSearches": "Recherches récentes",
+  "@recentSearches": {
+    "description": "Titre des recherches récentes"
+  },
+  "clearHistory": "Effacer",
+  "@clearHistory": {
+    "description": "Bouton pour effacer l'historique de recherche"
   }
 }
 

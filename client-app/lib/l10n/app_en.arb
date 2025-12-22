@@ -977,6 +977,14 @@
   "submit": "Submit",
   "@submit": {
     "description": "Submit button text"
+  },
+  "recentSearches": "Recent Searches",
+  "@recentSearches": {
+    "description": "Recent searches title"
+  },
+  "clearHistory": "Clear",
+  "@clearHistory": {
+    "description": "Clear search history button"
   }
 }
 

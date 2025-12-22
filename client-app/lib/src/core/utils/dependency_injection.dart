@@ -7,6 +7,7 @@ import 'package:client_app/src/features/restaurant/cubit/category_cubit.dart';
 import 'package:client_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'package:client_app/src/features/restaurant/cubit/restaurant_search_cubit.dart';
 import 'package:client_app/src/features/restaurant/cubit/restaurant_details_cubit.dart';
+import 'package:client_app/src/features/restaurant/cubit/search_history_cubit.dart';
 import 'package:client_app/src/features/restaurant/services/restaurant_service.dart';
 import 'package:client_app/src/features/restaurant/repositories/restaurant_repository.dart';
 import 'package:client_app/src/features/cart/services/cart_service.dart';
@@ -80,6 +81,8 @@ void setupLocator() {
           restaurantRepository: locator<RestaurantRepository>()));
   locator.registerFactory<RestaurantDetailsCubit>(() =>
       RestaurantDetailsCubit(repository: locator<RestaurantRepository>()));
+  locator.registerLazySingleton<SearchHistoryCubit>(() =>
+      SearchHistoryCubit());
   locator.registerLazySingleton<LocationCubit>(() => LocationCubit());
 
   // Review services

@@ -1437,6 +1437,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Submit'**
   String get submit;
+
+  /// Recent searches title
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Searches'**
+  String get recentSearches;
+
+  /// Clear search history button
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clearHistory;
 }
 
 class _AppLocalizationsDelegate

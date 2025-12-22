@@ -353,6 +353,14 @@
   "submit": "إرسال",
   "@submit": {
     "description": "نص زر الإرسال"
+  },
+  "recentSearches": "البحث الأخير",
+  "@recentSearches": {
+    "description": "عنوان البحث الأخير"
+  },
+  "clearHistory": "مسح",
+  "@clearHistory": {
+    "description": "زر مسح سجل البحث"
   }
 }
 

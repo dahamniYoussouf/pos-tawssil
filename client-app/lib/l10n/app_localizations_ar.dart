@@ -726,4 +726,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get submit => 'إرسال';
+
+  @override
+  String get recentSearches => 'البحث الأخير';
+
+  @override
+  String get clearHistory => 'مسح';
 }

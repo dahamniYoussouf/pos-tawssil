@@ -749,4 +749,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get submit => 'Soumettre';
+
+  @override
+  String get recentSearches => 'Recherches récentes';
+
+  @override
+  String get clearHistory => 'Effacer';
 }

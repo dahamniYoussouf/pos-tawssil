@@ -739,4 +739,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get submit => 'Submit';
+
+  @override
+  String get recentSearches => 'Recent Searches';
+
+  @override
+  String get clearHistory => 'Clear';
 }
