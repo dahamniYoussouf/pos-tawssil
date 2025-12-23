@@ -1,62 +1,96 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geocoding/geocoding.dart';
+import 'package:client_app/src/features/restaurant/services/google_places_service.dart';
 import 'address_search_state.dart';
 
 class AddressSearchCubit extends Cubit<AddressSearchState> {
   AddressSearchCubit() : super(AddressSearchInitial());
 
+  /// Get autocomplete suggestions as user types
+  Future<void> getAutocompleteSuggestions(String query) async {
+    if (query.trim().isEmpty) {
+      emit(AddressSearchInitial());
+      return;
+    }
+
+    // Only search if query is at least 2 characters
+    if (query.trim().length < 2) {
+      emit(AddressSearchInitial());
+      return;
+    }
+
+    emit(AddressSearchLoading());
+    try {
+      final predictions = await GooglePlacesService.getAutocompleteSuggestions(
+        query.trim(),
+      );
+
+      if (predictions.isEmpty) {
+        emit(const AddressSearchError(
+            message: 'No locations found for this address'));
+      } else {
+        emit(AddressSearchSuggestions(predictions: predictions));
+      }
+    } catch (e) {
+      emit(AddressSearchError(
+          message: 'Error searching address: ${e.toString()}'));
+    }
+  }
+
+  /// Select a place from autocomplete suggestions and get its details
+  Future<void> selectPlace(PlacePrediction prediction) async {
+    emit(AddressSearchLoading());
+    try {
+      final placeDetails = await GooglePlacesService.getPlaceDetails(
+        prediction.placeId,
+      );
+
+      emit(AddressSearchSuccess(
+        address: placeDetails.formattedAddress,
+        latitude: placeDetails.latitude,
+        longitude: placeDetails.longitude,
+      ));
+    } catch (e) {
+      emit(AddressSearchError(
+          message: 'Error getting place details: ${e.toString()}'));
+    }
+  }
+
+  /// Legacy method for backward compatibility - now uses Google Places
   Future<void> searchAddress(String query) async {
     if (query.trim().isEmpty) {
       emit(AddressSearchInitial());
       return;
     }
+
     emit(AddressSearchLoading());
     try {
-      final List<Location> locations = await locationFromAddress(query);
-      if (locations.isEmpty) {
+      // Get autocomplete suggestions first
+      final predictions = await GooglePlacesService.getAutocompleteSuggestions(
+        query.trim(),
+      );
+
+      if (predictions.isEmpty) {
         emit(const AddressSearchError(
             message: 'No location found for this address'));
       } else {
-        final location = locations.first;
-        final placemarks = await placemarkFromCoordinates(
-          location.latitude,
-          location.longitude,
+        // Use the first prediction
+        final placeDetails = await GooglePlacesService.getPlaceDetails(
+          predictions.first.placeId,
         );
-        String address = query;
-        if (placemarks.isNotEmpty) {
-          final placemark = placemarks.first;
-          address = _formatAddress(placemark);
-        }
+
         emit(AddressSearchSuccess(
-          address: address,
-          latitude: location.latitude,
-          longitude: location.longitude,
+          address: placeDetails.formattedAddress,
+          latitude: placeDetails.latitude,
+          longitude: placeDetails.longitude,
         ));
       }
     } catch (e) {
-      emit(AddressSearchError(message: 'Error searching address: ${e.toString()}'));
+      emit(AddressSearchError(
+          message: 'Error searching address: ${e.toString()}'));
     }
-  }
-
-  String _formatAddress(Placemark placemark) {
-    final parts = <String>[];
-    if (placemark.street != null && placemark.street!.isNotEmpty) {
-      parts.add(placemark.street!);
-    }
-    if (placemark.subLocality != null && placemark.subLocality!.isNotEmpty) {
-      parts.add(placemark.subLocality!);
-    }
-    if (placemark.locality != null && placemark.locality!.isNotEmpty) {
-      parts.add(placemark.locality!);
-    }
-    if (placemark.country != null && placemark.country!.isNotEmpty) {
-      parts.add(placemark.country!);
-    }
-    return parts.join(', ');
   }
 
   void resetState() {
     emit(AddressSearchInitial());
   }
 }
-

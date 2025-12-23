@@ -13,8 +13,15 @@ class ApiConfig {
   static const String nearbyRestaurantsEndpoint = '/restaurant/nearbyfilter';
   static const String nearbyRestaurantsNames = '/restaurant/getnearbynames';
 
-  static String get nearbyRestaurantsUrl => '$baseUrl$nearbyRestaurantsEndpoint';
+  static String get nearbyRestaurantsUrl =>
+      '$baseUrl$nearbyRestaurantsEndpoint';
 
   // storage key
   static const String storageKeyToken = 'access_token';
+
+  // Google Places API Key
+  // Note: Replace with your actual API key or load from environment/config
+  // For production, consider loading from secure storage or environment variables
+  static const String googlePlacesApiKey =
+      'AIzaSyCJXJUAkRyVdR_mndA6yy7gTSXrFvpt2Wg';
 }

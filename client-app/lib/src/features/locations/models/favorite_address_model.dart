@@ -16,12 +16,26 @@ class FavoriteAddressModel {
   });
 
   factory FavoriteAddressModel.fromJson(Map<String, dynamic> json) {
+    // Handle lat/lng as either string or number
+    double parseCoordinate(dynamic value) {
+      if (value == null) throw ArgumentError('Coordinate cannot be null');
+      if (value is num) return value.toDouble();
+      if (value is String) {
+        final parsed = double.tryParse(value);
+        if (parsed == null) {
+          throw FormatException('Invalid coordinate format: $value');
+        }
+        return parsed;
+      }
+      throw FormatException('Coordinate must be a number or string, got: ${value.runtimeType}');
+    }
+
     return FavoriteAddressModel(
       id: json['id']?.toString() ?? json['_id']?.toString(),
-      name: json['name'] as String,
-      address: json['address'] as String,
-      lat: (json['lat'] as num).toDouble(),
-      lng: (json['lng'] as num).toDouble(),
+      name: json['name'] as String? ?? '',
+      address: json['address'] as String? ?? '',
+      lat: parseCoordinate(json['lat']),
+      lng: parseCoordinate(json['lng']),
       isDefault: json['is_default'] as bool? ?? false,
     );
   }

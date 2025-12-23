@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:client_app/src/features/restaurant/services/google_places_service.dart';
 
 abstract class AddressSearchState extends Equatable {
   const AddressSearchState();
@@ -10,6 +11,15 @@ abstract class AddressSearchState extends Equatable {
 class AddressSearchInitial extends AddressSearchState {}
 
 class AddressSearchLoading extends AddressSearchState {}
+
+class AddressSearchSuggestions extends AddressSearchState {
+  final List<PlacePrediction> predictions;
+
+  const AddressSearchSuggestions({required this.predictions});
+
+  @override
+  List<Object?> get props => [predictions];
+}
 
 class AddressSearchSuccess extends AddressSearchState {
   final String address;
@@ -34,4 +44,3 @@ class AddressSearchError extends AddressSearchState {
   @override
   List<Object?> get props => [message];
 }
-
