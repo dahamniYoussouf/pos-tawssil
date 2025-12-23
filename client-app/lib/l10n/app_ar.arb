@@ -362,6 +362,58 @@
   "clearHistory": "مسح",
   "@clearHistory": {
     "description": "زر مسح سجل البحث"
+  },
+  "changeLocation": "تغيير موقعك",
+  "@changeLocation": {
+    "description": "عنوان مربع حوار تغيير الموقع"
+  },
+  "currentAddress": "العنوان الحالي",
+  "@currentAddress": {
+    "description": "عنوان قسم العنوان الحالي"
+  },
+  "savedAddresses": "العناوين المحفوظة",
+  "@savedAddresses": {
+    "description": "عنوان قسم العناوين المحفوظة"
+  },
+  "addNewAddress": "إضافة عنوان جديد",
+  "@addNewAddress": {
+    "description": "نص زر إضافة عنوان جديد"
+  },
+  "useCurrentLocation": "استخدام الموقع الحالي",
+  "@useCurrentLocation": {
+    "description": "نص زر استخدام الموقع الحالي"
+  },
+  "searchForLocation": "البحث عن موقع",
+  "@searchForLocation": {
+    "description": "نص تلميح البحث عن موقع"
+  },
+  "addNewAddressTitle": "إضافة عنوان جديد",
+  "@addNewAddressTitle": {
+    "description": "عنوان مربع حوار إضافة عنوان"
+  },
+  "addressNameHint": "الاسم (مثال: المنزل، العمل)",
+  "@addressNameHint": {
+    "description": "تلميح حقل اسم العنوان"
+  },
+  "setAsDefaultAddress": "تعيين كعنوان افتراضي",
+  "@setAsDefaultAddress": {
+    "description": "تسمية مربع تحديد تعيين كعنوان افتراضي"
+  },
+  "saveAddress": "حفظ العنوان",
+  "@saveAddress": {
+    "description": "نص زر حفظ العنوان"
+  },
+  "loadingAddress": "جاري تحميل العنوان...",
+  "@loadingAddress": {
+    "description": "رسالة تحميل العنوان"
+  },
+  "pleaseEnterAddressName": "يرجى إدخال اسم لهذا العنوان",
+  "@pleaseEnterAddressName": {
+    "description": "رسالة خطأ عندما يكون اسم العنوان فارغًا"
+  },
+  "pleaseSelectLocation": "يرجى تحديد موقع على الخريطة",
+  "@pleaseSelectLocation": {
+    "description": "رسالة خطأ عندما لا يتم تحديد الموقع"
   }
 }
 

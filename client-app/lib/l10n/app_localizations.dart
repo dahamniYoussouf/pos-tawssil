@@ -1455,6 +1455,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Clear'**
   String get clearHistory;
+
+  /// Change location dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Change your location'**
+  String get changeLocation;
+
+  /// Current address section title
+  ///
+  /// In en, this message translates to:
+  /// **'Current address'**
+  String get currentAddress;
+
+  /// Saved addresses section title
+  ///
+  /// In en, this message translates to:
+  /// **'Saved addresses'**
+  String get savedAddresses;
+
+  /// Add new address button text
+  ///
+  /// In en, this message translates to:
+  /// **'Add a new address'**
+  String get addNewAddress;
+
+  /// Use current location button text
+  ///
+  /// In en, this message translates to:
+  /// **'Use Current Location'**
+  String get useCurrentLocation;
+
+  /// Search for location hint text
+  ///
+  /// In en, this message translates to:
+  /// **'Search for location'**
+  String get searchForLocation;
+
+  /// Add new address dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Address'**
+  String get addNewAddressTitle;
+
+  /// Address name input hint
+  ///
+  /// In en, this message translates to:
+  /// **'Name (e.g., Home, Work)'**
+  String get addressNameHint;
+
+  /// Set as default address checkbox label
+  ///
+  /// In en, this message translates to:
+  /// **'Set as default address'**
+  String get setAsDefaultAddress;
+
+  /// Save address button text
+  ///
+  /// In en, this message translates to:
+  /// **'Save Address'**
+  String get saveAddress;
+
+  /// Loading address message
+  ///
+  /// In en, this message translates to:
+  /// **'Loading address...'**
+  String get loadingAddress;
+
+  /// Error message when address name is empty
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a name for this address'**
+  String get pleaseEnterAddressName;
+
+  /// Error message when location is not selected
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a location on the map'**
+  String get pleaseSelectLocation;
 }
 
 class _AppLocalizationsDelegate

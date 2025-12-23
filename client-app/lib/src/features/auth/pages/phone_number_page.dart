@@ -449,15 +449,18 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
   }) {
     return GestureDetector(
       onTap: onTap,
-      child: Text(
+      child: FittedBox(
+          child: Text(
         text,
         style: const TextStyle(
-          fontSize: 12,
+          fontSize: 10,
           color: ColorApp.black,
           decoration: TextDecoration.underline,
           decorationColor: ColorApp.black,
         ),
-      ),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      )),
     );
   }
 }

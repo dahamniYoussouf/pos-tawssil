@@ -1,4 +1,8 @@
+import 'package:client_app/src/features/locations/cubit/favorite_address_cubit.dart';
 import 'package:client_app/src/features/restaurant/cubit/restaurant_details_cubit.dart';
+import 'package:client_app/src/features/restaurant/widgets/cubit/address_search_cubit.dart';
+import 'package:client_app/src/features/restaurant/widgets/cubit/create_address_ui_cubit.dart';
+import 'package:client_app/src/features/restaurant/widgets/cubit/map_location_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -88,6 +92,13 @@ class MyApp extends StatelessWidget {
         BlocProvider<RestaurantDetailsCubit>(
           create: (context) => locator<RestaurantDetailsCubit>(),
         ),
+        BlocProvider<AddressSearchCubit>(
+            create: (context) => AddressSearchCubit()),
+        BlocProvider<MapLocationCubit>(create: (context) => MapLocationCubit()),
+        BlocProvider<CreateAddressUiCubit>(
+            create: (context) => CreateAddressUiCubit()),
+        BlocProvider<FavoriteAddressCubit>(
+            create: (context) => FavoriteAddressCubit()),
       ],
       child: BlocBuilder<LocaleCubit, LocaleState>(
         builder: (context, localeState) {

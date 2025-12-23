@@ -735,4 +735,43 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get clearHistory => 'مسح';
+
+  @override
+  String get changeLocation => 'تغيير موقعك';
+
+  @override
+  String get currentAddress => 'العنوان الحالي';
+
+  @override
+  String get savedAddresses => 'العناوين المحفوظة';
+
+  @override
+  String get addNewAddress => 'إضافة عنوان جديد';
+
+  @override
+  String get useCurrentLocation => 'استخدام الموقع الحالي';
+
+  @override
+  String get searchForLocation => 'البحث عن موقع';
+
+  @override
+  String get addNewAddressTitle => 'إضافة عنوان جديد';
+
+  @override
+  String get addressNameHint => 'الاسم (مثال: المنزل، العمل)';
+
+  @override
+  String get setAsDefaultAddress => 'تعيين كعنوان افتراضي';
+
+  @override
+  String get saveAddress => 'حفظ العنوان';
+
+  @override
+  String get loadingAddress => 'جاري تحميل العنوان...';
+
+  @override
+  String get pleaseEnterAddressName => 'يرجى إدخال اسم لهذا العنوان';
+
+  @override
+  String get pleaseSelectLocation => 'يرجى تحديد موقع على الخريطة';
 }

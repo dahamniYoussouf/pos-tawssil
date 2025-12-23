@@ -758,4 +758,45 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get clearHistory => 'Effacer';
+
+  @override
+  String get changeLocation => 'Changer votre emplacement';
+
+  @override
+  String get currentAddress => 'Adresses actuelle';
+
+  @override
+  String get savedAddresses => 'Adresses enregistrées';
+
+  @override
+  String get addNewAddress => 'Ajouter une nouvelle addresse';
+
+  @override
+  String get useCurrentLocation => 'Use Current Location';
+
+  @override
+  String get searchForLocation => 'Rechercher un emplacement';
+
+  @override
+  String get addNewAddressTitle => 'Ajouter une nouvelle adresse';
+
+  @override
+  String get addressNameHint => 'Nom (ex: Domicile, Travail)';
+
+  @override
+  String get setAsDefaultAddress => 'Définir comme adresse par défaut';
+
+  @override
+  String get saveAddress => 'Enregistrer l\'adresse';
+
+  @override
+  String get loadingAddress => 'Chargement de l\'adresse...';
+
+  @override
+  String get pleaseEnterAddressName =>
+      'Veuillez entrer un nom pour cette adresse';
+
+  @override
+  String get pleaseSelectLocation =>
+      'Veuillez sélectionner un emplacement sur la carte';
 }

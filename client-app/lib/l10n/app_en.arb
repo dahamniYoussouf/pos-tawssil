@@ -989,6 +989,58 @@
   "clearHistory": "Clear",
   "@clearHistory": {
     "description": "Clear search history button"
+  },
+  "changeLocation": "Change your location",
+  "@changeLocation": {
+    "description": "Change location dialog title"
+  },
+  "currentAddress": "Current address",
+  "@currentAddress": {
+    "description": "Current address section title"
+  },
+  "savedAddresses": "Saved addresses",
+  "@savedAddresses": {
+    "description": "Saved addresses section title"
+  },
+  "addNewAddress": "Add a new address",
+  "@addNewAddress": {
+    "description": "Add new address button text"
+  },
+  "useCurrentLocation": "Use Current Location",
+  "@useCurrentLocation": {
+    "description": "Use current location button text"
+  },
+  "searchForLocation": "Search for location",
+  "@searchForLocation": {
+    "description": "Search for location hint text"
+  },
+  "addNewAddressTitle": "Add New Address",
+  "@addNewAddressTitle": {
+    "description": "Add new address dialog title"
+  },
+  "addressNameHint": "Name (e.g., Home, Work)",
+  "@addressNameHint": {
+    "description": "Address name input hint"
+  },
+  "setAsDefaultAddress": "Set as default address",
+  "@setAsDefaultAddress": {
+    "description": "Set as default address checkbox label"
+  },
+  "saveAddress": "Save Address",
+  "@saveAddress": {
+    "description": "Save address button text"
+  },
+  "loadingAddress": "Loading address...",
+  "@loadingAddress": {
+    "description": "Loading address message"
+  },
+  "pleaseEnterAddressName": "Please enter a name for this address",
+  "@pleaseEnterAddressName": {
+    "description": "Error message when address name is empty"
+  },
+  "pleaseSelectLocation": "Please select a location on the map",
+  "@pleaseSelectLocation": {
+    "description": "Error message when location is not selected"
   }
 }
 

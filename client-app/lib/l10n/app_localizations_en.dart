@@ -748,4 +748,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clearHistory => 'Clear';
+
+  @override
+  String get changeLocation => 'Change your location';
+
+  @override
+  String get currentAddress => 'Current address';
+
+  @override
+  String get savedAddresses => 'Saved addresses';
+
+  @override
+  String get addNewAddress => 'Add a new address';
+
+  @override
+  String get useCurrentLocation => 'Use Current Location';
+
+  @override
+  String get searchForLocation => 'Search for location';
+
+  @override
+  String get addNewAddressTitle => 'Add New Address';
+
+  @override
+  String get addressNameHint => 'Name (e.g., Home, Work)';
+
+  @override
+  String get setAsDefaultAddress => 'Set as default address';
+
+  @override
+  String get saveAddress => 'Save Address';
+
+  @override
+  String get loadingAddress => 'Loading address...';
+
+  @override
+  String get pleaseEnterAddressName => 'Please enter a name for this address';
+
+  @override
+  String get pleaseSelectLocation => 'Please select a location on the map';
 }

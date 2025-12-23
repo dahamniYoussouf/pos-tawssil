@@ -1,8 +1,10 @@
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/core/res/media_res.dart';
+import 'package:client_app/src/features/locations/cubit/favorite_address_cubit.dart';
 import 'package:client_app/src/features/locations/cubit/location_cubit.dart';
 import 'package:client_app/src/features/locations/cubit/location_state.dart';
 import 'package:client_app/src/features/restaurant/pages/restaurant_search_page.dart';
+import 'package:client_app/src/features/restaurant/widgets/address_selection_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/src/features/auth/cubit/user_cubit.dart';
@@ -12,8 +14,17 @@ import 'package:flutter_svg/svg.dart';
 import '../../auth/services/user_service.dart';
 import 'restaurant_search_bar.dart';
 
-class RestaurantSuggestionHeader extends StatelessWidget {
+class RestaurantSuggestionHeader extends StatefulWidget {
   const RestaurantSuggestionHeader({Key? key}) : super(key: key);
+
+  @override
+  State<RestaurantSuggestionHeader> createState() =>
+      _RestaurantSuggestionHeaderState();
+}
+
+class _RestaurantSuggestionHeaderState
+    extends State<RestaurantSuggestionHeader> {
+  final GlobalKey _locationKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -42,31 +53,43 @@ class RestaurantSuggestionHeader extends StatelessWidget {
                   BlocBuilder<LocationCubit, LocationState>(
                     builder: (context, locationState) {
                       if (locationState is LocationSuccess) {
-                        return Row(
-                          children: [
-                            SvgPicture.asset(
-                              MediaRes.locationIcon,
-                              height: 20,
-                              width: 20,
-                            ),
-                            SizedBox(width: 4),
-                            Flexible(
-                              child: Text(
-                                '${locationState.fullAddress}',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: ColorApp.textGrey,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
+                        return GestureDetector(
+                          onTap: () {
+                            context
+                                .read<FavoriteAddressCubit>()
+                                .loadFavoriteAddresses();
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              AddressSelectionOverLay.show(
+                                  context, _locationKey);
+                            });
+                          },
+                          child: Row(
+                            key: _locationKey,
+                            children: [
+                              SvgPicture.asset(
+                                MediaRes.locationIcon,
+                                height: 20,
+                                width: 20,
                               ),
-                            ),
-                            Icon(
-                              Icons.keyboard_arrow_down_rounded,
-                              color: ColorApp.primary,
-                              size: 24,
-                            ),
-                          ],
+                              SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  '${locationState.fullAddress}',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: ColorApp.textGrey,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              Icon(
+                                Icons.keyboard_arrow_down_rounded,
+                                color: ColorApp.primary,
+                                size: 24,
+                              ),
+                            ],
+                          ),
                         );
                       }
                       return SizedBox.shrink();

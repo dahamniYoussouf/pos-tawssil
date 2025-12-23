@@ -45,7 +45,9 @@
 		<true/>
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
-		<key>UIStatusBarHidden</key>
-		<false/>
-	</dict>
+	<key>UIStatusBarHidden</key>
+	<false/>
+	<key>GMSApiKey</key>
+	<string>wiqrGmF4x0P1XBX82bBjC_jFU</string>
+</dict>
 </plist>

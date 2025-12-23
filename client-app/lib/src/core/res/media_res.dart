@@ -66,4 +66,11 @@ class MediaRes {
   static const notificationIcon =
       '$_baseImageIcon/notification_icon_home_page.svg';
   static const favoriteIcon = '$_baseImageIcon/favorite_icon_home.svg';
+  static const upArrowIcon = '$_baseImageIcon/up_arrow_icon.svg';
+  static const listIcon = '$_baseImageIcon/list_icon.svg';
+
+  static const locationImage = '$_baseImage/location_image.png';
+
+  static const locationIconBlack = '$_baseImageIcon/location_icon_black.svg';
+  static const arrowDownIcon = '$_baseImageIcon/arrow_down_icon.svg';
 }

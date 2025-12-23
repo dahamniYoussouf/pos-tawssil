@@ -362,6 +362,58 @@
   "clearHistory": "Effacer",
   "@clearHistory": {
     "description": "Bouton pour effacer l'historique de recherche"
+  },
+  "changeLocation": "Changer votre emplacement",
+  "@changeLocation": {
+    "description": "Titre de la boîte de dialogue de changement d'emplacement"
+  },
+  "currentAddress": "Adresses actuelle",
+  "@currentAddress": {
+    "description": "Titre de la section adresse actuelle"
+  },
+  "savedAddresses": "Adresses enregistrées",
+  "@savedAddresses": {
+    "description": "Titre de la section adresses enregistrées"
+  },
+  "addNewAddress": "Ajouter une nouvelle addresse",
+  "@addNewAddress": {
+    "description": "Texte du bouton ajouter une nouvelle adresse"
+  },
+  "useCurrentLocation": "Use Current Location",
+  "@useCurrentLocation": {
+    "description": "Texte du bouton utiliser l'emplacement actuel"
+  },
+  "searchForLocation": "Rechercher un emplacement",
+  "@searchForLocation": {
+    "description": "Texte d'indication de recherche d'emplacement"
+  },
+  "addNewAddressTitle": "Ajouter une nouvelle adresse",
+  "@addNewAddressTitle": {
+    "description": "Titre de la boîte de dialogue d'ajout d'adresse"
+  },
+  "addressNameHint": "Nom (ex: Domicile, Travail)",
+  "@addressNameHint": {
+    "description": "Indication du champ de nom d'adresse"
+  },
+  "setAsDefaultAddress": "Définir comme adresse par défaut",
+  "@setAsDefaultAddress": {
+    "description": "Libellé de la case à cocher définir comme adresse par défaut"
+  },
+  "saveAddress": "Enregistrer l'adresse",
+  "@saveAddress": {
+    "description": "Texte du bouton enregistrer l'adresse"
+  },
+  "loadingAddress": "Chargement de l'adresse...",
+  "@loadingAddress": {
+    "description": "Message de chargement de l'adresse"
+  },
+  "pleaseEnterAddressName": "Veuillez entrer un nom pour cette adresse",
+  "@pleaseEnterAddressName": {
+    "description": "Message d'erreur lorsque le nom de l'adresse est vide"
+  },
+  "pleaseSelectLocation": "Veuillez sélectionner un emplacement sur la carte",
+  "@pleaseSelectLocation": {
+    "description": "Message d'erreur lorsque l'emplacement n'est pas sélectionné"
   }
 }
 
