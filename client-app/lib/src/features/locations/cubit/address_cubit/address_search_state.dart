@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:client_app/src/features/restaurant/services/google_places_service.dart';
+import 'package:client_app/src/features/locations/services/google_places_service.dart';
 
 abstract class AddressSearchState extends Equatable {
   const AddressSearchState();

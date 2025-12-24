@@ -4,7 +4,7 @@ import 'package:client_app/src/features/locations/cubit/favorite_address_cubit.d
 import 'package:client_app/src/features/locations/cubit/location_cubit.dart';
 import 'package:client_app/src/features/locations/cubit/location_state.dart';
 import 'package:client_app/src/features/restaurant/pages/restaurant_search_page.dart';
-import 'package:client_app/src/features/restaurant/widgets/address_selection_overlay.dart';
+import 'package:client_app/src/features/locations/widgets/address_selection_overlay.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/src/features/auth/cubit/user_cubit.dart';

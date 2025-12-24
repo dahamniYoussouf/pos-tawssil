@@ -34,4 +34,3 @@ class MapLocationError extends MapLocationState {
   @override
   List<Object?> get props => [message];
 }
-

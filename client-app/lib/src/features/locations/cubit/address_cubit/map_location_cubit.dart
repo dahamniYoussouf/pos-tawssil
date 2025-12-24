@@ -1,6 +1,6 @@
+import 'package:client_app/src/features/locations/cubit/address_cubit/map_location_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart';
-import 'map_location_state.dart';
 
 class MapLocationCubit extends Cubit<MapLocationState> {
   MapLocationCubit() : super(MapLocationInitial());
@@ -45,4 +45,3 @@ class MapLocationCubit extends Cubit<MapLocationState> {
     emit(MapLocationInitial());
   }
 }
-

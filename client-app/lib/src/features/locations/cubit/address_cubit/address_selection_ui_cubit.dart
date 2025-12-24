@@ -27,4 +27,3 @@ class AddressSelectionUiCubit extends Cubit<AddressSelectionUiState> {
     }
   }
 }
-

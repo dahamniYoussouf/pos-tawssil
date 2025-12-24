@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:client_app/src/features/restaurant/services/google_places_service.dart';
+import 'package:client_app/src/features/locations/services/google_places_service.dart';
 import 'address_search_state.dart';
 
 class AddressSearchCubit extends Cubit<AddressSearchState> {

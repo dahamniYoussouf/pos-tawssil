@@ -6,10 +6,10 @@ import 'package:client_app/src/features/locations/cubit/favorite_address_state.d
 import 'package:client_app/src/features/locations/cubit/location_cubit.dart';
 import 'package:client_app/src/features/locations/cubit/location_state.dart';
 import 'package:client_app/src/features/locations/models/favorite_address_model.dart';
-import 'package:client_app/src/features/restaurant/widgets/cubit/address_search_cubit.dart';
-import 'package:client_app/src/features/restaurant/widgets/cubit/address_search_state.dart';
-import 'package:client_app/src/features/restaurant/widgets/cubit/address_selection_ui_cubit.dart';
-import 'package:client_app/src/features/restaurant/widgets/create_address_widget.dart';
+import 'package:client_app/src/features/locations/cubit/address_cubit/address_search_cubit.dart';
+import 'package:client_app/src/features/locations/cubit/address_cubit/address_search_state.dart';
+import 'package:client_app/src/features/locations/cubit/address_cubit/address_selection_ui_cubit.dart';
+import 'package:client_app/src/features/locations/widgets/create_address_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';

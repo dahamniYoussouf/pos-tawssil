@@ -1,3 +1,5 @@
+import 'package:client_app/src/core/utils/dependency_injection.dart';
+import 'package:client_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import '../repositories/location_repository.dart';
@@ -74,6 +76,8 @@ class LocationCubit extends Cubit<LocationState> {
         latitude: result.latitude,
         longitude: result.longitude,
       ));
+      // reload nearby restaurants
+      await locator<RestaurantCubit>().loadNearbyRestaurants();
     } else {
       emit(LocationError(message: result.errorMessage ?? 'Unknown error'));
     }

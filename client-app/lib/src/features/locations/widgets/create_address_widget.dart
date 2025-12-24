@@ -2,21 +2,22 @@ import 'dart:async';
 import 'package:client_app/l10n/app_localizations.dart';
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/core/res/media_res.dart';
+import 'package:client_app/src/features/locations/cubit/address_cubit/create_address_ui_cubit.dart';
+
+import 'package:client_app/src/features/locations/cubit/address_cubit/map_location_state.dart';
 import 'package:client_app/src/features/locations/cubit/favorite_address_cubit.dart';
 import 'package:client_app/src/features/locations/cubit/favorite_address_state.dart';
 import 'package:client_app/src/features/locations/cubit/location_cubit.dart';
 import 'package:client_app/src/features/locations/cubit/location_state.dart';
-import 'package:client_app/src/features/restaurant/services/google_places_service.dart';
-import 'package:client_app/src/features/restaurant/widgets/cubit/address_search_cubit.dart';
-import 'package:client_app/src/features/restaurant/widgets/cubit/address_search_state.dart';
-import 'package:client_app/src/features/restaurant/widgets/cubit/create_address_ui_cubit.dart';
-import 'package:client_app/src/features/restaurant/widgets/cubit/map_location_cubit.dart';
-import 'package:client_app/src/features/restaurant/widgets/cubit/map_location_state.dart';
+import 'package:client_app/src/features/locations/services/google_places_service.dart';
+import 'package:client_app/src/features/locations/cubit/address_cubit/address_search_cubit.dart';
+import 'package:client_app/src/features/locations/cubit/address_cubit/address_search_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:client_app/src/features/locations/cubit/address_cubit/map_location_cubit.dart';
 
 class CreateAddressWidget extends StatefulWidget {
   const CreateAddressWidget();
@@ -639,11 +640,14 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
                           )
                         : Text(
                             localizations.saveAddress,
-                            style: const TextStyle(
-                              color: ColorApp.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(
+                                  color: ColorApp.white,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                   ),
                 ),
