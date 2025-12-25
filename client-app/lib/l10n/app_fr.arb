@@ -391,6 +391,10 @@
   "@addNewAddressTitle": {
     "description": "Titre de la boîte de dialogue d'ajout d'adresse"
   },
+  "editAddressTitle": "Modifier l'adresse",
+  "@editAddressTitle": {
+    "description": "Titre de la boîte de dialogue modifier l'adresse"
+  },
   "addressNameHint": "Nom (ex: Domicile, Travail)",
   "@addressNameHint": {
     "description": "Indication du champ de nom d'adresse"
@@ -414,6 +418,22 @@
   "pleaseSelectLocation": "Veuillez sélectionner un emplacement sur la carte",
   "@pleaseSelectLocation": {
     "description": "Message d'erreur lorsque l'emplacement n'est pas sélectionné"
+  },
+  "location": "Emplacement",
+  "@location": {
+    "description": "Titre de la page d'emplacement"
+  },
+  "edit": "Modifier",
+  "@edit": {
+    "description": "Libellé de l'action modifier"
+  },
+  "delete": "Supprimer",
+  "@delete": {
+    "description": "Libellé de l'action supprimer"
+  },
+  "deleteAddressConfirmation": "Êtes-vous sûr de vouloir supprimer cette adresse?",
+  "@deleteAddressConfirmation": {
+    "description": "Message de confirmation de suppression d'adresse"
   }
 }
 

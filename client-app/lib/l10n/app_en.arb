@@ -1018,6 +1018,10 @@
   "@addNewAddressTitle": {
     "description": "Add new address dialog title"
   },
+  "editAddressTitle": "Edit Address",
+  "@editAddressTitle": {
+    "description": "Edit address dialog title"
+  },
   "addressNameHint": "Name (e.g., Home, Work)",
   "@addressNameHint": {
     "description": "Address name input hint"
@@ -1041,6 +1045,22 @@
   "pleaseSelectLocation": "Please select a location on the map",
   "@pleaseSelectLocation": {
     "description": "Error message when location is not selected"
+  },
+  "location": "Location",
+  "@location": {
+    "description": "Location page title"
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit action label"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete action label"
+  },
+  "deleteAddressConfirmation": "Are you sure you want to delete this address?",
+  "@deleteAddressConfirmation": {
+    "description": "Delete address confirmation message"
   }
 }
 

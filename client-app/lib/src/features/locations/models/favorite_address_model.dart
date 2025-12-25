@@ -30,12 +30,36 @@ class FavoriteAddressModel {
       throw FormatException('Coordinate must be a number or string, got: ${value.runtimeType}');
     }
 
+    // Try to get coordinates from lat/lng fields first
+    double? lat;
+    double? lng;
+
+    if (json['lat'] != null && json['lng'] != null) {
+      lat = parseCoordinate(json['lat']);
+      lng = parseCoordinate(json['lng']);
+    } else if (json['location'] != null) {
+      // Fallback to GeoJSON format: location.coordinates = [lng, lat]
+      final location = json['location'] as Map<String, dynamic>?;
+      if (location != null && location['coordinates'] != null) {
+        final coordinates = location['coordinates'] as List<dynamic>?;
+        if (coordinates != null && coordinates.length >= 2) {
+          // GeoJSON format: [longitude, latitude]
+          lng = parseCoordinate(coordinates[0]);
+          lat = parseCoordinate(coordinates[1]);
+        }
+      }
+    }
+
+    if (lat == null || lng == null) {
+      throw FormatException('Missing coordinates in address data');
+    }
+
     return FavoriteAddressModel(
       id: json['id']?.toString() ?? json['_id']?.toString(),
       name: json['name'] as String? ?? '',
       address: json['address'] as String? ?? '',
-      lat: parseCoordinate(json['lat']),
-      lng: parseCoordinate(json['lng']),
+      lat: lat,
+      lng: lng,
       isDefault: json['is_default'] as bool? ?? false,
     );
   }

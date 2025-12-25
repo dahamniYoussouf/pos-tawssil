@@ -1498,6 +1498,12 @@ abstract class AppLocalizations {
   /// **'Add New Address'**
   String get addNewAddressTitle;
 
+  /// Edit address dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Address'**
+  String get editAddressTitle;
+
   /// Address name input hint
   ///
   /// In en, this message translates to:
@@ -1533,6 +1539,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please select a location on the map'**
   String get pleaseSelectLocation;
+
+  /// Location page title
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get location;
+
+  /// Edit action label
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// Delete action label
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// Delete address confirmation message
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this address?'**
+  String get deleteAddressConfirmation;
 }
 
 class _AppLocalizationsDelegate

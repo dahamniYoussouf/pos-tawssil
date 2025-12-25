@@ -1,6 +1,7 @@
 import 'package:client_app/l10n/app_localizations.dart';
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/core/res/media_res.dart';
+import 'package:client_app/src/core/widgets/confirmation_dialog.dart';
 import 'package:client_app/src/features/locations/cubit/favorite_address_cubit.dart';
 import 'package:client_app/src/features/locations/cubit/favorite_address_state.dart';
 import 'package:client_app/src/features/locations/cubit/location_cubit.dart';
@@ -10,6 +11,7 @@ import 'package:client_app/src/features/locations/cubit/address_cubit/address_se
 import 'package:client_app/src/features/locations/cubit/address_cubit/address_search_state.dart';
 import 'package:client_app/src/features/locations/cubit/address_cubit/address_selection_ui_cubit.dart';
 import 'package:client_app/src/features/locations/widgets/create_address_widget.dart';
+import 'package:client_app/src/features/locations/widgets/address_popup_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -99,7 +101,14 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
               _buildSearchBar(context, localizations),
               const SizedBox(height: 4),
               Flexible(
-                child: BlocBuilder<FavoriteAddressCubit, FavoriteAddressState>(
+                child: BlocConsumer<FavoriteAddressCubit, FavoriteAddressState>(
+                  listener: (context, state) {
+                    if (state is FavoriteAddressError) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.message)),
+                      );
+                    }
+                  },
                   builder: (context, state) {
                     if (state is FavoriteAddressLoading) {
                       return const Center(child: CircularProgressIndicator());
@@ -108,7 +117,10 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildCurrentAddressSection(context, localizations),
+                          _buildCurrentAddressSection(context, localizations,
+                              addresses: state is FavoriteAddressLoaded
+                                  ? state.addresses
+                                  : []),
                           _buildSavedAddressesSection(
                               context,
                               localizations,
@@ -148,6 +160,40 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => const CreateAddressWidget(),
+    );
+  }
+
+  void _handleEditAddress(BuildContext context, FavoriteAddressModel address) {
+    AddressSelectionOverLay.hide();
+    showDialog(
+      context: context,
+      builder: (context) => CreateAddressWidget(addressToEdit: address),
+    );
+  }
+
+  void _handleDeleteAddress(
+      BuildContext context, FavoriteAddressModel address) {
+    final localizations = AppLocalizations.of(context)!;
+    if (address.id == null) {
+      return;
+    }
+    final favoriteAddressCubit = context.read<FavoriteAddressCubit>();
+    final addressId = address.id!;
+    AddressSelectionOverLay.hide();
+    ConfirmationDialog.show(
+      context,
+      ConfirmationDialogData(
+        title: localizations.delete,
+        content: localizations.deleteAddressConfirmation,
+        confirmText: localizations.delete,
+        cancelText: localizations.cancel,
+        confirmButtonColor: ColorApp.redColorLight,
+        confirmTextColor: ColorApp.white,
+        onConfirm: () {
+          favoriteAddressCubit.deleteFavoriteAddress(addressId);
+        },
+      ),
+      useRootNavigator: true,
     );
   }
 
@@ -246,10 +292,19 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
   }
 
   Widget _buildCurrentAddressSection(
-      BuildContext context, AppLocalizations localizations) {
+      BuildContext context, AppLocalizations localizations,
+      {List<FavoriteAddressModel> addresses = const []}) {
     return BlocBuilder<LocationCubit, LocationState>(
       builder: (context, locationState) {
         if (locationState is LocationSuccess) {
+          final matchingAddresses = addresses
+              .where((address) =>
+                  address.lat == locationState.latitude &&
+                  address.lng == locationState.longitude)
+              .toList();
+          final addressId = matchingAddresses.isNotEmpty
+              ? matchingAddresses.first.id ?? ''
+              : '';
           return Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -264,7 +319,17 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                GestureDetector(
+                _buildAddressItem(
+                  context,
+                  FavoriteAddressModel(
+                    id: addressId,
+                    name: locationState.fullAddress,
+                    address: locationState.fullAddress,
+                    lat: locationState.latitude!,
+                    lng: locationState.longitude!,
+                    isDefault: false,
+                  ),
+                  hideDelete: true,
                   onTap: () {
                     if (locationState.latitude != null &&
                         locationState.longitude != null) {
@@ -276,37 +341,6 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
                       );
                     }
                   },
-                  child: Row(
-                    children: [
-                      SvgPicture.asset(
-                        MediaRes.locationIcon,
-                        height: 20,
-                        width: 20,
-                      ),
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: Text(
-                          locationState.fullAddress,
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w400,
-                                    color: ColorApp.textBlack,
-                                  ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      SvgPicture.asset(MediaRes.listIcon,
-                          height: 12,
-                          width: 12,
-                          colorFilter: ColorFilter.mode(
-                            ColorApp.textBlack,
-                            BlendMode.srcIn,
-                          )),
-                    ],
-                  ),
                 ),
               ],
             ),
@@ -342,46 +376,43 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
     );
   }
 
-  Widget _buildAddressItem(BuildContext context, FavoriteAddressModel address) {
-    return GestureDetector(
-        onTap: () {
-          _handleAddressSelected(
-            context,
-            address.address,
-            address.lat,
-            address.lng,
-          );
-        },
-        child: ListTile(
-          dense: true,
-          contentPadding: EdgeInsets.zero,
-          minVerticalPadding: 0,
-          visualDensity: VisualDensity.compact,
-          leading: SvgPicture.asset(
-            MediaRes.locationIcon,
-            height: 20,
-            width: 20,
-          ),
-          title: Flexible(
-            child: Text(
-              address.name,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    color: ColorApp.textBlack,
-                  ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+  Widget _buildAddressItem(BuildContext context, FavoriteAddressModel address,
+      {VoidCallback? onTap, bool hideDelete = false}) {
+    return ListTile(
+      dense: true,
+      contentPadding: EdgeInsets.zero,
+      minVerticalPadding: 0,
+      visualDensity: VisualDensity.compact,
+      leading: SvgPicture.asset(
+        MediaRes.locationIcon,
+        height: 20,
+        width: 20,
+      ),
+      title: Text(
+        address.name,
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontSize: 12,
+              fontWeight: FontWeight.w400,
+              color: ColorApp.textBlack,
             ),
-          ),
-          trailing: SvgPicture.asset(MediaRes.listIcon,
-              height: 12,
-              width: 12,
-              colorFilter: ColorFilter.mode(
-                ColorApp.textBlack,
-                BlendMode.srcIn,
-              )),
-        ));
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: AddressPopupMenu(
+        onEdit: () => _handleEditAddress(context, address),
+        onDelete: () => _handleDeleteAddress(context, address),
+        hideDelete: hideDelete,
+      ),
+      onTap: onTap ??
+          () {
+            _handleAddressSelected(
+              context,
+              address.address,
+              address.lat,
+              address.lng,
+            );
+          },
+    );
   }
 
   Widget _buildActionButtons(

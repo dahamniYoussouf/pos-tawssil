@@ -758,6 +758,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addNewAddressTitle => 'إضافة عنوان جديد';
 
   @override
+  String get editAddressTitle => 'تعديل العنوان';
+
+  @override
   String get addressNameHint => 'الاسم (مثال: المنزل، العمل)';
 
   @override
@@ -774,4 +777,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pleaseSelectLocation => 'يرجى تحديد موقع على الخريطة';
+
+  @override
+  String get location => 'الموقع';
+
+  @override
+  String get edit => 'تعديل';
+
+  @override
+  String get delete => 'حذف';
+
+  @override
+  String get deleteAddressConfirmation =>
+      'هل أنت متأكد أنك تريد حذف هذا العنوان؟';
 }

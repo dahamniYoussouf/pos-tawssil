@@ -13,7 +13,8 @@ class GetGpsLocationUseCase {
 
   Future<GpsLocationResult> execute() async {
     try {
-      final bool isGpsEnabled = await LocationService.isLocationServiceEnabled();
+      final bool isGpsEnabled =
+          await LocationService.isLocationServiceEnabled();
       if (!isGpsEnabled) {
         return GpsLocationResult.gpsDisabled();
       }
@@ -21,7 +22,8 @@ class GetGpsLocationUseCase {
       if (position == null) {
         return GpsLocationResult.error('Failed to get current position');
       }
-      final AddressData addressData = await _getAddressFromCoordinates(position);
+      final AddressData addressData =
+          await _getAddressFromCoordinates(position);
       await _saveLocationData(position, addressData);
 
       return GpsLocationResult.success(
@@ -41,13 +43,18 @@ class GetGpsLocationUseCase {
     String city = '';
     String fullAddress = '';
     try {
-      final List<geocoding.Placemark> placemarks = await geocoding.placemarkFromCoordinates(
+      final List<geocoding.Placemark> placemarks =
+          await geocoding.placemarkFromCoordinates(
         position.latitude,
         position.longitude,
       );
       if (placemarks.isNotEmpty) {
         final geocoding.Placemark place = placemarks.first;
-        area = (place.subLocality ?? place.locality ?? place.subAdministrativeArea ?? '').trim();
+        area = (place.subLocality ??
+                place.locality ??
+                place.subAdministrativeArea ??
+                '')
+            .trim();
         city = (place.administrativeArea ?? place.country ?? '').trim();
         final List<String?> addressParts = [
           place.name,
@@ -58,25 +65,32 @@ class GetGpsLocationUseCase {
           place.postalCode,
           place.country,
         ];
-        final List<String> parts = addressParts.where((part) => part != null && part.trim().isNotEmpty).map((part) => part!.trim()).toList();
+        final List<String> parts = addressParts
+            .where((part) => part != null && part.trim().isNotEmpty)
+            .map((part) => part!.trim())
+            .toList();
         fullAddress = parts.join(', ');
         if (fullAddress.isEmpty) {
-          fullAddress = 'Lat: ${position.latitude.toStringAsFixed(6)}, Lng: ${position.longitude.toStringAsFixed(6)}';
+          fullAddress =
+              'Lat: ${position.latitude.toStringAsFixed(6)}, Lng: ${position.longitude.toStringAsFixed(6)}';
         }
       } else {
-        fullAddress = 'Lat: ${position.latitude.toStringAsFixed(6)}, Lng: ${position.longitude.toStringAsFixed(6)}';
+        fullAddress =
+            'Lat: ${position.latitude.toStringAsFixed(6)}, Lng: ${position.longitude.toStringAsFixed(6)}';
         area = fullAddress;
         city = '';
       }
     } catch (e) {
-      fullAddress = 'Lat: ${position.latitude.toStringAsFixed(6)}, Lng: ${position.longitude.toStringAsFixed(6)}';
+      fullAddress =
+          'Lat: ${position.latitude.toStringAsFixed(6)}, Lng: ${position.longitude.toStringAsFixed(6)}';
       area = fullAddress;
       city = '';
     }
     return AddressData(area: area, city: city, fullAddress: fullAddress);
   }
 
-  Future<void> _saveLocationData(Position position, AddressData addressData) async {
+  Future<void> _saveLocationData(
+      Position position, AddressData addressData) async {
     await _locationRepository.saveLocationData(
       area: addressData.area,
       city: addressData.city,

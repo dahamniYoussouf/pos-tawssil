@@ -391,6 +391,10 @@
   "@addNewAddressTitle": {
     "description": "عنوان مربع حوار إضافة عنوان"
   },
+  "editAddressTitle": "تعديل العنوان",
+  "@editAddressTitle": {
+    "description": "عنوان مربع حوار تعديل العنوان"
+  },
   "addressNameHint": "الاسم (مثال: المنزل، العمل)",
   "@addressNameHint": {
     "description": "تلميح حقل اسم العنوان"
@@ -414,6 +418,22 @@
   "pleaseSelectLocation": "يرجى تحديد موقع على الخريطة",
   "@pleaseSelectLocation": {
     "description": "رسالة خطأ عندما لا يتم تحديد الموقع"
+  },
+  "location": "الموقع",
+  "@location": {
+    "description": "عنوان صفحة الموقع"
+  },
+  "edit": "تعديل",
+  "@edit": {
+    "description": "تسمية إجراء التعديل"
+  },
+  "delete": "حذف",
+  "@delete": {
+    "description": "تسمية إجراء الحذف"
+  },
+  "deleteAddressConfirmation": "هل أنت متأكد أنك تريد حذف هذا العنوان؟",
+  "@deleteAddressConfirmation": {
+    "description": "رسالة تأكيد حذف العنوان"
   }
 }
 

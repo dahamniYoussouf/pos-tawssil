@@ -3,7 +3,6 @@ import 'package:client_app/l10n/app_localizations.dart';
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/core/res/media_res.dart';
 import 'package:client_app/src/features/locations/cubit/address_cubit/create_address_ui_cubit.dart';
-
 import 'package:client_app/src/features/locations/cubit/address_cubit/map_location_state.dart';
 import 'package:client_app/src/features/locations/cubit/favorite_address_cubit.dart';
 import 'package:client_app/src/features/locations/cubit/favorite_address_state.dart';
@@ -12,15 +11,19 @@ import 'package:client_app/src/features/locations/cubit/location_state.dart';
 import 'package:client_app/src/features/locations/services/google_places_service.dart';
 import 'package:client_app/src/features/locations/cubit/address_cubit/address_search_cubit.dart';
 import 'package:client_app/src/features/locations/cubit/address_cubit/address_search_state.dart';
+import 'package:client_app/src/features/locations/pages/location_selection_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:client_app/src/features/locations/cubit/address_cubit/map_location_cubit.dart';
+import 'package:client_app/src/features/locations/models/favorite_address_model.dart';
 
 class CreateAddressWidget extends StatefulWidget {
-  const CreateAddressWidget();
+  final FavoriteAddressModel? addressToEdit;
+
+  const CreateAddressWidget({this.addressToEdit});
 
   @override
   State<CreateAddressWidget> createState() => CreateAddressWidgetState();
@@ -38,6 +41,10 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
   @override
   void initState() {
     super.initState();
+    if (widget.addressToEdit != null) {
+      _nameController.text = widget.addressToEdit!.name;
+      _searchController.text = widget.addressToEdit!.address;
+    }
     _searchController.addListener(_onSearchChanged);
     _searchFocusNode.addListener(_onFocusChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -227,15 +234,7 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
             mainAxisSize: MainAxisSize.min,
             children: [
               _buildHeader(localizations),
-              SizedBox(
-                height: 220,
-                child: Stack(
-                  children: [
-                    _buildMap(context, uiCubit, mapLocationCubit),
-                    _buildMapMarker(),
-                  ],
-                ),
-              ),
+              _buildMap(context, uiCubit, mapLocationCubit),
               _buildSearchBar(context),
               _buildAddressForm(context, localizations, uiCubit),
               _buildSaveButton(context, localizations, uiCubit),
@@ -249,6 +248,20 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
     CreateAddressUiCubit uiCubit,
     MapLocationCubit mapLocationCubit,
   ) async {
+    if (widget.addressToEdit != null) {
+      final address = widget.addressToEdit!;
+      final position = LatLng(address.lat, address.lng);
+      uiCubit.updatePositionAndAddress(
+        position: position,
+        address: address.address,
+        lat: address.lat,
+        lng: address.lng,
+        isDefault: address.isDefault,
+      );
+      mapLocationCubit.updateLocation(address.lat, address.lng);
+      _updateCameraPosition(position);
+      return;
+    }
     final locationCubit = context.read<LocationCubit>();
     final locationState = locationCubit.state;
     if (locationState is LocationSuccess &&
@@ -293,25 +306,9 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
   }
 
   Widget _buildHeader(AppLocalizations localizations) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            localizations.addNewAddressTitle,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: ColorApp.textBlack,
-                ),
-          ),
-          GestureDetector(
-            child: const Icon(Icons.close, color: ColorApp.textBlack),
-            onTap: () => Navigator.pop(context),
-          ),
-        ],
-      ),
+    return _CreateAddressHeader(
+      localizations: localizations,
+      isEditMode: widget.addressToEdit != null,
     );
   }
 
@@ -431,40 +428,78 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
     return BlocBuilder<CreateAddressUiCubit, CreateAddressUiState>(
       builder: (context, uiState) {
         if (uiState is CreateAddressUiInitial) {
-          return Container(
-              margin: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: ColorApp.white,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: GoogleMap(
-                  onMapCreated: (controller) {
-                    _mapController = controller;
-                  },
-                  initialCameraPosition: CameraPosition(
-                    target: uiState.currentPosition,
-                    zoom: 15,
+          return GestureDetector(
+              onTap: () => _navigateToLocationSelection(
+                    context,
+                    uiState.currentPosition,
+                    uiCubit,
+                    mapLocationCubit,
                   ),
-                  onCameraMove: (position) {
-                    uiCubit.updatePosition(position.target);
-                  },
-                  onCameraIdle: () {
-                    final currentState = uiCubit.state;
-                    if (currentState is CreateAddressUiInitial) {
-                      mapLocationCubit.updateLocation(
-                        currentState.currentPosition.latitude,
-                        currentState.currentPosition.longitude,
-                      );
-                    }
-                  },
-                  myLocationEnabled: true,
-                  myLocationButtonEnabled: true,
-                  mapType: MapType.normal,
-                  zoomControlsEnabled: true,
-                  compassEnabled: true,
-                  mapToolbarEnabled: true,
+              child: Container(
+                height: 220,
+                margin: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: ColorApp.white,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Stack(
+                    children: [
+                      GestureDetector(
+                          onTap: () => _navigateToLocationSelection(
+                                context,
+                                uiState.currentPosition,
+                                uiCubit,
+                                mapLocationCubit,
+                              ),
+                          child: GoogleMap(
+                            onMapCreated: (controller) {
+                              _mapController = controller;
+                            },
+                            initialCameraPosition: CameraPosition(
+                              target: uiState.currentPosition,
+                              zoom: 15,
+                            ),
+                            // onCameraMove: (position) {
+                            //   uiCubit.updatePosition(position.target);
+                            // },
+                            onCameraIdle: () {
+                              final currentState = uiCubit.state;
+                              if (currentState is CreateAddressUiInitial) {
+                                mapLocationCubit.updateLocation(
+                                  currentState.currentPosition.latitude,
+                                  currentState.currentPosition.longitude,
+                                );
+                              }
+                            },
+                            myLocationEnabled: false,
+                            myLocationButtonEnabled: false,
+                            mapType: MapType.normal,
+                            zoomControlsEnabled: false,
+                            compassEnabled: false,
+                            mapToolbarEnabled: false,
+                          )),
+                      IgnorePointer(
+                        child: _buildMapMarker(),
+                      ),
+                      Positioned(
+                        top: 5,
+                        right: 10,
+                        child: IconButton(
+                            onPressed: () => _navigateToLocationSelection(
+                                  context,
+                                  uiState.currentPosition,
+                                  uiCubit,
+                                  mapLocationCubit,
+                                ),
+                            icon: Icon(
+                              Icons.map_outlined,
+                              color: ColorApp.primary,
+                            )),
+                      )
+                    ],
+                  ),
                 ),
               ));
         }
@@ -473,29 +508,44 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
     );
   }
 
-  Widget _buildMapMarker() {
-    return IgnorePointer(
-      child: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.location_on,
-              color: ColorApp.primary,
-              size: 48,
-            ),
-            Container(
-              width: 8,
-              height: 8,
-              decoration: const BoxDecoration(
-                color: ColorApp.primary,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ],
+  Future<void> _navigateToLocationSelection(
+    BuildContext context,
+    LatLng currentPosition,
+    CreateAddressUiCubit uiCubit,
+    MapLocationCubit mapLocationCubit,
+  ) async {
+    final selectedPosition = await Navigator.push<LatLng>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => LocationSelectionPage(
+          initialPosition: currentPosition,
         ),
       ),
     );
+
+    if (selectedPosition != null && mounted) {
+      uiCubit.updatePosition(selectedPosition);
+      await mapLocationCubit.updateLocation(
+        selectedPosition.latitude,
+        selectedPosition.longitude,
+      );
+
+      // Update address when location is fetched
+      final mapState = mapLocationCubit.state;
+      if (mapState is MapLocationSuccess) {
+        uiCubit.updateSelectedAddress(
+          address: mapState.address,
+          lat: mapState.latitude,
+          lng: mapState.longitude,
+        );
+      }
+
+      _updateCameraPosition(selectedPosition);
+    }
+  }
+
+  Widget _buildMapMarker() {
+    return const _MapMarker();
   }
 
   Widget _buildAddressForm(
@@ -679,13 +729,24 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
       return;
     }
     final cubit = context.read<FavoriteAddressCubit>();
-    await cubit.createFavoriteAddress(
-      name: name,
-      address: uiState.selectedAddress,
-      lat: uiState.selectedLat!,
-      lng: uiState.selectedLng!,
-      isDefault: uiState.isDefault,
-    );
+    if (widget.addressToEdit != null && widget.addressToEdit!.id != null) {
+      await cubit.updateFavoriteAddress(
+        id: widget.addressToEdit!.id!,
+        name: name,
+        address: uiState.selectedAddress,
+        lat: uiState.selectedLat!,
+        lng: uiState.selectedLng!,
+        isDefault: uiState.isDefault,
+      );
+    } else {
+      await cubit.createFavoriteAddress(
+        name: name,
+        address: uiState.selectedAddress,
+        lat: uiState.selectedLat!,
+        lng: uiState.selectedLng!,
+        isDefault: uiState.isDefault,
+      );
+    }
     if (context.mounted) {
       Navigator.pop(context);
     }
@@ -697,5 +758,71 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
         CameraUpdate.newLatLngZoom(position, 15),
       );
     }
+  }
+}
+
+class _CreateAddressHeader extends StatelessWidget {
+  final AppLocalizations localizations;
+  final bool isEditMode;
+
+  const _CreateAddressHeader({
+    required this.localizations,
+    required this.isEditMode,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            isEditMode
+                ? localizations.editAddressTitle
+                : localizations.addNewAddressTitle,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: ColorApp.textBlack,
+                ),
+          ),
+          GestureDetector(
+            child: const Icon(Icons.close, color: ColorApp.textBlack),
+            onTap: () => Navigator.pop(context),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MapMarker extends StatelessWidget {
+  const _MapMarker();
+
+  @override
+  Widget build(BuildContext context) {
+    return IgnorePointer(
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.location_on,
+              color: ColorApp.primary,
+              size: 48,
+            ),
+            Container(
+              width: 8,
+              height: 8,
+              decoration: const BoxDecoration(
+                color: ColorApp.primary,
+                shape: BoxShape.circle,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

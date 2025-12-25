@@ -23,5 +23,5 @@ class ApiConfig {
   // Note: Replace with your actual API key or load from environment/config
   // For production, consider loading from secure storage or environment variables
   static const String googlePlacesApiKey =
-      'AIzaSyCJXJUAkRyVdR_mndA6yy7gTSXrFvpt2Wg';
+      'AIzaSyDffjDg1iLZfXM5jwFhQ2UtLBJAFuTSsHc';
 }

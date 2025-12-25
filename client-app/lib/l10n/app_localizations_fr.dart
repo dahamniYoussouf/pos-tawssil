@@ -781,6 +781,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get addNewAddressTitle => 'Ajouter une nouvelle adresse';
 
   @override
+  String get editAddressTitle => 'Modifier l\'adresse';
+
+  @override
   String get addressNameHint => 'Nom (ex: Domicile, Travail)';
 
   @override
@@ -799,4 +802,17 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get pleaseSelectLocation =>
       'Veuillez sélectionner un emplacement sur la carte';
+
+  @override
+  String get location => 'Emplacement';
+
+  @override
+  String get edit => 'Modifier';
+
+  @override
+  String get delete => 'Supprimer';
+
+  @override
+  String get deleteAddressConfirmation =>
+      'Êtes-vous sûr de vouloir supprimer cette adresse?';
 }

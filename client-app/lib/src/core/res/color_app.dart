@@ -32,4 +32,6 @@ class ColorApp {
   static const Color blueAccentColor = Color(0xFF87CEEB);
 
   static const Color greyIconColor = Color(0xFF6B7280);
+
+  static const Color backgroundPrimary = Color(0xFFEAF0EE80);
 }

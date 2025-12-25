@@ -1,5 +1,6 @@
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/core/res/media_res.dart';
+import 'package:client_app/src/core/widgets/confirmation_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/l10n/app_localizations.dart';
@@ -63,77 +64,17 @@ class ProfileMenuListWidget extends StatelessWidget {
 
   void _showLogoutDialog(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        backgroundColor: ColorApp.white,
-        title: Text(
-          l10n.logout,
-          style: const TextStyle(color: ColorApp.black),
-          textAlign: TextAlign.center,
-        ),
-        content: Text(l10n.logoutConfirmation,
-            style: const TextStyle(color: ColorApp.grey)),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-        actions: [
-          Row(
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(dialogContext);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorApp.white,
-                  foregroundColor: ColorApp.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                  disabledBackgroundColor: ColorApp.greyLight,
-                ),
-                child: Text(
-                  l10n.cancel,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: ColorApp.grey,
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(dialogContext);
-                  context.read<AuthCubit>().logout();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorApp.redColorLight,
-                  foregroundColor: ColorApp.white,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  disabledBackgroundColor: ColorApp.greyLight,
-                ),
-                child: Text(
-                  l10n.logout,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          )
-        ],
+    ConfirmationDialog.show(
+      context,
+      ConfirmationDialogData(
+        title: l10n.logout,
+        content: l10n.logoutConfirmation,
+        confirmText: l10n.logout,
+        cancelText: l10n.cancel,
+        confirmButtonColor: ColorApp.redColorLight,
+        onConfirm: () {
+          context.read<AuthCubit>().logout();
+        },
       ),
     );
   }

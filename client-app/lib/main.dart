@@ -1,4 +1,5 @@
 import 'package:client_app/src/features/locations/cubit/address_cubit/create_address_ui_cubit.dart';
+import 'package:client_app/src/features/locations/cubit/address_cubit/location_selection_cubit.dart';
 import 'package:client_app/src/features/locations/cubit/address_cubit/map_location_cubit.dart';
 import 'package:client_app/src/features/locations/cubit/favorite_address_cubit.dart';
 import 'package:client_app/src/features/restaurant/cubit/restaurant_details_cubit.dart';
@@ -99,6 +100,8 @@ class MyApp extends StatelessWidget {
             create: (context) => CreateAddressUiCubit()),
         BlocProvider<FavoriteAddressCubit>(
             create: (context) => FavoriteAddressCubit()),
+        BlocProvider<LocationSelectionCubit>(
+            create: (context) => LocationSelectionCubit()),
       ],
       child: BlocBuilder<LocaleCubit, LocaleState>(
         builder: (context, localeState) {

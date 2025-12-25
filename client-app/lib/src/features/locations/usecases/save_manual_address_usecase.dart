@@ -12,13 +12,15 @@ class SaveManualAddressUseCase {
 
   Future<ManualAddressResult> execute(String address) async {
     try {
-      final List<String> addressParts = address.split(',').map((e) => e.trim()).toList();
+      final List<String> addressParts =
+          address.split(',').map((e) => e.trim()).toList();
       final String area = addressParts.isNotEmpty ? addressParts[0] : address;
       final String city = addressParts.length > 1 ? addressParts[1] : address;
       double? latitude;
       double? longitude;
       try {
-        final List<geocoding.Location> locations = await geocoding.locationFromAddress(address);
+        final List<geocoding.Location> locations =
+            await geocoding.locationFromAddress(address);
         if (locations.isNotEmpty) {
           final loc = locations.first;
           latitude = loc.latitude;

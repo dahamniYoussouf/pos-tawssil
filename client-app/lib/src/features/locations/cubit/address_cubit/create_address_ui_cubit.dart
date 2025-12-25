@@ -82,6 +82,7 @@ class CreateAddressUiCubit extends Cubit<CreateAddressUiState> {
     required String address,
     required double lat,
     required double lng,
+    bool? isDefault,
   }) {
     final currentState = state;
     if (currentState is CreateAddressUiInitial) {
@@ -91,6 +92,7 @@ class CreateAddressUiCubit extends Cubit<CreateAddressUiState> {
           selectedAddress: address,
           selectedLat: lat,
           selectedLng: lng,
+          isDefault: isDefault ?? currentState.isDefault,
         ),
       );
     }
