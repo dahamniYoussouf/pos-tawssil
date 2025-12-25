@@ -10,7 +10,8 @@ class SaveManualAddressUseCase {
     LocationService? locationService,
   }) : _locationRepository = locationRepository ?? LocationRepository();
 
-  Future<ManualAddressResult> execute(String address) async {
+  Future<ManualAddressResult> execute(String address,
+      {String? favoriteAddressId}) async {
     try {
       final List<String> addressParts =
           address.split(',').map((e) => e.trim()).toList();
@@ -35,12 +36,23 @@ class SaveManualAddressUseCase {
       }
       await _locationRepository.saveAreaAndCity(area: area, city: city);
       await _locationRepository.saveFullAddress(address);
+      if (latitude != null && longitude != null) {
+        await _locationRepository.saveLocationData(
+          area: area,
+          city: city,
+          latitude: latitude.toString(),
+          longitude: longitude.toString(),
+          fullAddress: address,
+          favoriteAddressId: favoriteAddressId,
+        );
+      }
       return ManualAddressResult.success(
         area: area,
         city: city,
         fullAddress: address,
         latitude: latitude,
         longitude: longitude,
+        favoriteAddressId: favoriteAddressId,
       );
     } catch (e) {
       return ManualAddressResult.error(e.toString());
@@ -56,6 +68,7 @@ class ManualAddressResult {
   final String? fullAddress;
   final double? latitude;
   final double? longitude;
+  final String? favoriteAddressId;
 
   ManualAddressResult._({
     required this.isSuccess,
@@ -65,6 +78,7 @@ class ManualAddressResult {
     this.fullAddress,
     this.latitude,
     this.longitude,
+    this.favoriteAddressId,
   });
 
   factory ManualAddressResult.success({
@@ -73,6 +87,7 @@ class ManualAddressResult {
     required String fullAddress,
     double? latitude,
     double? longitude,
+    String? favoriteAddressId,
   }) {
     return ManualAddressResult._(
       isSuccess: true,
@@ -81,6 +96,7 @@ class ManualAddressResult {
       fullAddress: fullAddress,
       latitude: latitude,
       longitude: longitude,
+      favoriteAddressId: favoriteAddressId,
     );
   }
 

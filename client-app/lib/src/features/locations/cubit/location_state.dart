@@ -32,6 +32,7 @@ class LocationSuccess extends LocationState {
   final String fullAddress;
   final double? latitude;
   final double? longitude;
+  final String? favoriteAddressId;
 
   const LocationSuccess({
     required this.area,
@@ -39,10 +40,12 @@ class LocationSuccess extends LocationState {
     required this.fullAddress,
     this.latitude,
     this.longitude,
+    this.favoriteAddressId,
   });
 
   @override
-  List<Object?> get props => [area, city, fullAddress, latitude, longitude];
+  List<Object?> get props =>
+      [area, city, fullAddress, latitude, longitude, favoriteAddressId];
 }
 
 class LocationError extends LocationState {

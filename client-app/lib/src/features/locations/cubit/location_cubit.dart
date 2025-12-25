@@ -65,9 +65,11 @@ class LocationCubit extends Cubit<LocationState> {
     }
   }
 
-  Future<void> saveManualAddress(String address) async {
+  Future<void> saveManualAddress(String address,
+      {String? favoriteAddressId}) async {
     emit(LocationLoading());
-    final result = await _saveManualAddressUseCase.execute(address);
+    final result = await _saveManualAddressUseCase.execute(address,
+        favoriteAddressId: favoriteAddressId);
     if (result.isSuccess) {
       emit(LocationSuccess(
         area: result.area!,
@@ -75,6 +77,7 @@ class LocationCubit extends Cubit<LocationState> {
         fullAddress: result.fullAddress!,
         latitude: result.latitude,
         longitude: result.longitude,
+        favoriteAddressId: result.favoriteAddressId,
       ));
       // reload nearby restaurants
       await locator<RestaurantCubit>().loadNearbyRestaurants();
@@ -104,6 +107,7 @@ class LocationCubit extends Cubit<LocationState> {
       final area = data['area'];
       final city = data['city'];
       final fullAddress = data['fullAddress'];
+      final favoriteAddressId = data['favoriteAddressId'];
       double? latitude = double.tryParse(data['latitude'].toString());
       double? longitude = double.tryParse(data['longitude'].toString());
 
@@ -114,6 +118,7 @@ class LocationCubit extends Cubit<LocationState> {
           fullAddress: fullAddress,
           latitude: latitude,
           longitude: longitude,
+          favoriteAddressId: favoriteAddressId,
         ));
       } else {
         requestLocationPermission().whenComplete(() => getGpsLocation());

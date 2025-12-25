@@ -121,12 +121,6 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
                               addresses: state is FavoriteAddressLoaded
                                   ? state.addresses
                                   : []),
-                          _buildSavedAddressesSection(
-                              context,
-                              localizations,
-                              state is FavoriteAddressLoaded
-                                  ? state.addresses
-                                  : []),
                         ],
                       ),
                     );
@@ -142,9 +136,11 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
   }
 
   void _handleAddressSelected(
-      BuildContext context, String address, double lat, double lng) {
+      BuildContext context, String address, double lat, double lng,
+      {String? favoriteAddressId}) {
     final locationCubit = context.read<LocationCubit>();
-    locationCubit.saveManualAddress(address);
+    locationCubit.saveManualAddress(address,
+        favoriteAddressId: favoriteAddressId);
     AddressSelectionOverLay.hide();
   }
 
@@ -302,9 +298,10 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
                   address.lat == locationState.latitude &&
                   address.lng == locationState.longitude)
               .toList();
-          final addressId = matchingAddresses.isNotEmpty
-              ? matchingAddresses.first.id ?? ''
-              : '';
+          final addressId = locationState.favoriteAddressId ??
+              (matchingAddresses.isNotEmpty
+                  ? matchingAddresses.first.id
+                  : null);
           return Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -338,10 +335,18 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
                         locationState.fullAddress,
                         locationState.latitude!,
                         locationState.longitude!,
+                        favoriteAddressId: addressId,
                       );
                     }
                   },
                 ),
+                _buildSavedAddressesSection(
+                    context,
+                    localizations,
+                    // remove the current address from the list
+                    addresses
+                        .where((address) => address.id != addressId)
+                        .toList()),
               ],
             ),
           );
@@ -357,7 +362,7 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
       return const SizedBox.shrink();
     }
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(top: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -393,7 +398,7 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontSize: 12,
               fontWeight: FontWeight.w400,
-              color: ColorApp.textBlack,
+              color: hideDelete ? ColorApp.primary : ColorApp.textBlack,
             ),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
@@ -410,6 +415,7 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
               address.address,
               address.lat,
               address.lng,
+              favoriteAddressId: address.id,
             );
           },
     );

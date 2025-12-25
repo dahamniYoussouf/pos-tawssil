@@ -6,6 +6,8 @@ class LocationRepository {
   static const String _locationLatitudeKey = 'location_latitude';
   static const String _locationLongitudeKey = 'location_longitude';
   static const String _locationFullAddressKey = 'location_full_address';
+  static const String _locationFavoriteAddressIdKey =
+      'location_favorite_address_id';
 
   Future<bool> saveLocationData({
     required String area,
@@ -13,16 +15,24 @@ class LocationRepository {
     required String latitude,
     required String longitude,
     required String fullAddress,
+    String? favoriteAddressId,
   }) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      await Future.wait([
+      final futures = <Future>[
         prefs.setString(_locationAreaKey, area),
         prefs.setString(_locationCityKey, city),
         prefs.setString(_locationLatitudeKey, latitude),
         prefs.setString(_locationLongitudeKey, longitude),
         prefs.setString(_locationFullAddressKey, fullAddress),
-      ]);
+      ];
+      if (favoriteAddressId != null && favoriteAddressId.isNotEmpty) {
+        futures.add(
+            prefs.setString(_locationFavoriteAddressIdKey, favoriteAddressId));
+      } else {
+        futures.add(prefs.remove(_locationFavoriteAddressIdKey));
+      }
+      await Future.wait(futures);
       return true;
     } catch (e) {
       return false;
@@ -88,6 +98,7 @@ class LocationRepository {
         'latitude': prefs.getString(_locationLatitudeKey),
         'longitude': prefs.getString(_locationLongitudeKey),
         'fullAddress': prefs.getString(_locationFullAddressKey),
+        'favoriteAddressId': prefs.getString(_locationFavoriteAddressIdKey),
       };
     } catch (e) {
       return {};
@@ -103,6 +114,7 @@ class LocationRepository {
         prefs.remove(_locationLatitudeKey),
         prefs.remove(_locationLongitudeKey),
         prefs.remove(_locationFullAddressKey),
+        prefs.remove(_locationFavoriteAddressIdKey),
       ]);
       return true;
     } catch (e) {

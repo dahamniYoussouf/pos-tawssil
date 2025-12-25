@@ -37,6 +37,7 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
   GoogleMapController? _mapController;
   OverlayEntry? _overlayEntry;
   Timer? _debounceTimer;
+  LatLng? _pendingCameraPosition;
 
   @override
   void initState() {
@@ -259,7 +260,10 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
         isDefault: address.isDefault,
       );
       mapLocationCubit.updateLocation(address.lat, address.lng);
-      _updateCameraPosition(position);
+      _pendingCameraPosition = position;
+      if (_mapController != null) {
+        _updateCameraPosition(position);
+      }
       return;
     }
     final locationCubit = context.read<LocationCubit>();
@@ -281,7 +285,11 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
         locationState.latitude!,
         locationState.longitude!,
       );
-      _updateCameraPosition(position);
+      _pendingCameraPosition = position;
+      if (_mapController != null) {
+        _updateCameraPosition(position);
+        _pendingCameraPosition = null;
+      }
     } else {
       await _getCurrentLocation(context, uiCubit, mapLocationCubit);
     }
@@ -299,7 +307,11 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
       final latLng = LatLng(position.latitude, position.longitude);
       uiCubit.updatePosition(latLng);
       mapLocationCubit.updateLocation(position.latitude, position.longitude);
-      _updateCameraPosition(latLng);
+      _pendingCameraPosition = latLng;
+      if (_mapController != null) {
+        _updateCameraPosition(latLng);
+        _pendingCameraPosition = null;
+      }
     } catch (e) {
       // Handle error
     }
@@ -333,9 +345,6 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
         } else if (state is AddressSearchSuggestions) {
           _showSuggestionsOverlay(state.predictions);
         } else if (state is AddressSearchError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
-          );
           _removeOverlay();
         }
       },
@@ -425,86 +434,113 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
     CreateAddressUiCubit uiCubit,
     MapLocationCubit mapLocationCubit,
   ) {
-    return BlocBuilder<CreateAddressUiCubit, CreateAddressUiState>(
-      builder: (context, uiState) {
-        if (uiState is CreateAddressUiInitial) {
-          return GestureDetector(
-              onTap: () => _navigateToLocationSelection(
-                    context,
-                    uiState.currentPosition,
-                    uiCubit,
-                    mapLocationCubit,
-                  ),
-              child: Container(
-                height: 220,
-                margin: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: ColorApp.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Stack(
-                    children: [
-                      GestureDetector(
-                          onTap: () => _navigateToLocationSelection(
-                                context,
-                                uiState.currentPosition,
-                                uiCubit,
-                                mapLocationCubit,
-                              ),
-                          child: GoogleMap(
-                            onMapCreated: (controller) {
-                              _mapController = controller;
-                            },
-                            initialCameraPosition: CameraPosition(
-                              target: uiState.currentPosition,
-                              zoom: 15,
-                            ),
-                            // onCameraMove: (position) {
-                            //   uiCubit.updatePosition(position.target);
-                            // },
-                            onCameraIdle: () {
-                              final currentState = uiCubit.state;
-                              if (currentState is CreateAddressUiInitial) {
-                                mapLocationCubit.updateLocation(
-                                  currentState.currentPosition.latitude,
-                                  currentState.currentPosition.longitude,
-                                );
-                              }
-                            },
-                            myLocationEnabled: false,
-                            myLocationButtonEnabled: false,
-                            mapType: MapType.normal,
-                            zoomControlsEnabled: false,
-                            compassEnabled: false,
-                            mapToolbarEnabled: false,
-                          )),
-                      IgnorePointer(
-                        child: _buildMapMarker(),
-                      ),
-                      Positioned(
-                        top: 5,
-                        right: 10,
-                        child: IconButton(
-                            onPressed: () => _navigateToLocationSelection(
-                                  context,
-                                  uiState.currentPosition,
-                                  uiCubit,
-                                  mapLocationCubit,
-                                ),
-                            icon: Icon(
-                              Icons.map_outlined,
-                              color: ColorApp.primary,
-                            )),
-                      )
-                    ],
-                  ),
-                ),
-              ));
+    return BlocListener<MapLocationCubit, MapLocationState>(
+      listener: (context, mapState) {
+        if (mapState is MapLocationSuccess) {
+          _searchController.text = mapState.address;
+          uiCubit.updateSelectedAddress(
+            address: mapState.address,
+            lat: mapState.latitude,
+            lng: mapState.longitude,
+          );
         }
-        return const SizedBox.shrink();
       },
+      child: BlocListener<CreateAddressUiCubit, CreateAddressUiState>(
+        listener: (context, uiState) {
+          if (uiState is CreateAddressUiInitial &&
+              _mapController != null &&
+              _pendingCameraPosition != null) {
+            _updateCameraPosition(_pendingCameraPosition!);
+            _pendingCameraPosition = null;
+          }
+        },
+        child: BlocBuilder<CreateAddressUiCubit, CreateAddressUiState>(
+          builder: (context, uiState) {
+            if (uiState is CreateAddressUiInitial) {
+              return GestureDetector(
+                  onTap: () => _navigateToLocationSelection(
+                        context,
+                        uiState.currentPosition,
+                        uiCubit,
+                        mapLocationCubit,
+                      ),
+                  child: Container(
+                    height: 220,
+                    margin: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: ColorApp.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Stack(
+                        children: [
+                          GestureDetector(
+                              onTap: () => _navigateToLocationSelection(
+                                    context,
+                                    uiState.currentPosition,
+                                    uiCubit,
+                                    mapLocationCubit,
+                                  ),
+                              child: GoogleMap(
+                                onMapCreated: (controller) {
+                                  _mapController = controller;
+                                  if (_pendingCameraPosition != null) {
+                                    _updateCameraPosition(
+                                        _pendingCameraPosition!);
+                                    _pendingCameraPosition = null;
+                                  }
+                                },
+                                initialCameraPosition: CameraPosition(
+                                  target: uiState.currentPosition,
+                                  zoom: 15,
+                                ),
+                                onCameraMove: (position) {
+                                  uiCubit.updatePosition(position.target);
+                                },
+                                onCameraIdle: () {
+                                  final currentState = uiCubit.state;
+                                  if (currentState is CreateAddressUiInitial) {
+                                    mapLocationCubit.updateLocation(
+                                      currentState.currentPosition.latitude,
+                                      currentState.currentPosition.longitude,
+                                    );
+                                  }
+                                },
+                                myLocationEnabled: false,
+                                myLocationButtonEnabled: false,
+                                mapType: MapType.normal,
+                                zoomControlsEnabled: false,
+                                compassEnabled: false,
+                                mapToolbarEnabled: false,
+                              )),
+                          IgnorePointer(
+                            child: _buildMapMarker(),
+                          ),
+                          Positioned(
+                            top: 5,
+                            right: 10,
+                            child: IconButton(
+                                onPressed: () => _navigateToLocationSelection(
+                                      context,
+                                      uiState.currentPosition,
+                                      uiCubit,
+                                      mapLocationCubit,
+                                    ),
+                                icon: Icon(
+                                  Icons.map_outlined,
+                                  color: ColorApp.primary,
+                                )),
+                          )
+                        ],
+                      ),
+                    ),
+                  ));
+            }
+            return const SizedBox.shrink();
+          },
+        ),
+      ),
     );
   }
 
@@ -775,7 +811,7 @@ class _CreateAddressHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             isEditMode
@@ -786,10 +822,6 @@ class _CreateAddressHeader extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   color: ColorApp.textBlack,
                 ),
-          ),
-          GestureDetector(
-            child: const Icon(Icons.close, color: ColorApp.textBlack),
-            onTap: () => Navigator.pop(context),
           ),
         ],
       ),
