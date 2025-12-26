@@ -63,7 +63,7 @@ class _AddressIconPopupMenuState extends State<AddressIconPopupMenu> {
                     children: [
                       _buildIconMenuItem(
                         overlayContext,
-                        MediaRes.locationIconBlack,
+                        MediaRes.locationIconAddress,
                       ),
                       _buildIconMenuItem(
                         overlayContext,
@@ -178,4 +178,3 @@ class _AddressIconPopupMenuState extends State<AddressIconPopupMenu> {
     );
   }
 }
-

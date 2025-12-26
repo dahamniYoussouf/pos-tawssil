@@ -7,8 +7,6 @@ import 'package:client_app/src/features/locations/cubit/favorite_address_state.d
 import 'package:client_app/src/features/locations/cubit/location_cubit.dart';
 import 'package:client_app/src/features/locations/cubit/location_state.dart';
 import 'package:client_app/src/features/locations/models/favorite_address_model.dart';
-import 'package:client_app/src/features/locations/cubit/address_cubit/address_search_cubit.dart';
-import 'package:client_app/src/features/locations/cubit/address_cubit/address_search_state.dart';
 import 'package:client_app/src/features/locations/cubit/address_cubit/address_selection_ui_cubit.dart';
 import 'package:client_app/src/features/locations/widgets/create_address_widget.dart';
 import 'package:client_app/src/features/locations/widgets/address_popup_menu.dart';
@@ -101,28 +99,53 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
               _buildSearchBar(context, localizations),
               const SizedBox(height: 4),
               Flexible(
-                child: BlocConsumer<FavoriteAddressCubit, FavoriteAddressState>(
-                  listener: (context, state) {
-                    if (state is FavoriteAddressError) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(state.message)),
-                      );
-                    }
-                  },
-                  builder: (context, state) {
-                    if (state is FavoriteAddressLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    return SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _buildCurrentAddressSection(context, localizations,
-                              addresses: state is FavoriteAddressLoaded
-                                  ? state.addresses
-                                  : []),
-                        ],
-                      ),
+                child: BlocBuilder<AddressSelectionUiCubit,
+                    AddressSelectionUiState>(
+                  builder: (context, uiState) {
+                    final searchQuery = uiState is AddressSelectionUiInitial
+                        ? uiState.searchQuery.toLowerCase().trim()
+                        : '';
+                    return BlocConsumer<FavoriteAddressCubit,
+                        FavoriteAddressState>(
+                      listener: (context, state) {
+                        if (state is FavoriteAddressError) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(state.message)),
+                          );
+                        }
+                      },
+                      builder: (context, state) {
+                        if (state is FavoriteAddressLoading) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }
+                        final allAddresses = state is FavoriteAddressLoaded
+                            ? state.addresses
+                            : <FavoriteAddressModel>[];
+                        final filteredAddresses = searchQuery.isEmpty
+                            ? allAddresses
+                            : allAddresses.where((address) {
+                                final nameMatch = address.name
+                                    .toLowerCase()
+                                    .contains(searchQuery);
+                                final addressMatch = address.address
+                                    .toLowerCase()
+                                    .contains(searchQuery);
+                                return nameMatch || addressMatch;
+                              }).toList();
+                        return SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              _buildCurrentAddressSection(
+                                context,
+                                localizations,
+                                addresses: filteredAddresses,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     );
                   },
                 ),
@@ -209,13 +232,16 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
                       color: ColorApp.textBlack,
                     ),
               ),
-              SvgPicture.asset(MediaRes.upArrowIcon,
-                  height: 10,
-                  width: 10,
-                  colorFilter: ColorFilter.mode(
-                    ColorApp.primary,
-                    BlendMode.srcIn,
-                  ))
+              GestureDetector(
+                onTap: () => AddressSelectionOverLay.hide(),
+                child: SvgPicture.asset(MediaRes.upArrowIcon,
+                    height: 10,
+                    width: 10,
+                    colorFilter: ColorFilter.mode(
+                      ColorApp.primary,
+                      BlendMode.srcIn,
+                    )),
+              ),
             ],
           ),
         );
@@ -224,67 +250,7 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
   }
 
   Widget _buildSearchBar(BuildContext context, AppLocalizations localizations) {
-    return BlocProvider(
-      create: (context) => AddressSearchCubit(),
-      child: BlocConsumer<AddressSearchCubit, AddressSearchState>(
-        listener: (context, state) {
-          if (state is AddressSearchSuccess) {
-            _handleAddressSelected(
-                context, state.address, state.latitude, state.longitude);
-          } else if (state is AddressSearchError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
-          }
-        },
-        builder: (context, state) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: TextField(
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    color: ColorApp.textBlack,
-                  ),
-              decoration: InputDecoration(
-                hintText: localizations.searchForLocation,
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: SvgPicture.asset(
-                    MediaRes.searchIcon,
-                    height: 12,
-                    width: 12,
-                    colorFilter: ColorFilter.mode(
-                      ColorApp.greyIconColor,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-                ),
-                filled: true,
-                fillColor: ColorApp.white,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: ColorApp.greyBorder),
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: ColorApp.greyBorder),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: ColorApp.primary),
-                ),
-              ),
-              onSubmitted: (value) {
-                if (value.trim().isNotEmpty) {
-                  context.read<AddressSearchCubit>().searchAddress(value);
-                }
-              },
-            ),
-          );
-        },
-      ),
-    );
+    return _SearchBarWidget(localizations: localizations);
   }
 
   Widget _buildCurrentAddressSection(
@@ -389,9 +355,13 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
       minVerticalPadding: 0,
       visualDensity: VisualDensity.compact,
       leading: SvgPicture.asset(
-        MediaRes.locationIcon,
+        address.iconUrl ?? MediaRes.locationIconAddress,
         height: 20,
         width: 20,
+        colorFilter: ColorFilter.mode(
+          hideDelete ? ColorApp.primary : ColorApp.textBlack,
+          BlendMode.srcIn,
+        ),
       ),
       title: Text(
         address.name,
@@ -478,6 +448,107 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _SearchBarWidget extends StatefulWidget {
+  final AppLocalizations localizations;
+
+  const _SearchBarWidget({required this.localizations});
+
+  @override
+  State<_SearchBarWidget> createState() => _SearchBarWidgetState();
+}
+
+class _SearchBarWidgetState extends State<_SearchBarWidget> {
+  late TextEditingController _controller;
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<AddressSelectionUiCubit, AddressSelectionUiState>(
+      listener: (context, state) {
+        if (state is AddressSelectionUiInitial) {
+          if (!_isInitialized || _controller.text != state.searchQuery) {
+            _controller.text = state.searchQuery;
+            _isInitialized = true;
+          }
+        }
+      },
+      child: BlocBuilder<AddressSelectionUiCubit, AddressSelectionUiState>(
+        builder: (context, uiState) {
+          final searchQuery =
+              uiState is AddressSelectionUiInitial ? uiState.searchQuery : '';
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: TextField(
+              controller: _controller,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: ColorApp.textBlack,
+                  ),
+              decoration: InputDecoration(
+                hintText: widget.localizations.searchForLocation,
+                prefixIcon: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: SvgPicture.asset(
+                    MediaRes.searchIcon,
+                    height: 12,
+                    width: 12,
+                    colorFilter: ColorFilter.mode(
+                      ColorApp.greyIconColor,
+                      BlendMode.srcIn,
+                    ),
+                  ),
+                ),
+                suffixIcon: searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, size: 20),
+                        onPressed: () {
+                          context
+                              .read<AddressSelectionUiCubit>()
+                              .clearSearchQuery();
+                        },
+                      )
+                    : null,
+                filled: true,
+                fillColor: ColorApp.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: ColorApp.greyBorder),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: ColorApp.greyBorder),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: ColorApp.primary),
+                ),
+              ),
+              onChanged: (value) {
+                context
+                    .read<AddressSelectionUiCubit>()
+                    .updateSearchQuery(value);
+              },
+            ),
+          );
+        },
       ),
     );
   }

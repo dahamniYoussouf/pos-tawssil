@@ -230,6 +230,9 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
     final mapLocationCubit = context.read<MapLocationCubit>();
     return Dialog(
       backgroundColor: ColorApp.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Column(

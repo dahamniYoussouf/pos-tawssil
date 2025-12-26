@@ -10,11 +10,15 @@ abstract class AddressSelectionUiState extends Equatable {
 
 class AddressSelectionUiInitial extends AddressSelectionUiState {
   final bool isExpanded;
+  final String searchQuery;
 
-  const AddressSelectionUiInitial({this.isExpanded = true});
+  const AddressSelectionUiInitial({
+    this.isExpanded = true,
+    this.searchQuery = '',
+  });
 
   @override
-  List<Object?> get props => [isExpanded];
+  List<Object?> get props => [isExpanded, searchQuery];
 }
 
 class AddressSelectionUiCubit extends Cubit<AddressSelectionUiState> {
@@ -23,7 +27,30 @@ class AddressSelectionUiCubit extends Cubit<AddressSelectionUiState> {
   void toggleExpanded() {
     final currentState = state;
     if (currentState is AddressSelectionUiInitial) {
-      emit(AddressSelectionUiInitial(isExpanded: !currentState.isExpanded));
+      emit(AddressSelectionUiInitial(
+        isExpanded: !currentState.isExpanded,
+        searchQuery: currentState.searchQuery,
+      ));
+    }
+  }
+
+  void updateSearchQuery(String query) {
+    final currentState = state;
+    if (currentState is AddressSelectionUiInitial) {
+      emit(AddressSelectionUiInitial(
+        isExpanded: currentState.isExpanded,
+        searchQuery: query,
+      ));
+    }
+  }
+
+  void clearSearchQuery() {
+    final currentState = state;
+    if (currentState is AddressSelectionUiInitial) {
+      emit(AddressSelectionUiInitial(
+        isExpanded: currentState.isExpanded,
+        searchQuery: '',
+      ));
     }
   }
 }

@@ -24,6 +24,8 @@ class MediaRes {
   static const appleIcon = '$_baseImage/apple_icon.png';
 
   static const locationIcon = '$_baseImageIcon/location_icon.svg';
+  static const locationIconAddress =
+      '$_baseImageIcon/location_icon_address.svg';
 
   static const pizzaIcon = '$_baseImage/pizza_icon.png';
   static const burgerIcon = '$_baseImage/burger_icon.png';
