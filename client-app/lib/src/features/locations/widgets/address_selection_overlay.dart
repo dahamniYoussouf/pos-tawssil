@@ -82,8 +82,8 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
           constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height * 0.65,
           ),
-          decoration: const BoxDecoration(
-            color: ColorApp.white,
+          decoration: BoxDecoration(
+            color: ColorApp.white.withOpacity(0.94),
             borderRadius: BorderRadius.all(Radius.circular(10)),
             boxShadow: [
               BoxShadow(

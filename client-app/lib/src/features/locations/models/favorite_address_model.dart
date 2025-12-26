@@ -5,6 +5,7 @@ class FavoriteAddressModel {
   final double lat;
   final double lng;
   final bool isDefault;
+  final String? iconUrl;
 
   const FavoriteAddressModel({
     this.id,
@@ -13,6 +14,7 @@ class FavoriteAddressModel {
     required this.lat,
     required this.lng,
     required this.isDefault,
+    this.iconUrl,
   });
 
   factory FavoriteAddressModel.fromJson(Map<String, dynamic> json) {
@@ -61,6 +63,7 @@ class FavoriteAddressModel {
       lat: lat,
       lng: lng,
       isDefault: json['is_default'] as bool? ?? false,
+      iconUrl: json['icon_url'] as String?,
     );
   }
 
@@ -72,6 +75,7 @@ class FavoriteAddressModel {
       'lat': lat,
       'lng': lng,
       'is_default': isDefault,
+      if (iconUrl != null) 'icon_url': iconUrl,
     };
   }
 
@@ -82,6 +86,7 @@ class FavoriteAddressModel {
     double? lat,
     double? lng,
     bool? isDefault,
+    String? iconUrl,
   }) {
     return FavoriteAddressModel(
       id: id ?? this.id,
@@ -90,6 +95,7 @@ class FavoriteAddressModel {
       lat: lat ?? this.lat,
       lng: lng ?? this.lng,
       isDefault: isDefault ?? this.isDefault,
+      iconUrl: iconUrl ?? this.iconUrl,
     );
   }
 }

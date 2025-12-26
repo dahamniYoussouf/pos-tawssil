@@ -16,6 +16,7 @@ class FavoriteAddressService extends BaseApiService {
     required double lat,
     required double lng,
     required bool isDefault,
+    String? iconUrl,
   }) async {
     final body = {
       'name': name,
@@ -23,6 +24,7 @@ class FavoriteAddressService extends BaseApiService {
       'lat': lat,
       'lng': lng,
       'is_default': isDefault,
+      if (iconUrl != null) 'icon_url': iconUrl,
     };
     return await postRequest('/client/favorite-addresses', data: body);
   }
@@ -34,6 +36,7 @@ class FavoriteAddressService extends BaseApiService {
     required double lat,
     required double lng,
     required bool isDefault,
+    String? iconUrl,
   }) async {
     final body = {
       'name': name,
@@ -41,6 +44,7 @@ class FavoriteAddressService extends BaseApiService {
       'lat': lat,
       'lng': lng,
       'is_default': isDefault,
+      if (iconUrl != null) 'icon_url': iconUrl,
     };
     return await putRequest('/client/favorite-addresses/$id', data: body);
   }
@@ -49,4 +53,3 @@ class FavoriteAddressService extends BaseApiService {
     return await deleteRequest('/client/favorite-addresses/$id');
   }
 }
-

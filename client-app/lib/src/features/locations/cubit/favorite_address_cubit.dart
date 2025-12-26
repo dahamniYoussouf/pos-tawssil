@@ -56,6 +56,7 @@ class FavoriteAddressCubit extends Cubit<FavoriteAddressState> {
     required double lat,
     required double lng,
     required bool isDefault,
+    String? iconUrl,
   }) async {
     emit(FavoriteAddressLoading());
     try {
@@ -65,6 +66,7 @@ class FavoriteAddressCubit extends Cubit<FavoriteAddressState> {
         lat: lat,
         lng: lng,
         isDefault: isDefault,
+        iconUrl: iconUrl,
       );
 
       if (response['success'] != true) {
@@ -97,6 +99,7 @@ class FavoriteAddressCubit extends Cubit<FavoriteAddressState> {
     required double lat,
     required double lng,
     required bool isDefault,
+    String? iconUrl,
   }) async {
     emit(FavoriteAddressLoading());
     try {
@@ -107,6 +110,7 @@ class FavoriteAddressCubit extends Cubit<FavoriteAddressState> {
         lat: lat,
         lng: lng,
         isDefault: isDefault,
+        iconUrl: iconUrl,
       );
 
       if (response['success'] != true) {

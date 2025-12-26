@@ -19,6 +19,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:client_app/src/features/locations/cubit/address_cubit/map_location_cubit.dart';
 import 'package:client_app/src/features/locations/models/favorite_address_model.dart';
+import 'package:client_app/src/features/locations/widgets/address_icon_popup_menu.dart';
 
 class CreateAddressWidget extends StatefulWidget {
   final FavoriteAddressModel? addressToEdit;
@@ -259,6 +260,7 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
         lat: address.lat,
         lng: address.lng,
         isDefault: address.isDefault,
+        iconUrl: address.iconUrl,
       );
       mapLocationCubit.updateLocation(address.lat, address.lng);
       _pendingCameraPosition = position;
@@ -603,60 +605,45 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      width: 60,
-                      height: 48,
-                      margin: EdgeInsets.only(right: 8),
-                      decoration: BoxDecoration(
-                        color: ColorApp.white,
-                        border: Border.all(color: ColorApp.greyBorder),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          SvgPicture.asset(MediaRes.locationIconBlack,
-                              height: 27,
-                              width: 27,
-                              colorFilter: ColorFilter.mode(
-                                  ColorApp.textBlack, BlendMode.srcIn)),
-                          SvgPicture.asset(MediaRes.arrowDownIcon,
-                              height: 20,
-                              width: 20,
-                              colorFilter: ColorFilter.mode(
-                                  ColorApp.textBlack, BlendMode.srcIn)),
-                        ],
+                    AddressIconPopupMenu(
+                      selectedIcon: uiState.iconUrl,
+                      onIconSelected: (iconPath) {
+                        uiCubit.updateIconUrl(iconPath);
+                      },
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          hintText: localizations.addressNameHint,
+                          filled: true,
+                          fillColor: ColorApp.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: ColorApp.greyBorder),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: ColorApp.greyBorder),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: ColorApp.greyBorder),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 0,
+                          ),
+                        ),
+                        style:
+                            Theme.of(context).textTheme.titleMedium?.copyWith(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: ColorApp.textBlack,
+                                ),
                       ),
                     ),
-                    Expanded(
-                        child: TextField(
-                      controller: _nameController,
-                      decoration: InputDecoration(
-                        hintText: localizations.addressNameHint,
-                        filled: true,
-                        fillColor: ColorApp.white,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: ColorApp.greyBorder),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: ColorApp.greyBorder),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: ColorApp.greyBorder),
-                        ),
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 12, vertical: 0),
-                      ),
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w500,
-                            color: ColorApp.textBlack,
-                          ),
-                    )),
                   ],
                 ),
               );
@@ -850,6 +837,7 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
         lat: uiState.selectedLat!,
         lng: uiState.selectedLng!,
         isDefault: uiState.isDefault,
+        iconUrl: uiState.iconUrl,
       );
     } else {
       await cubit.createFavoriteAddress(
@@ -858,6 +846,7 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
         lat: uiState.selectedLat!,
         lng: uiState.selectedLng!,
         isDefault: uiState.isDefault,
+        iconUrl: uiState.iconUrl,
       );
     }
     if (context.mounted) {

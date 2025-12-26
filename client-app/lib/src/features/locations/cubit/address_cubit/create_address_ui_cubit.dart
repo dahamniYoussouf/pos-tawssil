@@ -15,6 +15,7 @@ class CreateAddressUiInitial extends CreateAddressUiState {
   final double? selectedLat;
   final double? selectedLng;
   final bool isDefault;
+  final String? iconUrl;
 
   const CreateAddressUiInitial({
     this.currentPosition = const LatLng(36.747385, 6.27404),
@@ -22,6 +23,7 @@ class CreateAddressUiInitial extends CreateAddressUiState {
     this.selectedLat,
     this.selectedLng,
     this.isDefault = false,
+    this.iconUrl,
   });
 
   CreateAddressUiInitial copyWith({
@@ -30,6 +32,7 @@ class CreateAddressUiInitial extends CreateAddressUiState {
     double? selectedLat,
     double? selectedLng,
     bool? isDefault,
+    String? iconUrl,
   }) {
     return CreateAddressUiInitial(
       currentPosition: currentPosition ?? this.currentPosition,
@@ -37,6 +40,7 @@ class CreateAddressUiInitial extends CreateAddressUiState {
       selectedLat: selectedLat ?? this.selectedLat,
       selectedLng: selectedLng ?? this.selectedLng,
       isDefault: isDefault ?? this.isDefault,
+      iconUrl: iconUrl ?? this.iconUrl,
     );
   }
 
@@ -47,6 +51,7 @@ class CreateAddressUiInitial extends CreateAddressUiState {
         selectedLat,
         selectedLng,
         isDefault,
+        iconUrl,
       ];
 }
 
@@ -83,6 +88,7 @@ class CreateAddressUiCubit extends Cubit<CreateAddressUiState> {
     required double lat,
     required double lng,
     bool? isDefault,
+    String? iconUrl,
   }) {
     final currentState = state;
     if (currentState is CreateAddressUiInitial) {
@@ -93,8 +99,16 @@ class CreateAddressUiCubit extends Cubit<CreateAddressUiState> {
           selectedLat: lat,
           selectedLng: lng,
           isDefault: isDefault ?? currentState.isDefault,
+          iconUrl: iconUrl ?? currentState.iconUrl,
         ),
       );
+    }
+  }
+
+  void updateIconUrl(String iconUrl) {
+    final currentState = state;
+    if (currentState is CreateAddressUiInitial) {
+      emit(currentState.copyWith(iconUrl: iconUrl));
     }
   }
 

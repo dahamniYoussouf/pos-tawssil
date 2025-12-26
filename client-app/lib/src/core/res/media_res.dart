@@ -73,4 +73,6 @@ class MediaRes {
 
   static const locationIconBlack = '$_baseImageIcon/location_icon_black.svg';
   static const arrowDownIcon = '$_baseImageIcon/arrow_down_icon.svg';
+
+  static const homeIcon = '$_baseImageIcon/home_icon.svg';
 }
