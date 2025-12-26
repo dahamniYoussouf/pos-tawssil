@@ -239,6 +239,7 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
               _buildSearchBar(context),
               _buildAddressForm(context, localizations, uiCubit),
               _buildSaveButton(context, localizations, uiCubit),
+              _buildSearchButton(context, localizations, uiCubit),
             ],
           )),
     );
@@ -466,7 +467,8 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
                       ),
                   child: Container(
                     height: 220,
-                    margin: const EdgeInsets.all(16),
+                    margin: const EdgeInsets.only(
+                        left: 16, right: 16, bottom: 8, top: 8),
                     decoration: BoxDecoration(
                       color: ColorApp.white,
                       borderRadius: BorderRadius.circular(12),
@@ -595,17 +597,8 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
           builder: (context, uiState) {
             if (uiState is CreateAddressUiInitial) {
               return Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 12,
-                      offset: const Offset(0, 4),
-                      spreadRadius: 0,
-                    ),
-                  ],
-                ),
+                padding: const EdgeInsets.only(
+                    left: 16, right: 16, bottom: 8, top: 8),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   mainAxisSize: MainAxisSize.min,
@@ -675,6 +668,81 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
     );
   }
 
+  Widget _buildSearchButton(BuildContext context,
+      AppLocalizations localizations, CreateAddressUiCubit uiCubit) {
+    return BlocConsumer<LocationCubit, LocationState>(
+      listener: (context, state) {
+        if (state is LocationError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(state.message)),
+          );
+        } else if (state is LocationSuccess) {
+          Navigator.pop(context);
+        }
+      },
+      builder: (context, state) {
+        final isLoading = state is LocationLoading;
+        return BlocBuilder<CreateAddressUiCubit, CreateAddressUiState>(
+          builder: (context, uiState) {
+            if (uiState is CreateAddressUiInitial &&
+                uiState.selectedLat != null &&
+                uiState.selectedLng != null &&
+                uiState.selectedAddress.isNotEmpty) {
+              return Padding(
+                padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: isLoading
+                        ? null
+                        : () => _handleAddressSelected(
+                              context,
+                              uiState.selectedAddress,
+                              uiState.selectedLat!,
+                              uiState.selectedLng!,
+                            ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: ColorApp.white,
+                      elevation: 0,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: ColorApp.primary),
+                      ),
+                    ),
+                    child: isLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                ColorApp.primary,
+                              ),
+                            ),
+                          )
+                        : Text(
+                            localizations.searchingFor,
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(
+                                  color: ColorApp.primary,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                  ),
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildSaveButton(
     BuildContext context,
     AppLocalizations localizations,
@@ -694,7 +762,7 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
           builder: (context, uiState) {
             if (uiState is CreateAddressUiInitial) {
               return Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -707,6 +775,7 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
                               localizations,
                             ),
                     style: ElevatedButton.styleFrom(
+                      elevation: 0,
                       backgroundColor: ColorApp.primary,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
@@ -744,6 +813,14 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
         );
       },
     );
+  }
+
+  void _handleAddressSelected(
+      BuildContext context, String address, double lat, double lng,
+      {String? favoriteAddressId}) {
+    final locationCubit = context.read<LocationCubit>();
+    locationCubit.saveManualAddress(address,
+        favoriteAddressId: favoriteAddressId);
   }
 
   Future<void> _saveAddress(

@@ -403,11 +403,13 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: AddressPopupMenu(
-        onEdit: () => _handleEditAddress(context, address),
-        onDelete: () => _handleDeleteAddress(context, address),
-        hideDelete: hideDelete,
-      ),
+      trailing: address.id?.isNotEmpty ?? false
+          ? AddressPopupMenu(
+              onEdit: () => _handleEditAddress(context, address),
+              onDelete: () => _handleDeleteAddress(context, address),
+              hideDelete: hideDelete,
+            )
+          : null,
       onTap: onTap ??
           () {
             _handleAddressSelected(
