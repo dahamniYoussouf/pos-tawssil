@@ -66,9 +66,6 @@ class GooglePlacesService {
         body: json.encode(requestBody),
       );
 
-      print(response.body);
-      print(response.statusCode);
-
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final suggestions = data['suggestions'] as List?;
