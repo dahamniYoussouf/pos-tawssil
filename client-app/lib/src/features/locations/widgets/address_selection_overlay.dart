@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:client_app/l10n/app_localizations.dart';
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/core/res/media_res.dart';
@@ -176,17 +177,55 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
 
   void _showCreateAddressDialog(BuildContext context) {
     AddressSelectionOverLay.hide();
-    showDialog(
+    showGeneralDialog(
       context: context,
-      builder: (context) => const CreateAddressWidget(),
+      barrierColor: Colors.black.withOpacity(0.3),
+      transitionDuration: const Duration(milliseconds: 200),
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          const CreateAddressWidget(),
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return Stack(
+          children: [
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                color: Colors.transparent,
+              ),
+            ),
+            FadeTransition(
+              opacity: animation,
+              child: child,
+            ),
+          ],
+        );
+      },
     );
   }
 
   void _handleEditAddress(BuildContext context, FavoriteAddressModel address) {
     AddressSelectionOverLay.hide();
-    showDialog(
+    showGeneralDialog(
       context: context,
-      builder: (context) => CreateAddressWidget(addressToEdit: address),
+      barrierColor: Colors.black.withOpacity(0.3),
+      transitionDuration: const Duration(milliseconds: 200),
+      pageBuilder: (context, animation, secondaryAnimation) =>
+          CreateAddressWidget(addressToEdit: address),
+      transitionBuilder: (context, animation, secondaryAnimation, child) {
+        return Stack(
+          children: [
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                color: Colors.transparent,
+              ),
+            ),
+            FadeTransition(
+              opacity: animation,
+              child: child,
+            ),
+          ],
+        );
+      },
     );
   }
 
