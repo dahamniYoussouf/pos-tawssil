@@ -1061,6 +1061,10 @@
   "deleteAddressConfirmation": "Are you sure you want to delete this address?",
   "@deleteAddressConfirmation": {
     "description": "Delete address confirmation message"
+  },
+  "errorMaxFavoriteAddressesReached": "Maximum 5 favorite addresses allowed",
+  "@errorMaxFavoriteAddressesReached": {
+    "description": "Error message when maximum favorite addresses limit is reached"
   }
 }
 

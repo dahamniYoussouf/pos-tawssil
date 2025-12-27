@@ -14,6 +14,11 @@ extension AppLocalizationsErrorExtension on AppLocalizations {
       }
     }
 
+    // Check for specific API error messages that need translation
+    if (_isKnownApiErrorMessage(errorMessage)) {
+      return _translateApiErrorMessage(errorMessage);
+    }
+
     // Check if it's a known translation key
     if (_isTranslationKey(errorMessage)) {
       return _translateKey(errorMessage);
@@ -21,6 +26,24 @@ extension AppLocalizationsErrorExtension on AppLocalizations {
 
     // If it's not a translation key (e.g., server error message), return as-is
     return errorMessage;
+  }
+
+  bool _isKnownApiErrorMessage(String message) {
+    final lowerMessage = message.toLowerCase();
+    return (lowerMessage.contains('maximum') &&
+            lowerMessage.contains('adresses favorites')) ||
+        (lowerMessage.contains('maximum') &&
+            lowerMessage.contains('favorite addresses'));
+  }
+
+  String _translateApiErrorMessage(String message) {
+    final lowerMessage = message.toLowerCase();
+    if (lowerMessage.contains('maximum') &&
+        (lowerMessage.contains('adresses favorites') ||
+            lowerMessage.contains('favorite addresses'))) {
+      return errorMaxFavoriteAddressesReached;
+    }
+    return message;
   }
 
   bool _isTranslationKey(String message) {
@@ -34,7 +57,8 @@ extension AppLocalizationsErrorExtension on AppLocalizations {
             message == 'errorFirstNameRequired' ||
             message == 'errorLastNameRequired' ||
             message == 'errorProfileUpdateFailed' ||
-            message == 'errorProfileFetchFailed');
+            message == 'errorProfileFetchFailed' ||
+            message == 'errorMaxFavoriteAddressesReached');
   }
 
   String _translateKey(String key) {
@@ -59,6 +83,8 @@ extension AppLocalizationsErrorExtension on AppLocalizations {
         return errorProfileUpdateFailed;
       case 'errorProfileFetchFailed':
         return errorProfileFetchFailed;
+      case 'errorMaxFavoriteAddressesReached':
+        return errorMaxFavoriteAddressesReached;
       default:
         return key;
     }

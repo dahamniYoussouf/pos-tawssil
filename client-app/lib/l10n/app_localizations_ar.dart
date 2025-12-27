@@ -790,4 +790,8 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get deleteAddressConfirmation =>
       'هل أنت متأكد أنك تريد حذف هذا العنوان؟';
+
+  @override
+  String get errorMaxFavoriteAddressesReached =>
+      'الحد الأقصى 5 عناوين مفضلة مسموح بها';
 }

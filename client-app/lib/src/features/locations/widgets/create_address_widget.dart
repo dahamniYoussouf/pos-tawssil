@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:client_app/l10n/app_localizations.dart';
+import 'package:client_app/src/core/extensions/app_localizations_extension.dart';
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/core/res/media_res.dart';
 import 'package:client_app/src/features/locations/cubit/address_cubit/create_address_ui_cubit.dart';
@@ -741,8 +742,13 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
     return BlocConsumer<FavoriteAddressCubit, FavoriteAddressState>(
       listener: (context, state) {
         if (state is FavoriteAddressError) {
+          final localizations = AppLocalizations.of(context)!;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message)),
+            SnackBar(
+              content: Text(
+                localizations.translateErrorMessage(state.message),
+              ),
+            ),
           );
         }
       },

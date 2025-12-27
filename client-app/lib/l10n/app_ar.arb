@@ -434,6 +434,10 @@
   "deleteAddressConfirmation": "هل أنت متأكد أنك تريد حذف هذا العنوان؟",
   "@deleteAddressConfirmation": {
     "description": "رسالة تأكيد حذف العنوان"
+  },
+  "errorMaxFavoriteAddressesReached": "الحد الأقصى 5 عناوين مفضلة مسموح بها",
+  "@errorMaxFavoriteAddressesReached": {
+    "description": "رسالة خطأ عند الوصول إلى الحد الأقصى للعناوين المفضلة"
   }
 }
 

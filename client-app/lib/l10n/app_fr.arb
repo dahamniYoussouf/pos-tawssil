@@ -434,6 +434,10 @@
   "deleteAddressConfirmation": "Êtes-vous sûr de vouloir supprimer cette adresse?",
   "@deleteAddressConfirmation": {
     "description": "Message de confirmation de suppression d'adresse"
+  },
+  "errorMaxFavoriteAddressesReached": "Maximum 5 adresses favorites autorisées",
+  "@errorMaxFavoriteAddressesReached": {
+    "description": "Message d'erreur lorsque la limite maximale d'adresses favorites est atteinte"
   }
 }
 

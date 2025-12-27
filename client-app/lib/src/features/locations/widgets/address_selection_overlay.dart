@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:client_app/l10n/app_localizations.dart';
+import 'package:client_app/src/core/extensions/app_localizations_extension.dart';
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/core/res/media_res.dart';
 import 'package:client_app/src/core/widgets/confirmation_dialog.dart';
@@ -110,8 +111,14 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
                         FavoriteAddressState>(
                       listener: (context, state) {
                         if (state is FavoriteAddressError) {
+                          final localizations = AppLocalizations.of(context)!;
                           ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(state.message)),
+                            SnackBar(
+                              content: Text(
+                                localizations
+                                    .translateErrorMessage(state.message),
+                              ),
+                            ),
                           );
                         }
                       },

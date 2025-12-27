@@ -1563,6 +1563,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to delete this address?'**
   String get deleteAddressConfirmation;
+
+  /// Error message when maximum favorite addresses limit is reached
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum 5 favorite addresses allowed'**
+  String get errorMaxFavoriteAddressesReached;
 }
 
 class _AppLocalizationsDelegate

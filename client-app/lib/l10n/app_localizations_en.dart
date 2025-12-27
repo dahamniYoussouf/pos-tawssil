@@ -803,4 +803,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get deleteAddressConfirmation =>
       'Are you sure you want to delete this address?';
+
+  @override
+  String get errorMaxFavoriteAddressesReached =>
+      'Maximum 5 favorite addresses allowed';
 }
