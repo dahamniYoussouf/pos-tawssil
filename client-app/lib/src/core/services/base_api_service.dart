@@ -26,6 +26,7 @@ class BaseApiService {
 
     if (includeAuth) {
       final token = await _tokenStorage.getAccessToken();
+
       if (token != null) {
         headers['Authorization'] = 'Bearer $token';
       }
@@ -42,7 +43,10 @@ class BaseApiService {
   Map<String, dynamic> _handleError(DioException e) {
     late int status;
 
-    if (e.error is SocketException || e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.sendTimeout || e.type == DioExceptionType.receiveTimeout) {
+    if (e.error is SocketException ||
+        e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.sendTimeout ||
+        e.type == DioExceptionType.receiveTimeout) {
       status = -3; // Connection error
     } else if (e.response?.statusCode == 401) {
       status = -1; // Unauthorized - session expired
@@ -61,7 +65,8 @@ class BaseApiService {
       if (responseData.containsKey('errors')) {
         errorResponse['errors'] = responseData['errors'];
       }
-      if (responseData.containsKey('message') && responseData['message'] != null) {
+      if (responseData.containsKey('message') &&
+          responseData['message'] != null) {
         errorResponse['message'] = responseData['message'];
       }
     }
@@ -201,7 +206,9 @@ class BaseApiService {
   /// Process the response from the server
   Map<String, dynamic> _processResponse(Response response) {
     // Check if response is successful
-    if (response.statusCode != null && response.statusCode! >= 200 && response.statusCode! < 300) {
+    if (response.statusCode != null &&
+        response.statusCode! >= 200 &&
+        response.statusCode! < 300) {
       final data = response.data;
 
       // If data is already a map, return it

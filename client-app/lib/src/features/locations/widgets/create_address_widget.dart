@@ -810,16 +810,10 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
 
   Future<void> _saveAddress(
     BuildContext context,
-    String name,
+    String? name,
     CreateAddressUiInitial uiState,
     AppLocalizations localizations,
   ) async {
-    if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(localizations.pleaseEnterAddressName)),
-      );
-      return;
-    }
     if (uiState.selectedLat == null || uiState.selectedLng == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(localizations.pleaseSelectLocation)),

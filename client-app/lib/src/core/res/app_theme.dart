@@ -1,3 +1,4 @@
+import 'package:client_app/src/core/res/color_app.dart';
 import 'package:flutter/material.dart';
 
 class AppTheme {
@@ -5,7 +6,9 @@ class AppTheme {
 
   static ThemeData get lightTheme {
     return ThemeData(
-      primarySwatch: Colors.green,
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: ColorApp.primary,
+      ),
       fontFamily: 'Gilmer',
       textTheme: ThemeData.light()
           .textTheme

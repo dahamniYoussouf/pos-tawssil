@@ -51,7 +51,7 @@ class FavoriteAddressCubit extends Cubit<FavoriteAddressState> {
   }
 
   Future<void> createFavoriteAddress({
-    required String name,
+    String? name,
     required String address,
     required double lat,
     required double lng,
@@ -94,7 +94,7 @@ class FavoriteAddressCubit extends Cubit<FavoriteAddressState> {
 
   Future<void> updateFavoriteAddress({
     required String id,
-    required String name,
+    String? name,
     required String address,
     required double lat,
     required double lng,

@@ -11,7 +11,7 @@ class FavoriteAddressService extends BaseApiService {
   }
 
   Future<Map<String, dynamic>> createFavoriteAddress({
-    required String name,
+    String? name,
     required String address,
     required double lat,
     required double lng,
@@ -19,19 +19,21 @@ class FavoriteAddressService extends BaseApiService {
     String? iconUrl,
   }) async {
     final body = {
-      'name': name,
       'address': address,
       'lat': lat,
       'lng': lng,
       'is_default': isDefault,
       if (iconUrl != null) 'icon_url': iconUrl,
     };
+    if (name != null) {
+      body['name'] = name;
+    }
     return await postRequest('/client/favorite-addresses', data: body);
   }
 
   Future<Map<String, dynamic>> updateFavoriteAddress({
     required String id,
-    required String name,
+    String? name,
     required String address,
     required double lat,
     required double lng,
@@ -39,13 +41,15 @@ class FavoriteAddressService extends BaseApiService {
     String? iconUrl,
   }) async {
     final body = {
-      'name': name,
       'address': address,
       'lat': lat,
       'lng': lng,
       'is_default': isDefault,
       if (iconUrl != null) 'icon_url': iconUrl,
     };
+    if (name != null) {
+      body['name'] = name;
+    }
     return await putRequest('/client/favorite-addresses/$id', data: body);
   }
 

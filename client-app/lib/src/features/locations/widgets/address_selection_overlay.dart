@@ -12,6 +12,7 @@ import 'package:client_app/src/features/locations/models/favorite_address_model.
 import 'package:client_app/src/features/locations/cubit/address_cubit/address_selection_ui_cubit.dart';
 import 'package:client_app/src/features/locations/widgets/create_address_widget.dart';
 import 'package:client_app/src/features/locations/widgets/address_popup_menu.dart';
+import 'package:client_app/src/features/restaurant/cubit/homepage_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -178,7 +179,10 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
   void _handleUseCurrentLocation(BuildContext context) async {
     final locationCubit = context.read<LocationCubit>();
     await locationCubit.requestLocationPermission();
+
     await locationCubit.getGpsLocation();
+    // reload nearby restaurants
+    await context.read<HomepageCubit>().loadHomepage();
     AddressSelectionOverLay.hide();
   }
 
@@ -363,7 +367,7 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
             ),
           );
         }
-        return const SizedBox.shrink();
+        return const Center(child: CircularProgressIndicator());
       },
     );
   }
@@ -410,7 +414,7 @@ class _AddressSelectionOverlayContent extends StatelessWidget {
         ),
       ),
       title: Text(
-        address.name,
+        address.name.isEmpty ? address.address : address.name,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontSize: 12,
               fontWeight: FontWeight.w400,
