@@ -1,6 +1,5 @@
 import 'package:client_app/src/core/utils/dependency_injection.dart';
 import 'package:client_app/src/features/restaurant/cubit/homepage_cubit.dart';
-import 'package:client_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
 import '../repositories/location_repository.dart';
