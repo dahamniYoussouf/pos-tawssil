@@ -1,4 +1,5 @@
 import 'package:client_app/src/core/utils/dependency_injection.dart';
+import 'package:client_app/src/features/restaurant/cubit/homepage_cubit.dart';
 import 'package:client_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart';
@@ -80,7 +81,7 @@ class LocationCubit extends Cubit<LocationState> {
         favoriteAddressId: result.favoriteAddressId,
       ));
       // reload nearby restaurants
-      await locator<RestaurantCubit>().loadNearbyRestaurants();
+      await locator<HomepageCubit>().loadHomepage();
     } else {
       emit(LocationError(message: result.errorMessage ?? 'Unknown error'));
     }

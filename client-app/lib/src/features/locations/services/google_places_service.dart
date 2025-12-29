@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:client_app/src/core/config/api_config.dart';
+import 'dart:developer' as dev;
 
 /// Google Places Service (New API) optimized for Algeria
 ///
@@ -70,6 +71,7 @@ class GooglePlacesService {
         final data = json.decode(response.body);
         final suggestions = data['suggestions'] as List?;
         if (suggestions != null && suggestions.isNotEmpty) {
+          dev.log("suggestions: ${suggestions.toString()}");
           return suggestions
               .map((s) => PlacePrediction.fromNewApiJson(s))
               .toList();
@@ -134,12 +136,14 @@ class GooglePlacesService {
 
 /// Represents a place prediction from autocomplete
 class PlacePrediction {
+  final String place;
   final String placeId;
   final String description;
   final String mainText;
   final String secondaryText;
 
   PlacePrediction({
+    required this.place,
     required this.placeId,
     required this.description,
     required this.mainText,
@@ -148,7 +152,15 @@ class PlacePrediction {
 
   factory PlacePrediction.fromNewApiJson(Map<String, dynamic> json) {
     final placePrediction = json['placePrediction'] ?? {};
-    final placeId = json['placeId'] ?? '';
+    final place = placePrediction['place'] ?? '';
+    String placeId = placePrediction['placeId'] ?? '';
+    if (placeId.isEmpty && place.isNotEmpty) {
+      if (place.startsWith('places/')) {
+        placeId = place.substring(7);
+      } else {
+        placeId = place;
+      }
+    }
     final text = placePrediction['text'] ?? {};
     final structuredFormat = placePrediction['structuredFormat'] ?? {};
 
@@ -157,11 +169,26 @@ class PlacePrediction {
     final secondaryText = structuredFormat['secondaryText']?['text'] ?? '';
 
     return PlacePrediction(
+      place: place,
       placeId: placeId,
       description: text['text'] ?? mainText,
       mainText: mainText,
       secondaryText: secondaryText,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'placeId': placeId,
+      'description': description,
+      'mainText': mainText,
+      'secondaryText': secondaryText,
+    };
+  }
+
+  @override
+  String toString() {
+    return 'PlacePrediction(placeId: $placeId, description: $description, mainText: $mainText, secondaryText: $secondaryText)';
   }
 }
 

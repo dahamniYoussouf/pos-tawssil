@@ -158,8 +158,6 @@ class AuthCubit extends HydratedCubit<AuthState> {
       // Format phone number for API (strip '+' for backend)
       String formattedPhone = _formatPhoneForApi(phoneNumber, countryCode);
       final result = await _authService.sendVerificationCode(formattedPhone);
-      print("fouad : result: ${result}");
-      print("fouad : result['dev_otp']: ${result['dev_otp']}");
       if (result['success'] == true) {
         // Store normalized phone number in state and start resend timer
         emit(AuthCodeSent(

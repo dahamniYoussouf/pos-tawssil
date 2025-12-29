@@ -170,28 +170,17 @@ class CreateAddressWidgetState extends State<CreateAddressWidget> {
 
   Widget _buildSuggestionItem(PlacePrediction prediction) {
     return InkWell(
-      onTap: () {
+      onTap: () async {
         _searchController.text = prediction.description;
         _searchFocusNode.unfocus();
         _removeOverlay();
-        context.read<AddressSearchCubit>().selectPlace(prediction);
+        await context.read<AddressSearchCubit>().selectPlace(prediction);
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: ColorApp.greyIconColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(
-                Icons.location_on,
-                color: ColorApp.primary,
-                size: 20,
-              ),
-            ),
+            SvgPicture.asset(MediaRes.locationIcon, height: 20, width: 20),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
