@@ -11,6 +11,8 @@ class RestaurantModel {
   final double? lat;
   final double? lng;
   final bool isPremium;
+  final double? deliveryFee;
+  final String? promotionBadgeText;
 
   RestaurantModel({
     required this.id,
@@ -25,6 +27,8 @@ class RestaurantModel {
     this.lat,
     this.lng,
     required this.isPremium,
+    this.deliveryFee,
+    this.promotionBadgeText,
   });
 
   factory RestaurantModel.fromJson(Map<String, dynamic> json) {
@@ -70,6 +74,8 @@ class RestaurantModel {
     }
 
     final isPremiumVal = _parseBool(json['is_premium'] ?? json['isPremium'] ?? json['premium'] ?? json['is_vip']);
+    final deliveryFeeVal = json['delivery_fee'] ?? json['deliveryFee'] ?? null;
+    final promotionBadgeTextVal = json['promotion_badge_text'] ?? json['promotionBadgeText'] as String?;
 
     return RestaurantModel(
       id: id?.toString() ?? '',
@@ -84,6 +90,8 @@ class RestaurantModel {
       lat: latVal,
       lng: lngVal,
       isPremium: isPremiumVal,
+      deliveryFee: deliveryFeeVal != null ? _parseDouble(deliveryFeeVal) : null,
+      promotionBadgeText: promotionBadgeTextVal?.toString(),
     );
   }
 
@@ -130,6 +138,8 @@ class RestaurantModel {
       'lat': lat,
       'lng': lng,
       'is_premium': isPremium,
+      if (deliveryFee != null) 'delivery_fee': deliveryFee,
+      if (promotionBadgeText != null) 'promotion_badge_text': promotionBadgeText,
     };
   }
 }

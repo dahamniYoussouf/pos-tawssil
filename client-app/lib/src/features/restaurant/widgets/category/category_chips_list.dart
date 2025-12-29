@@ -6,11 +6,13 @@ import 'package:client_app/l10n/app_localizations.dart';
 class CategoryChipsList extends StatelessWidget {
   final List<HomeCategoryModel> categories;
   final Function(HomeCategoryModel) onCategoryTap;
+  final bool hideText;
 
   const CategoryChipsList({
     Key? key,
     required this.categories,
     required this.onCategoryTap,
+    this.hideText = false,
   }) : super(key: key);
 
   @override
@@ -21,26 +23,27 @@ class CategoryChipsList extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                AppLocalizations.of(context)!.categories,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 28,
-                      letterSpacing: 0.0,
-                      color: ColorApp.textBlack,
-                    ),
-              ),
-              Text(AppLocalizations.of(context)!.showAll,
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: ColorApp.primary,
-                        fontSize: 18,
-                      )),
-            ],
-          ),
+          if (!(hideText))
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  AppLocalizations.of(context)!.categories,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 28,
+                        letterSpacing: 0.0,
+                        color: ColorApp.textBlack,
+                      ),
+                ),
+                Text(AppLocalizations.of(context)!.showAll,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: ColorApp.primary,
+                          fontSize: 18,
+                        )),
+              ],
+            ),
           SizedBox(height: 8),
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,

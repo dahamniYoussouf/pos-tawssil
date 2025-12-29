@@ -1,4 +1,9 @@
+import 'package:client_app/src/features/restaurant/cubit/homepage_cubit.dart';
+import 'package:client_app/src/features/restaurant/cubit/homepage_state.dart';
+import 'package:client_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'package:client_app/src/features/restaurant/cubit/restaurant_search_state.dart';
+import 'package:client_app/src/features/restaurant/widgets/category/category_chips_list.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:async';
@@ -120,6 +125,16 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
         child: Column(
           children: [
             SearchBarWidget(controller: _searchController),
+            BlocBuilder<HomepageCubit, HomepageState>(
+                builder: (context, homepageState) {
+              if (homepageState is HomepageLoaded) {
+                return CategoryChipsList(
+                    hideText: true,
+                    categories: homepageState.homepageData.homeCategories,
+                    onCategoryTap: (Category) {});
+              }
+              return SizedBox.shrink();
+            }),
             BlocBuilder<RestaurantSearchCubit, RestaurantSearchState>(
               builder: (context, searchState) {
                 if (searchState is RestaurantSearchInitial) {

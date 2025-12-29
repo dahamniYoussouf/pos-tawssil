@@ -28,6 +28,8 @@ class SearchHistoryListWidget extends StatelessWidget {
             margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Padding(
                   padding: const EdgeInsets.only(bottom: 8),
@@ -62,9 +64,9 @@ class SearchHistoryListWidget extends StatelessWidget {
                     ],
                   ),
                 ),
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                ListView(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
                   children: state.history.map((query) {
                     return _SearchHistoryChip(
                       query: query,
@@ -102,19 +104,12 @@ class _SearchHistoryChip extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: ColorApp.backgroundGrey,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: ColorApp.greyBorder,
-            width: 1,
-          ),
-        ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Icon(
               Icons.history,

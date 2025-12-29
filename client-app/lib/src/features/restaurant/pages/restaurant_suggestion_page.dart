@@ -8,7 +8,7 @@ import 'package:client_app/src/features/restaurant/pages/restaurant_details_page
 import '../cubit/homepage_cubit.dart';
 import '../cubit/homepage_state.dart';
 import '../widgets/restaurant_suggestion_header.dart';
-import '../widgets/homepage_widget.dart';
+import 'home_page.dart';
 import '../widgets/restaurant_suggestion_widgets.dart';
 
 class RestaurantSuggestionPage extends StatefulWidget {
@@ -78,19 +78,9 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
                         child: Column(
                           children: [
                             const RestaurantSuggestionHeader(),
-                            HomepageWidget(
+                            HomePage(
                               homepageData: homepageState.homepageData,
                               allRestaurants: homepageState.restaurants,
-                              onRestaurantTap: (restaurant) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => RestaurantDetailsPage(
-                                      restaurant: restaurant,
-                                    ),
-                                  ),
-                                );
-                              },
                             ),
                           ],
                         ),

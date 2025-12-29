@@ -1,28 +1,28 @@
 import 'package:client_app/l10n/app_localizations.dart';
 import 'package:client_app/src/core/res/color_app.dart';
+import 'package:client_app/src/features/restaurant/pages/restaurant_details_page.dart';
 import 'package:client_app/src/features/restaurant/widgets/annoncements/annoncements_widget.dart';
 import 'package:client_app/src/features/restaurant/widgets/category/category_chips_list.dart';
 import 'package:client_app/src/features/restaurant/widgets/daily_deals/daily_deals_widget.dart';
 import 'package:flutter/material.dart';
 import '../models/homepage_models.dart';
 import '../models/restaurant_model.dart';
-import 'restaurant_card.dart';
+import '../widgets/restaurant_card.dart';
+import '../widgets/restaurant_list_item.dart';
 
-class HomepageWidget extends StatelessWidget {
+class HomePage extends StatelessWidget {
   final HomepageDataModel homepageData;
   final List<RestaurantModel> allRestaurants;
-  final Function(RestaurantModel) onRestaurantTap;
   final Function(HomeCategoryModel)? onHomeCategoryTap;
   final Function(ThematicSelectionModel)? onThematicSelectionTap;
   final Function(RecommendedDishModel)? onRecommendedDishTap;
   final Function(DailyDealModel)? onDailyDealTap;
   final Function(PromotionModel)? onPromotionTap;
 
-  const HomepageWidget({
+  const HomePage({
     Key? key,
     required this.homepageData,
     required this.allRestaurants,
-    required this.onRestaurantTap,
     this.onHomeCategoryTap,
     this.onThematicSelectionTap,
     this.onRecommendedDishTap,
@@ -54,12 +54,10 @@ class HomepageWidget extends StatelessWidget {
             ThematicSelectionsSection(
               selections: homepageData.thematicSelections,
               onSelectionTap: onThematicSelectionTap ?? (_) {},
-              onRestaurantTap: onRestaurantTap,
             ),
           if (homepageData.featuredRestaurants.isNotEmpty)
             FeaturedRestaurantsSection(
               restaurants: homepageData.featuredRestaurants,
-              onRestaurantTap: onRestaurantTap,
             ),
           if (homepageData.recommendedDishes.isNotEmpty)
             RecommendedDishesSection(
@@ -75,7 +73,10 @@ class HomepageWidget extends StatelessWidget {
               homepageData.nearby!.data.isNotEmpty)
             NearbyRestaurantsSection(
               nearbyData: homepageData.nearby!,
-              onRestaurantTap: onRestaurantTap,
+            ),
+          if (allRestaurants.isNotEmpty)
+            AllRestaurantsSection(
+              restaurants: allRestaurants,
             ),
         ],
       ),
@@ -86,13 +87,11 @@ class HomepageWidget extends StatelessWidget {
 class ThematicSelectionsSection extends StatelessWidget {
   final List<ThematicSelectionModel> selections;
   final Function(ThematicSelectionModel) onSelectionTap;
-  final Function(RestaurantModel) onRestaurantTap;
 
   const ThematicSelectionsSection({
     Key? key,
     required this.selections,
     required this.onSelectionTap,
-    required this.onRestaurantTap,
   }) : super(key: key);
 
   @override
@@ -110,7 +109,16 @@ class ThematicSelectionsSection extends StatelessWidget {
             .map((selection) => _ThematicSelectionItem(
                   selection: selection,
                   onSelectionTap: () => onSelectionTap(selection),
-                  onRestaurantTap: onRestaurantTap,
+                  onRestaurantTap: (restaurant) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RestaurantDetailsPage(
+                          restaurant: restaurant,
+                        ),
+                      ),
+                    );
+                  },
                 ))
             .toList(),
       ),
@@ -199,12 +207,10 @@ class _ThematicSelectionItem extends StatelessWidget {
 
 class FeaturedRestaurantsSection extends StatelessWidget {
   final List<RestaurantModel> restaurants;
-  final Function(RestaurantModel) onRestaurantTap;
 
   const FeaturedRestaurantsSection({
     Key? key,
     required this.restaurants,
-    required this.onRestaurantTap,
   }) : super(key: key);
 
   @override
@@ -240,7 +246,16 @@ class FeaturedRestaurantsSection extends StatelessWidget {
                   margin: const EdgeInsets.only(right: 12),
                   child: RestaurantCard(
                     restaurant: restaurants[index],
-                    onTap: () => onRestaurantTap(restaurants[index]),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RestaurantDetailsPage(
+                            restaurant: restaurants[index],
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 );
               },
@@ -568,12 +583,10 @@ class _PromotionCard extends StatelessWidget {
 
 class NearbyRestaurantsSection extends StatelessWidget {
   final NearbyRestaurantsData nearbyData;
-  final Function(RestaurantModel) onRestaurantTap;
 
   const NearbyRestaurantsSection({
     Key? key,
     required this.nearbyData,
-    required this.onRestaurantTap,
   }) : super(key: key);
 
   @override
@@ -611,21 +624,96 @@ class NearbyRestaurantsSection extends StatelessWidget {
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: GridView.builder(
+            child: ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-                childAspectRatio: 0.75,
-              ),
               itemCount: nearbyData.data.length,
               itemBuilder: (context, index) {
-                return RestaurantCard(
+                return RestaurantListItem(
                   restaurant: nearbyData.data[index],
-                  onTap: () => onRestaurantTap(nearbyData.data[index]),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => RestaurantDetailsPage(
+                          restaurant: nearbyData.data[index],
+                        ),
+                      ),
+                    );
+                  },
                 );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class AllRestaurantsSection extends StatelessWidget {
+  final List<RestaurantModel> restaurants;
+
+  const AllRestaurantsSection({
+    Key? key,
+    required this.restaurants,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (restaurants.isEmpty) return const SizedBox.shrink();
+    final localizations = AppLocalizations.of(context)!;
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Tous les Restaurants',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 22,
+                        color: ColorApp.textBlack,
+                      ),
+                ),
+                TextButton(
+                  onPressed: () {},
+                  child: Text(
+                    localizations.showAll,
+                    style: TextStyle(
+                      color: ColorApp.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: restaurants.length,
+              itemBuilder: (context, index) {
+                return RestaurantListItem(
+                    restaurant: restaurants[index],
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RestaurantDetailsPage(
+                            restaurant: restaurants[index],
+                          ),
+                        ),
+                      );
+                    });
               },
             ),
           ),

@@ -1,6 +1,3 @@
-import 'package:client_app/src/core/utils/dependency_injection.dart';
-import 'package:client_app/src/features/locations/cubit/location_cubit.dart';
-import 'package:client_app/src/features/locations/cubit/location_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../repositories/restaurant_repository.dart';
 import 'restaurant_state.dart';
@@ -13,59 +10,6 @@ class RestaurantCubit extends Cubit<RestaurantState> {
     RestaurantRepository? restaurantRepository,
   })  : _restaurantRepository = restaurantRepository ?? RestaurantRepository(),
         super(RestaurantInitial());
-
-  // Future<void> loadNearbyRestaurants({int radius = 5000}) async {
-  //   if (isClosed) return;
-  //   emit(RestaurantLoading());
-
-  //   try {
-  //     // Get user coordinates
-  //     // Get location from LocationCubit if available
-  //     await locator<LocationCubit>().loadSavedLocation();
-  //     final locationState = locator<LocationCubit>().state;
-  //     double? lat;
-  //     double? lng;
-
-  //     if (locationState is LocationSuccess) {
-  //       // use only coordinates if available
-  //       if (locationState.latitude != null && locationState.longitude != null) {
-  //         lat = locationState.latitude;
-  //         lng = locationState.longitude;
-  //       }
-  //     }
-  //     if (isClosed) return;
-  //     if (lat == null || lng == null) {
-  //       emit(const RestaurantError(message: 'Unable to get location. Please enable location services.'));
-  //       return;
-  //     }
-
-  //     final result = await _restaurantRepository.getNearbyRestaurants(
-  //       lat: lat,
-  //       lng: lng,
-  //       radius: radius,
-  //     );
-
-  //     if (isClosed) return;
-  //     result.fold(
-  //       (error) {
-  //         if (!isClosed) emit(RestaurantError(message: error));
-  //       },
-  //       (restaurants) async {
-  //         final categories = _restaurantRepository.getStaticCategories();
-  //         if (!isClosed) {
-  //           emit(RestaurantLoaded(
-  //             restaurants: restaurants,
-  //             categories: categories,
-  //           ));
-  //         }
-  //       },
-  //     );
-  //   } catch (e) {
-  //     if (!isClosed) {
-  //       emit(RestaurantError(message: 'errorRestaurantsLoading|${e.toString()}'));
-  //     }
-  //   }
-  // }
 
   Future<void> loadRestaurantDetails(String restaurantId) async {
     if (isClosed) return;
