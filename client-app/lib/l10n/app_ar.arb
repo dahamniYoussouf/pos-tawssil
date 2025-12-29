@@ -438,6 +438,30 @@
   "errorMaxFavoriteAddressesReached": "الحد الأقصى 5 عناوين مفضلة مسموح بها",
   "@errorMaxFavoriteAddressesReached": {
     "description": "رسالة خطأ عند الوصول إلى الحد الأقصى للعناوين المفضلة"
+  },
+  "loadingHomepage": "جاري تحميل الصفحة الرئيسية...",
+  "@loadingHomepage": {
+    "description": "رسالة تحميل الصفحة الرئيسية"
+  },
+  "dailyDeals": "عروض اليوم",
+  "@dailyDeals": {
+    "description": "عنوان قسم عروض اليوم"
+  },
+  "featuredRestaurants": "مطاعم مميزة",
+  "@featuredRestaurants": {
+    "description": "عنوان قسم المطاعم المميزة"
+  },
+  "recommendedDishes": "أطباق موصى بها",
+  "@recommendedDishes": {
+    "description": "عنوان قسم الأطباق الموصى بها"
+  },
+  "promotions": "العروض",
+  "@promotions": {
+    "description": "عنوان قسم العروض"
+  },
+  "nearbyRestaurants": "المطاعم القريبة",
+  "@nearbyRestaurants": {
+    "description": "عنوان قسم المطاعم القريبة"
   }
 }
 

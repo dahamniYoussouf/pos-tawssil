@@ -819,4 +819,22 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get errorMaxFavoriteAddressesReached =>
       'Maximum 5 adresses favorites autorisées';
+
+  @override
+  String get loadingHomepage => 'Chargement de la page d\'accueil...';
+
+  @override
+  String get dailyDeals => 'Offres du jour';
+
+  @override
+  String get featuredRestaurants => 'Restaurants en vedette';
+
+  @override
+  String get recommendedDishes => 'Plats recommandés';
+
+  @override
+  String get promotions => 'Promotions';
+
+  @override
+  String get nearbyRestaurants => 'Restaurants à proximité';
 }

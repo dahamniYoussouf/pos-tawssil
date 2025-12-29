@@ -438,6 +438,30 @@
   "errorMaxFavoriteAddressesReached": "Maximum 5 adresses favorites autorisées",
   "@errorMaxFavoriteAddressesReached": {
     "description": "Message d'erreur lorsque la limite maximale d'adresses favorites est atteinte"
+  },
+  "loadingHomepage": "Chargement de la page d'accueil...",
+  "@loadingHomepage": {
+    "description": "Message de chargement de la page d'accueil"
+  },
+  "dailyDeals": "Offres du jour",
+  "@dailyDeals": {
+    "description": "Titre de la section des offres du jour"
+  },
+  "featuredRestaurants": "Restaurants en vedette",
+  "@featuredRestaurants": {
+    "description": "Titre de la section des restaurants en vedette"
+  },
+  "recommendedDishes": "Plats recommandés",
+  "@recommendedDishes": {
+    "description": "Titre de la section des plats recommandés"
+  },
+  "promotions": "Promotions",
+  "@promotions": {
+    "description": "Titre de la section des promotions"
+  },
+  "nearbyRestaurants": "Restaurants à proximité",
+  "@nearbyRestaurants": {
+    "description": "Titre de la section des restaurants à proximité"
   }
 }
 

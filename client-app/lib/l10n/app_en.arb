@@ -1065,6 +1065,30 @@
   "errorMaxFavoriteAddressesReached": "Maximum 5 favorite addresses allowed",
   "@errorMaxFavoriteAddressesReached": {
     "description": "Error message when maximum favorite addresses limit is reached"
+  },
+  "loadingHomepage": "Loading homepage...",
+  "@loadingHomepage": {
+    "description": "Loading homepage message"
+  },
+  "dailyDeals": "Daily Deals",
+  "@dailyDeals": {
+    "description": "Daily deals section title"
+  },
+  "featuredRestaurants": "Featured Restaurants",
+  "@featuredRestaurants": {
+    "description": "Featured restaurants section title"
+  },
+  "recommendedDishes": "Recommended Dishes",
+  "@recommendedDishes": {
+    "description": "Recommended dishes section title"
+  },
+  "promotions": "Promotions",
+  "@promotions": {
+    "description": "Promotions section title"
+  },
+  "nearbyRestaurants": "Nearby Restaurants",
+  "@nearbyRestaurants": {
+    "description": "Nearby restaurants section title"
   }
 }
 

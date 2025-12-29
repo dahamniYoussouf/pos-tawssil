@@ -8,8 +8,10 @@ import 'package:client_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'package:client_app/src/features/restaurant/cubit/restaurant_search_cubit.dart';
 import 'package:client_app/src/features/restaurant/cubit/restaurant_details_cubit.dart';
 import 'package:client_app/src/features/restaurant/cubit/search_history_cubit.dart';
+import 'package:client_app/src/features/restaurant/cubit/homepage_cubit.dart';
 import 'package:client_app/src/features/restaurant/services/restaurant_service.dart';
 import 'package:client_app/src/features/restaurant/repositories/restaurant_repository.dart';
+import 'package:client_app/src/features/restaurant/repositories/homepage_repository.dart';
 import 'package:client_app/src/features/cart/services/cart_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -75,6 +77,13 @@ void setupLocator() {
 
   locator.registerLazySingleton<CategoryCubit>(() =>
       CategoryCubit(restaurantRepository: locator<RestaurantRepository>()));
+
+  locator.registerLazySingleton<HomepageRepository>(
+    () => HomepageRepository(),
+  );
+
+  locator.registerLazySingleton<HomepageCubit>(() =>
+      HomepageCubit(homepageRepository: locator<HomepageRepository>()));
 
   locator.registerLazySingleton<RestaurantSearchCubit>(() =>
       RestaurantSearchCubit(

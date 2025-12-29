@@ -29,8 +29,8 @@ class OrderAssignedCard extends StatelessWidget {
         final localizations = AppLocalizations.of(context)!;
         final isLoading = state.isActionLoading;
         final isDelivering = OrderStatus.delivering == state.order?.status;
-        print("fouad : status: ${state.order?.status}");
-        final String restaurantName = currentOrder.restaurantName ?? localizations.restaurant;
+        final String restaurantName =
+            currentOrder.restaurantName ?? localizations.restaurant;
         final String restaurantPhone = currentOrder.client?.phoneNumber ?? '';
         final String restaurantAddress = currentOrder.restaurantAddress ?? '';
         final String deliveryAddress = currentOrder.deliveryAddress ?? '';
@@ -70,7 +70,9 @@ class OrderAssignedCard extends StatelessWidget {
               _buildInfoRow(
                 context,
                 Icons.location_on,
-                restaurantAddress.isNotEmpty ? restaurantAddress : deliveryAddress,
+                restaurantAddress.isNotEmpty
+                    ? restaurantAddress
+                    : deliveryAddress,
               ),
               const SizedBox(height: 12),
               _buildInfoRow(
@@ -229,7 +231,10 @@ class OrderAssignedCard extends StatelessWidget {
               ? null
               : () {
                   if (isDelivering) {
-                    context.read<AssignedOrderCubit>().completeDelivery(orderId).whenComplete(() {
+                    context
+                        .read<AssignedOrderCubit>()
+                        .completeDelivery(orderId)
+                        .whenComplete(() {
                       // delivered status go home pick new one
                       if (context.mounted) {
                         Navigator.of(context).push(

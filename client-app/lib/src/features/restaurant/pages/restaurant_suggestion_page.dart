@@ -1,20 +1,15 @@
 import 'package:client_app/src/features/locations/cubit/location_cubit.dart';
-import 'package:client_app/src/features/restaurant/cubit/category_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:client_app/l10n/app_localizations.dart';
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/features/auth/cubit/user_cubit.dart';
 import 'package:client_app/src/features/auth/cubit/user_state.dart';
 import 'package:client_app/src/features/restaurant/pages/restaurant_details_page.dart';
-import 'restaurant_category_page.dart';
-import '../cubit/restaurant_cubit.dart';
-import '../cubit/restaurant_state.dart';
-import '../cubit/category_cubit.dart';
+import '../cubit/homepage_cubit.dart';
+import '../cubit/homepage_state.dart';
 import '../widgets/restaurant_suggestion_header.dart';
-import '../widgets/promo_banner.dart';
-import '../widgets/category_chips_list.dart';
-import '../widgets/restaurant_grid.dart';
+import '../widgets/homepage_widget.dart';
+import '../widgets/restaurant_suggestion_widgets.dart';
 
 class RestaurantSuggestionPage extends StatefulWidget {
   const RestaurantSuggestionPage({Key? key}) : super(key: key);
@@ -31,13 +26,9 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<UserCubit>().fetchProfile();
       context.read<LocationCubit>().loadSavedLocation();
-      final restaurantCubit = context.read<RestaurantCubit>();
-      final categoryCubit = context.read<CategoryCubit>();
-      if (restaurantCubit.state is! RestaurantLoaded) {
-        restaurantCubit.loadNearbyRestaurants(radius: 5000);
-      }
-      if (categoryCubit.state is! CategoryLoaded) {
-        categoryCubit.loadCategories();
+      final homepageCubit = context.read<HomepageCubit>();
+      if (homepageCubit.state is! HomepageLoaded) {
+        homepageCubit.loadHomepage();
       }
     });
   }
@@ -47,153 +38,72 @@ class _RestaurantSuggestionPageState extends State<RestaurantSuggestionPage> {
     return Scaffold(
       backgroundColor: ColorApp.white,
       body: SafeArea(
-          child: BlocBuilder<UserCubit, UserState>(builder: (context, state) {
-        if (state is UserLoading) {
-          return _buildLoadingState(context);
-        }
-        if (state is UserError) {
-          return _buildErrorState(
-            context,
-            state.message,
-            onRetry: () => context.read<UserCubit>().fetchProfile(),
-          );
-        }
-        if (state is UserLoaded) {
-          return BlocBuilder<RestaurantCubit, RestaurantState>(
-            builder: (context, state) {
-              if (state is RestaurantLoading) {
-                return _buildLoadingState(context);
-              }
-              if (state is RestaurantError) {
-                return _buildErrorState(
-                  context,
-                  state.message,
-                  onRetry: () => context
-                      .read<RestaurantCubit>()
-                      .loadNearbyRestaurants(radius: 5000),
-                );
-              }
-              if (state is RestaurantLoaded) {
-                return RefreshIndicator(
-                  color: ColorApp.primary,
-                  backgroundColor: ColorApp.white,
-                  strokeWidth: 3.0,
-                  displacement: 40.0,
-                  edgeOffset: 0.0,
-                  triggerMode: RefreshIndicatorTriggerMode.onEdge,
-                  onRefresh: () async {
-                    await Future.wait([
-                      context
-                          .read<RestaurantCubit>()
-                          .loadNearbyRestaurants(radius: 5000),
-                      context.read<CategoryCubit>().loadCategories(),
-                    ]);
-                  },
-                  child: SingleChildScrollView(
-                    physics: AlwaysScrollableScrollPhysics(),
-                    child: Column(
-                      children: [
-                        RestaurantSuggestionHeader(),
-                        BlocBuilder<CategoryCubit, CategoryState>(
-                          builder: (context, categoryState) {
-                            if (categoryState is CategoryLoaded) {
-                              return CategoryChipsList(
-                                categories: categoryState.categories,
-                                onCategoryTap: (category) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => RestaurantListPage(
-                                        category: category,
-                                        allRestaurants: state.restaurants,
-                                      ),
+        child: BlocBuilder<UserCubit, UserState>(
+          builder: (context, userState) {
+            if (userState is UserLoading) {
+              return const LoadingStateWidget();
+            }
+            if (userState is UserError) {
+              return ErrorStateWidget(
+                message: userState.message,
+                onRetry: () => context.read<UserCubit>().fetchProfile(),
+              );
+            }
+            if (userState is UserLoaded) {
+              return BlocBuilder<HomepageCubit, HomepageState>(
+                builder: (context, homepageState) {
+                  if (homepageState is HomepageLoading) {
+                    return const LoadingStateWidget();
+                  }
+                  if (homepageState is HomepageError) {
+                    return ErrorStateWidget(
+                      message: homepageState.message,
+                      onRetry: () =>
+                          context.read<HomepageCubit>().loadHomepage(),
+                    );
+                  }
+                  if (homepageState is HomepageLoaded) {
+                    return RefreshIndicator(
+                      color: ColorApp.primary,
+                      backgroundColor: ColorApp.white,
+                      strokeWidth: 3.0,
+                      displacement: 40.0,
+                      edgeOffset: 0.0,
+                      triggerMode: RefreshIndicatorTriggerMode.onEdge,
+                      onRefresh: () async {
+                        await context.read<HomepageCubit>().loadHomepage();
+                      },
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: Column(
+                          children: [
+                            const RestaurantSuggestionHeader(),
+                            HomepageWidget(
+                              homepageData: homepageState.homepageData,
+                              allRestaurants: homepageState.restaurants,
+                              onRestaurantTap: (restaurant) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => RestaurantDetailsPage(
+                                      restaurant: restaurant,
                                     ),
-                                  );
-                                },
-                              );
-                            }
-                            if (categoryState is CategoryLoading) {
-                              return SizedBox(
-                                height: 100,
-                                child: Center(
-                                  child: CircularProgressIndicator(
-                                      color: ColorApp.primary),
-                                ),
-                              );
-                            }
-                            return SizedBox.shrink();
-                          },
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
                         ),
-                        PromoBanner(),
-                        SizedBox(height: 20),
-                        RestaurantGrid(
-                          restaurants: state.restaurants,
-                          onRestaurantTap: (restaurant) {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => RestaurantDetailsPage(
-                                    restaurant: restaurant),
-                              ),
-                            );
-                          },
-                          onReload: () => context
-                              .read<RestaurantCubit>()
-                              .loadNearbyRestaurants(radius: 5000),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              }
-              return _buildLoadingState(context);
-            },
-          );
-        }
-        return _buildLoadingState(context);
-      })),
-    );
-  }
-
-  Widget _buildLoadingState(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircularProgressIndicator(color: ColorApp.primary),
-          SizedBox(height: 16),
-          Text(AppLocalizations.of(context)!.loadingRestaurants),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildErrorState(BuildContext context, String message,
-      {VoidCallback? onRetry}) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.error_outline, size: 64, color: ColorApp.redColor),
-          SizedBox(height: 16),
-          Text(
-            AppLocalizations.of(context)!.error,
-            style: TextStyle(color: ColorApp.redColor),
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: onRetry ??
-                () => context
-                    .read<RestaurantCubit>()
-                    .loadNearbyRestaurants(radius: 5000),
-            child: Text(AppLocalizations.of(context)!.retry),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: ColorApp.primary,
-              foregroundColor: ColorApp.white,
-            ),
-          ),
-        ],
+                      ),
+                    );
+                  }
+                  return const LoadingStateWidget();
+                },
+              );
+            }
+            return const LoadingStateWidget();
+          },
+        ),
       ),
     );
   }

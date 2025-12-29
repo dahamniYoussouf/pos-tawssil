@@ -14,67 +14,69 @@ class RestaurantCubit extends Cubit<RestaurantState> {
   })  : _restaurantRepository = restaurantRepository ?? RestaurantRepository(),
         super(RestaurantInitial());
 
-  Future<void> loadNearbyRestaurants({int radius = 5000}) async {
-    if (isClosed) return;
-    emit(RestaurantLoading());
+  // Future<void> loadNearbyRestaurants({int radius = 5000}) async {
+  //   if (isClosed) return;
+  //   emit(RestaurantLoading());
 
-    try {
-      // Get user coordinates
-      // Get location from LocationCubit if available
-      await locator<LocationCubit>().loadSavedLocation();
-      final locationState = locator<LocationCubit>().state;
-      double? lat;
-      double? lng;
+  //   try {
+  //     // Get user coordinates
+  //     // Get location from LocationCubit if available
+  //     await locator<LocationCubit>().loadSavedLocation();
+  //     final locationState = locator<LocationCubit>().state;
+  //     double? lat;
+  //     double? lng;
 
-      if (locationState is LocationSuccess) {
-        // use only coordinates if available
-        if (locationState.latitude != null && locationState.longitude != null) {
-          lat = locationState.latitude;
-          lng = locationState.longitude;
-        }
-      }
-      if (isClosed) return;
-      if (lat == null || lng == null) {
-        emit(const RestaurantError(message: 'Unable to get location. Please enable location services.'));
-        return;
-      }
+  //     if (locationState is LocationSuccess) {
+  //       // use only coordinates if available
+  //       if (locationState.latitude != null && locationState.longitude != null) {
+  //         lat = locationState.latitude;
+  //         lng = locationState.longitude;
+  //       }
+  //     }
+  //     if (isClosed) return;
+  //     if (lat == null || lng == null) {
+  //       emit(const RestaurantError(message: 'Unable to get location. Please enable location services.'));
+  //       return;
+  //     }
 
-      final result = await _restaurantRepository.getNearbyRestaurants(
-        lat: lat,
-        lng: lng,
-        radius: radius,
-      );
+  //     final result = await _restaurantRepository.getNearbyRestaurants(
+  //       lat: lat,
+  //       lng: lng,
+  //       radius: radius,
+  //     );
 
-      if (isClosed) return;
-      result.fold(
-        (error) {
-          if (!isClosed) emit(RestaurantError(message: error));
-        },
-        (restaurants) async {
-          final categories = _restaurantRepository.getStaticCategories();
-          if (!isClosed) {
-            emit(RestaurantLoaded(
-              restaurants: restaurants,
-              categories: categories,
-            ));
-          }
-        },
-      );
-    } catch (e) {
-      if (!isClosed) {
-        emit(RestaurantError(message: 'errorRestaurantsLoading|${e.toString()}'));
-      }
-    }
-  }
+  //     if (isClosed) return;
+  //     result.fold(
+  //       (error) {
+  //         if (!isClosed) emit(RestaurantError(message: error));
+  //       },
+  //       (restaurants) async {
+  //         final categories = _restaurantRepository.getStaticCategories();
+  //         if (!isClosed) {
+  //           emit(RestaurantLoaded(
+  //             restaurants: restaurants,
+  //             categories: categories,
+  //           ));
+  //         }
+  //       },
+  //     );
+  //   } catch (e) {
+  //     if (!isClosed) {
+  //       emit(RestaurantError(message: 'errorRestaurantsLoading|${e.toString()}'));
+  //     }
+  //   }
+  // }
 
   Future<void> loadRestaurantDetails(String restaurantId) async {
     if (isClosed) return;
     try {
       emit(RestaurantLoading());
 
-      final restaurantResult = await _restaurantRepository.getRestaurantById(restaurantId);
+      final restaurantResult =
+          await _restaurantRepository.getRestaurantById(restaurantId);
       if (isClosed) return;
-      final menuItemsResult = await _restaurantRepository.getRestaurantMenuItems(restaurantId);
+      final menuItemsResult =
+          await _restaurantRepository.getRestaurantMenuItems(restaurantId);
       if (isClosed) return;
       final categories = _restaurantRepository.getStaticCategories();
 
@@ -101,12 +103,14 @@ class RestaurantCubit extends Cubit<RestaurantState> {
       );
     } catch (e) {
       if (!isClosed) {
-        emit(RestaurantError(message: 'errorRestaurantDetailsLoading|${e.toString()}'));
+        emit(RestaurantError(
+            message: 'errorRestaurantDetailsLoading|${e.toString()}'));
       }
     }
   }
 
-  Future<void> loadRestaurantsByLocation(double latitude, double longitude, {int radius = 5000}) async {
+  Future<void> loadRestaurantsByLocation(double latitude, double longitude,
+      {int radius = 5000}) async {
     if (isClosed) return;
     emit(RestaurantLoading());
 

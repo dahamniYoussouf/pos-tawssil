@@ -794,4 +794,22 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get errorMaxFavoriteAddressesReached =>
       'الحد الأقصى 5 عناوين مفضلة مسموح بها';
+
+  @override
+  String get loadingHomepage => 'جاري تحميل الصفحة الرئيسية...';
+
+  @override
+  String get dailyDeals => 'عروض اليوم';
+
+  @override
+  String get featuredRestaurants => 'مطاعم مميزة';
+
+  @override
+  String get recommendedDishes => 'أطباق موصى بها';
+
+  @override
+  String get promotions => 'العروض';
+
+  @override
+  String get nearbyRestaurants => 'المطاعم القريبة';
 }

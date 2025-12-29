@@ -1,11 +1,11 @@
 import 'package:client_app/src/core/res/color_app.dart';
+import 'package:client_app/src/features/restaurant/models/homepage_models.dart';
 import 'package:flutter/material.dart';
-import '../models/category_model.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 
 class CategoryChipsList extends StatelessWidget {
-  final List<CategoryModel> categories;
-  final Function(CategoryModel) onCategoryTap;
+  final List<HomeCategoryModel> categories;
+  final Function(HomeCategoryModel) onCategoryTap;
 
   const CategoryChipsList({
     Key? key,
@@ -55,7 +55,7 @@ class CategoryChipsList extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryChip(CategoryModel category, BuildContext context) {
+  Widget _buildCategoryChip(HomeCategoryModel category, BuildContext context) {
     return GestureDetector(
       onTap: () => onCategoryTap(category),
       child: Container(
@@ -70,17 +70,15 @@ class CategoryChipsList extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(20),
-              child: Image.asset(
-                category.iconPath,
-                width: 45,
-                height: 40,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Icon(Icons.restaurant, size: 55, color: Colors.grey);
-                },
-              ),
+            Image.network(
+              category.imageUrl ?? '',
+              width: 45,
+              height: 40,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Icon(Icons.error_outline,
+                    size: 40, color: ColorApp.primary);
+              },
             ),
             SizedBox(width: 8),
             Text(

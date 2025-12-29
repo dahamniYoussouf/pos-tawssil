@@ -1569,6 +1569,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Maximum 5 favorite addresses allowed'**
   String get errorMaxFavoriteAddressesReached;
+
+  /// Loading homepage message
+  ///
+  /// In en, this message translates to:
+  /// **'Loading homepage...'**
+  String get loadingHomepage;
+
+  /// Daily deals section title
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Deals'**
+  String get dailyDeals;
+
+  /// Featured restaurants section title
+  ///
+  /// In en, this message translates to:
+  /// **'Featured Restaurants'**
+  String get featuredRestaurants;
+
+  /// Recommended dishes section title
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended Dishes'**
+  String get recommendedDishes;
+
+  /// Promotions section title
+  ///
+  /// In en, this message translates to:
+  /// **'Promotions'**
+  String get promotions;
+
+  /// Nearby restaurants section title
+  ///
+  /// In en, this message translates to:
+  /// **'Nearby Restaurants'**
+  String get nearbyRestaurants;
 }
 
 class _AppLocalizationsDelegate

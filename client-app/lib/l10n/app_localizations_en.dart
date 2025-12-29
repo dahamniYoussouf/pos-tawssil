@@ -807,4 +807,22 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get errorMaxFavoriteAddressesReached =>
       'Maximum 5 favorite addresses allowed';
+
+  @override
+  String get loadingHomepage => 'Loading homepage...';
+
+  @override
+  String get dailyDeals => 'Daily Deals';
+
+  @override
+  String get featuredRestaurants => 'Featured Restaurants';
+
+  @override
+  String get recommendedDishes => 'Recommended Dishes';
+
+  @override
+  String get promotions => 'Promotions';
+
+  @override
+  String get nearbyRestaurants => 'Nearby Restaurants';
 }
