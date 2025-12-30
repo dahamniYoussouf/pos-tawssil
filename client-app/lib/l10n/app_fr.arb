@@ -202,6 +202,10 @@
       }
     }
   },
+  "search": "Recherche",
+  "@search": {
+    "description": "Titre de la page de recherche"
+  },
   "searching": "Recherche en cours...",
   "@searching": {
     "description": "Message de recherche en cours"

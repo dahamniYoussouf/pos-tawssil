@@ -1,6 +1,7 @@
+import 'package:client_app/l10n/app_localizations.dart';
+import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/features/restaurant/cubit/homepage_cubit.dart';
 import 'package:client_app/src/features/restaurant/cubit/homepage_state.dart';
-import 'package:client_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'package:client_app/src/features/restaurant/cubit/restaurant_search_state.dart';
 import 'package:client_app/src/features/restaurant/widgets/category/category_chips_list.dart';
 import 'package:flutter/foundation.dart';
@@ -117,9 +118,18 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: ColorApp.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: ColorApp.white,
+        title: Text(
+          AppLocalizations.of(context)!.search,
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: ColorApp.black,
+              ),
+        ),
+        centerTitle: true,
       ),
       body: SafeArea(
         child: Column(
@@ -162,6 +172,7 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
                     if (state.restaurants.isEmpty) {
                       return SearchEmptyWidget(state: state);
                     }
+
                     return SearchResultsListWidget(state: state);
                   }
                   return const SearchInitialWidget();

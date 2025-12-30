@@ -1210,6 +1210,12 @@ abstract class AppLocalizations {
   /// **'Error loading order: {error}'**
   String errorOrderLoad(String error);
 
+  /// Search page title
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
   /// Search in progress message
   ///
   /// In en, this message translates to:

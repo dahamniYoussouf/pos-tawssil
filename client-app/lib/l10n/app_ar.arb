@@ -202,6 +202,10 @@
       }
     }
   },
+  "search": "بحث",
+  "@search": {
+    "description": "عنوان صفحة البحث"
+  },
   "searching": "جاري البحث...",
   "@searching": {
     "description": "رسالة البحث قيد التقدم"

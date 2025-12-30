@@ -820,6 +820,10 @@
       }
     }
   },
+  "search": "Search",
+  "@search": {
+    "description": "Search page title"
+  },
   "searching": "Searching...",
   "@searching": {
     "description": "Search in progress message"

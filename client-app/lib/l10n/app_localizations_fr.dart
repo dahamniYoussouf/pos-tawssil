@@ -629,6 +629,9 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get search => 'Recherche';
+
+  @override
   String get searching => 'Recherche en cours...';
 
   @override
