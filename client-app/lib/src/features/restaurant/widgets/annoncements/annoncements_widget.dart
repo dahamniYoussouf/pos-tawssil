@@ -84,102 +84,49 @@ class _AnnouncementsWidgetState extends State<AnnouncementsWidget> {
             width: _getCardWidth(),
             child: Padding(
               padding: const EdgeInsets.only(right: 12),
-              child: _AnnouncementCard(
-                announcement: activeAnnouncements[index],
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  height: 165,
+                  width: double.infinity,
+                  child: Image.network(
+                    activeAnnouncements[index].image!,
+                    width: double.infinity,
+                    height: 165,
+                    fit: BoxFit.fill,
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        color: Colors.grey[200],
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                                : null,
+                            color: ColorApp.primary,
+                          ),
+                        ),
+                      );
+                    },
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        child: Center(
+                          child: Icon(
+                            Icons.image_not_supported_outlined,
+                            size: 48,
+                            color: ColorApp.primary,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
           );
         },
       ),
     );
-  }
-}
-
-class _AnnouncementCard extends StatelessWidget {
-  final AnnouncementModel announcement;
-
-  const _AnnouncementCard({
-    Key? key,
-    required this.announcement,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: _getBackgroundColor(context),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: _getBorderColor(context),
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            announcement.title,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: _getTextColor(context),
-                ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          if (announcement.content != null) ...[
-            const SizedBox(height: 8),
-            Text(
-              announcement.content!,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: _getTextColor(context),
-                  ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Color _getBackgroundColor(BuildContext context) {
-    switch (announcement.type) {
-      case 'error':
-        return ColorApp.redColor.withOpacity(0.1);
-      case 'warning':
-        return Colors.orange.withOpacity(0.1);
-      case 'success':
-        return ColorApp.primary.withOpacity(0.1);
-      default:
-        return ColorApp.primary.withOpacity(0.1);
-    }
-  }
-
-  Color _getBorderColor(BuildContext context) {
-    switch (announcement.type) {
-      case 'error':
-        return ColorApp.redColor;
-      case 'warning':
-        return Colors.orange;
-      case 'success':
-        return ColorApp.primary;
-      default:
-        return ColorApp.primary;
-    }
-  }
-
-  Color _getTextColor(BuildContext context) {
-    switch (announcement.type) {
-      case 'error':
-        return ColorApp.redColor;
-      case 'warning':
-        return Colors.orange.shade800;
-      case 'success':
-        return ColorApp.primary;
-      default:
-        return ColorApp.textBlack;
-    }
   }
 }

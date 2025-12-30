@@ -1,7 +1,9 @@
 import 'package:client_app/src/features/restaurant/models/homepage_models.dart';
 import 'package:flutter/material.dart';
 import 'package:client_app/src/core/res/color_app.dart';
+import 'package:client_app/src/core/res/media_res.dart';
 import 'package:client_app/l10n/app_localizations.dart';
+import 'package:flutter_svg/svg.dart';
 
 class DailyDealsWidget extends StatelessWidget {
   final List<DailyDealModel> dailyDeals;
@@ -35,14 +37,14 @@ class DailyDealsWidget extends StatelessWidget {
               localizations.dailyDeals,
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.w800,
-                    fontSize: 28,
+                    fontSize: 20,
                     color: ColorApp.textBlack,
                   ),
             ),
           ),
           const SizedBox(height: 12),
           SizedBox(
-            height: 200,
+            height: 230,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -74,11 +76,14 @@ class _DailyDealCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final promotion = deal.promotion;
+    final imageUrl =
+        promotion.menuItem?.photoUrl ?? promotion.restaurant?.imageUrl;
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 280,
-        margin: const EdgeInsets.all(4),
+        width: 190,
+        margin: const EdgeInsets.only(right: 16, bottom: 16),
         decoration: BoxDecoration(
           color: ColorApp.white,
           borderRadius: BorderRadius.circular(16),
@@ -93,84 +98,70 @@ class _DailyDealCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(16)),
-                child: Image.network(
-                  promotion.restaurant!.imageUrl!,
-                  height: 90,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
-                    height: 120,
-                    color: ColorApp.primary.withOpacity(0.1),
-                    child: const Icon(Icons.local_offer, size: 40),
-                  ),
-                ),
-              ),
+            ClipRRect(
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(16)),
+              child: imageUrl != null
+                  ? Image.network(
+                      imageUrl,
+                      height: 130,
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          _buildPlaceholderImage(),
+                    )
+                  : _buildPlaceholderImage(),
             ),
-            Expanded(
-                child: Container(
-              padding: const EdgeInsets.all(4),
+            Padding(
+              padding: const EdgeInsets.all(12),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      if (promotion.badgeText != null)
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: ColorApp.primary,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            promotion.badgeText!,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                  Text(
+                    promotion.title,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: ColorApp.textBlack,
+                          fontSize: 16,
                         ),
-                    ],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
-
-                  if (promotion.description != null) ...[
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            promotion.description!,
-                            style: Theme.of(context).textTheme.bodySmall,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
-                  // if (promotion.restaurant != null) ...[
-                  //   const SizedBox(height: 8),
-                  //   Text(
-                  //     promotion.restaurant!.name,
-                  //     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  //           color: ColorApp.primary,
-                  //           fontWeight: FontWeight.w600,
-                  //         ),
-                  //   ),
-                  // ],
+                  Row(
+                    children: [
+                      SvgPicture.asset(
+                        MediaRes.timeIcon,
+                        width: 14,
+                        height: 14,
+                        color: ColorApp.grey,
+                      ),
+                      const SizedBox(width: 4),
+                      // todo : add Distance and time from the restaurant to the user
+                      Text(
+                        '2.5 km - 20 min',
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: ColorApp.grey,
+                              fontSize: 12,
+                            ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-            ))
+            ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPlaceholderImage() {
+    return Container(
+      height: 140,
+      width: double.infinity,
+      color: ColorApp.primary.withOpacity(0.1),
+      child: const Icon(Icons.local_offer, size: 40, color: ColorApp.primary),
     );
   }
 }

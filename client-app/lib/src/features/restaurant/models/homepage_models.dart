@@ -466,22 +466,23 @@ class AnnouncementModel {
   final RestaurantBasicInfo? restaurant;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final String? image;
 
-  AnnouncementModel({
-    required this.id,
-    required this.title,
-    this.content,
-    this.cssStyles,
-    this.jsScripts,
-    required this.type,
-    required this.isActive,
-    required this.startDate,
-    required this.endDate,
-    this.restaurantId,
-    this.restaurant,
-    this.createdAt,
-    this.updatedAt,
-  });
+  AnnouncementModel(
+      {required this.id,
+      required this.title,
+      this.content,
+      this.cssStyles,
+      this.jsScripts,
+      required this.type,
+      required this.isActive,
+      required this.startDate,
+      required this.endDate,
+      this.restaurantId,
+      this.restaurant,
+      this.createdAt,
+      this.updatedAt,
+      this.image});
 
   factory AnnouncementModel.fromJson(Map<String, dynamic> json) {
     return AnnouncementModel(
@@ -495,6 +496,7 @@ class AnnouncementModel {
       startDate: DateTime.parse(json['start_date']),
       endDate: DateTime.parse(json['end_date']),
       restaurantId: json['restaurant_id'] as String?,
+      image: json['image_url'] as String?,
       restaurant: json['restaurant'] != null
           ? RestaurantBasicInfo.fromJson(
               json['restaurant'] as Map<String, dynamic>)
@@ -523,6 +525,7 @@ class AnnouncementModel {
       if (restaurant != null) 'restaurant': restaurant!.toJson(),
       if (createdAt != null) 'created_at': createdAt!.toIso8601String(),
       if (updatedAt != null) 'updated_at': updatedAt!.toIso8601String(),
+      if (image != null) 'image_url': image.toString(),
     };
   }
 }
