@@ -808,6 +808,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get featuredRestaurants => 'مطاعم مميزة';
 
   @override
+  String get premiumRestaurants => 'مطاعم مميزة';
+
+  @override
   String get recommendedDishes => 'أطباق موصى بها';
 
   @override

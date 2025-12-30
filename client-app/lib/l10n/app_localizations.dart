@@ -1594,6 +1594,12 @@ abstract class AppLocalizations {
   /// **'Featured Restaurants'**
   String get featuredRestaurants;
 
+  /// Premium restaurants section title
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Restaurants'**
+  String get premiumRestaurants;
+
   /// Recommended dishes section title
   ///
   /// In en, this message translates to:

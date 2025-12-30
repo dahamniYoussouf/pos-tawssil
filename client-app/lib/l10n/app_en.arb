@@ -1082,6 +1082,10 @@
   "@featuredRestaurants": {
     "description": "Featured restaurants section title"
   },
+  "premiumRestaurants": "Premium Restaurants",
+  "@premiumRestaurants": {
+    "description": "Premium restaurants section title"
+  },
   "recommendedDishes": "Recommended Dishes",
   "@recommendedDishes": {
     "description": "Recommended dishes section title"

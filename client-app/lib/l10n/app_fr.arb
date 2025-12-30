@@ -455,6 +455,10 @@
   "@featuredRestaurants": {
     "description": "Titre de la section des restaurants en vedette"
   },
+  "premiumRestaurants": "Restaurants mis en avant",
+  "@premiumRestaurants": {
+    "description": "Titre de la section des restaurants premium"
+  },
   "recommendedDishes": "Plats recommandés",
   "@recommendedDishes": {
     "description": "Titre de la section des plats recommandés"

@@ -23,11 +23,6 @@ class RestaurantCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color:
-                restaurant.isPremium ? ColorApp.premiumColor : ColorApp.primary,
-            width: restaurant.isPremium ? 2.0 : 1.2,
-          ),
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
@@ -102,7 +97,8 @@ class RestaurantCard extends StatelessWidget {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.local_offer, size: 12, color: Colors.white),
+                            Icon(Icons.local_offer,
+                                size: 12, color: Colors.white),
                             SizedBox(width: 4),
                             Flexible(
                               child: Text(

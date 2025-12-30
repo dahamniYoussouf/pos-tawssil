@@ -455,6 +455,10 @@
   "@featuredRestaurants": {
     "description": "عنوان قسم المطاعم المميزة"
   },
+  "premiumRestaurants": "مطاعم مميزة",
+  "@premiumRestaurants": {
+    "description": "عنوان قسم المطاعم المميزة"
+  },
   "recommendedDishes": "أطباق موصى بها",
   "@recommendedDishes": {
     "description": "عنوان قسم الأطباق الموصى بها"

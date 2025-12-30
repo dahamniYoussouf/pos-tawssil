@@ -833,6 +833,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get featuredRestaurants => 'Restaurants en vedette';
 
   @override
+  String get premiumRestaurants => 'Restaurants mis en avant';
+
+  @override
   String get recommendedDishes => 'Plats recommandés';
 
   @override
