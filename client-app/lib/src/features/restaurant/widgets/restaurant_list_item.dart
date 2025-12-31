@@ -23,47 +23,37 @@ class RestaurantListItem extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: restaurant.isPremium
-                ? ColorApp.premiumColor
-                : Colors.grey.shade200,
-            width: restaurant.isPremium ? 1.5 : 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.04),
-              blurRadius: 12,
-              offset: const Offset(0, 2),
-            ),
-          ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(12),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 width: 120,
-                height: 120,
+                height: 100,
                 decoration: BoxDecoration(
                   color: Colors.grey.shade100,
                 ),
                 child: Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.network(
-                      restaurant.imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey.shade200,
-                          child: Icon(
-                            Icons.restaurant,
-                            size: 40,
-                            color: Colors.grey.shade400,
-                          ),
-                        );
-                      },
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        restaurant.imageUrl,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.grey.shade200,
+                            child: Icon(
+                              Icons.restaurant,
+                              size: 40,
+                              color: Colors.grey.shade400,
+                            ),
+                          );
+                        },
+                      ),
                     ),
                     if (restaurant.promotionBadgeText != null)
                       Positioned(
@@ -128,19 +118,31 @@ class RestaurantListItem extends StatelessWidget {
                                   restaurant.name,
                                   style: const TextStyle(
                                     fontSize: 16,
-                                    fontWeight: FontWeight.w600,
+                                    fontWeight: FontWeight.bold,
                                     color: Colors.black87,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              if (restaurant.isPremium)
-                                Container(
-                                  margin: const EdgeInsets.only(left: 4),
-                                  child: Icon(Icons.verified,
-                                      size: 14, color: ColorApp.premiumColor),
-                                ),
+                              Row(
+                                children: [
+                                  Text(
+                                    restaurant.rating.toStringAsFixed(1),
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Icon(
+                                    Icons.star_border_outlined,
+                                    size: 16,
+                                    color: Colors.amber,
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                           const SizedBox(height: 8),
@@ -152,48 +154,9 @@ class RestaurantListItem extends StatelessWidget {
                               fontWeight: FontWeight.w500,
                             ),
                           ),
-                          if (restaurant.isPremium) ...[
-                            const SizedBox(height: 6),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: ColorApp.primary,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: const Text(
-                                'Premium',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ],
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.star,
-                            size: 16,
-                            color: Colors.amber,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            restaurant.rating.toStringAsFixed(1),
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ],
-                      ),
                     ],
                   ),
                 ),
@@ -205,4 +168,3 @@ class RestaurantListItem extends StatelessWidget {
     );
   }
 }
-

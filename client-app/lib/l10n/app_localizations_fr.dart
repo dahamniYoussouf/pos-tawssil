@@ -843,4 +843,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get nearbyRestaurants => 'Restaurants à proximité';
+
+  @override
+  String get allRestaurants => 'Tous les Restaurants';
 }

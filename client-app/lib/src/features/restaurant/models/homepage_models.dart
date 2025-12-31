@@ -299,6 +299,7 @@ class PromotionModel {
   final String scope;
   final String? restaurantId;
   final String? menuItemId;
+  final List<String> menuItemIds;
   final String? discountValue;
   final String? currency;
   final String? badgeText;
@@ -323,6 +324,7 @@ class PromotionModel {
     required this.scope,
     this.restaurantId,
     this.menuItemId,
+    this.menuItemIds = const [],
     this.discountValue,
     this.currency,
     this.badgeText,
@@ -356,6 +358,10 @@ class PromotionModel {
         .whereType<MenuItemBasicInfo>()
         .toList();
 
+    final menuItemIdsList = json['menu_item_ids'] as List<dynamic>? ?? [];
+    final menuItemIds =
+        menuItemIdsList.map((e) => e?.toString()).whereType<String>().toList();
+
     return PromotionModel(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
       title: (json['title'] ?? '').toString(),
@@ -364,6 +370,7 @@ class PromotionModel {
       scope: (json['scope'] ?? '').toString(),
       restaurantId: json['restaurant_id'] as String?,
       menuItemId: json['menu_item_id'] as String?,
+      menuItemIds: menuItemIds,
       discountValue: json['discount_value']?.toString(),
       currency: json['currency'] as String?,
       badgeText: json['badge_text'] as String?,
@@ -401,6 +408,7 @@ class PromotionModel {
       'scope': scope,
       if (restaurantId != null) 'restaurant_id': restaurantId,
       if (menuItemId != null) 'menu_item_id': menuItemId,
+      if (menuItemIds.isNotEmpty) 'menu_item_ids': menuItemIds,
       if (discountValue != null) 'discount_value': discountValue,
       if (currency != null) 'currency': currency,
       if (badgeText != null) 'badge_text': badgeText,
@@ -425,20 +433,44 @@ class RestaurantBasicInfo {
   final String name;
   final bool? isPremium;
   final String? imageUrl;
+  final String? address;
+  final String? phoneNumber;
+  final List<PromotionModel> promotions;
 
   RestaurantBasicInfo({
     required this.id,
     required this.name,
     this.isPremium,
     this.imageUrl,
+    this.address,
+    this.phoneNumber,
+    this.promotions = const [],
   });
 
   factory RestaurantBasicInfo.fromJson(Map<String, dynamic> json) {
+    final promotionsList = json['promotions'] as List<dynamic>? ?? [];
+    final promotions = promotionsList
+        .map((e) {
+          try {
+            if (e is Map<String, dynamic>) {
+              return PromotionModel.fromJson(e);
+            }
+            return null;
+          } catch (_) {
+            return null;
+          }
+        })
+        .whereType<PromotionModel>()
+        .toList();
+
     return RestaurantBasicInfo(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
       name: (json['name'] ?? '').toString(),
       isPremium: json['is_premium'] as bool?,
       imageUrl: json['image_url'] as String?,
+      address: json['address'] as String?,
+      phoneNumber: json['phone_number'] as String?,
+      promotions: promotions,
     );
   }
 
@@ -448,6 +480,10 @@ class RestaurantBasicInfo {
       'name': name,
       if (isPremium != null) 'is_premium': isPremium,
       if (imageUrl != null) 'image_url': imageUrl,
+      if (address != null) 'address': address,
+      if (phoneNumber != null) 'phone_number': phoneNumber,
+      if (promotions.isNotEmpty)
+        'promotions': promotions.map((p) => p.toJson()).toList(),
     };
   }
 }

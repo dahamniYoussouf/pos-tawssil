@@ -1097,6 +1097,10 @@
   "nearbyRestaurants": "Nearby Restaurants",
   "@nearbyRestaurants": {
     "description": "Nearby restaurants section title"
+  },
+  "allRestaurants": "All Restaurants",
+  "@allRestaurants": {
+    "description": "All restaurants section title"
   }
 }
 

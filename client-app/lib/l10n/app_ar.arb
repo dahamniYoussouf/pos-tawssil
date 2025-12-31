@@ -470,6 +470,10 @@
   "nearbyRestaurants": "المطاعم القريبة",
   "@nearbyRestaurants": {
     "description": "عنوان قسم المطاعم القريبة"
+  },
+  "allRestaurants": "جميع المطاعم",
+  "@allRestaurants": {
+    "description": "عنوان قسم جميع المطاعم"
   }
 }
 

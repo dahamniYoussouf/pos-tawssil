@@ -818,4 +818,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get nearbyRestaurants => 'المطاعم القريبة';
+
+  @override
+  String get allRestaurants => 'جميع المطاعم';
 }

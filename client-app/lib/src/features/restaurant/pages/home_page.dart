@@ -5,6 +5,7 @@ import 'package:client_app/src/features/restaurant/widgets/annoncements/annoncem
 import 'package:client_app/src/features/restaurant/widgets/category/category_chips_list.dart';
 import 'package:client_app/src/features/restaurant/widgets/daily_deals/daily_deals_widget.dart';
 import 'package:client_app/src/features/restaurant/widgets/premium_restaurant/premium_restaurant_widget.dart';
+import 'package:client_app/src/features/restaurant/widgets/recommended_dishes/recommended_dishes_widget.dart';
 import 'package:client_app/src/features/restaurant/widgets/thematic_selection/thematic_selection_widget.dart';
 import 'package:flutter/material.dart';
 import '../models/homepage_models.dart';
@@ -52,9 +53,16 @@ class HomePage extends StatelessWidget {
               dailyDeals: homepageData.dailyDeals,
               onDealTap: onDailyDealTap ?? (_) {},
             ),
+          // premium restaurants section (mis en avant)
           if (allRestaurants.isNotEmpty)
             PremiumRestaurantWidget(
                 restaurants: allRestaurants, onRestaurantTap: (r) {}),
+          // recommended dishes section
+          if (homepageData.recommendedDishes.isNotEmpty)
+            RecommendedDishesWidget(
+              dishes: homepageData.recommendedDishes,
+              onDishTap: onRecommendedDishTap ?? (_) {},
+            ),
           if (homepageData.thematicSelections.isNotEmpty)
             ThematicSelectionsSection(
               selections: homepageData.thematicSelections,
@@ -469,7 +477,7 @@ class AllRestaurantsSection extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Tous les Restaurants',
+                  localizations.allRestaurants,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w800,
                         fontSize: 22,

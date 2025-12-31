@@ -470,6 +470,10 @@
   "nearbyRestaurants": "Restaurants à proximité",
   "@nearbyRestaurants": {
     "description": "Titre de la section des restaurants à proximité"
+  },
+  "allRestaurants": "Tous les Restaurants",
+  "@allRestaurants": {
+    "description": "Titre de la section tous les restaurants"
   }
 }
 

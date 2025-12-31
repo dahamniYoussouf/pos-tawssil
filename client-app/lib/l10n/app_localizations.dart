@@ -1617,6 +1617,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Nearby Restaurants'**
   String get nearbyRestaurants;
+
+  /// All restaurants section title
+  ///
+  /// In en, this message translates to:
+  /// **'All Restaurants'**
+  String get allRestaurants;
 }
 
 class _AppLocalizationsDelegate
