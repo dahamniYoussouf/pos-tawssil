@@ -81,8 +81,8 @@ class ConfirmationDialog extends StatelessWidget {
                   backgroundColor: data.cancelButtonColor ?? ColorApp.white,
                   foregroundColor: data.cancelTextColor ?? ColorApp.grey,
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
+                    horizontal: 24,
+                    vertical: 8,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -92,11 +92,11 @@ class ConfirmationDialog extends StatelessWidget {
                 ),
                 child: Text(
                   data.cancelText,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: data.cancelTextColor ?? ColorApp.grey,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: data.cancelTextColor ?? ColorApp.grey,
+                      ),
                 ),
               ),
             ),
@@ -111,8 +111,8 @@ class ConfirmationDialog extends StatelessWidget {
                   backgroundColor: data.confirmButtonColor ?? ColorApp.primary,
                   foregroundColor: data.confirmTextColor ?? ColorApp.white,
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 32,
-                    vertical: 16,
+                    horizontal: 24,
+                    vertical: 8,
                   ),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(data.borderRadius),
@@ -121,11 +121,11 @@ class ConfirmationDialog extends StatelessWidget {
                 ),
                 child: Text(
                   data.confirmText,
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: data.confirmTextColor ?? ColorApp.white,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: data.confirmTextColor ?? ColorApp.white,
+                      ),
                 ),
               ),
             ),

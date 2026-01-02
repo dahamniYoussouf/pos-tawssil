@@ -1,6 +1,7 @@
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/core/res/media_res.dart';
 import 'package:client_app/src/core/widgets/confirmation_dialog.dart';
+import 'package:client_app/src/features/auth/pages/phone_number_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/l10n/app_localizations.dart';
@@ -69,11 +70,18 @@ class ProfileMenuListWidget extends StatelessWidget {
       ConfirmationDialogData(
         title: l10n.logout,
         content: l10n.logoutConfirmation,
-        confirmText: l10n.logout,
+        confirmText: l10n.ok,
         cancelText: l10n.cancel,
         confirmButtonColor: ColorApp.redColorLight,
         onConfirm: () {
-          context.read<AuthCubit>().logout();
+          context.read<AuthCubit>().logout().then((success) {
+            if (success) {
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (context) => PhoneNumberPage()),
+                (route) => false,
+              );
+            }
+          });
         },
       ),
     );

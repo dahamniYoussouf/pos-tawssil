@@ -17,6 +17,8 @@ class LocationPage extends StatefulWidget {
 }
 
 class _LocationPageState extends State<LocationPage> {
+  bool _shouldNavigateOnSuccess = false;
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<LocationCubit, LocationState>(
@@ -27,6 +29,17 @@ class _LocationPageState extends State<LocationPage> {
               content: Text(state.message),
               backgroundColor: ColorApp.redColor,
             ),
+          );
+        } else if (state is LocationSuccess && _shouldNavigateOnSuccess) {
+          _shouldNavigateOnSuccess = false;
+          // Close any open dialogs first
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
+          // Navigate to home
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => HomePage()),
+            (route) => false,
           );
         }
       },
@@ -57,6 +70,7 @@ class _LocationPageState extends State<LocationPage> {
             return SharingScreen(
               onShareLocation: () {
                 FocusScope.of(context).unfocus();
+                _shouldNavigateOnSuccess = true;
                 context.read<LocationCubit>().getGpsLocation();
               },
               onAddAddress: () {
@@ -83,10 +97,8 @@ class _LocationPageState extends State<LocationPage> {
           return SharingScreen(
             onShareLocation: () {
               FocusScope.of(context).unfocus();
-              context
-                  .read<LocationCubit>()
-                  .getGpsLocation()
-                  .whenComplete(() => _navigateToHome(context, context));
+              _shouldNavigateOnSuccess = true;
+              context.read<LocationCubit>().getGpsLocation();
             },
             onAddAddress: () {
               FocusScope.of(context).unfocus();
@@ -101,7 +113,6 @@ class _LocationPageState extends State<LocationPage> {
 
   void _showAddressDialog(BuildContext context) {
     final TextEditingController addressController = TextEditingController();
-    final BuildContext pageContext = context;
 
     showDialog(
       context: context,
@@ -196,13 +207,10 @@ class _LocationPageState extends State<LocationPage> {
                       ),
                       onSubmitted: (value) {
                         if (value.trim().isNotEmpty && !isLoading) {
+                          _shouldNavigateOnSuccess = true;
                           builderContext
                               .read<LocationCubit>()
-                              .saveManualAddress(value.trim())
-                              .whenComplete(
-                                () =>
-                                    _navigateToHome(dialogContext, pageContext),
-                              );
+                              .saveManualAddress(value.trim());
                         }
                       },
                     ),
@@ -239,13 +247,10 @@ class _LocationPageState extends State<LocationPage> {
                               : () {
                                   final value = addressController.text.trim();
                                   if (value.isNotEmpty) {
+                                    _shouldNavigateOnSuccess = true;
                                     builderContext
                                         .read<LocationCubit>()
-                                        .saveManualAddress(value)
-                                        .whenComplete(
-                                          () => _navigateToHome(
-                                              dialogContext, pageContext),
-                                        );
+                                        .saveManualAddress(value);
                                   }
                                 },
                           style: ElevatedButton.styleFrom(
@@ -285,18 +290,6 @@ class _LocationPageState extends State<LocationPage> {
         },
       ),
     );
-  }
-
-  void _navigateToHome(BuildContext dialogContext, BuildContext pageContext) {
-    final state = context.read<LocationCubit>().state;
-    // check if the state is not LocationSuccess
-    if (state is LocationSuccess) {
-      Navigator.of(dialogContext).pop();
-      Navigator.of(pageContext).pushAndRemoveUntil(
-        MaterialPageRoute(builder: (_) => HomePage()),
-        (route) => false,
-      );
-    }
   }
 
   void _showGpsDisabledPopup(BuildContext context) {
