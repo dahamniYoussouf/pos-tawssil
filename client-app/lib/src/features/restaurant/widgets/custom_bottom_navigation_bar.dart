@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:client_app/l10n/app_localizations.dart';
-import '../../cart/services/cart_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../cart/cubit/cart_cubit.dart';
+import '../../cart/states/cart_state.dart';
 import 'package:client_app/src/core/res/color_app.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
@@ -110,11 +112,12 @@ class CustomBottomNavigationBar extends StatelessWidget {
               isActive ? ColorApp.primary.withOpacity(0.1) : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
-        child: ListenableBuilder(
-          listenable: CartService(),
-          builder: (context, child) {
-            final cartService = CartService();
-            final totalItems = cartService.totalItems;
+        child: BlocBuilder<CartCubit, CartState>(
+          builder: (context, state) {
+            int totalItems = 0;
+            if (state is CartUpdated) {
+              totalItems = state.totalItems;
+            }
 
             return Stack(
               clipBehavior: Clip.none,

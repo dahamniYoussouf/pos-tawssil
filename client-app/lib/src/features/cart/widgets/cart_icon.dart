@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import '../services/cart_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubit/cart_cubit.dart';
+import '../states/cart_state.dart';
 
 class CartIcon extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -17,18 +19,22 @@ class CartIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: CartService(),
-      builder: (context, child) {
-        final cartService = CartService();
-        final totalItems = cartService.totalItems;
+    return BlocBuilder<CartCubit, CartState>(
+      builder: (context, state) {
+        int totalItems = 0;
+        bool isNotEmpty = false;
+
+        if (state is CartUpdated) {
+          totalItems = state.totalItems;
+          isNotEmpty = !state.isEmpty;
+        }
 
         Widget iconButton = Stack(
           clipBehavior: Clip.none,
           children: [
             IconButton(
               icon: Icon(Icons.local_grocery_store_outlined, color: iconColor, size: iconSize),
-              onPressed: cartService.isNotEmpty ? onPressed : null,
+              onPressed: isNotEmpty ? onPressed : null,
             ),
             if (totalItems > 0)
               Positioned(

@@ -35,7 +35,6 @@ import 'src/features/home/pages/home_page.dart';
 
 // Service Imports
 import 'src/features/auth/services/auth_service.dart';
-import 'src/features/cart/services/cart_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -71,7 +70,7 @@ class MyApp extends StatelessWidget {
           create: (context) => LocationCubit(),
         ),
         BlocProvider<CartCubit>(
-          create: (context) => CartCubit(cartService: locator<CartService>()),
+          create: (context) => CartCubit(),
         ),
         BlocProvider<UserCubit>(
           create: (context) => locator<UserCubit>(),

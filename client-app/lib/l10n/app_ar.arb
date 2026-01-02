@@ -79,6 +79,7 @@
   "orderValidatedSuccessfully": "تم التحقق من الطلب بنجاح!",
   "verificationError": "خطأ:",
   "addToCart": "إضافة إلى السلة",
+  "removeFromCart": "إزالة من السلة",
   "noteForKitchen": "ملاحظة للمطبخ",
   "verification": "التحقق",
   "enterVerificationCode": "أدخل رمز التحقق",
@@ -474,6 +475,10 @@
   "allRestaurants": "جميع المطاعم",
   "@allRestaurants": {
     "description": "عنوان قسم جميع المطاعم"
+  },
+  "additionalOptions": "خيارات إضافية :",
+  "@additionalOptions": {
+    "description": "عنوان قسم الخيارات الإضافية"
   }
 }
 

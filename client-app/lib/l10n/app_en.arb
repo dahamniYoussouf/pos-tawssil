@@ -331,6 +331,10 @@
   "@addToCart": {
     "description": "Add to cart button"
   },
+  "removeFromCart": "Retirer du panier",
+  "@removeFromCart": {
+    "description": "Remove from cart button"
+  },
   "noteForKitchen": "Note pour la cuisine",
   "@noteForKitchen": {
     "description": "Note for kitchen label"
@@ -1101,6 +1105,10 @@
   "allRestaurants": "All Restaurants",
   "@allRestaurants": {
     "description": "All restaurants section title"
+  },
+  "additionalOptions": "Additional Options :",
+  "@additionalOptions": {
+    "description": "Additional options section title"
   }
 }
 

@@ -1,7 +1,7 @@
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/core/res/media_res.dart';
 import 'package:flutter/material.dart';
-import 'package:client_app/src/features/cart/services/cart_service.dart';
+import 'package:client_app/src/features/cart/cubit/cart_cubit.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 import '../../restaurant/models/menu_model.dart';
@@ -12,7 +12,6 @@ class CartItemCard extends StatelessWidget {
   final VoidCallback onQuantityIncrease;
   final VoidCallback onRemove;
   final VoidCallback onEdit;
-  final List<MenuItemAddition> additions;
 
   const CartItemCard({
     Key? key,
@@ -21,7 +20,6 @@ class CartItemCard extends StatelessWidget {
     required this.onQuantityIncrease,
     required this.onRemove,
     required this.onEdit,
-    this.additions = const [],
   }) : super(key: key);
 
   @override
@@ -151,14 +149,16 @@ class CartItemCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ],
-            if (additions.isNotEmpty) ...[
+            if (item.additions.isNotEmpty) ...[
               const SizedBox(height: 12),
               Divider(height: 1, color: ColorApp.greyBorder),
               const SizedBox(height: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ...additions.where((addition) => addition.isAvailable).map(
+                  ...item.additions
+                      .where((addition) => addition.isAvailable)
+                      .map(
                         (addition) => Padding(
                           padding: const EdgeInsets.only(bottom: 8),
                           child: Row(

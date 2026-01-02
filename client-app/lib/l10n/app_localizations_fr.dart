@@ -266,6 +266,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get addToCart => 'Ajouter au panier';
 
   @override
+  String get removeFromCart => 'Retirer du panier';
+
+  @override
   String get noteForKitchen => 'Note pour la cuisine';
 
   @override
@@ -846,4 +849,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get allRestaurants => 'Tous les Restaurants';
+
+  @override
+  String get additionalOptions => 'Options supplémentaires :';
 }

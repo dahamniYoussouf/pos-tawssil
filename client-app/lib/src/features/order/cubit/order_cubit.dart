@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:client_app/src/core/utils/dependency_injection.dart';
-import 'package:client_app/src/features/cart/services/cart_service.dart';
+import 'package:client_app/src/features/cart/cubit/cart_cubit.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../services/order_service.dart';
 import 'order_state.dart';
@@ -189,7 +189,7 @@ class OrderCubit extends Cubit<OrderState> {
 
       if (response['success'] == true || response['id'] != null || response['_id'] != null) {
         // Clear cart after successful order creation
-        locator<CartService>().clearCart();
+        locator<CartCubit>().clearCart();
         final order = _orderService.parseOrder(response);
 
         if (order == null) {

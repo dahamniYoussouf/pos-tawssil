@@ -12,7 +12,7 @@ import 'package:client_app/src/features/restaurant/cubit/homepage_cubit.dart';
 import 'package:client_app/src/features/restaurant/services/restaurant_service.dart';
 import 'package:client_app/src/features/restaurant/repositories/restaurant_repository.dart';
 import 'package:client_app/src/features/restaurant/repositories/homepage_repository.dart';
-import 'package:client_app/src/features/cart/services/cart_service.dart';
+import 'package:client_app/src/features/cart/cubit/cart_cubit.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:client_app/src/core/localization/locale_cubit.dart';
@@ -58,7 +58,7 @@ void setupLocator() {
       () => OrderCubit(orderService: locator<OrderService>()));
 
   // Cart services
-  locator.registerLazySingleton<CartService>(() => CartService());
+  locator.registerLazySingleton<CartCubit>(() => CartCubit());
 
   locator.registerLazySingleton<OrderTrackingMapCubit>(
       () => OrderTrackingMapCubit());

@@ -261,6 +261,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get addToCart => 'إضافة إلى السلة';
 
   @override
+  String get removeFromCart => 'إزالة من السلة';
+
+  @override
   String get noteForKitchen => 'ملاحظة للمطبخ';
 
   @override
@@ -821,4 +824,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get allRestaurants => 'جميع المطاعم';
+
+  @override
+  String get additionalOptions => 'خيارات إضافية :';
 }

@@ -1,21 +1,24 @@
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/core/res/media_res.dart';
 import 'package:flutter/material.dart';
-import 'package:client_app/l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 
 class MenuItemDetailBottomBar extends StatelessWidget {
   final int quantity;
   final VoidCallback onDecrementQuantity;
   final VoidCallback onIncrementQuantity;
-  final VoidCallback onAddToCart;
+  final VoidCallback onButtonPressed;
+  final String buttonText;
+  final bool isRemoveButton;
 
   const MenuItemDetailBottomBar({
     Key? key,
     required this.quantity,
     required this.onDecrementQuantity,
     required this.onIncrementQuantity,
-    required this.onAddToCart,
+    required this.onButtonPressed,
+    required this.buttonText,
+    this.isRemoveButton = false,
   }) : super(key: key);
 
   @override
@@ -39,9 +42,10 @@ class MenuItemDetailBottomBar extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: ElevatedButton(
-                onPressed: onAddToCart,
+                onPressed: onButtonPressed,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: ColorApp.primary,
+                  backgroundColor:
+                      isRemoveButton ? ColorApp.redColor : ColorApp.primary,
                   foregroundColor: ColorApp.white,
                   minimumSize: const Size(0, 52),
                   shape: RoundedRectangleBorder(
@@ -53,16 +57,17 @@ class MenuItemDetailBottomBar extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SvgPicture.asset(
-                      MediaRes.cartIcon,
-                      width: 20,
-                      height: 20,
-                      color: ColorApp.white,
-                    ),
-                    const SizedBox(width: 8),
+                    if (!isRemoveButton)
+                      SvgPicture.asset(
+                        MediaRes.cartIcon,
+                        width: 20,
+                        height: 20,
+                        color: ColorApp.white,
+                      ),
+                    if (!isRemoveButton) const SizedBox(width: 8),
                     Flexible(
                       child: Text(
-                        AppLocalizations.of(context)!.addToCart,
+                        buttonText,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
@@ -136,4 +141,3 @@ class _MenuDetailQuantitySelector extends StatelessWidget {
     );
   }
 }
-

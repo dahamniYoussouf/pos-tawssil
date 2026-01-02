@@ -1,28 +1,62 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../services/cart_service.dart';
+import 'package:client_app/src/features/restaurant/models/menu_model.dart';
 import '../states/cart_state.dart';
 
-// Cart Cubit
+class CartItem {
+  final String menuItemId;
+  final String menuItemName;
+  final double price;
+  final String imageUrl;
+  int quantity;
+  String? note;
+  List<MenuItemAddition> additions;
+
+  CartItem({
+    required this.menuItemId,
+    required this.menuItemName,
+    required this.price,
+    required this.imageUrl,
+    this.quantity = 1,
+    this.note,
+    List<MenuItemAddition>? additions,
+  }) : additions = additions ?? [];
+
+  double get totalPrice {
+    double additionsTotal = 0.0;
+    for (final addition in additions) {
+      additionsTotal += addition.prix;
+    }
+    return (price + additionsTotal) * quantity;
+  }
+}
+
 class CartCubit extends Cubit<CartState> {
-  final CartService _cartService;
+  final Map<String, CartItem> _items = {};
 
-  CartCubit({CartService? cartService})
-      : _cartService = cartService ?? CartService(),
-        super(CartInitial()) {
-    _cartService.addListener(_onCartChanged);
+  CartCubit() : super(CartInitial()) {
     _emitCurrentState();
   }
 
-  void _onCartChanged() {
-    _emitCurrentState();
+  Map<String, CartItem> get items => Map.unmodifiable(_items);
+
+  int get totalItems {
+    return _items.values.fold(0, (sum, item) => sum + item.quantity);
   }
+
+  double get totalPrice {
+    return _items.values.fold(0.0, (sum, item) => sum + item.totalPrice);
+  }
+
+  bool get isEmpty => _items.isEmpty;
+
+  bool get isNotEmpty => _items.isNotEmpty;
 
   void _emitCurrentState() {
     emit(CartUpdated(
-      items: _cartService.items,
-      totalItems: _cartService.totalItems,
-      totalPrice: _cartService.totalPrice,
-      isEmpty: _cartService.isEmpty,
+      items: items,
+      totalItems: totalItems,
+      totalPrice: totalPrice,
+      isEmpty: isEmpty,
     ));
   }
 
@@ -33,16 +67,29 @@ class CartCubit extends Cubit<CartState> {
     required String imageUrl,
     int quantity = 1,
     String? note,
+    List<MenuItemAddition>? additions,
   }) {
     try {
-      _cartService.addItem(
-        menuItemId: menuItemId,
-        menuItemName: menuItemName,
-        price: price,
-        imageUrl: imageUrl,
-        quantity: quantity,
-        note: note,
-      );
+      if (_items.containsKey(menuItemId)) {
+        _items[menuItemId]!.quantity += quantity;
+        if (note != null && note.isNotEmpty) {
+          _items[menuItemId]!.note = note;
+        }
+        if (additions != null && additions.isNotEmpty) {
+          _items[menuItemId]!.additions = additions;
+        }
+      } else {
+        _items[menuItemId] = CartItem(
+          menuItemId: menuItemId,
+          menuItemName: menuItemName,
+          price: price,
+          imageUrl: imageUrl,
+          quantity: quantity,
+          note: note,
+          additions: additions,
+        );
+      }
+      _emitCurrentState();
     } catch (e) {
       emit(CartError(
           message: 'Erreur lors de l\'ajout au panier: ${e.toString()}'));
@@ -56,23 +103,29 @@ class CartCubit extends Cubit<CartState> {
     required String imageUrl,
     required int quantity,
     String? note,
+    List<MenuItemAddition>? additions,
   }) {
     try {
-      if (_cartService.hasItem(menuItemId)) {
-        _cartService.updateQuantity(menuItemId, quantity);
+      if (_items.containsKey(menuItemId)) {
+        _items[menuItemId]!.quantity = quantity;
         if (note != null && note.isNotEmpty) {
-          _cartService.updateNote(menuItemId, note);
+          _items[menuItemId]!.note = note;
+        }
+        if (additions != null && additions.isNotEmpty) {
+          _items[menuItemId]!.additions = additions;
         }
       } else {
-        _cartService.addItem(
+        _items[menuItemId] = CartItem(
           menuItemId: menuItemId,
           menuItemName: menuItemName,
           price: price,
           imageUrl: imageUrl,
           quantity: quantity,
           note: note,
+          additions: additions,
         );
       }
+      _emitCurrentState();
     } catch (e) {
       emit(CartError(
           message: 'Erreur lors de l\'ajout au panier: ${e.toString()}'));
@@ -81,7 +134,8 @@ class CartCubit extends Cubit<CartState> {
 
   void removeItem(String menuItemId) {
     try {
-      _cartService.removeItem(menuItemId);
+      _items.remove(menuItemId);
+      _emitCurrentState();
     } catch (e) {
       emit(
           CartError(message: 'Erreur lors de la suppression: ${e.toString()}'));
@@ -90,7 +144,14 @@ class CartCubit extends Cubit<CartState> {
 
   void updateQuantity(String menuItemId, int quantity) {
     try {
-      _cartService.updateQuantity(menuItemId, quantity);
+      if (_items.containsKey(menuItemId)) {
+        if (quantity <= 0) {
+          _items.remove(menuItemId);
+        } else {
+          _items[menuItemId]!.quantity = quantity;
+        }
+        _emitCurrentState();
+      }
     } catch (e) {
       emit(
           CartError(message: 'Erreur lors de la mise à jour: ${e.toString()}'));
@@ -99,7 +160,10 @@ class CartCubit extends Cubit<CartState> {
 
   void updateNote(String menuItemId, String note) {
     try {
-      _cartService.updateNote(menuItemId, note);
+      if (_items.containsKey(menuItemId)) {
+        _items[menuItemId]!.note = note;
+        _emitCurrentState();
+      }
     } catch (e) {
       emit(CartError(
           message:
@@ -107,13 +171,45 @@ class CartCubit extends Cubit<CartState> {
     }
   }
 
-  CartItem? getItem(String menuItemId) {
-    return _cartService.getItem(menuItemId);
+  int getQuantity(String menuItemId) {
+    return _items[menuItemId]?.quantity ?? 0;
   }
 
-  @override
-  Future<void> close() {
-    _cartService.removeListener(_onCartChanged);
-    return super.close();
+  bool hasItem(String menuItemId) {
+    return _items.containsKey(menuItemId);
+  }
+
+  void clearCart() {
+    _items.clear();
+    _emitCurrentState();
+  }
+
+  CartItem? getItem(String menuItemId) {
+    return _items[menuItemId];
+  }
+
+  void addAddition(String menuItemId, MenuItemAddition addition) {
+    try {
+      if (_items.containsKey(menuItemId)) {
+        _items[menuItemId]!.additions.add(addition);
+        _emitCurrentState();
+      }
+    } catch (e) {
+      emit(CartError(
+          message: 'Erreur lors de l\'ajout de l\'addition: ${e.toString()}'));
+    }
+  }
+
+  void removeAddition(String menuItemId, MenuItemAddition addition) {
+    try {
+      if (_items.containsKey(menuItemId)) {
+        _items[menuItemId]!.additions.remove(addition);
+        _emitCurrentState();
+      }
+    } catch (e) {
+      emit(CartError(
+          message:
+              'Erreur lors de la suppression de l\'addition: ${e.toString()}'));
+    }
   }
 }

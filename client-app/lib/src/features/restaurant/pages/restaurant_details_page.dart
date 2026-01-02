@@ -1,5 +1,3 @@
-import 'package:client_app/src/core/utils/dependency_injection.dart';
-import 'package:client_app/src/features/cart/services/cart_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/src/features/locations/cubit/location_cubit.dart';
@@ -106,7 +104,7 @@ class _RestaurantDetailsView extends StatelessWidget {
                       RestaurantDetailsHeader(
                         imageUrl: restaurant.imageUrl,
                         onBackPressed: () {
-                          locator<CartService>().clearCart();
+                          context.read<CartCubit>().clearCart();
                           Navigator.pop(context);
                         },
                         onCartPressed: () => _navigateToCart(context),
@@ -124,8 +122,6 @@ class _RestaurantDetailsView extends StatelessWidget {
                   ),
                   if (!cartData.isEmpty)
                     FloatingCartButton(
-                      totalItems: cartData.totalItems,
-                      totalPrice: cartData.totalPrice,
                       onTap: () => _navigateToCart(context),
                     ),
                 ],

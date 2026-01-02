@@ -5,7 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import 'package:client_app/src/core/res/media_res.dart';
-import '../../cart/services/cart_service.dart';
+import '../../cart/cubit/cart_cubit.dart';
+import '../../cart/states/cart_state.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'validate_order_page.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -35,18 +37,24 @@ enum DeliveryOption {
 }
 
 class _ConsultOrderPageState extends State<ConsultOrderPage> {
-  final CartService _cartService = CartService();
   String selectedPaymentMethod = 'cash_on_delivery';
   DeliveryOption selectedDeliveryOption = DeliveryOption.delivery;
   final double deliveryFee = 300.0;
   final double platformFee = 0.0;
 
-  double get _subtotal => _cartService.totalPrice;
+  double _subtotal(CartCubit cartCubit) {
+    final state = cartCubit.state;
+    if (state is CartUpdated) {
+      return state.totalPrice;
+    }
+    return 0.0;
+  }
 
   double get _actualDeliveryFee =>
       selectedDeliveryOption == DeliveryOption.pickup ? 0.0 : deliveryFee;
 
-  double get _total => _subtotal + platformFee + _actualDeliveryFee;
+  double _total(CartCubit cartCubit) =>
+      _subtotal(cartCubit) + platformFee + _actualDeliveryFee;
 
   String get _estimatedDeliveryTime {
     if (selectedDeliveryOption == DeliveryOption.pickup) {
@@ -76,12 +84,18 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
         ),
         centerTitle: true,
       ),
-      body: AnimatedBuilder(
-        animation: _cartService,
-        builder: (context, child) {
-          if (_cartService.isEmpty) {
+      body: BlocBuilder<CartCubit, CartState>(
+        builder: (context, cartState) {
+          final cartCubit = context.read<CartCubit>();
+
+          if (cartState is CartUpdated && cartState.isEmpty) {
             return const EmptyCartWidget();
           }
+
+          if (cartState is! CartUpdated) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
           return SingleChildScrollView(
             // padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
@@ -129,21 +143,21 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
                 if (widget.restaurantName != null)
                   _RestaurantNameSection(name: widget.restaurantName!),
                 const SizedBox(height: 12),
-                ..._cartService.items.values.map((item) => CartItemCard(
+                ...cartState.items.values.map((item) => CartItemCard(
                       item: item,
                       onQuantityDecrease: () {
                         if (item.quantity > 1) {
-                          _cartService.updateQuantity(
+                          cartCubit.updateQuantity(
                               item.menuItemId, item.quantity - 1);
                         } else {
-                          _showRemoveItemDialog(item);
+                          _showRemoveItemDialog(context, item);
                         }
                       },
                       onQuantityIncrease: () {
-                        _cartService.updateQuantity(
+                        cartCubit.updateQuantity(
                             item.menuItemId, item.quantity + 1);
                       },
-                      onRemove: () => _showRemoveItemDialog(item),
+                      onRemove: () => _showRemoveItemDialog(context, item),
                       onEdit: () {},
                     )),
                 const SizedBox(height: 12),
@@ -168,12 +182,12 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
                 const SizedBox(height: 20),
                 Divider(color: Colors.grey[300], thickness: 1),
                 _OrderDetailsSection(
-                  subtotal: _subtotal,
+                  subtotal: _subtotal(cartCubit),
                   platformFee: platformFee,
                   deliveryFee: selectedDeliveryOption == DeliveryOption.delivery
                       ? _actualDeliveryFee
                       : null,
-                  total: _total,
+                  total: _total(cartCubit),
                 ),
                 const SizedBox(height: 20),
                 Divider(color: Colors.grey[300], thickness: 1),
@@ -192,15 +206,22 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
           );
         },
       ),
-      floatingActionButton: _VerifyButton(
-        onPressed: _handleOrderValidation,
-        total: _total,
+      floatingActionButton: BlocBuilder<CartCubit, CartState>(
+        builder: (context, cartState) {
+          final cartCubit = context.read<CartCubit>();
+          final total = _total(cartCubit);
+          return _VerifyButton(
+            onPressed: () => _handleOrderValidation(context),
+            total: total,
+          );
+        },
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
-  void _showRemoveItemDialog(CartItem item) {
+  void _showRemoveItemDialog(BuildContext context, CartItem item) {
+    final cartCubit = context.read<CartCubit>();
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -214,9 +235,10 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
           ),
           TextButton(
             onPressed: () {
-              _cartService.removeItem(item.menuItemId);
+              cartCubit.removeItem(item.menuItemId);
               Navigator.pop(context);
-              if (_cartService.isEmpty) {
+              final state = cartCubit.state;
+              if (state is CartUpdated && state.isEmpty) {
                 Navigator.pop(context);
               }
             },
@@ -230,7 +252,11 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
     );
   }
 
-  void _handleOrderValidation() {
+  void _handleOrderValidation(BuildContext context) {
+    final cartCubit = context.read<CartCubit>();
+    final cartState = cartCubit.state;
+    if (cartState is! CartUpdated) return;
+
     final now = DateTime.now();
     final orderType =
         selectedDeliveryOption == DeliveryOption.pickup ? 'PKP' : 'DEL';
@@ -238,7 +264,7 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
         '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
     final timeStr = '${now.hour}${now.minute}${now.second}';
     final orderNumber = '$orderType-$dateStr-$timeStr';
-    final orderItems = _cartService.items.values.map((item) {
+    final orderItems = cartState.items.values.map((item) {
       return {
         'menu_item_id': item.menuItemId,
         'name': item.menuItemName, // For display purposes
@@ -265,7 +291,7 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
               deliveryAddress: widget.deliveryAddress ?? '',
               estimatedTime: _estimatedDeliveryTime,
               orderNumber: orderNumber,
-              totalPrice: _total,
+              totalPrice: _total(cartCubit),
               paymentMethod: paymentMethodLabel,
               paymentMethodCode: selectedPaymentMethod,
               orderItems: orderItems,
@@ -736,7 +762,7 @@ class _VerifyButton extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '${total.toDouble().toStringAsFixed(2)} DA',
+                    '${total.toStringAsFixed(0)} DA',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontSize: 16,
                         fontWeight: FontWeight.w900,

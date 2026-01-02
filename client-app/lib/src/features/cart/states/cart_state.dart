@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../services/cart_service.dart';
+import '../cubit/cart_cubit.dart';
 
 // Cart States
 abstract class CartState extends Equatable {

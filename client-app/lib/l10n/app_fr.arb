@@ -79,6 +79,7 @@
   "orderValidatedSuccessfully": "Commande validée avec succès!",
   "verificationError": "Erreur:",
   "addToCart": "Ajouter au panier",
+  "removeFromCart": "Retirer du panier",
   "noteForKitchen": "Note pour la cuisine",
   "verification": "Vérification",
   "enterVerificationCode": "Entrez le code de vérification",
@@ -474,6 +475,10 @@
   "allRestaurants": "Tous les Restaurants",
   "@allRestaurants": {
     "description": "Titre de la section tous les restaurants"
+  },
+  "additionalOptions": "Options supplémentaires :",
+  "@additionalOptions": {
+    "description": "Titre de la section des options supplémentaires"
   }
 }
 

@@ -574,6 +574,12 @@ abstract class AppLocalizations {
   /// **'Ajouter au panier'**
   String get addToCart;
 
+  /// Remove from cart button
+  ///
+  /// In en, this message translates to:
+  /// **'Retirer du panier'**
+  String get removeFromCart;
+
   /// Note for kitchen label
   ///
   /// In en, this message translates to:
@@ -1623,6 +1629,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All Restaurants'**
   String get allRestaurants;
+
+  /// Additional options section title
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Options :'**
+  String get additionalOptions;
 }
 
 class _AppLocalizationsDelegate
