@@ -42,7 +42,7 @@ class HomePage extends StatelessWidget {
           if (homepageData.homeCategories.isNotEmpty)
             CategoryChipsList(
               categories: homepageData.homeCategories,
-              onCategoryTap: onHomeCategoryTap ?? (_) {},
+              allRestaurants: allRestaurants,
             ),
           if (homepageData.announcements.isNotEmpty)
             AnnouncementsWidget(
@@ -67,6 +67,7 @@ class HomePage extends StatelessWidget {
             ThematicSelectionsSection(
               selections: homepageData.thematicSelections,
               onSelectionTap: onThematicSelectionTap ?? (_) {},
+              allRestaurants: allRestaurants,
             ),
           if (allRestaurants.isNotEmpty)
             AllRestaurantsSection(
@@ -483,16 +484,6 @@ class AllRestaurantsSection extends StatelessWidget {
                         fontSize: 22,
                         color: ColorApp.textBlack,
                       ),
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: Text(
-                    localizations.showAll,
-                    style: TextStyle(
-                      color: ColorApp.primary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
                 ),
               ],
             ),

@@ -139,9 +139,9 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
                 builder: (context, homepageState) {
               if (homepageState is HomepageLoaded) {
                 return CategoryChipsList(
-                    hideText: true,
-                    categories: homepageState.homepageData.homeCategories,
-                    onCategoryTap: (Category) {});
+                  hideText: true,
+                  categories: homepageState.homepageData.homeCategories,
+                );
               }
               return SizedBox.shrink();
             }),

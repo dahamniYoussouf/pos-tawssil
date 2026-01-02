@@ -2,6 +2,7 @@ import 'package:client_app/src/core/res/media_res.dart';
 import 'package:client_app/src/features/restaurant/models/homepage_models.dart';
 import 'package:client_app/src/features/restaurant/models/restaurant_model.dart';
 import 'package:client_app/src/features/restaurant/pages/restaurant_details_page.dart';
+import 'package:client_app/src/features/restaurant/pages/restaurants_by_category_page.dart';
 
 import 'package:flutter/material.dart';
 import 'package:client_app/src/core/res/color_app.dart';
@@ -11,11 +12,13 @@ import 'package:flutter_svg/svg.dart';
 class ThematicSelectionsSection extends StatelessWidget {
   final List<ThematicSelectionModel> selections;
   final Function(ThematicSelectionModel) onSelectionTap;
+  final List<RestaurantModel> allRestaurants;
 
   const ThematicSelectionsSection({
     Key? key,
     required this.selections,
     required this.onSelectionTap,
+    required this.allRestaurants,
   }) : super(key: key);
 
   @override
@@ -33,6 +36,7 @@ class ThematicSelectionsSection extends StatelessWidget {
             .map((selection) => _ThematicSelectionItem(
                   selection: selection,
                   onSelectionTap: () => onSelectionTap(selection),
+                  allRestaurants: allRestaurants,
                   onRestaurantTap: (restaurant) {
                     Navigator.push(
                       context,
@@ -54,12 +58,13 @@ class _ThematicSelectionItem extends StatelessWidget {
   final ThematicSelectionModel selection;
   final VoidCallback onSelectionTap;
   final Function(RestaurantModel) onRestaurantTap;
-
+  final List<RestaurantModel> allRestaurants;
   const _ThematicSelectionItem({
     Key? key,
     required this.selection,
     required this.onSelectionTap,
     required this.onRestaurantTap,
+    required this.allRestaurants,
   }) : super(key: key);
 
   @override
@@ -88,7 +93,17 @@ class _ThematicSelectionItem extends StatelessWidget {
                 ),
               ),
               TextButton(
-                onPressed: onSelectionTap,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RestaurantsByCategoryPage(
+                        category: null,
+                        initialRestaurants: allRestaurants,
+                      ),
+                    ),
+                  );
+                },
                 child: Text(
                   AppLocalizations.of(context)!.showAll,
                   style: TextStyle(
