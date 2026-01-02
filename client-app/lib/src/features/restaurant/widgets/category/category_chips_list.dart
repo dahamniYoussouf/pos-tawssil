@@ -63,7 +63,7 @@ class CategoryChipsList extends StatelessWidget {
       onTap: () => onCategoryTap(category),
       child: Container(
         height: 84,
-        margin: EdgeInsets.only(right: 12),
+        margin: EdgeInsets.only(right: 16),
         decoration: BoxDecoration(
           color: ColorApp.white,
           borderRadius: BorderRadius.circular(25),
@@ -83,7 +83,7 @@ class CategoryChipsList extends StatelessWidget {
                     size: 40, color: ColorApp.primary);
               },
             ),
-            SizedBox(width: 8),
+            SizedBox(height: 8),
             Text(
               category.name,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(

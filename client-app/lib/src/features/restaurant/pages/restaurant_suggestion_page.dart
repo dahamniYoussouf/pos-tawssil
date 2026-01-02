@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/features/auth/cubit/user_cubit.dart';
 import 'package:client_app/src/features/auth/cubit/user_state.dart';
-import 'package:client_app/src/features/restaurant/pages/restaurant_details_page.dart';
 import '../cubit/homepage_cubit.dart';
 import '../cubit/homepage_state.dart';
 import '../widgets/restaurant_suggestion_header.dart';

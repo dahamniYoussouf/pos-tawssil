@@ -57,4 +57,3 @@ class MenuCategoryChips extends StatelessWidget {
     );
   }
 }
-
