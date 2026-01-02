@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:client_app/src/features/cart/cubit/cart_cubit.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
-import '../../restaurant/models/menu_model.dart';
 
 class CartItemCard extends StatelessWidget {
   final CartItem item;
