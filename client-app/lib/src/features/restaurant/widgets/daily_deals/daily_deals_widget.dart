@@ -30,39 +30,57 @@ class DailyDealsWidget extends StatelessWidget {
         .toList();
     if (activeDeals.isEmpty) return const SizedBox.shrink();
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Text(
-              localizations.dailyDeals,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 20,
-                    color: ColorApp.textBlack,
-                  ),
-            ),
-          ),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 230,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
+        margin: EdgeInsets.all(8),
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          color: ColorApp.primary.withOpacity(0.1),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 8),
+            Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemCount: activeDeals.length,
-              itemBuilder: (context, index) {
-                return _DailyDealCard(
-                  deal: activeDeals[index],
-                  onTap: () => onDealTap(activeDeals[index]),
-                );
-              },
+              child: Text(
+                localizations.dailyDeals,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 20,
+                      color: ColorApp.textBlack,
+                    ),
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+            const SizedBox(height: 4),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                localizations.dailyDealsSubtitle,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 14,
+                      color: ColorApp.grey,
+                    ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 230,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                itemCount: activeDeals.length,
+                itemBuilder: (context, index) {
+                  return _DailyDealCard(
+                    deal: activeDeals[index],
+                    onTap: () => onDealTap(activeDeals[index]),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 8),
+          ],
+        ));
   }
 }
 
@@ -151,9 +169,9 @@ class _DailyDealCard extends StatelessWidget {
                                           vertical: 6,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: Colors.red.withOpacity(.5),
+                                          color: Colors.red.withOpacity(.8),
                                           borderRadius:
-                                              BorderRadius.circular(8),
+                                              BorderRadius.circular(12),
                                         ),
                                         child: Text(
                                           badgeText,

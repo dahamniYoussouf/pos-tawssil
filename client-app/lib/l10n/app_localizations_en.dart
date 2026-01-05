@@ -821,6 +821,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dailyDeals => 'Daily Deals';
 
   @override
+  String get dailyDealsSubtitle => 'Enjoy the best deals';
+
+  @override
   String get featuredRestaurants => 'Featured Restaurants';
 
   @override

@@ -808,6 +808,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get dailyDeals => 'عروض اليوم';
 
   @override
+  String get dailyDealsSubtitle => 'استمتع بأفضل العروض';
+
+  @override
   String get featuredRestaurants => 'مطاعم مميزة';
 
   @override

@@ -833,6 +833,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get dailyDeals => 'Offres du jour';
 
   @override
+  String get dailyDealsSubtitle => 'Profitez des meilleurs deals';
+
+  @override
   String get featuredRestaurants => 'Restaurants en vedette';
 
   @override

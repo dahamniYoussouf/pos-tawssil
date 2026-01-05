@@ -452,6 +452,10 @@
   "@dailyDeals": {
     "description": "عنوان قسم عروض اليوم"
   },
+  "dailyDealsSubtitle": "استمتع بأفضل العروض",
+  "@dailyDealsSubtitle": {
+    "description": "عنوان فرعي لقسم عروض اليوم"
+  },
   "featuredRestaurants": "مطاعم مميزة",
   "@featuredRestaurants": {
     "description": "عنوان قسم المطاعم المميزة"

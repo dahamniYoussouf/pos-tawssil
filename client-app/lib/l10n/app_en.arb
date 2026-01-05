@@ -1082,6 +1082,10 @@
   "@dailyDeals": {
     "description": "Daily deals section title"
   },
+  "dailyDealsSubtitle": "Enjoy the best deals",
+  "@dailyDealsSubtitle": {
+    "description": "Daily deals section subtitle"
+  },
   "featuredRestaurants": "Featured Restaurants",
   "@featuredRestaurants": {
     "description": "Featured restaurants section title"

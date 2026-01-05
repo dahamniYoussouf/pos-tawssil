@@ -452,6 +452,10 @@
   "@dailyDeals": {
     "description": "Titre de la section des offres du jour"
   },
+  "dailyDealsSubtitle": "Profitez des meilleurs deals",
+  "@dailyDealsSubtitle": {
+    "description": "Sous-titre de la section des offres du jour"
+  },
   "featuredRestaurants": "Restaurants en vedette",
   "@featuredRestaurants": {
     "description": "Titre de la section des restaurants en vedette"

@@ -1594,6 +1594,12 @@ abstract class AppLocalizations {
   /// **'Daily Deals'**
   String get dailyDeals;
 
+  /// Daily deals section subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Enjoy the best deals'**
+  String get dailyDealsSubtitle;
+
   /// Featured restaurants section title
   ///
   /// In en, this message translates to:

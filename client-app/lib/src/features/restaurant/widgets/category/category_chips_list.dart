@@ -39,27 +39,6 @@ class CategoryChipsList extends StatelessWidget {
                         color: ColorApp.textBlack,
                       ),
                 ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => RestaurantsByCategoryPage(
-                          category: null,
-                          initialRestaurants: allRestaurants,
-                        ),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    AppLocalizations.of(context)!.showAll,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: ColorApp.primary,
-                          fontSize: 18,
-                        ),
-                  ),
-                ),
               ],
             ),
           const SizedBox(height: 8),
@@ -90,7 +69,7 @@ class CategoryChipsList extends StatelessWidget {
         );
       },
       child: Container(
-        height: 84,
+        // height: 84,
         margin: const EdgeInsets.only(right: 16),
         decoration: BoxDecoration(
           color: ColorApp.white,
@@ -103,8 +82,8 @@ class CategoryChipsList extends StatelessWidget {
           children: [
             Image.network(
               category.imageUrl ?? '',
-              width: 45,
-              height: 40,
+              width: 55,
+              height: 55,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
                 return const Icon(
@@ -120,7 +99,7 @@ class CategoryChipsList extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: ColorApp.textBlack,
                     fontWeight: FontWeight.w800,
-                    fontSize: 16,
+                    fontSize: 12,
                     letterSpacing: 0.0,
                   ),
             ),

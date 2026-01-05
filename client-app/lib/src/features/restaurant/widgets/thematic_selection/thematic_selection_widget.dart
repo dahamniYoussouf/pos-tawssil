@@ -77,20 +77,13 @@ class _ThematicSelectionItem extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      selection.name,
-                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.w800,
-                            fontSize: 22,
-                            color: ColorApp.textBlack,
-                          ),
+              Text(
+                selection.name,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 22,
+                      color: ColorApp.textBlack,
                     ),
-                  ],
-                ),
               ),
               TextButton(
                 onPressed: () {

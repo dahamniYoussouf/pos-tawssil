@@ -57,18 +57,40 @@ class HomePage extends StatelessWidget {
           if (allRestaurants.isNotEmpty)
             PremiumRestaurantWidget(
                 restaurants: allRestaurants, onRestaurantTap: (r) {}),
+
+          Divider(
+            color: ColorApp.grey.withOpacity(0.2),
+            height: 1,
+            thickness: 1,
+            endIndent: 20,
+            indent: 20,
+          ),
           // recommended dishes section
           if (homepageData.recommendedDishes.isNotEmpty)
             RecommendedDishesWidget(
               dishes: homepageData.recommendedDishes,
               onDishTap: onRecommendedDishTap ?? (_) {},
             ),
+          Divider(
+            color: ColorApp.grey.withOpacity(0.2),
+            height: 1,
+            thickness: 1,
+            endIndent: 20,
+            indent: 20,
+          ),
           if (homepageData.thematicSelections.isNotEmpty)
             ThematicSelectionsSection(
               selections: homepageData.thematicSelections,
               onSelectionTap: onThematicSelectionTap ?? (_) {},
               allRestaurants: allRestaurants,
             ),
+          Divider(
+            color: ColorApp.grey.withOpacity(0.2),
+            height: 1,
+            thickness: 1,
+            endIndent: 20,
+            indent: 20,
+          ),
           if (allRestaurants.isNotEmpty)
             AllRestaurantsSection(
               restaurants: allRestaurants,
@@ -474,18 +496,13 @@ class AllRestaurantsSection extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  localizations.allRestaurants,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w800,
-                        fontSize: 22,
-                        color: ColorApp.textBlack,
-                      ),
-                ),
-              ],
+            child: Text(
+              localizations.allRestaurants,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 22,
+                    color: ColorApp.textBlack,
+                  ),
             ),
           ),
           const SizedBox(height: 16),
