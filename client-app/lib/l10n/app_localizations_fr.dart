@@ -360,6 +360,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get showAll => 'Afficher tout';
 
   @override
+  String get all => 'Tout';
+
+  @override
   String get recommendations => 'Recommandations';
 
   @override
@@ -668,11 +671,11 @@ class AppLocalizationsFr extends AppLocalizations {
       'après deux commandes, la livraison de votre troisième commande est offerte.';
 
   @override
-  String get noMenuItemsAvailable => 'No menu items available';
+  String get noMenuItemsAvailable => 'Aucun élément de menu disponible';
 
   @override
   String get failedToLoadMenuItems =>
-      'Failed to load menu items. Please try again.';
+      'Échec du chargement des éléments du menu. Veuillez réessayer.';
 
   @override
   String get or => 'Ou';
@@ -855,4 +858,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get additionalOptions => 'Options supplémentaires :';
+
+  @override
+  String get ourDishes => 'Nos plats';
 }

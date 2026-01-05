@@ -355,6 +355,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get showAll => 'عرض الكل';
 
   @override
+  String get all => 'الكل';
+
+  @override
   String get recommendations => 'التوصيات';
 
   @override
@@ -647,11 +650,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get promoBannerDescription => 'بعد طلبين، توصيل طلبك الثالث مجاني.';
 
   @override
-  String get noMenuItemsAvailable => 'No menu items available';
+  String get noMenuItemsAvailable => 'لا توجد عناصر قائمة متاحة';
 
   @override
   String get failedToLoadMenuItems =>
-      'Failed to load menu items. Please try again.';
+      'فشل تحميل عناصر القائمة. يرجى المحاولة مرة أخرى.';
 
   @override
   String get or => 'أو';
@@ -830,4 +833,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get additionalOptions => 'خيارات إضافية :';
+
+  @override
+  String get ourDishes => 'أطباقنا';
 }

@@ -461,6 +461,10 @@
   "@showAll": {
     "description": "Show all button text"
   },
+  "all": "All",
+  "@all": {
+    "description": "All categories label"
+  },
   "recommendations": "Recommendations",
   "@recommendations": {
     "description": "Recommendations section title"
@@ -1113,6 +1117,10 @@
   "additionalOptions": "Additional Options :",
   "@additionalOptions": {
     "description": "Additional options section title"
+  },
+  "ourDishes": "Our Dishes",
+  "@ourDishes": {
+    "description": "Our dishes section title"
   }
 }
 

@@ -64,9 +64,9 @@ class MenuListView extends StatelessWidget {
           quantity: quantity,
           onTap: () => onItemTap(item),
           onFavoriteToggle: () => onFavoriteToggle(item.id),
+          rating: 2.7,
         );
       },
     );
   }
 }
-

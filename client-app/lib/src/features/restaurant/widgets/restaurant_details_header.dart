@@ -1,8 +1,13 @@
+import 'package:client_app/src/core/res/color_app.dart';
+import 'package:client_app/src/core/res/media_res.dart';
 import 'package:flutter/material.dart';
-import '../../cart/widgets/cart_icon.dart';
+import 'package:flutter_svg/svg.dart';
 
 class RestaurantDetailsHeader extends StatelessWidget {
   final String imageUrl;
+  final String restaurantName;
+  final String cuisineType;
+  final double rating;
   final VoidCallback onBackPressed;
   final VoidCallback onCartPressed;
   final VoidCallback? onFavoritePressed;
@@ -11,6 +16,9 @@ class RestaurantDetailsHeader extends StatelessWidget {
   const RestaurantDetailsHeader({
     Key? key,
     required this.imageUrl,
+    required this.restaurantName,
+    required this.cuisineType,
+    required this.rating,
     required this.onBackPressed,
     required this.onCartPressed,
     this.onFavoritePressed,
@@ -20,65 +28,149 @@ class RestaurantDetailsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      expandedHeight: 200,
+      expandedHeight: 220,
       pinned: true,
       backgroundColor: Colors.white,
       leading: Container(
+        height: 43,
+        width: 43,
         margin: EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Colors.white.withOpacity(0.3),
           shape: BoxShape.circle,
         ),
         child: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black, size: 20),
+          icon: SvgPicture.asset(MediaRes.backButtonIcon),
           onPressed: onBackPressed,
         ),
       ),
-      actions: [
-        CartIcon(
-          onPressed: onCartPressed,
-          iconColor: Colors.black,
-          iconSize: 20,
-          showBackground: true,
-        ),
-        if (onFavoritePressed != null)
-          Container(
-            margin: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
+      title: Text(
+        "Magasin",
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: ColorApp.white,
             ),
-            child: IconButton(
-              icon: Icon(Icons.favorite_outline, color: Colors.black, size: 20),
-              onPressed: onFavoritePressed,
-            ),
-          ),
-        if (onSearchPressed != null)
-          Container(
-            margin: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
-            child: IconButton(
-              icon: Icon(Icons.search, color: Colors.black, size: 20),
-              onPressed: onSearchPressed,
-            ),
-          ),
-      ],
+      ),
+      centerTitle: true,
       flexibleSpace: FlexibleSpaceBar(
-        background: Image.network(
-          imageUrl,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              color: Colors.grey[200],
-              child: Icon(Icons.restaurant, size: 80, color: Colors.grey[400]),
-            );
-          },
+        background: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  color: Colors.grey[200],
+                  child:
+                      Icon(Icons.restaurant, size: 80, color: Colors.grey[400]),
+                );
+              },
+            ),
+            Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.3),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 16,
+              left: 0,
+              right: 0,
+              child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        restaurantName,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: ColorApp.white,
+                          shadows: [
+                            Shadow(
+                              offset: Offset(0, 2),
+                              blurRadius: 4,
+                              color: Colors.black.withOpacity(0.3),
+                            ),
+                          ],
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: Text(
+                              cuisineType,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: ColorApp.white.withOpacity(0.8),
+                                shadows: [
+                                  Shadow(
+                                    offset: Offset(0, 1),
+                                    blurRadius: 3,
+                                    color: Colors.black.withOpacity(0.3),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 4),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.star,
+                                  color: Colors.amber,
+                                  size: 20,
+                                ),
+                                SizedBox(width: 4),
+                                Text(
+                                  rating.toStringAsFixed(1),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleLarge
+                                      ?.copyWith(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: ColorApp.white,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  )),
+            ),
+          ],
         ),
       ),
     );
   }
 }
-

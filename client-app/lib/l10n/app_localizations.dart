@@ -754,6 +754,12 @@ abstract class AppLocalizations {
   /// **'Show All'**
   String get showAll;
 
+  /// All categories label
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
   /// Recommendations section title
   ///
   /// In en, this message translates to:
@@ -1641,6 +1647,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Additional Options :'**
   String get additionalOptions;
+
+  /// Our dishes section title
+  ///
+  /// In en, this message translates to:
+  /// **'Our Dishes'**
+  String get ourDishes;
 }
 
 class _AppLocalizationsDelegate

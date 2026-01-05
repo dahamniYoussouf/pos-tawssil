@@ -9,7 +9,6 @@ import '../../cart/cubit/cart_cubit.dart';
 import '../../cart/states/cart_state.dart';
 import '../../order/pages/consult_order_page.dart';
 import '../widgets/restaurant_details_header.dart';
-import '../widgets/restaurant_info_section.dart';
 import '../widgets/premium_banner.dart';
 import '../widgets/menu_category_chips.dart';
 import '../widgets/floating_cart_button.dart';
@@ -90,6 +89,7 @@ class _RestaurantDetailsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('restaurant: ${restaurant.id}');
     return Scaffold(
       backgroundColor: Colors.white,
       body: BlocBuilder<RestaurantDetailsCubit, RestaurantDetailsState>(
@@ -103,6 +103,11 @@ class _RestaurantDetailsView extends StatelessWidget {
                     slivers: [
                       RestaurantDetailsHeader(
                         imageUrl: restaurant.imageUrl,
+                        restaurantName: restaurant.name,
+                        cuisineType: restaurant.description.isNotEmpty
+                            ? restaurant.description
+                            : 'Restaurant',
+                        rating: restaurant.rating,
                         onBackPressed: () {
                           context.read<CartCubit>().clearCart();
                           Navigator.pop(context);
@@ -150,17 +155,12 @@ class _RestaurantDetailsContent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        RestaurantInfoSection(restaurant: restaurant),
         PremiumBanner(),
-        const SizedBox(height: 12),
         if (state is RestaurantDetailsLoaded) ...[
           MenuCategoryChips(
             categories: (state as RestaurantDetailsLoaded).categories,
             selectedCategoryId:
                 (state as RestaurantDetailsLoaded).selectedCategoryId,
-            onCategorySelected: (categoryId) {
-              context.read<RestaurantDetailsCubit>().selectCategory(categoryId);
-            },
           ),
         ],
         Container(

@@ -109,6 +109,7 @@
   "loadingRestaurants": "جاري تحميل المطاعم...",
   "categories": "الفئات",
   "showAll": "عرض الكل",
+  "all": "الكل",
   "recommendations": "التوصيات",
   "newToDiscover": "جديد لاكتشافه ({count})",
   "noRestaurantFound": "لم يتم العثور على مطعم",
@@ -491,6 +492,10 @@
   "failedToLoadMenuItems": "فشل تحميل عناصر القائمة. يرجى المحاولة مرة أخرى.",
   "@failedToLoadMenuItems": {
     "description": "رسالة خطأ فشل تحميل عناصر القائمة"
+  },
+  "ourDishes": "أطباقنا",
+  "@ourDishes": {
+    "description": "عنوان قسم أطباقنا"
   }
 }
 

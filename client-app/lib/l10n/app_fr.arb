@@ -109,6 +109,7 @@
   "loadingRestaurants": "Chargement des restaurants...",
   "categories": "Catégories",
   "showAll": "Afficher tout",
+  "all": "Tout",
   "recommendations": "Recommandations",
   "newToDiscover": "Nouveautés à découvrir ({count})",
   "noRestaurantFound": "Aucun restaurant trouvé",
@@ -491,6 +492,10 @@
   "failedToLoadMenuItems": "Échec du chargement des éléments du menu. Veuillez réessayer.",
   "@failedToLoadMenuItems": {
     "description": "Message d'erreur échec du chargement des éléments du menu"
+  },
+  "ourDishes": "Nos plats",
+  "@ourDishes": {
+    "description": "Titre de la section nos plats"
   }
 }
 

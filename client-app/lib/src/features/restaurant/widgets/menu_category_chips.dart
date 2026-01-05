@@ -1,58 +1,114 @@
+import 'package:client_app/l10n/app_localizations.dart';
+import 'package:client_app/src/features/restaurant/cubit/restaurant_details_cubit.dart';
 import 'package:flutter/material.dart';
+import 'package:client_app/src/core/res/color_app.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/menu_model.dart';
 
 class MenuCategoryChips extends StatelessWidget {
   final List<MenuItemCategory> categories;
   final String? selectedCategoryId;
-  final ValueChanged<String> onCategorySelected;
 
   const MenuCategoryChips({
     Key? key,
     required this.categories,
     required this.selectedCategoryId,
-    required this.onCategorySelected,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (categories.isEmpty) return SizedBox.shrink();
-
+    if (categories.isEmpty) return const SizedBox.shrink();
     return Container(
-      height: 50,
-      padding: EdgeInsets.symmetric(vertical: 8),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          final cat = categories[index];
-          final selected = cat.id == selectedCategoryId;
-          return GestureDetector(
-            onTap: () => onCategorySelected(cat.id),
-            child: Container(
-              margin: EdgeInsets.only(right: 8),
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: selected ? Colors.black : Colors.grey[300]!,
-                  width: selected ? 2 : 1,
-                ),
-              ),
-              child: Center(
-                child: Text(
-                  cat.nom,
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                    fontSize: 14,
+      padding: const EdgeInsets.only(top: 12, bottom: 8, left: 8),
+      child: Column(
+        children: [
+          SizedBox(
+            height: 50,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: categories.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        final isAllSelected = selectedCategoryId == "all";
+                        return _buildCategoryTab(
+                          label: AppLocalizations.of(context)!.all,
+                          isSelected: isAllSelected,
+                          onTap: () => context
+                              .read<RestaurantDetailsCubit>()
+                              .selectCategory("all"),
+                        );
+                      }
+                      final cat = categories[index - 1];
+                      final selected = cat.id == selectedCategoryId;
+                      return _buildCategoryTab(
+                        label: cat.nom,
+                        isSelected: selected,
+                        onTap: () => context
+                            .read<RestaurantDetailsCubit>()
+                            .selectCategory(cat.id),
+                      );
+                    },
                   ),
                 ),
+                Positioned(
+                  left: 16,
+                  right: 16,
+                  bottom: 0,
+                  child: Container(
+                    height: 1,
+                    decoration: const BoxDecoration(
+                      color: ColorApp.greyBorder,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryTab({
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(right: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? ColorApp.primary : ColorApp.grey,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                fontSize: 14,
               ),
             ),
-          );
-        },
+            const SizedBox(height: 8),
+            if (isSelected)
+              Container(
+                height: 3,
+                width: label.length * 10.0,
+                decoration: BoxDecoration(
+                  color: ColorApp.primary,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              )
+            else
+              const SizedBox(height: 3),
+          ],
+        ),
       ),
     );
   }

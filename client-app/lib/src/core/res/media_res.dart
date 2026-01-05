@@ -19,6 +19,7 @@ class MediaRes {
   static const recupererIcon = '$_baseImageIcon/recuperer_icon.svg';
   static const tawwsilIcon = '$_baseImageIcon/tawwsil_icon.png';
   static const doubleArrowUpIcon = '$_baseImageIcon/double_arrow.svg';
+  static const backButtonIcon = '$_baseImageIcon/back_button_icon.svg';
   static const algeriaFlagIcon = '$_baseImage/alg.png';
   static const googleIcon = '$_baseImage/google_icon.png';
   static const appleIcon = '$_baseImage/apple_icon.png';
@@ -77,4 +78,8 @@ class MediaRes {
   static const arrowDownIcon = '$_baseImageIcon/arrow_down_icon.svg';
 
   static const homeIcon = '$_baseImageIcon/home_icon.svg';
+
+  static const promoLogoImage = '$_baseImage/promo_logo_image.png';
+  static const promoImage = '$_baseImage/promo_image.png';
+  static const addIcon = '$_baseImageIcon/add_icon.svg';
 }

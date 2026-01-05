@@ -41,26 +41,22 @@ class RestaurantDetailsCubit extends Cubit<RestaurantDetailsState> {
           if (categories.isEmpty && items.isNotEmpty) {
             final categoryData = _buildCategoryMaps(items);
             final builtCategories = categoryData.values.toList();
-            final selectedCategoryId =
-                builtCategories.isNotEmpty ? builtCategories.first.id : null;
             if (!isClosed) {
               emit(RestaurantDetailsLoaded(
                 menuItems: items,
                 categories: builtCategories,
-                selectedCategoryId: selectedCategoryId,
+                selectedCategoryId: "all",
                 favoriteFoods: favoriteFoods,
               ));
             }
           } else {
             _buildCategoryMapsFromCategories(categories);
             _buildCategoryMaps(items);
-            final selectedCategoryId =
-                categories.isNotEmpty ? categories.first.id : null;
             if (!isClosed) {
               emit(RestaurantDetailsLoaded(
                 menuItems: items,
                 categories: categories,
-                selectedCategoryId: selectedCategoryId,
+                selectedCategoryId: "all",
                 favoriteFoods: favoriteFoods,
               ));
             }
@@ -120,10 +116,11 @@ class RestaurantDetailsCubit extends Cubit<RestaurantDetailsState> {
     }
   }
 
-  void selectCategory(String categoryId) {
+  void selectCategory(String? categoryId) {
     if (state is RestaurantDetailsLoaded) {
       final currentState = state as RestaurantDetailsLoaded;
       emit(currentState.copyWith(selectedCategoryId: categoryId));
+      print('selectedCategoryId: ${currentState.selectedCategoryId}');
     }
   }
 
@@ -161,7 +158,8 @@ class RestaurantDetailsCubit extends Cubit<RestaurantDetailsState> {
       return [];
     }
     final currentState = state as RestaurantDetailsLoaded;
-    if (currentState.selectedCategoryId == null) {
+    if (currentState.selectedCategoryId == null ||
+        currentState.selectedCategoryId == "all") {
       return currentState.menuItems;
     }
     return currentState.menuItems.where((item) {

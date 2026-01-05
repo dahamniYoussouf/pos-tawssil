@@ -359,6 +359,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get showAll => 'Show All';
 
   @override
+  String get all => 'All';
+
+  @override
   String get recommendations => 'Recommendations';
 
   @override
@@ -843,4 +846,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get additionalOptions => 'Additional Options :';
+
+  @override
+  String get ourDishes => 'Our Dishes';
 }

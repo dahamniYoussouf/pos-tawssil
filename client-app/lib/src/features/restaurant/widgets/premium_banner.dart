@@ -1,3 +1,4 @@
+import 'package:client_app/src/core/res/media_res.dart';
 import 'package:flutter/material.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import 'package:client_app/src/core/res/color_app.dart';
@@ -15,15 +16,16 @@ class PremiumBanner extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         padding: EdgeInsets.all(14),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: [ColorApp.primary, Color(0xFF00E676)],
+            colors: [
+              ColorApp.premiumBannerGradientStart,
+              ColorApp.premiumBannerGradientEnd
+            ],
             begin: Alignment.centerLeft,
             end: Alignment.centerRight,
           ),
-          borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
           children: [
@@ -37,19 +39,21 @@ class PremiumBanner extends StatelessWidget {
                         TextSpan(
                           text:
                               '${AppLocalizations.of(context)!.switchToPremium} ',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                         TextSpan(
                           text: AppLocalizations.of(context)!.premium,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w800,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    color: ColorApp.premiumColor,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ],
                     ),
@@ -57,36 +61,19 @@ class PremiumBanner extends StatelessWidget {
                   SizedBox(height: 2),
                   Text(
                     AppLocalizations.of(context)!.moreServices,
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.95),
-                      fontSize: 11,
-                    ),
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          color: Colors.white.withOpacity(0.95),
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ],
               ),
             ),
             SizedBox(width: 12),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                'Tawsil',
-                style: TextStyle(
-                  color: ColorApp.primary,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -0.5,
-                ),
-              ),
-            ),
-            Icon(
-              Icons.arrow_forward_ios,
-              color: Colors.white,
-              size: 16,
-            ),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                child: Image.asset(MediaRes.promoImage)),
           ],
         ),
       ),

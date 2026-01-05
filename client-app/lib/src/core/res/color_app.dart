@@ -34,4 +34,7 @@ class ColorApp {
   static const Color greyIconColor = Color(0xFF6B7280);
 
   static const Color backgroundPrimary = Color(0xFFEAF0EE80);
+
+  static const Color premiumBannerGradientStart = Color(0xFF53A701);
+  static const Color premiumBannerGradientEnd = Color(0xFF78DD15);
 }
