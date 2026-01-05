@@ -483,6 +483,14 @@
   "additionalOptions": "Options supplémentaires :",
   "@additionalOptions": {
     "description": "Titre de la section des options supplémentaires"
+  },
+  "noMenuItemsAvailable": "Aucun élément de menu disponible",
+  "@noMenuItemsAvailable": {
+    "description": "Message aucun élément de menu disponible"
+  },
+  "failedToLoadMenuItems": "Échec du chargement des éléments du menu. Veuillez réessayer.",
+  "@failedToLoadMenuItems": {
+    "description": "Message d'erreur échec du chargement des éléments du menu"
   }
 }
 

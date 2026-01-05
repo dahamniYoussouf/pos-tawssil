@@ -483,6 +483,14 @@
   "additionalOptions": "خيارات إضافية :",
   "@additionalOptions": {
     "description": "عنوان قسم الخيارات الإضافية"
+  },
+  "noMenuItemsAvailable": "لا توجد عناصر قائمة متاحة",
+  "@noMenuItemsAvailable": {
+    "description": "رسالة عدم توفر عناصر القائمة"
+  },
+  "failedToLoadMenuItems": "فشل تحميل عناصر القائمة. يرجى المحاولة مرة أخرى.",
+  "@failedToLoadMenuItems": {
+    "description": "رسالة خطأ فشل تحميل عناصر القائمة"
   }
 }
 
