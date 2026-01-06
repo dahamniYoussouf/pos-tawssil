@@ -16,7 +16,7 @@ class DeliveryOptionSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -96,12 +96,7 @@ class DeliveryOptionWidget extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: isSelected ? ColorApp.primary : ColorApp.backgroundGrey,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(radiusLeft ?? 0),
-            bottomLeft: Radius.circular(radiusLeft ?? 0),
-            topRight: Radius.circular(radiusRight ?? 0),
-            bottomRight: Radius.circular(radiusRight ?? 0),
-          ),
+          borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: isSelected ? ColorApp.primary : ColorApp.transparent,
             width: isSelected ? 2 : 1,
@@ -113,15 +108,15 @@ class DeliveryOptionWidget extends StatelessWidget {
           children: [
             if (icon != null)
               SvgPicture.asset(icon!,
-                  width: 18,
-                  height: 18,
+                  width: 14,
+                  height: 14,
                   color: isSelected ? ColorApp.white : ColorApp.black),
             const SizedBox(width: 8),
             Flexible(
               child: Text(
                 label,
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 12,
                   fontWeight: isSelected ? FontWeight.w900 : FontWeight.w500,
                   color: isSelected ? ColorApp.white : ColorApp.black,
                 ),

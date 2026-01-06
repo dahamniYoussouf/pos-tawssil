@@ -130,8 +130,8 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
                                   child: Text(
                                     AppLocalizations.of(context)!.addItem,
                                     style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w900,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
                                       color: ColorApp.primary,
                                     ),
                                     maxLines: 1,
@@ -140,8 +140,8 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
                                 )))
                       ],
                     )),
-                if (widget.restaurantName != null)
-                  _RestaurantNameSection(name: widget.restaurantName!),
+                // if (widget.restaurantName != null)
+                //   _RestaurantNameSection(name: widget.restaurantName!),
                 const SizedBox(height: 12),
                 ...cartState.items.values.map((item) => CartItemCard(
                       item: item,

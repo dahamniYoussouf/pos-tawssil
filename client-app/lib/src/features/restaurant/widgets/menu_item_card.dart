@@ -35,7 +35,7 @@ class MenuItemCard extends StatelessWidget {
       child: Container(
         height: 130,
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
         decoration: BoxDecoration(
           color: ColorApp.white,
           borderRadius: BorderRadius.circular(17),
@@ -48,7 +48,7 @@ class MenuItemCard extends StatelessWidget {
           ],
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
               child: MenuItemDetails(
@@ -59,7 +59,6 @@ class MenuItemCard extends StatelessWidget {
                 quantity: quantity,
               ),
             ),
-            const SizedBox(width: 16),
             MenuItemImage(
               imageUrl: item.imageUrl,
               isAvailable: item.disponible,
@@ -92,6 +91,7 @@ class MenuItemDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -103,7 +103,6 @@ class MenuItemDetails extends StatelessWidget {
             height: 1.2,
           ),
         ),
-        const SizedBox(height: 4),
         Text(
           '${item.prix.toStringAsFixed(0)} DA',
           style: const TextStyle(
@@ -112,21 +111,17 @@ class MenuItemDetails extends StatelessWidget {
             color: ColorApp.primary,
           ),
         ),
-        if (item.description != null && item.description!.isNotEmpty) ...[
-          const SizedBox(height: 4),
+        if (item.description != null && item.description!.isNotEmpty)
           Text(
             item.description!,
             style: const TextStyle(
               fontSize: 14,
               color: ColorApp.textBlack,
-              height: 1.4,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-          )
-        ],
+          ),
         if (rating != null) ...[
-          const SizedBox(height: 4),
           MenuItemRating(
             rating: rating!,
             ratingCount: ratingCount,
@@ -187,7 +182,6 @@ class MenuItemImage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: 100,
-      height: 100,
       child: Stack(
         children: [
           ClipRRect(
@@ -195,7 +189,7 @@ class MenuItemImage extends StatelessWidget {
             child: Image.network(
               imageUrl,
               width: 100,
-              height: 100,
+              height: 110,
               fit: BoxFit.cover,
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress == null) return child;
@@ -212,7 +206,7 @@ class MenuItemImage extends StatelessWidget {
               errorBuilder: (context, error, stackTrace) {
                 return Container(
                   width: 100,
-                  height: 100,
+                  height: 110,
                   color: ColorApp.backgroundGrey,
                   child: const Icon(
                     Icons.restaurant,
@@ -224,8 +218,8 @@ class MenuItemImage extends StatelessWidget {
             ),
           ),
           Positioned(
-            bottom: 0,
-            right: 0,
+            bottom: 5,
+            right: 5,
             child: AddButton(
               isAvailable: isAvailable,
               isInCart: isInCart,

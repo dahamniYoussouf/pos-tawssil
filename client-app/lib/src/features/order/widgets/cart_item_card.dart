@@ -25,7 +25,7 @@ class CartItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(children: [
       Container(
-          margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6),
+          margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6),
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             color: ColorApp.white,
@@ -64,26 +64,28 @@ class CartItemCard extends StatelessWidget {
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         item.menuItemName,
                         style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 8),
                       Text(
                         '${item.price.toStringAsFixed(0)} DA',
                         style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: ColorApp.primary),
                       ),
-                      const SizedBox(height: 8),
                       Container(
+                        height: 26,
+                        width: 85,
+                        margin: EdgeInsets.only(top: 8),
                         decoration: BoxDecoration(
                           color: ColorApp.white,
                           borderRadius: BorderRadius.circular(20),
@@ -109,8 +111,8 @@ class CartItemCard extends StatelessWidget {
                               child: Text(
                                 '${item.quantity}',
                                 style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
@@ -190,16 +192,16 @@ class CartItemCard extends StatelessWidget {
             ],
           ])),
       Positioned(
-        top: 0,
-        right: 0,
+        top: 5,
+        right: 10,
         child: IconButton(
           onPressed: onRemove,
           icon: SvgPicture.asset(MediaRes.closeIcon, width: 20, height: 20),
         ),
       ),
       Positioned(
-        top: 0,
-        right: 25,
+        top: 5,
+        right: 35,
         child: IconButton(
           onPressed: onEdit,
           icon: SvgPicture.asset(MediaRes.editIcon, width: 20, height: 20),

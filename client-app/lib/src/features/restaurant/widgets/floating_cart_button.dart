@@ -9,81 +9,72 @@ class FloatingCartButton extends StatelessWidget {
   final VoidCallback onTap;
 
   const FloatingCartButton({
-    Key? key,
+    super.key,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
-        final cartCubit = context.read<CartCubit>();
-        final totalItems = cartCubit.totalItems;
-        final totalPrice = cartCubit.totalPrice;
+        final totalPrice = context.read<CartCubit>().totalPrice;
 
         return Positioned(
           left: 16,
           right: 16,
           bottom: 16,
-          child: GestureDetector(
-            onTap: onTap,
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-              decoration: BoxDecoration(
-                color: ColorApp.primary,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.2),
-                    blurRadius: 10,
-                    offset: Offset(0, 4),
+          child: Container(
+            height: 62,
+            padding:
+                const EdgeInsets.only(left: 16, right: 8, top: 4, bottom: 4),
+            decoration: BoxDecoration(
+              color: ColorApp.white,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.15),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  '${AppLocalizations.of(context)!.total} : ${totalPrice.toStringAsFixed(0)} DA',
+                  style: const TextStyle(
+                    color: ColorApp.textBlack,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.3),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Center(
-                          child: Text(
-                            '$totalItems',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                            ),
+                ),
+                GestureDetector(
+                    onTap: onTap,
+                    child: Container(
+                      height: 43,
+                      width: 200,
+                      decoration: BoxDecoration(
+                        color: ColorApp.primary,
+                        borderRadius: BorderRadius.circular(40),
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 4,
+                        vertical: 4,
+                      ),
+                      child: Center(
+                        child: Text(
+                          AppLocalizations.of(context)!.viewCart,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: ColorApp.white,
                           ),
                         ),
                       ),
-                      SizedBox(width: 12),
-                      Text(
-                        AppLocalizations.of(context)!.viewCart,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    '${totalPrice.toStringAsFixed(0)} DA',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
+                    )),
+              ],
             ),
           ),
         );
