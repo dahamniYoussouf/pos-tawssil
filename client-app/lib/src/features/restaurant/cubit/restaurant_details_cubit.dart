@@ -175,4 +175,36 @@ class RestaurantDetailsCubit extends Cubit<RestaurantDetailsState> {
       return false;
     }).toList();
   }
+
+  Map<String, List<MenuModel>> getItemsGroupedByCategory() {
+    if (state is! RestaurantDetailsLoaded) {
+      return {};
+    }
+    final currentState = state as RestaurantDetailsLoaded;
+    final Map<String, List<MenuModel>> grouped = {};
+    for (final item in currentState.menuItems) {
+      final categoryName = item.category?.nom ?? 'Other';
+      if (!grouped.containsKey(categoryName)) {
+        grouped[categoryName] = [];
+      }
+      grouped[categoryName]!.add(item);
+    }
+    final sortedKeys = grouped.keys.toList()
+      ..sort((a, b) {
+        final catA = currentState.categories.firstWhere(
+          (c) => c.nom == a,
+          orElse: () => MenuItemCategory(id: '', nom: a, ordreAffichage: 999),
+        );
+        final catB = currentState.categories.firstWhere(
+          (c) => c.nom == b,
+          orElse: () => MenuItemCategory(id: '', nom: b, ordreAffichage: 999),
+        );
+        return catA.ordreAffichage.compareTo(catB.ordreAffichage);
+      });
+    final sortedGrouped = <String, List<MenuModel>>{};
+    for (final key in sortedKeys) {
+      sortedGrouped[key] = grouped[key]!;
+    }
+    return sortedGrouped;
+  }
 }

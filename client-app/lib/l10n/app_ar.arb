@@ -496,6 +496,7 @@
   "ourDishes": "أطباقنا",
   "@ourDishes": {
     "description": "عنوان قسم أطباقنا"
-  }
+  },
+  "store": "المتجر"
 }
 

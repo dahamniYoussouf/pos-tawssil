@@ -2,6 +2,7 @@ import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/core/res/media_res.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:client_app/l10n/app_localizations.dart';
 
 class RestaurantDetailsHeader extends StatelessWidget {
   final String imageUrl;
@@ -31,6 +32,7 @@ class RestaurantDetailsHeader extends StatelessWidget {
       expandedHeight: 220,
       pinned: true,
       backgroundColor: Colors.white,
+      foregroundColor: ColorApp.textBlack,
       leading: Container(
         height: 43,
         width: 43,
@@ -40,16 +42,22 @@ class RestaurantDetailsHeader extends StatelessWidget {
           shape: BoxShape.circle,
         ),
         child: IconButton(
-          icon: SvgPicture.asset(MediaRes.backButtonIcon),
+          icon: SvgPicture.asset(
+            MediaRes.backButtonIcon,
+            colorFilter: const ColorFilter.mode(
+              ColorApp.textBlack,
+              BlendMode.srcIn,
+            ),
+          ),
           onPressed: onBackPressed,
         ),
       ),
       title: Text(
-        "Magasin",
+        AppLocalizations.of(context)!.store,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: ColorApp.white,
+              color: ColorApp.textBlack,
             ),
       ),
       centerTitle: true,
@@ -164,7 +172,7 @@ class RestaurantDetailsHeader extends StatelessWidget {
                             ),
                           ),
                         ],
-                      )
+                      ),
                     ],
                   )),
             ),

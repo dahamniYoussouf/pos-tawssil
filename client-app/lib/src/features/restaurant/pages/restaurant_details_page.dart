@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/src/features/locations/cubit/location_cubit.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import '../models/restaurant_model.dart';
+import '../models/menu_model.dart';
 import '../cubit/restaurant_details_cubit.dart';
 import '../cubit/restaurant_details_state.dart';
 import '../../cart/cubit/cart_cubit.dart';
@@ -117,6 +118,17 @@ class _RestaurantDetailsView extends StatelessWidget {
                         onSearchPressed: () {},
                       ),
                       SliverToBoxAdapter(
+                        child: PremiumBanner(),
+                      ),
+                      if (state is RestaurantDetailsLoaded)
+                        SliverPersistentHeader(
+                          pinned: true,
+                          delegate: _CategoryChipsHeaderDelegate(
+                            categories: state.categories,
+                            selectedCategoryId: state.selectedCategoryId,
+                          ),
+                        ),
+                      SliverToBoxAdapter(
                         child: _RestaurantDetailsContent(
                           restaurant: restaurant,
                           state: state,
@@ -155,14 +167,6 @@ class _RestaurantDetailsContent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        PremiumBanner(),
-        if (state is RestaurantDetailsLoaded) ...[
-          MenuCategoryChips(
-            categories: (state as RestaurantDetailsLoaded).categories,
-            selectedCategoryId:
-                (state as RestaurantDetailsLoaded).selectedCategoryId,
-          ),
-        ],
         Container(
           constraints: BoxConstraints(
             minHeight: MediaQuery.of(context).size.height * 0.4,
@@ -209,5 +213,39 @@ class _RestaurantDetailsMenuSection extends StatelessWidget {
       );
     }
     return const SizedBox.shrink();
+  }
+}
+
+class _CategoryChipsHeaderDelegate extends SliverPersistentHeaderDelegate {
+  final List<MenuItemCategory> categories;
+  final String? selectedCategoryId;
+
+  _CategoryChipsHeaderDelegate({
+    required this.categories,
+    required this.selectedCategoryId,
+  });
+
+  @override
+  double get minExtent => 70;
+
+  @override
+  double get maxExtent => 70;
+
+  @override
+  Widget build(
+      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: Colors.white,
+      child: MenuCategoryChips(
+        categories: categories,
+        selectedCategoryId: selectedCategoryId,
+      ),
+    );
+  }
+
+  @override
+  bool shouldRebuild(_CategoryChipsHeaderDelegate oldDelegate) {
+    return categories != oldDelegate.categories ||
+        selectedCategoryId != oldDelegate.selectedCategoryId;
   }
 }

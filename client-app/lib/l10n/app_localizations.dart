@@ -1653,6 +1653,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Our Dishes'**
   String get ourDishes;
+
+  /// No description provided for @store.
+  ///
+  /// In en, this message translates to:
+  /// **'Store'**
+  String get store;
 }
 
 class _AppLocalizationsDelegate

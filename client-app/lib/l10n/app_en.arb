@@ -1121,6 +1121,7 @@
   "ourDishes": "Our Dishes",
   "@ourDishes": {
     "description": "Our dishes section title"
-  }
+  },
+  "store": "Store"
 }
 

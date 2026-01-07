@@ -836,4 +836,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get ourDishes => 'أطباقنا';
+
+  @override
+  String get store => 'المتجر';
 }

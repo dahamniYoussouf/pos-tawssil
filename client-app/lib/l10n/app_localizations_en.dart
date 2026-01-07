@@ -849,4 +849,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ourDishes => 'Our Dishes';
+
+  @override
+  String get store => 'Store';
 }

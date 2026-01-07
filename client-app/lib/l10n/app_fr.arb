@@ -496,6 +496,7 @@
   "ourDishes": "Nos plats",
   "@ourDishes": {
     "description": "Titre de la section nos plats"
-  }
+  },
+  "store": "Magasin"
 }
 

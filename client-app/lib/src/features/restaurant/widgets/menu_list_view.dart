@@ -4,69 +4,142 @@ import '../models/menu_model.dart';
 import 'menu_item_card.dart';
 
 class MenuListView extends StatelessWidget {
-  final List<MenuModel> items;
+  final List<MenuModel>? items;
+  final Map<String, List<MenuModel>>? groupedItems;
   final Set<String> favoriteFoods;
   final String? selectedItemId;
   final Map<String, int> cartQuantities;
   final Function(MenuModel) onItemTap;
   final Function(String) onFavoriteToggle;
+  final bool showCategoryHeaders;
 
   const MenuListView({
     Key? key,
-    required this.items,
+    this.items,
+    this.groupedItems,
     required this.favoriteFoods,
     required this.selectedItemId,
     required this.cartQuantities,
     required this.onItemTap,
     required this.onFavoriteToggle,
+    this.showCategoryHeaders = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    if (items.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: EdgeInsets.all(40),
-          child: Column(
-            children: [
-              Icon(Icons.restaurant_menu, size: 64, color: Colors.grey[300]),
-              SizedBox(height: 16),
-              Text(
-                AppLocalizations.of(context)!.noMenuItemsAvailable,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+    if (showCategoryHeaders && groupedItems != null) {
+      return _buildGroupedList(context);
     }
+    if (items == null || items!.isEmpty) {
+      return _buildEmptyState(context);
+    }
+    return _buildSimpleList(context);
+  }
 
+  Widget _buildEmptyState(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          children: [
+            Icon(Icons.restaurant_menu, size: 64, color: Colors.grey[300]),
+            const SizedBox(height: 16),
+            Text(
+              AppLocalizations.of(context)!.noMenuItemsAvailable,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSimpleList(BuildContext context) {
     return ListView.builder(
-      padding: EdgeInsets.only(top: 8, bottom: 8),
+      padding: const EdgeInsets.only(top: 8, bottom: 8),
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
-      itemCount: items.length,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: items!.length,
       itemBuilder: (context, index) {
-        final item = items[index];
-        final isFavorite = favoriteFoods.contains(item.id);
-        final isSelected = selectedItemId == item.id;
-        final quantity = cartQuantities[item.id] ?? 0;
-        final isInCart = quantity > 0;
-
-        return MenuItemCard(
-          item: item,
-          isFavorite: isFavorite,
-          isSelected: isSelected,
-          isInCart: isInCart,
-          quantity: quantity,
-          onTap: () => onItemTap(item),
-          onFavoriteToggle: () => onFavoriteToggle(item.id),
-          rating: 2.7,
-        );
+        final item = items![index];
+        return _buildMenuItem(item);
       },
+    );
+  }
+
+  Widget _buildGroupedList(BuildContext context) {
+    if (groupedItems == null || groupedItems!.isEmpty) {
+      return _buildEmptyState(context);
+    }
+    return ListView.builder(
+      padding: const EdgeInsets.only(top: 8, bottom: 8),
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: _calculateTotalItems(),
+      itemBuilder: (context, index) {
+        return _buildGroupedItem(index);
+      },
+    );
+  }
+
+  int _calculateTotalItems() {
+    int count = 0;
+    groupedItems!.forEach((category, items) {
+      count += 1;
+      count += items.length;
+    });
+    return count;
+  }
+
+  Widget _buildGroupedItem(int index) {
+    int currentIndex = 0;
+    for (final entry in groupedItems!.entries) {
+      if (currentIndex == index) {
+        return _buildCategoryHeader(entry.key);
+      }
+      currentIndex++;
+      final categoryItemsCount = entry.value.length;
+      if (index < currentIndex + categoryItemsCount) {
+        final itemIndex = index - currentIndex;
+        return _buildMenuItem(entry.value[itemIndex]);
+      }
+      currentIndex += categoryItemsCount;
+    }
+    return const SizedBox.shrink();
+  }
+
+  Widget _buildCategoryHeader(String categoryName) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+      child: Text(
+        categoryName,
+        style: const TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.black87,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuItem(MenuModel item) {
+    final isFavorite = favoriteFoods.contains(item.id);
+    final isSelected = selectedItemId == item.id;
+    final quantity = cartQuantities[item.id] ?? 0;
+    final isInCart = quantity > 0;
+
+    return MenuItemCard(
+      item: item,
+      isFavorite: isFavorite,
+      isSelected: isSelected,
+      isInCart: isInCart,
+      quantity: quantity,
+      onTap: () => onItemTap(item),
+      onFavoriteToggle: () => onFavoriteToggle(item.id),
+      rating: 2.7,
     );
   }
 }

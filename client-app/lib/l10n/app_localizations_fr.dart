@@ -861,4 +861,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get ourDishes => 'Nos plats';
+
+  @override
+  String get store => 'Magasin';
 }
