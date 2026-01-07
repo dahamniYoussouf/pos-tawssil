@@ -72,6 +72,9 @@ class _AnnouncementsWidgetState extends State<AnnouncementsWidget> {
     if (widget.announcements.isEmpty) return const SizedBox.shrink();
     final activeAnnouncements = _getActiveAnnouncements();
     if (activeAnnouncements.isEmpty) return const SizedBox.shrink();
+    final activeAnnouncementsWithImage =
+        activeAnnouncements.where((a) => a.image != null).toList();
+    if (activeAnnouncementsWithImage.isEmpty) return const SizedBox.shrink();
     return SizedBox(
       height: 165,
       child: ListView.builder(
@@ -80,6 +83,9 @@ class _AnnouncementsWidgetState extends State<AnnouncementsWidget> {
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         itemCount: activeAnnouncements.length,
         itemBuilder: (context, index) {
+          if (activeAnnouncements[index].image == null) {
+            return SizedBox.shrink();
+          }
           return SizedBox(
             width: _getCardWidth(),
             child: Padding(

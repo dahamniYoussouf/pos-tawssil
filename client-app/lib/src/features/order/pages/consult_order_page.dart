@@ -347,27 +347,6 @@ class EmptyCartWidget extends StatelessWidget {
   }
 }
 
-class _RestaurantNameSection extends StatelessWidget {
-  final String name;
-
-  const _RestaurantNameSection({required this.name});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Text(
-        name,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: Colors.grey[800],
-        ),
-      ),
-    );
-  }
-}
-
 class _DeliveryAddressSection extends StatelessWidget {
   final String address;
 
