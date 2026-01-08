@@ -18,6 +18,15 @@ class MenuCategoryChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (categories.isEmpty) return const SizedBox.shrink();
+    final filteredCategories = categories.where((category) {
+      final categoryName = category.nom.toLowerCase().trim();
+      return categoryName != 'promo' &&
+          categoryName != 'promotion' &&
+          categoryName != 'promotions';
+    }).toList();
+    if (filteredCategories.isEmpty && categories.isNotEmpty) {
+      return const SizedBox.shrink();
+    }
     return Container(
       padding: const EdgeInsets.only(top: 12, bottom: 8, left: 8),
       child: Column(
@@ -30,7 +39,7 @@ class MenuCategoryChips extends StatelessWidget {
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: categories.length + 1,
+                    itemCount: filteredCategories.length + 1,
                     itemBuilder: (context, index) {
                       if (index == 0) {
                         final isAllSelected = selectedCategoryId == "all";
@@ -42,7 +51,7 @@ class MenuCategoryChips extends StatelessWidget {
                               .selectCategory("all"),
                         );
                       }
-                      final cat = categories[index - 1];
+                      final cat = filteredCategories[index - 1];
                       final selected = cat.id == selectedCategoryId;
                       return _buildCategoryTab(
                         label: cat.nom,

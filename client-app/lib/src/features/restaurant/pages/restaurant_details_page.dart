@@ -16,6 +16,7 @@ import '../widgets/floating_cart_button.dart';
 import '../widgets/restaurant_details_loading_widget.dart';
 import '../widgets/restaurant_details_error_widget.dart';
 import '../widgets/restaurant_details_menu_content_widget.dart';
+import '../widgets/promo_section_widget.dart';
 import '../helpers/cart_data_extractor.dart';
 import '../usecases/navigate_to_cart_usecase.dart';
 
@@ -124,7 +125,9 @@ class _RestaurantDetailsView extends StatelessWidget {
                         SliverPersistentHeader(
                           pinned: true,
                           delegate: _CategoryChipsHeaderDelegate(
-                            categories: state.categories,
+                            categories: context
+                                .read<RestaurantDetailsCubit>()
+                                .getCategoriesWithoutPromo(),
                             selectedCategoryId: state.selectedCategoryId,
                           ),
                         ),
@@ -167,6 +170,11 @@ class _RestaurantDetailsContent extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        if (state is RestaurantDetailsLoaded)
+          _PromoSection(
+            state: state as RestaurantDetailsLoaded,
+            cartQuantities: cartData.quantities,
+          ),
         Container(
           constraints: BoxConstraints(
             minHeight: MediaQuery.of(context).size.height * 0.4,
@@ -213,6 +221,33 @@ class _RestaurantDetailsMenuSection extends StatelessWidget {
       );
     }
     return const SizedBox.shrink();
+  }
+}
+
+class _PromoSection extends StatelessWidget {
+  final RestaurantDetailsLoaded state;
+  final Map<String, int> cartQuantities;
+
+  const _PromoSection({
+    required this.state,
+    required this.cartQuantities,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final cubit = context.read<RestaurantDetailsCubit>();
+    final promoItems = cubit.getPromoItems();
+    if (promoItems.isEmpty) {
+      return const SizedBox.shrink();
+    }
+    return PromoSectionWidget(
+      promoItems: promoItems,
+      cartQuantities: cartQuantities,
+      favoriteFoods: state.favoriteFoods,
+      onFavoriteToggle: (foodId) {
+        context.read<RestaurantDetailsCubit>().toggleFavorite(foodId);
+      },
+    );
   }
 }
 

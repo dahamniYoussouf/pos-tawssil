@@ -21,6 +21,8 @@ class MenuModel {
   final List<dynamic> promotions;
   final bool isFavorite;
   final String? favoriteId;
+  final double? rating;
+  final String categoryName;
 
   MenuModel({
     required this.id,
@@ -45,9 +47,11 @@ class MenuModel {
     this.promotions = const [],
     this.isFavorite = false,
     this.favoriteId,
+    this.rating,
+    required this.categoryName,
   });
 
-  factory MenuModel.fromJson(Map<String, dynamic> json) {
+  factory MenuModel.fromJson(Map<String, dynamic> json, String categoryName) {
     // helper to safely read nested maps
     Map<String, dynamic>? _asMap(dynamic v) {
       if (v == null) return null;
@@ -71,6 +75,19 @@ class MenuModel {
         json['updatedAt'] ??
         DateTime.now().toIso8601String();
 
+    DateTime parseDateTime(dynamic value) {
+      if (value == null) return DateTime.now();
+      if (value is DateTime) return value;
+      if (value is String) {
+        try {
+          return DateTime.parse(value);
+        } catch (e) {
+          return DateTime.now();
+        }
+      }
+      return DateTime.now();
+    }
+
     final additionsList = json['additions'] as List<dynamic>?;
     final additions = additionsList != null
         ? additionsList
@@ -83,11 +100,14 @@ class MenuModel {
       json['prix'] ??
           json['price'] ??
           json['prix_value'] ??
-          json['display_price'],
+          json['display_price'] ??
+          json['promo_price'],
     );
-    final displayPriceValue = json['display_price'] != null
-        ? parsePrice(json['display_price'])
-        : null;
+    final displayPriceValue = json['promo_price'] != null
+        ? parsePrice(json['promo_price'])
+        : (json['display_price'] != null
+            ? parsePrice(json['display_price'])
+            : null);
 
     final additionsCountValue =
         json['additions_count'] as int? ?? additions.length;
@@ -115,8 +135,8 @@ class MenuModel {
       photoUrl: (json['photo_url'] ?? json['photoUrl'] ?? json['imageUrl'])
           as String?,
       disponible: (json['is_available'] ?? json['disponible']) as bool? ?? true,
-      createdAt: DateTime.parse(created as String),
-      updatedAt: DateTime.parse(updated as String),
+      createdAt: parseDateTime(created),
+      updatedAt: parseDateTime(updated),
       category: _asMap(json['category']) != null
           ? MenuItemCategory.fromJson(_asMap(json['category'])!)
           : null,
@@ -125,6 +145,11 @@ class MenuModel {
       promotions: promotionsList,
       isFavorite: (json['is_favorite'] ?? json['isFavorite']) as bool? ?? false,
       favoriteId: (json['favorite_id'] ?? json['favoriteId']) as String?,
+      rating: _parseRating(json['rating'] ??
+          json['avg_rating'] ??
+          json['average_rating'] ??
+          json['note']),
+      categoryName: categoryName,
     );
   }
 
@@ -133,6 +158,17 @@ class MenuModel {
     if (price is int) return price.toDouble();
     if (price is String) return double.tryParse(price) ?? 0.0;
     return 0.0;
+  }
+
+  static double? _parseRating(dynamic rating) {
+    if (rating == null) return null;
+    if (rating is double) return rating;
+    if (rating is int) return rating.toDouble();
+    if (rating is String) {
+      final parsed = double.tryParse(rating);
+      return parsed;
+    }
+    return null;
   }
 
   Map<String, dynamic> toJson() {
@@ -159,6 +195,7 @@ class MenuModel {
       'promotions': promotions,
       'is_favorite': isFavorite,
       if (favoriteId != null) 'favorite_id': favoriteId,
+      if (rating != null) 'rating': rating,
     };
   }
 
@@ -171,6 +208,9 @@ class MenuModel {
       : priceFormatted;
 
   double get effectivePrice => displayPrice ?? prix;
+
+  String get ratingFormatted =>
+      rating != null ? rating!.toStringAsFixed(1) : '0.0';
 }
 
 class MenuItemCategory {

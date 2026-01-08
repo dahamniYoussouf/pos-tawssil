@@ -101,111 +101,6 @@ class RestaurantRepository {
     }
   }
 
-  /// Get menu items for a restaurant
-  Future<Either<String, List<MenuModel>>> getMenuItems({
-    required String restaurantId,
-    String? categoryId,
-  }) async {
-    try {
-      final response = await _restaurantService.getMenuItems(
-        restaurantId: restaurantId,
-        categoryId: categoryId,
-      );
-
-      if (response['success'] == true) {
-        final data = response['data'] ?? response['items'];
-        if (data is List) {
-          final List<MenuModel> parsedItems = [];
-
-          for (final item in data) {
-            try {
-              if (item is Map<String, dynamic>) {
-                final menuItem = MenuModel.fromJson(item);
-                // If backend didn't populate restaurant_id, assume items belong to requested restaurant
-                if (menuItem.restaurantId.isEmpty ||
-                    menuItem.restaurantId == restaurantId) {
-                  parsedItems.add(menuItem);
-                }
-              }
-            } catch (e) {
-              // Skip items that fail to parse
-              continue;
-            }
-          }
-
-          return Right(parsedItems);
-        }
-        return const Right([]);
-      }
-
-      return Left(
-          response['message']?.toString() ?? 'Failed to fetch menu items');
-    } catch (e) {
-      return Left('An unexpected error occurred: ${e.toString()}');
-    }
-  }
-
-  /// Get menu items for a restaurant (legacy method name)
-  Future<Either<String, List<MenuModel>>> getRestaurantMenuItems(
-      String restaurantId) async {
-    try {
-      final response =
-          await _restaurantService.getRestaurantMenuItems(restaurantId);
-
-      if (response['success'] == true && response.containsKey('data')) {
-        final data = response['data'];
-        if (data is List) {
-          final items = data
-              .map((json) {
-                try {
-                  if (json is Map<String, dynamic>) {
-                    return MenuModel.fromJson(json);
-                  }
-                  return null;
-                } catch (e) {
-                  return null;
-                }
-              })
-              .whereType<MenuModel>()
-              .toList();
-
-          return Right(items);
-        }
-        return const Right([]);
-      }
-
-      return Left(
-          response['message']?.toString() ?? 'Failed to fetch menu items');
-    } catch (e) {
-      return Left('An unexpected error occurred: ${e.toString()}');
-    }
-  }
-
-  /// Get menu categories for a restaurant by extracting from menu items
-  Future<Either<String, List<MenuItemCategory>>> getMenuCategories({
-    required String restaurantId,
-  }) async {
-    try {
-      final menuItemsResult = await getMenuItems(restaurantId: restaurantId);
-
-      return menuItemsResult.fold(
-        (error) => Left(error),
-        (menuItems) {
-          // Extract unique categories from menu items
-          final Map<String, MenuItemCategory> categoriesMap = {};
-          for (var item in menuItems) {
-            if (item.category != null) {
-              categoriesMap[item.category!.id] = item.category!;
-            }
-          }
-          return Right(categoriesMap.values.toList());
-        },
-      );
-    } catch (e) {
-      return Left('An unexpected error occurred: ${e.toString()}');
-    }
-  }
-
   /// Get restaurant details with menu items using restaurant/details endpoint
   Future<Either<String, List<MenuModel>>> getRestaurantDetailsWithMenu(
       String restaurantId) async {
@@ -251,7 +146,8 @@ class RestaurantRepository {
                           'id': category.id,
                           'nom': category.nom,
                         };
-                        final menuItem = MenuModel.fromJson(itemWithCategory);
+                        final menuItem =
+                            MenuModel.fromJson(itemWithCategory, category.nom);
                         parsedItems.add(menuItem);
                       }
                     } catch (e) {
@@ -276,7 +172,7 @@ class RestaurantRepository {
                   if (item is Map<String, dynamic>) {
                     final itemWithRestaurant = Map<String, dynamic>.from(item);
                     itemWithRestaurant['restaurant_id'] = restaurantId;
-                    final menuItem = MenuModel.fromJson(itemWithRestaurant);
+                    final menuItem = MenuModel.fromJson(itemWithRestaurant, '');
                     parsedItems.add(menuItem);
                   }
                 } catch (e) {
@@ -291,7 +187,7 @@ class RestaurantRepository {
               if (item is Map<String, dynamic>) {
                 final itemWithRestaurant = Map<String, dynamic>.from(item);
                 itemWithRestaurant['restaurant_id'] = restaurantId;
-                final menuItem = MenuModel.fromJson(itemWithRestaurant);
+                final menuItem = MenuModel.fromJson(itemWithRestaurant, '');
                 parsedItems.add(menuItem);
               }
             } catch (e) {

@@ -34,6 +34,7 @@ class RestaurantDetailsCubit extends Cubit<RestaurantDetailsState> {
         (data) {
           final categories = data.categories;
           final items = data.menuItems;
+          print('items: ${items.length}');
           final favoriteFoods = items
               .where((item) => item.isFavorite)
               .map((item) => item.id)
@@ -51,7 +52,7 @@ class RestaurantDetailsCubit extends Cubit<RestaurantDetailsState> {
             }
           } else {
             _buildCategoryMapsFromCategories(categories);
-            _buildCategoryMaps(items);
+            _buildCategoryMaps(items, clearMaps: false);
             if (!isClosed) {
               emit(RestaurantDetailsLoaded(
                 menuItems: items,
@@ -72,19 +73,25 @@ class RestaurantDetailsCubit extends Cubit<RestaurantDetailsState> {
     }
   }
 
-  Map<String, MenuItemCategory> _buildCategoryMaps(List<MenuModel> items) {
-    _categoryIdMap.clear();
-    _displayIdToKey.clear();
+  Map<String, MenuItemCategory> _buildCategoryMaps(List<MenuModel> items,
+      {bool clearMaps = true}) {
+    if (clearMaps) {
+      _categoryIdMap.clear();
+      _displayIdToKey.clear();
+    }
     final Map<String, MenuItemCategory> displayMap = {};
     for (var item in items) {
       final cat = item.category;
       final cid =
           (item.categoryId.isNotEmpty ? item.categoryId : (cat?.id ?? ''))
               .toString();
-      final name = (cat?.nom ?? '').toString();
+      final name = item.categoryName.isNotEmpty
+          ? item.categoryName
+          : (cat?.nom ?? '').toString();
       final nameKey = name.isNotEmpty
           ? name.toLowerCase().trim()
-          : cid.toLowerCase().trim();
+          : (cid.isNotEmpty ? cid.toLowerCase().trim() : 'other');
+      if (nameKey.isEmpty) continue;
       _categoryIdMap.putIfAbsent(nameKey, () => <String>{});
       if (cid.isNotEmpty) _categoryIdMap[nameKey]!.add(cid);
       if (!displayMap.containsKey(nameKey)) {
@@ -120,7 +127,6 @@ class RestaurantDetailsCubit extends Cubit<RestaurantDetailsState> {
     if (state is RestaurantDetailsLoaded) {
       final currentState = state as RestaurantDetailsLoaded;
       emit(currentState.copyWith(selectedCategoryId: categoryId));
-      print('selectedCategoryId: ${currentState.selectedCategoryId}');
     }
   }
 
@@ -160,18 +166,49 @@ class RestaurantDetailsCubit extends Cubit<RestaurantDetailsState> {
     final currentState = state as RestaurantDetailsLoaded;
     if (currentState.selectedCategoryId == null ||
         currentState.selectedCategoryId == "all") {
-      return currentState.menuItems;
+      return currentState.menuItems
+          .where((item) => !_isPromoItem(item))
+          .toList();
     }
+    final selectedId = currentState.selectedCategoryId!;
+    final nameKey =
+        _displayIdToKey[selectedId] ?? selectedId.toLowerCase().trim();
+    final allowedIds = _categoryIdMap[nameKey] ?? <String>{};
+    final selectedIdLower = selectedId.toLowerCase().trim();
     return currentState.menuItems.where((item) {
-      final selectedId = currentState.selectedCategoryId!;
-      final nameKey =
-          _displayIdToKey[selectedId] ?? selectedId.toLowerCase().trim();
-      final allowedIds = _categoryIdMap[nameKey] ?? <String>{};
-      if (allowedIds.contains(item.categoryId)) return true;
-      final itemCatName = item.category?.nom.toLowerCase().trim() ?? '';
-      if (itemCatName.isNotEmpty && itemCatName == nameKey) return true;
-      if (item.categoryId.isEmpty && selectedId.toLowerCase().trim() == nameKey)
+      if (_isPromoItem(item)) {
+        return false;
+      }
+      final itemCategoryId = item.categoryId.toLowerCase().trim();
+      final itemCatName = item.categoryName.isNotEmpty
+          ? item.categoryName.toLowerCase().trim()
+          : (item.category?.nom.toLowerCase().trim() ?? '');
+      if (allowedIds.isNotEmpty) {
+        if (allowedIds.contains(item.categoryId) ||
+            allowedIds.contains(itemCategoryId)) {
+          return true;
+        }
+      }
+      if (itemCatName.isNotEmpty && itemCatName == nameKey) {
         return true;
+      }
+      if (item.categoryId.isNotEmpty) {
+        if (itemCategoryId == selectedIdLower ||
+            item.categoryId == selectedId) {
+          return true;
+        }
+      }
+      if (item.category != null) {
+        final categoryId = item.category!.id.toLowerCase().trim();
+        final categoryNom = item.category!.nom.toLowerCase().trim();
+        if (categoryId == selectedIdLower ||
+            categoryNom == nameKey ||
+            (allowedIds.isNotEmpty &&
+                (allowedIds.contains(item.category!.id) ||
+                    allowedIds.contains(categoryId)))) {
+          return true;
+        }
+      }
       return false;
     }).toList();
   }
@@ -183,7 +220,12 @@ class RestaurantDetailsCubit extends Cubit<RestaurantDetailsState> {
     final currentState = state as RestaurantDetailsLoaded;
     final Map<String, List<MenuModel>> grouped = {};
     for (final item in currentState.menuItems) {
-      final categoryName = item.category?.nom ?? 'Other';
+      if (_isPromoItem(item)) {
+        continue;
+      }
+      final categoryName = item.categoryName.isNotEmpty
+          ? item.categoryName
+          : (item.category?.nom ?? 'Other');
       if (!grouped.containsKey(categoryName)) {
         grouped[categoryName] = [];
       }
@@ -206,5 +248,36 @@ class RestaurantDetailsCubit extends Cubit<RestaurantDetailsState> {
       sortedGrouped[key] = grouped[key]!;
     }
     return sortedGrouped;
+  }
+
+  List<MenuModel> getPromoItems() {
+    if (state is! RestaurantDetailsLoaded) {
+      return [];
+    }
+    final currentState = state as RestaurantDetailsLoaded;
+    return currentState.menuItems.where((item) => _isPromoItem(item)).toList();
+  }
+
+  bool _isPromoItem(MenuModel item) {
+    if (item.isOnPromotion) {
+      return true;
+    }
+    final categoryName = item.categoryName.toLowerCase().trim();
+    return categoryName == 'promo' ||
+        categoryName == 'promotion' ||
+        categoryName == 'promotions';
+  }
+
+  List<MenuItemCategory> getCategoriesWithoutPromo() {
+    if (state is! RestaurantDetailsLoaded) {
+      return [];
+    }
+    final currentState = state as RestaurantDetailsLoaded;
+    return currentState.categories.where((category) {
+      final categoryName = category.nom.toLowerCase().trim();
+      return categoryName != 'promo' &&
+          categoryName != 'promotion' &&
+          categoryName != 'promotions';
+    }).toList();
   }
 }
