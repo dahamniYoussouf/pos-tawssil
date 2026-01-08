@@ -90,45 +90,59 @@ class MenuItemDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          item.nom,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: ColorApp.textBlack,
-            height: 1.2,
-          ),
-        ),
-        Text(
-          '${item.prix.toStringAsFixed(0)} DA',
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w700,
-            color: ColorApp.primary,
-          ),
-        ),
-        if (item.description != null && item.description!.isNotEmpty)
-          Text(
-            item.description!,
-            style: const TextStyle(
-              fontSize: 14,
-              color: ColorApp.textBlack,
+    return Padding(
+        padding: EdgeInsets.only(top: 8, bottom: 8, right: 4),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  item.nom,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: ColorApp.textBlack,
+                        height: 1.2,
+                      ),
+                ),
+                if (item.description != null && item.description!.isNotEmpty)
+                  Text(
+                    item.description!,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      color: ColorApp.textBlack,
+                    ),
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+              ],
             ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        if (rating != null) ...[
-          MenuItemRating(
-            rating: rating!,
-            ratingCount: ratingCount,
-          ),
-        ],
-      ],
-    );
+            Padding(
+                padding: EdgeInsets.only(right: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '${item.prix.toStringAsFixed(0)} DA',
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w700,
+                        color: ColorApp.primary,
+                      ),
+                    ),
+                    if (rating != null) ...[
+                      MenuItemRating(
+                        rating: rating!,
+                        ratingCount: ratingCount,
+                      ),
+                    ],
+                  ],
+                ))
+          ],
+        ));
   }
 }
 

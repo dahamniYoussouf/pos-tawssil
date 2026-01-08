@@ -30,7 +30,8 @@ class PromoSectionWidget extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          padding:
+              const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
           child: Text(
             localizations.promotions,
             style: const TextStyle(

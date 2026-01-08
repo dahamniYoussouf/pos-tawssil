@@ -80,7 +80,7 @@ class MenuListView extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: _calculateTotalItems(),
       itemBuilder: (context, index) {
-        return _buildGroupedItem(index);
+        return _buildGroupedItem(index, context);
       },
     );
   }
@@ -94,11 +94,11 @@ class MenuListView extends StatelessWidget {
     return count;
   }
 
-  Widget _buildGroupedItem(int index) {
+  Widget _buildGroupedItem(int index, BuildContext context) {
     int currentIndex = 0;
     for (final entry in groupedItems!.entries) {
       if (currentIndex == index) {
-        return _buildCategoryHeader(entry.key);
+        return _buildCategoryHeader(entry.key, context);
       }
       currentIndex++;
       final categoryItemsCount = entry.value.length;
@@ -111,16 +111,16 @@ class MenuListView extends StatelessWidget {
     return const SizedBox.shrink();
   }
 
-  Widget _buildCategoryHeader(String categoryName) {
+  Widget _buildCategoryHeader(String categoryName, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
       child: Text(
         categoryName,
-        style: const TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: Colors.black87,
-        ),
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
+            height: 1.2),
       ),
     );
   }

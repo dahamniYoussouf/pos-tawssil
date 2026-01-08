@@ -34,7 +34,6 @@ class RestaurantDetailsCubit extends Cubit<RestaurantDetailsState> {
         (data) {
           final categories = data.categories;
           final items = data.menuItems;
-          print('items: ${items.length}');
           final favoriteFoods = items
               .where((item) => item.isFavorite)
               .map((item) => item.id)
