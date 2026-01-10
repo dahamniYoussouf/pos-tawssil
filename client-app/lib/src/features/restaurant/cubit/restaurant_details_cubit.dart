@@ -258,9 +258,9 @@ class RestaurantDetailsCubit extends Cubit<RestaurantDetailsState> {
   }
 
   bool _isPromoItem(MenuModel item) {
-    if (item.isOnPromotion) {
-      return true;
-    }
+    // if (item.isOnPromotion) {
+    //   return true;
+    // }
     final categoryName = item.categoryName.toLowerCase().trim();
     return categoryName == 'promo' ||
         categoryName == 'promotion' ||

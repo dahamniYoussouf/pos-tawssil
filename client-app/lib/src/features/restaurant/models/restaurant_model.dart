@@ -1,3 +1,5 @@
+import 'homepage_models.dart';
+
 class RestaurantModel {
   final String id;
   final String name;
@@ -13,6 +15,7 @@ class RestaurantModel {
   final bool isPremium;
   final double? deliveryFee;
   final String? promotionBadgeText;
+  final List<HomeCategoryModel> homeCategories;
 
   RestaurantModel({
     required this.id,
@@ -29,6 +32,7 @@ class RestaurantModel {
     required this.isPremium,
     this.deliveryFee,
     this.promotionBadgeText,
+    this.homeCategories = const [],
   });
 
   factory RestaurantModel.fromJson(Map<String, dynamic> json) {
@@ -40,17 +44,38 @@ class RestaurantModel {
     }
 
     // Try multiple common key names used across schema versions
-    final id = (json['id'] ?? json['_id'] ?? json['restaurant_id'] ?? '') as dynamic;
-    final name = (json['name'] ?? json['nom'] ?? json['title'] ?? '') as dynamic;
-    final description = (json['description'] ?? json['desc'] ?? json['description_fr'] ?? json['description_ar'] ?? '') as dynamic;
-    final imageUrl = (json['image_url'] ?? json['imageUrl'] ?? json['image'] ?? json['photo'] ?? json['picture'] ?? '') as dynamic;
+    final id =
+        (json['id'] ?? json['_id'] ?? json['restaurant_id'] ?? '') as dynamic;
+    final name =
+        (json['name'] ?? json['nom'] ?? json['title'] ?? '') as dynamic;
+    final description = (json['description'] ??
+        json['desc'] ??
+        json['description_fr'] ??
+        json['description_ar'] ??
+        '') as dynamic;
+    final imageUrl = (json['image_url'] ??
+        json['imageUrl'] ??
+        json['image'] ??
+        json['photo'] ??
+        json['picture'] ??
+        '') as dynamic;
 
     // rating may be named differently or be a string
-    final ratingVal = json['rating'] ?? json['avg_rating'] ?? json['average_rating'] ?? json['note'] ?? 0.0;
+    final ratingVal = json['rating'] ??
+        json['avg_rating'] ??
+        json['average_rating'] ??
+        json['note'] ??
+        0.0;
 
     // delivery times - try several names and parse to int safely
-    final deliveryMinVal = json['delivery_time_min'] ?? json['delivery_min'] ?? json['deliveryMin'] ?? json['min_delivery_time'];
-    final deliveryMaxVal = json['delivery_time_max'] ?? json['delivery_max'] ?? json['deliveryMax'] ?? json['max_delivery_time'];
+    final deliveryMinVal = json['delivery_time_min'] ??
+        json['delivery_min'] ??
+        json['deliveryMin'] ??
+        json['min_delivery_time'];
+    final deliveryMaxVal = json['delivery_time_max'] ??
+        json['delivery_max'] ??
+        json['deliveryMax'] ??
+        json['max_delivery_time'];
 
     // address/distance
     final addressVal = json['address'] ?? json['adresse'] ?? null;
@@ -73,9 +98,29 @@ class RestaurantModel {
       }
     }
 
-    final isPremiumVal = _parseBool(json['is_premium'] ?? json['isPremium'] ?? json['premium'] ?? json['is_vip']);
+    final isPremiumVal = _parseBool(json['is_premium'] ??
+        json['isPremium'] ??
+        json['premium'] ??
+        json['is_vip']);
     final deliveryFeeVal = json['delivery_fee'] ?? json['deliveryFee'] ?? null;
-    final promotionBadgeTextVal = json['promotion_badge_text'] ?? json['promotionBadgeText'] as String?;
+    final promotionBadgeTextVal =
+        json['promotion_badge_text'] ?? json['promotionBadgeText'] as String?;
+
+    // Parse home_categories array
+    final homeCategoriesList =
+        json['home_categories'] ?? json['homeCategories'] ?? [];
+    final List<HomeCategoryModel> homeCategories = [];
+    if (homeCategoriesList is List) {
+      for (var item in homeCategoriesList) {
+        if (item is Map<String, dynamic>) {
+          try {
+            homeCategories.add(HomeCategoryModel.fromJson(item));
+          } catch (e) {
+            // Skip invalid category items
+          }
+        }
+      }
+    }
 
     return RestaurantModel(
       id: id?.toString() ?? '',
@@ -92,6 +137,7 @@ class RestaurantModel {
       isPremium: isPremiumVal,
       deliveryFee: deliveryFeeVal != null ? _parseDouble(deliveryFeeVal) : null,
       promotionBadgeText: promotionBadgeTextVal?.toString(),
+      homeCategories: homeCategories,
     );
   }
 
@@ -139,7 +185,10 @@ class RestaurantModel {
       'lng': lng,
       'is_premium': isPremium,
       if (deliveryFee != null) 'delivery_fee': deliveryFee,
-      if (promotionBadgeText != null) 'promotion_badge_text': promotionBadgeText,
+      if (promotionBadgeText != null)
+        'promotion_badge_text': promotionBadgeText,
+      if (homeCategories.isNotEmpty)
+        'home_categories': homeCategories.map((c) => c.toJson()).toList(),
     };
   }
 }

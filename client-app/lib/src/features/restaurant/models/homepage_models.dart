@@ -239,54 +239,32 @@ class MenuItemBasicInfo {
 }
 
 class DailyDealModel {
-  final String id;
-  final String promotionId;
-  final DateTime startDate;
-  final DateTime endDate;
-  final bool isActive;
-  final PromotionModel promotion;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
+  final String restaurantId;
 
   DailyDealModel({
-    required this.id,
-    required this.promotionId,
-    required this.startDate,
-    required this.endDate,
-    required this.isActive,
-    required this.promotion,
-    this.createdAt,
-    this.updatedAt,
+    required this.restaurantId,
   });
 
-  factory DailyDealModel.fromJson(Map<String, dynamic> json) {
-    return DailyDealModel(
-      id: (json['id'] ?? json['_id'] ?? '').toString(),
-      promotionId: (json['promotion_id'] ?? '').toString(),
-      startDate: DateTime.parse(json['start_date']),
-      endDate: DateTime.parse(json['end_date']),
-      isActive: (json['is_active'] ?? json['isActive'] ?? true) as bool,
-      promotion:
-          PromotionModel.fromJson(json['promotion'] as Map<String, dynamic>),
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'])
-          : null,
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'])
-          : null,
-    );
+  factory DailyDealModel.fromJson(dynamic json) {
+    // Handle both string (restaurant ID) and object (legacy format)
+    if (json is String) {
+      return DailyDealModel(restaurantId: json);
+    } else if (json is Map<String, dynamic>) {
+      // Legacy format support - try to extract restaurant ID from various fields
+      final restaurantId = json['restaurant_id']?.toString() ??
+          json['restaurantId']?.toString() ??
+          json['id']?.toString() ??
+          json['_id']?.toString() ??
+          '';
+      return DailyDealModel(restaurantId: restaurantId);
+    }
+    // If it's neither string nor map, try to convert to string
+    return DailyDealModel(restaurantId: json?.toString() ?? '');
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
-      'promotion_id': promotionId,
-      'start_date': startDate.toIso8601String(),
-      'end_date': endDate.toIso8601String(),
-      'is_active': isActive,
-      'promotion': promotion.toJson(),
-      if (createdAt != null) 'created_at': createdAt!.toIso8601String(),
-      if (updatedAt != null) 'updated_at': updatedAt!.toIso8601String(),
+      'restaurant_id': restaurantId,
     };
   }
 }
@@ -702,15 +680,13 @@ class HomepageDataModel {
     final dailyDeals = dailyDealsList
         .map((e) {
           try {
-            if (e is Map<String, dynamic>) {
-              return DailyDealModel.fromJson(e);
-            }
-            return null;
+            return DailyDealModel.fromJson(e);
           } catch (_) {
             return null;
           }
         })
         .whereType<DailyDealModel>()
+        .where((deal) => deal.restaurantId.isNotEmpty)
         .toList();
 
     final promotionsList = json['promotions'] as List<dynamic>? ?? [];

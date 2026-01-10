@@ -51,7 +51,21 @@ class HomePage extends StatelessWidget {
           if (homepageData.dailyDeals.isNotEmpty)
             DailyDealsWidget(
               dailyDeals: homepageData.dailyDeals,
-              onDealTap: onDailyDealTap ?? (_) {},
+              restaurants: allRestaurants,
+              onDealTap: (restaurant) {
+                // Handle daily deal tap - navigate to restaurant details or call callback
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RestaurantDetailsPage(
+                      restaurant: restaurant,
+                    ),
+                  ),
+                );
+                // Create a minimal DailyDealModel for callback if needed
+                final deal = DailyDealModel(restaurantId: restaurant.id);
+                onDailyDealTap?.call(deal);
+              },
             ),
           // premium restaurants section (mis en avant)
           if (allRestaurants.isNotEmpty)

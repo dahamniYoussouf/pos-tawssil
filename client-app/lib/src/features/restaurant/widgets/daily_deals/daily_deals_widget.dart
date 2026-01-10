@@ -1,4 +1,5 @@
 import 'package:client_app/src/features/restaurant/models/homepage_models.dart';
+import 'package:client_app/src/features/restaurant/models/restaurant_model.dart';
 import 'package:flutter/material.dart';
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/core/res/media_res.dart';
@@ -10,11 +11,13 @@ import '../../cubit/homepage_state.dart';
 
 class DailyDealsWidget extends StatelessWidget {
   final List<DailyDealModel> dailyDeals;
-  final Function(DailyDealModel) onDealTap;
+  final List<RestaurantModel> restaurants;
+  final Function(RestaurantModel) onDealTap;
 
   const DailyDealsWidget({
     Key? key,
     required this.dailyDeals,
+    required this.restaurants,
     required this.onDealTap,
   }) : super(key: key);
 
@@ -22,13 +25,17 @@ class DailyDealsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     if (dailyDeals.isEmpty) return const SizedBox.shrink();
     final localizations = AppLocalizations.of(context)!;
-    final activeDeals = dailyDeals
-        .where((deal) =>
-            deal.isActive &&
-            DateTime.now().isAfter(deal.startDate) &&
-            DateTime.now().isBefore(deal.endDate))
+
+    // Look up restaurants by their IDs from dailyDeals
+    final restaurantMap = {
+      for (var restaurant in restaurants) restaurant.id: restaurant
+    };
+    final activeRestaurants = dailyDeals
+        .map((deal) => restaurantMap[deal.restaurantId])
+        .whereType<RestaurantModel>()
         .toList();
-    if (activeDeals.isEmpty) return const SizedBox.shrink();
+
+    if (activeRestaurants.isEmpty) return const SizedBox.shrink();
     return Container(
         margin: EdgeInsets.all(8),
         padding: EdgeInsets.all(8),
@@ -69,11 +76,11 @@ class DailyDealsWidget extends StatelessWidget {
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                itemCount: activeDeals.length,
+                itemCount: activeRestaurants.length,
                 itemBuilder: (context, index) {
                   return _DailyDealCard(
-                    deal: activeDeals[index],
-                    onTap: () => onDealTap(activeDeals[index]),
+                    restaurant: activeRestaurants[index],
+                    onTap: () => onDealTap(activeRestaurants[index]),
                   );
                 },
               ),
@@ -85,29 +92,27 @@ class DailyDealsWidget extends StatelessWidget {
 }
 
 class _DailyDealCard extends StatelessWidget {
-  final DailyDealModel deal;
+  final RestaurantModel restaurant;
   final VoidCallback onTap;
 
   const _DailyDealCard({
     Key? key,
-    required this.deal,
+    required this.restaurant,
     required this.onTap,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final promotion = deal.promotion;
-    final imageUrl =
-        promotion.menuItem?.photoUrl ?? promotion.restaurant?.imageUrl;
+    final imageUrl = restaurant.imageUrl;
 
     return BlocBuilder<HomepageCubit, HomepageState>(
       builder: (context, state) {
         // Get promotions for this restaurant from the homepage state
         List<String> promotionBadges = [];
-        if (state is HomepageLoaded && promotion.restaurantId != null) {
+        if (state is HomepageLoaded) {
           promotionBadges = state.homepageData.promotions
               .where((promo) =>
-                  promo.restaurantId == promotion.restaurantId &&
+                  promo.restaurantId == restaurant.id &&
                   promo.isActive &&
                   promo.badgeText != null &&
                   promo.badgeText!.isNotEmpty)
@@ -142,7 +147,7 @@ class _DailyDealCard extends StatelessWidget {
                     width: double.infinity,
                     child: Stack(
                       children: [
-                        imageUrl != null
+                        imageUrl.isNotEmpty
                             ? Image.network(
                                 imageUrl,
                                 height: 130,
@@ -197,7 +202,7 @@ class _DailyDealCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        promotion.title,
+                        restaurant.name,
                         style:
                             Theme.of(context).textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
@@ -217,9 +222,10 @@ class _DailyDealCard extends StatelessWidget {
                             color: ColorApp.grey,
                           ),
                           const SizedBox(width: 4),
-                          // todo : add Distance and time from the restaurant to the user
                           Text(
-                            '2.5 km - 20 min',
+                            restaurant.distance != null
+                                ? '${restaurant.distance!.toStringAsFixed(1)} km - ${restaurant.deliveryMin}-${restaurant.deliveryMax} min'
+                                : '${restaurant.deliveryMin}-${restaurant.deliveryMax} min',
                             style:
                                 Theme.of(context).textTheme.bodySmall?.copyWith(
                                       color: ColorApp.grey,
