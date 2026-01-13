@@ -85,5 +85,5 @@ class MediaRes {
 
   static const promoBackGroundImage = '$_baseImage/promo_background.png';
   static const thematicBackgroundImage = '$_baseImage/thematic_background.png';
-  static const thematicBarImage = '$_baseImage/thematic_bar_iamge.png';
+  static const thematicBarImage = '$_baseImage/thematic_bar_image.png';
 }
