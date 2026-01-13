@@ -82,4 +82,8 @@ class MediaRes {
   static const promoLogoImage = '$_baseImage/promo_logo_image.png';
   static const promoImage = '$_baseImage/promo_image.png';
   static const addIcon = '$_baseImageIcon/add_icon.svg';
+
+  static const promoBackGroundImage = '$_baseImage/promo_background.png';
+  static const thematicBackgroundImage = '$_baseImage/thematic_background.png';
+  static const thematicBarImage = '$_baseImage/thematic_bar_iamge.png';
 }

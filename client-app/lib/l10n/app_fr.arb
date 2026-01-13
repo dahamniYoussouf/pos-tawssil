@@ -497,6 +497,10 @@
   "@ourDishes": {
     "description": "Titre de la section nos plats"
   },
-  "store": "Magasin"
+  "store": "Magasin",
+  "free": "Gratuite",
+  "@free": {
+    "description": "Label for free delivery"
+  }
 }
 

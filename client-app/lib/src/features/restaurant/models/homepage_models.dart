@@ -71,7 +71,7 @@ class ThematicSelectionModel {
   final bool isActive;
   final int restaurantsCount;
   final HomeCategoryModel? homeCategory;
-  final List<RestaurantModel> restaurants;
+  final List<String> restaurantIds;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -81,44 +81,65 @@ class ThematicSelectionModel {
     this.description,
     this.homeCategoryId,
     this.imageUrl,
-    required this.isActive,
-    required this.restaurantsCount,
+    this.isActive = true,
+    this.restaurantsCount = 0,
     this.homeCategory,
-    this.restaurants = const [],
+    this.restaurantIds = const [],
     this.createdAt,
     this.updatedAt,
   });
 
   factory ThematicSelectionModel.fromJson(Map<String, dynamic> json) {
-    final restaurantsList = json['restaurants'] as List<dynamic>? ?? [];
-    final restaurants = restaurantsList
-        .map((e) {
-          try {
-            if (e is Map<String, dynamic>) {
-              return RestaurantModel.fromJson(e);
-            }
-            return null;
-          } catch (_) {
-            return null;
-          }
-        })
-        .whereType<RestaurantModel>()
+    final restaurantIdsList = json['restaurant_ids'] as List<dynamic>? ?? [];
+    final restaurantIds = restaurantIdsList
+        .map((e) => e?.toString())
+        .whereType<String>()
         .toList();
+
+    // Support both 'title' (new API) and 'name' (legacy) for backward compatibility
+    final nameValue = json['title'] ?? json['name'] ?? '';
+
+    // Support both 'category' (new API) and 'home_category' (legacy)
+    final categoryJson = json['category'] ?? json['home_category'];
+    String? categoryId;
+    if (json['category_id'] != null) {
+      categoryId = json['category_id'].toString();
+    } else if (json['home_category_id'] != null) {
+      categoryId = json['home_category_id'].toString();
+    } else if (categoryJson is Map) {
+      categoryId = categoryJson['id']?.toString();
+    }
+
+    // Parse category object if present
+    HomeCategoryModel? parsedCategory;
+    if (categoryJson != null) {
+      try {
+        if (categoryJson is Map<String, dynamic>) {
+          parsedCategory = HomeCategoryModel.fromJson(categoryJson);
+        } else if (categoryJson is Map) {
+          // Handle Map<dynamic, dynamic> case
+          parsedCategory = HomeCategoryModel.fromJson(
+            Map<String, dynamic>.from(categoryJson),
+          );
+        }
+      } catch (e) {
+        // If category parsing fails, leave it as null
+        parsedCategory = null;
+      }
+    }
 
     return ThematicSelectionModel(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
-      name: (json['name'] ?? '').toString(),
+      name: nameValue.toString(),
       description: json['description'] as String?,
-      homeCategoryId: json['home_category_id'] as String?,
+      homeCategoryId: categoryId,
       imageUrl: json['image_url'] as String?,
       isActive: (json['is_active'] ?? json['isActive'] ?? true) as bool,
-      restaurantsCount:
-          (json['restaurants_count'] ?? json['restaurantsCount'] ?? 0) as int,
-      homeCategory: json['home_category'] != null
-          ? HomeCategoryModel.fromJson(
-              json['home_category'] as Map<String, dynamic>)
-          : null,
-      restaurants: restaurants,
+      restaurantsCount: (json['restaurants_count'] ??
+          json['restaurantsCount'] ??
+          restaurantIds.length) as int,
+      homeCategory: parsedCategory,
+      restaurantIds: restaurantIds,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : null,
@@ -131,16 +152,15 @@ class ThematicSelectionModel {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'name': name,
+      'title': name, // Use 'title' to match new API format
       if (description != null) 'description': description,
-      if (homeCategoryId != null) 'home_category_id': homeCategoryId,
       if (imageUrl != null) 'image_url': imageUrl,
-      'is_active': isActive,
-      'restaurants_count': restaurantsCount,
-      if (homeCategory != null) 'home_category': homeCategory!.toJson(),
-      'restaurants': restaurants.map((r) => r.toJson()).toList(),
-      if (createdAt != null) 'created_at': createdAt!.toIso8601String(),
-      if (updatedAt != null) 'updated_at': updatedAt!.toIso8601String(),
+      if (homeCategory != null)
+        'category':
+            homeCategory!.toJson(), // Use 'category' to match new API format
+      'restaurant_ids': restaurantIds,
+      // Note: is_active, restaurants_count, createdAt, updatedAt are not in the new API response format
+      // but kept in the model for backward compatibility and internal use
     };
   }
 }

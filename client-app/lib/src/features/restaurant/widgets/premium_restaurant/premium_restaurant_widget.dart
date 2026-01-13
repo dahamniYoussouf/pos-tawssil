@@ -1,12 +1,8 @@
 import 'package:client_app/src/features/restaurant/models/restaurant_model.dart';
+import 'package:client_app/src/features/restaurant/widgets/premium_restaurant/premium_restaurant_card.dart';
 import 'package:flutter/material.dart';
 import 'package:client_app/src/core/res/color_app.dart';
-import 'package:client_app/src/core/res/media_res.dart';
 import 'package:client_app/l10n/app_localizations.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../cubit/homepage_cubit.dart';
-import '../../cubit/homepage_state.dart';
 
 class PremiumRestaurantWidget extends StatelessWidget {
   final List<RestaurantModel> restaurants;
@@ -45,188 +41,19 @@ class PremiumRestaurantWidget extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           SizedBox(
-            height: 230,
+            height: 260,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: premiumRestaurants.length,
               itemBuilder: (context, index) {
-                return _PremiumRestaurantCard(
-                  restaurant: premiumRestaurants[index],
-                  onTap: () => onRestaurantTap(premiumRestaurants[index]),
-                );
+                return PremiumRestaurantCard(
+                    restaurant: premiumRestaurants[index]);
               },
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _PremiumRestaurantCard extends StatelessWidget {
-  final RestaurantModel restaurant;
-  final VoidCallback onTap;
-
-  const _PremiumRestaurantCard({
-    Key? key,
-    required this.restaurant,
-    required this.onTap,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final imageUrl = restaurant.imageUrl;
-    final distance = restaurant.distance;
-    final deliveryTime =
-        '${restaurant.deliveryMin}-${restaurant.deliveryMax} min';
-
-    return BlocBuilder<HomepageCubit, HomepageState>(
-      builder: (context, state) {
-        // Get promotions for this restaurant from the homepage state
-        List<String> promotionBadges = [];
-        if (state is HomepageLoaded) {
-          promotionBadges = state.homepageData.promotions
-              .where((promotion) =>
-                  promotion.restaurantId == restaurant.id &&
-                  promotion.isActive &&
-                  promotion.badgeText != null &&
-                  promotion.badgeText!.isNotEmpty)
-              .map((promotion) => promotion.badgeText!)
-              .toList();
-        }
-
-        return GestureDetector(
-          onTap: onTap,
-          child: Container(
-            width: 190,
-            margin: const EdgeInsets.only(right: 16, bottom: 16),
-            decoration: BoxDecoration(
-              color: ColorApp.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(16)),
-                  child: SizedBox(
-                    height: 130,
-                    width: double.infinity,
-                    child: Stack(
-                      children: [
-                        imageUrl.isNotEmpty
-                            ? Image.network(
-                                imageUrl,
-                                height: 130,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    _buildPlaceholderImage(),
-                              )
-                            : _buildPlaceholderImage(),
-                        if (promotionBadges.isNotEmpty)
-                          Positioned(
-                            top: 8,
-                            left: 8,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.min,
-                              children: promotionBadges
-                                  .map((badgeText) => Container(
-                                        width: 100,
-                                        margin:
-                                            const EdgeInsets.only(bottom: 4),
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 6,
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.red.withOpacity(.5),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: Text(
-                                          badgeText,
-                                          style: const TextStyle(
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                      ))
-                                  .toList(),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        restaurant.name,
-                        style:
-                            Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: ColorApp.textBlack,
-                                  fontSize: 16,
-                                ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          SvgPicture.asset(
-                            MediaRes.timeIcon,
-                            width: 14,
-                            height: 14,
-                            color: ColorApp.grey,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            distance != null
-                                ? '${distance.toStringAsFixed(1)} km - $deliveryTime'
-                                : deliveryTime,
-                            style:
-                                Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: ColorApp.grey,
-                                      fontSize: 12,
-                                    ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildPlaceholderImage() {
-    return Container(
-      height: 130,
-      width: double.infinity,
-      color: ColorApp.primary.withOpacity(0.1),
-      child: const Icon(Icons.restaurant, size: 40, color: ColorApp.primary),
     );
   }
 }

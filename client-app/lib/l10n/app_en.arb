@@ -1122,6 +1122,10 @@
   "@ourDishes": {
     "description": "Our dishes section title"
   },
-  "store": "Store"
+  "store": "Store",
+  "free": "Free",
+  "@free": {
+    "description": "Label for free delivery"
+  }
 }
 

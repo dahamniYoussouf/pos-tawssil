@@ -94,9 +94,8 @@ class HomepageRepository {
           if (homepageDataModel.nearby != null) {
             allRestaurants.addAll(homepageDataModel.nearby!.data);
           }
-          for (final selection in homepageDataModel.thematicSelections) {
-            allRestaurants.addAll(selection.restaurants);
-          }
+          // Note: Thematic selections now only contain restaurant IDs,
+          // and those restaurants should already be in the allRestaurants list
           final uniqueRestaurants = <String, RestaurantModel>{};
           for (final restaurant in allRestaurants) {
             if (!uniqueRestaurants.containsKey(restaurant.id)) {

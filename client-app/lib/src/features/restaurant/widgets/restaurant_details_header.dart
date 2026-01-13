@@ -95,7 +95,7 @@ class RestaurantDetailsHeader extends StatelessWidget {
               ),
             ),
             Positioned(
-              bottom: 16,
+              bottom: 0,
               left: 0,
               right: 0,
               child: Padding(
@@ -119,7 +119,6 @@ class RestaurantDetailsHeader extends StatelessWidget {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      SizedBox(height: 4),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -132,7 +131,7 @@ class RestaurantDetailsHeader extends StatelessWidget {
                                   .textTheme
                                   .titleLarge
                                   ?.copyWith(
-                                fontSize: 18,
+                                fontSize: 16,
                                 fontWeight: FontWeight.w600,
                                 color: ColorApp.white.withOpacity(0.8),
                                 shadows: [
@@ -147,7 +146,7 @@ class RestaurantDetailsHeader extends StatelessWidget {
                           ),
                           Container(
                             padding: EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
+                                horizontal: 8, vertical: 2),
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [

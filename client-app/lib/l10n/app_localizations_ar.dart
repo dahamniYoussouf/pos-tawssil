@@ -839,4 +839,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get store => 'المتجر';
+
+  @override
+  String get free => 'مجاني';
 }

@@ -864,4 +864,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get store => 'Magasin';
+
+  @override
+  String get free => 'Gratuite';
 }

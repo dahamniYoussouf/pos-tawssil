@@ -1659,6 +1659,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Store'**
   String get store;
+
+  /// Label for free delivery
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get free;
 }
 
 class _AppLocalizationsDelegate

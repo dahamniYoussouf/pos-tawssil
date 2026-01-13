@@ -91,7 +91,8 @@ class MenuItemDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding: EdgeInsets.only(top: 8, bottom: 8, right: 4),
+        padding: EdgeInsets.only(
+            top: item.description!.length > 100 ? 8 : 24, bottom: 8, right: 4),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,7 +116,7 @@ class MenuItemDetails extends StatelessWidget {
                       fontSize: 14,
                       color: ColorApp.textBlack,
                     ),
-                    maxLines: 3,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
               ],

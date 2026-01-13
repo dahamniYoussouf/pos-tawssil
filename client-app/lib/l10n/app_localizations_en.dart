@@ -852,4 +852,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get store => 'Store';
+
+  @override
+  String get free => 'Free';
 }
