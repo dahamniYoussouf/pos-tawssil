@@ -36,10 +36,29 @@ class RestaurantDetailsPage extends StatelessWidget {
   }
 }
 
-class _RestaurantDetailsView extends StatelessWidget {
+class _RestaurantDetailsView extends StatefulWidget {
   final RestaurantModel restaurant;
 
   const _RestaurantDetailsView({required this.restaurant});
+
+  @override
+  State<_RestaurantDetailsView> createState() => _RestaurantDetailsViewState();
+}
+
+class _RestaurantDetailsViewState extends State<_RestaurantDetailsView> {
+  late final ValueNotifier<bool> _showTitleNotifier;
+
+  @override
+  void initState() {
+    super.initState();
+    _showTitleNotifier = ValueNotifier<bool>(false);
+  }
+
+  @override
+  void dispose() {
+    _showTitleNotifier.dispose();
+    super.dispose();
+  }
 
   Future<void> _navigateToCart(BuildContext context) async {
     final cartCubit = context.read<CartCubit>();
@@ -48,7 +67,7 @@ class _RestaurantDetailsView extends StatelessWidget {
       cartCubit: cartCubit,
       locationCubit: locationCubit,
     );
-    final result = await useCase.execute(restaurant);
+    final result = await useCase.execute(widget.restaurant);
     if (result.isEmptyCart) {
       _showSnackBar(
         context,
@@ -100,44 +119,63 @@ class _RestaurantDetailsView extends StatelessWidget {
               final cartData = CartDataExtractor.extract(cartState);
               return Stack(
                 children: [
-                  CustomScrollView(
-                    slivers: [
-                      RestaurantDetailsHeader(
-                        imageUrl: restaurant.imageUrl,
-                        restaurantName: restaurant.name,
-                        cuisineType: restaurant.description.isNotEmpty
-                            ? restaurant.description
-                            : 'Restaurant',
-                        rating: restaurant.rating,
-                        onBackPressed: () {
-                          context.read<CartCubit>().clearCart();
-                          Navigator.pop(context);
-                        },
-                        onCartPressed: () => _navigateToCart(context),
-                        onFavoritePressed: () {},
-                        onSearchPressed: () {},
-                      ),
-                      SliverToBoxAdapter(
-                        child: PremiumBanner(),
-                      ),
-                      if (state is RestaurantDetailsLoaded)
-                        SliverPersistentHeader(
-                          pinned: true,
-                          delegate: _CategoryChipsHeaderDelegate(
-                            categories: context
-                                .read<RestaurantDetailsCubit>()
-                                .getCategoriesWithoutPromo(),
-                            selectedCategoryId: state.selectedCategoryId,
+                  NotificationListener<ScrollNotification>(
+                    onNotification: (ScrollNotification notification) {
+                      if (notification is ScrollUpdateNotification) {
+                        final double scrollOffset = notification.metrics.pixels;
+                        final bool shouldShowTitle = scrollOffset > 100;
+                        if (shouldShowTitle != _showTitleNotifier.value) {
+                          _showTitleNotifier.value = shouldShowTitle;
+                        }
+                      }
+                      return false;
+                    },
+                    child: CustomScrollView(
+                      slivers: [
+                        ValueListenableBuilder<bool>(
+                          valueListenable: _showTitleNotifier,
+                          builder: (BuildContext context, bool showTitle, _) {
+                            return RestaurantDetailsHeader(
+                              imageUrl: widget.restaurant.imageUrl,
+                              restaurantName: widget.restaurant.name,
+                              cuisineType:
+                                  widget.restaurant.description.isNotEmpty
+                                      ? widget.restaurant.description
+                                      : 'Restaurant',
+                              rating: widget.restaurant.rating,
+                              onBackPressed: () {
+                                context.read<CartCubit>().clearCart();
+                                Navigator.pop(context);
+                              },
+                              onCartPressed: () => _navigateToCart(context),
+                              onFavoritePressed: () {},
+                              onSearchPressed: () {},
+                              showTitle: showTitle,
+                            );
+                          },
+                        ),
+                        SliverToBoxAdapter(
+                          child: PremiumBanner(),
+                        ),
+                        if (state is RestaurantDetailsLoaded)
+                          SliverPersistentHeader(
+                            pinned: true,
+                            delegate: _CategoryChipsHeaderDelegate(
+                              categories: context
+                                  .read<RestaurantDetailsCubit>()
+                                  .getCategoriesWithoutPromo(),
+                              selectedCategoryId: state.selectedCategoryId,
+                            ),
+                          ),
+                        SliverToBoxAdapter(
+                          child: _RestaurantDetailsContent(
+                            restaurant: widget.restaurant,
+                            state: state,
+                            cartData: cartData,
                           ),
                         ),
-                      SliverToBoxAdapter(
-                        child: _RestaurantDetailsContent(
-                          restaurant: restaurant,
-                          state: state,
-                          cartData: cartData,
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   if (!cartData.isEmpty)
                     FloatingCartButton(
@@ -281,7 +319,16 @@ class _CategoryChipsHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(_CategoryChipsHeaderDelegate oldDelegate) {
-    return categories != oldDelegate.categories ||
-        selectedCategoryId != oldDelegate.selectedCategoryId;
+    if (categories.length != oldDelegate.categories.length ||
+        selectedCategoryId != oldDelegate.selectedCategoryId) {
+      return true;
+    }
+    for (int i = 0; i < categories.length; i++) {
+      if (categories[i].id != oldDelegate.categories[i].id ||
+          categories[i].nom != oldDelegate.categories[i].nom) {
+        return true;
+      }
+    }
+    return false;
   }
 }

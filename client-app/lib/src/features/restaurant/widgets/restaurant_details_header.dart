@@ -2,7 +2,6 @@ import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/core/res/media_res.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:client_app/l10n/app_localizations.dart';
 
 class RestaurantDetailsHeader extends StatelessWidget {
   final String imageUrl;
@@ -13,6 +12,7 @@ class RestaurantDetailsHeader extends StatelessWidget {
   final VoidCallback onCartPressed;
   final VoidCallback? onFavoritePressed;
   final VoidCallback? onSearchPressed;
+  final bool showTitle;
 
   const RestaurantDetailsHeader({
     Key? key,
@@ -24,6 +24,7 @@ class RestaurantDetailsHeader extends StatelessWidget {
     required this.onCartPressed,
     this.onFavoritePressed,
     this.onSearchPressed,
+    this.showTitle = false,
   }) : super(key: key);
 
   @override
@@ -52,15 +53,16 @@ class RestaurantDetailsHeader extends StatelessWidget {
           onPressed: onBackPressed,
         ),
       ),
-      // todo : delete when scroll
-      title: Text(
-        restaurantName,
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: ColorApp.textBlack,
-            ),
-      ),
+      title: showTitle
+          ? Text(
+              restaurantName,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: ColorApp.textBlack,
+                  ),
+            )
+          : null,
       centerTitle: true,
       flexibleSpace: FlexibleSpaceBar(
         background: Stack(
@@ -134,6 +136,7 @@ class RestaurantDetailsHeader extends StatelessWidget {
                                   ?.copyWith(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
+                                letterSpacing: -0.4,
                                 color: ColorApp.white.withOpacity(0.8),
                                 shadows: [
                                   Shadow(

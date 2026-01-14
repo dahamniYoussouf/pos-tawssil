@@ -26,9 +26,6 @@ class DailyDealCard extends StatelessWidget {
         final isFreeDelivery =
             restaurant.deliveryFee == null || restaurant.deliveryFee == 0;
 
-        // Check if restaurant is premium (exclusive)
-        final isExclusive = restaurant.isPremium;
-
         // Format distance and delivery time
         final distanceText = restaurant.distance != null
             ? '${(restaurant.distance! / 1000).toStringAsFixed(1)} km'
@@ -91,11 +88,15 @@ class DailyDealCard extends StatelessWidget {
                               ),
                               child: Text(
                                 'En exclusivite',
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: ColorApp.textBlack,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(
+                                      fontFamily: 'Inter',
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w900,
+                                      color: ColorApp.textBlack,
+                                    ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -112,11 +113,15 @@ class DailyDealCard extends StatelessWidget {
                               ),
                               child: Text(
                                 'Livraison Gratuite',
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: ColorApp.textBlack,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(
+                                      fontFamily: 'Inter',
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w900,
+                                      color: ColorApp.textBlack,
+                                    ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -161,11 +166,10 @@ class DailyDealCard extends StatelessWidget {
                     ],
                   ),
                   // Content section
-                  Expanded(
+                  Flexible(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Column(
-                        mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -178,12 +182,12 @@ class DailyDealCard extends StatelessWidget {
                                 ?.copyWith(
                                   fontWeight: FontWeight.w800,
                                   color: ColorApp.textBlack,
-                                  fontSize: 15,
+                                  fontSize: 13,
                                 ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(height: 4),
+                          const SizedBox(height: 3),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -194,7 +198,7 @@ class DailyDealCard extends StatelessWidget {
                                 height: 12,
                                 color: ColorApp.textBlack,
                               ),
-                              const SizedBox(width: 4),
+                              const SizedBox(width: 2),
                               Expanded(
                                 child: RichText(
                                   text: TextSpan(
@@ -203,7 +207,7 @@ class DailyDealCard extends StatelessWidget {
                                         .bodySmall
                                         ?.copyWith(
                                             color: ColorApp.textBlack,
-                                            fontSize: 10,
+                                            fontSize: 9,
                                             fontWeight: FontWeight.bold),
                                     children: [
                                       if (distanceText.isNotEmpty) ...[

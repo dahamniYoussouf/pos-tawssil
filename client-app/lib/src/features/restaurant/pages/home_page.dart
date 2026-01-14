@@ -71,7 +71,6 @@ class HomePage extends StatelessWidget {
           if (allRestaurants.isNotEmpty)
             PremiumRestaurantWidget(
                 restaurants: allRestaurants, onRestaurantTap: (r) {}),
-
           Divider(
             color: ColorApp.grey.withOpacity(0.2),
             height: 1,
@@ -85,13 +84,14 @@ class HomePage extends StatelessWidget {
               dishes: homepageData.recommendedDishes,
               onDishTap: onRecommendedDishTap ?? (_) {},
             ),
-          Divider(
-            color: ColorApp.grey.withOpacity(0.2),
-            height: 1,
-            thickness: 1,
-            endIndent: 20,
-            indent: 20,
-          ),
+          if (homepageData.recommendedDishes.isNotEmpty)
+            Divider(
+              color: ColorApp.grey.withOpacity(0.2),
+              height: 1,
+              thickness: 1,
+              endIndent: 20,
+              indent: 20,
+            ),
           if (homepageData.thematicSelections.isNotEmpty)
             ThematicSelectionsSection(
               selections: homepageData.thematicSelections,
