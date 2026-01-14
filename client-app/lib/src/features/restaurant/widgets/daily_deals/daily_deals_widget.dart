@@ -56,7 +56,7 @@ class DailyDealsWidget extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    localizations.dailyDeals,
+                    localizations.dailyDeals + ' 🎉',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.w800,
                           fontSize: 20,

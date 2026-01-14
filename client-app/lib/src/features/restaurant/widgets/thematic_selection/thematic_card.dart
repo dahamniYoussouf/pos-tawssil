@@ -39,7 +39,7 @@ class ThematicSelectionCard extends StatelessWidget {
           onTap: onTap,
           child: Container(
             width: 190,
-            margin: const EdgeInsets.only(right: 16, bottom: 16, left: 16),
+            margin: const EdgeInsets.only(right: 16, bottom: 16, left: 8),
             decoration: BoxDecoration(
               color: ColorApp.white,
               borderRadius: BorderRadius.circular(16),

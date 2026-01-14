@@ -35,7 +35,7 @@ class PromoSectionWidget extends StatelessWidget {
           child: Text(
             localizations.promotions,
             style: const TextStyle(
-              fontSize: 18,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               color: ColorApp.textBlack,
             ),
@@ -198,7 +198,8 @@ class _PromoCard extends StatelessWidget {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.all(12),
+              padding: const EdgeInsets.only(
+                  left: 12, right: 12, top: 10, bottom: 8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -212,7 +213,7 @@ class _PromoCard extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 2),
                   Row(
                     children: [
                       if (hasDiscount) ...[
@@ -238,7 +239,7 @@ class _PromoCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: 6),
                   Row(
                     children: [
                       const Icon(

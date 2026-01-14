@@ -78,49 +78,49 @@ class DailyDealCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            if (isExclusive)
-                              Container(
-                                margin: const EdgeInsets.only(bottom: 6),
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: ColorApp.promoColor,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  'En exclusivite',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: ColorApp.textBlack,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                            // if (isExclusive)
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 2,
                               ),
-                            if (isFreeDelivery)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: ColorApp.promoColor,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                child: Text(
-                                  'Livraison Gratuite',
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: ColorApp.textBlack,
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                              decoration: BoxDecoration(
+                                color: ColorApp.promoColor,
+                                borderRadius: BorderRadius.circular(6),
                               ),
+                              child: Text(
+                                'En exclusivite',
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: ColorApp.textBlack,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            // if (isFreeDelivery)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: ColorApp.promoColor,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                'Livraison Gratuite',
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: ColorApp.textBlack,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -178,7 +178,7 @@ class DailyDealCard extends StatelessWidget {
                                 ?.copyWith(
                                   fontWeight: FontWeight.w800,
                                   color: ColorApp.textBlack,
-                                  fontSize: 14,
+                                  fontSize: 15,
                                 ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -192,7 +192,7 @@ class DailyDealCard extends StatelessWidget {
                                 MediaRes.timeIcon,
                                 width: 12,
                                 height: 12,
-                                color: ColorApp.grey,
+                                color: ColorApp.textBlack,
                               ),
                               const SizedBox(width: 4),
                               Expanded(
@@ -202,9 +202,9 @@ class DailyDealCard extends StatelessWidget {
                                         .textTheme
                                         .bodySmall
                                         ?.copyWith(
-                                          color: ColorApp.grey,
-                                          fontSize: 10,
-                                        ),
+                                            color: ColorApp.textBlack,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold),
                                     children: [
                                       if (distanceText.isNotEmpty) ...[
                                         TextSpan(text: distanceText),

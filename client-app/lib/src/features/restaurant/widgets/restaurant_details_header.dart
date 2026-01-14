@@ -52,8 +52,9 @@ class RestaurantDetailsHeader extends StatelessWidget {
           onPressed: onBackPressed,
         ),
       ),
+      // todo : delete when scroll
       title: Text(
-        AppLocalizations.of(context)!.store,
+        restaurantName,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -99,7 +100,7 @@ class RestaurantDetailsHeader extends StatelessWidget {
               left: 0,
               right: 0,
               child: Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.only(left: 12.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

@@ -92,7 +92,7 @@ class MenuItemDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
         padding: EdgeInsets.only(
-            top: item.description!.length > 100 ? 8 : 24, bottom: 8, right: 4),
+            top: item.description!.length > 100 ? 8 : 16, bottom: 8, right: 4),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,12 +109,14 @@ class MenuItemDetails extends StatelessWidget {
                         height: 1.2,
                       ),
                 ),
+                SizedBox(height: 2),
                 if (item.description != null && item.description!.isNotEmpty)
                   Text(
                     item.description!,
                     style: const TextStyle(
                       fontSize: 14,
                       color: ColorApp.textBlack,
+                      height: 1,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,

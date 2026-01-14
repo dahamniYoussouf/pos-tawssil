@@ -100,7 +100,7 @@ class _ThematicSelectionItem extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.only(left: 20, right: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -134,7 +134,6 @@ class _ThematicSelectionItem extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 12),
         SizedBox(
           height: 260,
           child: ListView.builder(

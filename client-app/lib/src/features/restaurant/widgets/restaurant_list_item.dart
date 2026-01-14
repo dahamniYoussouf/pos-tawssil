@@ -170,6 +170,59 @@ class RestaurantListItem extends StatelessWidget {
                           ),
                         ),
                       ),
+                      Positioned(
+                        top: 8,
+                        left: 8,
+                        child: Wrap(
+                          spacing: 4,
+                          children: [
+                            // if (isExclusive)
+                            Container(
+                              margin: const EdgeInsets.only(bottom: 6),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: ColorApp.promoColor,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                'En exclusivite',
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: ColorApp.textBlack,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+
+                            // if (isFreeDelivery)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: ColorApp.promoColor,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                'Livraison Gratuite',
+                                style: const TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: ColorApp.textBlack,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                   // Content section

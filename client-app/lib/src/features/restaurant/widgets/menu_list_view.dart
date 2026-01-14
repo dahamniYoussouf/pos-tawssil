@@ -75,7 +75,7 @@ class MenuListView extends StatelessWidget {
       return _buildEmptyState(context);
     }
     return ListView.builder(
-      padding: const EdgeInsets.only(top: 8, bottom: 8),
+      padding: const EdgeInsets.only(top: 8, bottom: 4),
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: _calculateTotalItems(),
@@ -113,7 +113,7 @@ class MenuListView extends StatelessWidget {
 
   Widget _buildCategoryHeader(String categoryName, BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 16),
       child: Text(
         categoryName,
         style: Theme.of(context).textTheme.titleMedium?.copyWith(

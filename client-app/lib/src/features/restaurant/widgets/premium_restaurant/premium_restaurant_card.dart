@@ -47,7 +47,7 @@ class PremiumRestaurantCard extends StatelessWidget {
           },
           child: Container(
             width: 190,
-            margin: const EdgeInsets.only(right: 16, bottom: 16, left: 16),
+            margin: const EdgeInsets.only(right: 16, bottom: 16, left: 2),
             decoration: BoxDecoration(
               color: ColorApp.white,
               borderRadius: BorderRadius.circular(16),
@@ -90,8 +90,8 @@ class PremiumRestaurantCard extends StatelessWidget {
                             Container(
                               margin: const EdgeInsets.only(bottom: 6),
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
+                                horizontal: 4,
+                                vertical: 2,
                               ),
                               decoration: BoxDecoration(
                                 color: ColorApp.promoColor,
@@ -100,7 +100,7 @@ class PremiumRestaurantCard extends StatelessWidget {
                               child: Text(
                                 'En exclusivite',
                                 style: const TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.bold,
                                   color: ColorApp.textBlack,
                                 ),
@@ -111,8 +111,8 @@ class PremiumRestaurantCard extends StatelessWidget {
                           if (isFreeDelivery)
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
+                                horizontal: 4,
+                                vertical: 2,
                               ),
                               decoration: BoxDecoration(
                                 color: ColorApp.promoColor,
@@ -121,7 +121,7 @@ class PremiumRestaurantCard extends StatelessWidget {
                               child: Text(
                                 'Livraison Gratuite',
                                 style: const TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 10,
                                   fontWeight: FontWeight.bold,
                                   color: ColorApp.textBlack,
                                 ),
@@ -182,7 +182,7 @@ class PremiumRestaurantCard extends StatelessWidget {
                             Theme.of(context).textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w800,
                                   color: ColorApp.textBlack,
-                                  fontSize: 18,
+                                  fontSize: 16,
                                 ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -193,7 +193,7 @@ class PremiumRestaurantCard extends StatelessWidget {
                             MediaRes.timeIcon,
                             width: 14,
                             height: 14,
-                            color: ColorApp.grey,
+                            color: ColorApp.textBlack,
                           ),
                           const SizedBox(width: 4),
                           Expanded(
@@ -203,8 +203,9 @@ class PremiumRestaurantCard extends StatelessWidget {
                                     .textTheme
                                     .bodySmall
                                     ?.copyWith(
-                                      color: ColorApp.grey,
+                                      color: ColorApp.textBlack,
                                       fontSize: 10,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                 children: [
                                   if (distanceText.isNotEmpty) ...[

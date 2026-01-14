@@ -99,8 +99,8 @@ class MenuCategoryChips extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                color: isSelected ? ColorApp.primary : ColorApp.grey,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: isSelected ? ColorApp.primary : ColorApp.textBlack,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w600,
                 fontSize: 14,
               ),
             ),

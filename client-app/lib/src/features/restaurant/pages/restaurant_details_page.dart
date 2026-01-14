@@ -91,7 +91,6 @@ class _RestaurantDetailsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('restaurant: ${restaurant.id}');
     return Scaffold(
       backgroundColor: Colors.white,
       body: BlocBuilder<RestaurantDetailsCubit, RestaurantDetailsState>(
@@ -171,10 +170,12 @@ class _RestaurantDetailsContent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (state is RestaurantDetailsLoaded)
-          _PromoSection(
-            state: state as RestaurantDetailsLoaded,
-            cartQuantities: cartData.quantities,
-          ),
+          if ((state as RestaurantDetailsLoaded).selectedCategoryId == "all" ||
+              (state as RestaurantDetailsLoaded).selectedCategoryId == null)
+            _PromoSection(
+              state: state as RestaurantDetailsLoaded,
+              cartQuantities: cartData.quantities,
+            ),
         Container(
           constraints: BoxConstraints(
             minHeight: MediaQuery.of(context).size.height * 0.4,
