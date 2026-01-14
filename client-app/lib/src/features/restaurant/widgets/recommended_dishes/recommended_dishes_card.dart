@@ -32,17 +32,17 @@ class RecommendedDishCard extends StatelessWidget {
     );
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (context) {
-            return RestaurantDetailsPage(
-                restaurant: RestaurantModel(
-                    name: '',
-                    id: dish.restaurantId,
-                    description: '',
-                    imageUrl: '',
-                    isPremium: false));
-          },
-        ));
+        // Navigator.of(context).push(MaterialPageRoute(
+        //   builder: (context) {
+        //     return RestaurantDetailsPage(
+        //         restaurant: RestaurantModel(
+        //             name: '',
+        //             id: dish.restaurantId,
+        //             description: '',
+        //             imageUrl: '',
+        //             isPremium: false));
+        //   },
+        // ));
       },
       child: Container(
         width: 190,
