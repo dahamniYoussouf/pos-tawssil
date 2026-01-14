@@ -1,6 +1,6 @@
+import 'package:client_app/src/features/restaurant/widgets/restaurant_list_item.dart';
 import 'package:flutter/material.dart';
 import '../cubit/restaurant_search_state.dart';
-import '../widgets/restaurant_search_card.dart';
 import '../pages/restaurant_details_page.dart';
 
 class SearchResultsListWidget extends StatelessWidget {
@@ -18,7 +18,8 @@ class SearchResultsListWidget extends StatelessWidget {
       itemCount: state.restaurants.length,
       itemBuilder: (context, index) {
         final restaurant = state.restaurants[index];
-        return GestureDetector(
+        return RestaurantListItem(
+          restaurant: restaurant,
           onTap: () {
             Navigator.push(
               context,
@@ -28,10 +29,8 @@ class SearchResultsListWidget extends StatelessWidget {
               ),
             );
           },
-          child: RestaurantCard(restaurant: restaurant),
         );
       },
     );
   }
 }
-

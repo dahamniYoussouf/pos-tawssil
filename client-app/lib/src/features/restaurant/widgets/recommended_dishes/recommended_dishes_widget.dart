@@ -1,4 +1,6 @@
 import 'package:client_app/src/features/restaurant/models/homepage_models.dart';
+import 'package:client_app/src/features/restaurant/models/restaurant_model.dart';
+import 'package:client_app/src/features/restaurant/pages/restaurant_details_page.dart';
 import 'package:client_app/src/features/restaurant/widgets/recommended_dishes/recommended_dishes_card.dart';
 import 'package:flutter/material.dart';
 import 'package:client_app/src/core/res/color_app.dart';
@@ -6,12 +8,12 @@ import 'package:client_app/l10n/app_localizations.dart';
 
 class RecommendedDishesWidget extends StatelessWidget {
   final List<RecommendedDishModel> dishes;
-  final Function(RecommendedDishModel) onDishTap;
+  final List<RestaurantModel> allRestaurants;
 
   const RecommendedDishesWidget({
     Key? key,
     required this.dishes,
-    required this.onDishTap,
+    required this.allRestaurants,
   }) : super(key: key);
 
   @override
@@ -48,7 +50,15 @@ class RecommendedDishesWidget extends StatelessWidget {
               itemBuilder: (context, index) {
                 return RecommendedDishCard(
                   dish: activeDishes[index],
-                  onTap: () => onDishTap(activeDishes[index]),
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RestaurantDetailsPage(
+                        restaurant: allRestaurants.firstWhere((element) =>
+                            element.id == activeDishes[index].restaurantId),
+                      ),
+                    ),
+                  ),
                 );
               },
             ),

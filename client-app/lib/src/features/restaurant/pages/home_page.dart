@@ -82,7 +82,7 @@ class HomePage extends StatelessWidget {
           if (homepageData.recommendedDishes.isNotEmpty)
             RecommendedDishesWidget(
               dishes: homepageData.recommendedDishes,
-              onDishTap: onRecommendedDishTap ?? (_) {},
+              allRestaurants: allRestaurants,
             ),
           if (homepageData.recommendedDishes.isNotEmpty)
             Divider(

@@ -1,8 +1,10 @@
 import 'package:client_app/src/core/res/color_app.dart';
+import 'package:client_app/src/features/restaurant/cubit/homepage_cubit.dart';
 import 'package:client_app/src/features/restaurant/models/homepage_models.dart';
 import 'package:client_app/src/features/restaurant/models/restaurant_model.dart';
 import 'package:client_app/src/features/restaurant/pages/restaurant_details_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:client_app/src/core/res/media_res.dart';
 import 'package:client_app/l10n/app_localizations.dart';
@@ -31,19 +33,7 @@ class RecommendedDishCard extends StatelessWidget {
       dish.deliveryTimeMax,
     );
     return GestureDetector(
-      onTap: () {
-        // Navigator.of(context).push(MaterialPageRoute(
-        //   builder: (context) {
-        //     return RestaurantDetailsPage(
-        //         restaurant: RestaurantModel(
-        //             name: '',
-        //             id: dish.restaurantId,
-        //             description: '',
-        //             imageUrl: '',
-        //             isPremium: false));
-        //   },
-        // ));
-      },
+      onTap: onTap,
       child: Container(
         width: 190,
         margin: const EdgeInsets.only(right: 16, bottom: 8),
