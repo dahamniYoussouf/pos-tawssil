@@ -50,15 +50,20 @@ class RecommendedDishesWidget extends StatelessWidget {
               itemBuilder: (context, index) {
                 return RecommendedDishCard(
                   dish: activeDishes[index],
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => RestaurantDetailsPage(
-                        restaurant: allRestaurants.firstWhere((element) =>
-                            element.id == activeDishes[index].restaurantId),
-                      ),
-                    ),
-                  ),
+                  onTap: () {
+                    int indexRestaurant = allRestaurants.indexWhere((element) =>
+                        element.id == activeDishes[index].restaurantId);
+                    if (indexRestaurant != -1) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RestaurantDetailsPage(
+                            restaurant: allRestaurants[indexRestaurant],
+                          ),
+                        ),
+                      );
+                    }
+                  },
                 );
               },
             ),

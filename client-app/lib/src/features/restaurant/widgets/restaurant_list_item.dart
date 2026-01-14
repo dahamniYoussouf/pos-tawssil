@@ -21,22 +21,12 @@ class RestaurantListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<HomepageCubit, HomepageState>(
       builder: (context, state) {
-        // Get promotions for this restaurant from the homepage state
-        List<String> promotionBadges = [];
-        if (state is HomepageLoaded) {
-          promotionBadges = state.homepageData.promotions
-              .where((promotion) =>
-                  promotion.restaurantId == restaurant.id &&
-                  promotion.isActive &&
-                  promotion.badgeText != null &&
-                  promotion.badgeText!.isNotEmpty)
-              .map((promotion) => promotion.badgeText!)
-              .toList();
-        }
-
         // Check if delivery is free
         final isFreeDelivery =
             restaurant.deliveryFee == null || restaurant.deliveryFee == 0;
+        bool hasNumberInText(String text) {
+          return RegExp(r'\d').hasMatch(text);
+        }
 
         // Format distance and delivery time
         final distanceText = restaurant.distance != null
@@ -102,40 +92,7 @@ class RestaurantListItem extends StatelessWidget {
                           },
                         ),
                       ),
-                      // Promotion badges overlay (top-left)
-                      if (promotionBadges.isNotEmpty)
-                        Positioned(
-                          top: 8,
-                          left: 8,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisSize: MainAxisSize.min,
-                            children: promotionBadges
-                                .take(2) // Limit to 2 badges
-                                .map((badgeText) => Container(
-                                      margin: const EdgeInsets.only(bottom: 6),
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 10,
-                                        vertical: 6,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: ColorApp.primary,
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Text(
-                                        badgeText,
-                                        style: const TextStyle(
-                                          fontSize: 11,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ))
-                                .toList(),
-                          ),
-                        ),
+
                       // Rating overlay (top-right)
                       Positioned(
                         top: 8,
@@ -174,54 +131,43 @@ class RestaurantListItem extends StatelessWidget {
                         top: 8,
                         left: 8,
                         child: Wrap(
-                          spacing: 4,
-                          children: [
-                            // if (isExclusive)
-                            Container(
-                              margin: const EdgeInsets.only(bottom: 6),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: ColorApp.promoColor,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                'En exclusivite',
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: ColorApp.textBlack,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-
-                            // if (isFreeDelivery)
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: ColorApp.promoColor,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                'Livraison Gratuite',
-                                style: const TextStyle(
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.bold,
-                                  color: ColorApp.textBlack,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
+                            spacing: 4,
+                            children: List.generate(
+                                restaurant.promotions.length,
+                                (index) => restaurant
+                                            .promotions[index].badgeText !=
+                                        null
+                                    ? Container(
+                                        margin:
+                                            const EdgeInsets.only(bottom: 6),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: hasNumberInText(restaurant
+                                                      .promotions[index]
+                                                      .badgeText ??
+                                                  '')
+                                              ? ColorApp.promoYellowColor
+                                              : ColorApp.promoGreenColor,
+                                          borderRadius:
+                                              BorderRadius.circular(6),
+                                        ),
+                                        child: Text(
+                                          restaurant.promotions[index]
+                                                  .badgeText ??
+                                              '',
+                                          style: const TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: ColorApp.textBlack,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      )
+                                    : const SizedBox.shrink())),
                       ),
                     ],
                   ),

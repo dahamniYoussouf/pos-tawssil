@@ -83,7 +83,7 @@ class DailyDealCard extends StatelessWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: ColorApp.promoColor,
+                                color: ColorApp.promoGreenColor,
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -108,7 +108,7 @@ class DailyDealCard extends StatelessWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: ColorApp.promoColor,
+                                color: ColorApp.promoGreenColor,
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(

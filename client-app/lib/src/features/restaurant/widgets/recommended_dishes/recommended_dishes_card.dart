@@ -1,10 +1,6 @@
 import 'package:client_app/src/core/res/color_app.dart';
-import 'package:client_app/src/features/restaurant/cubit/homepage_cubit.dart';
 import 'package:client_app/src/features/restaurant/models/homepage_models.dart';
-import 'package:client_app/src/features/restaurant/models/restaurant_model.dart';
-import 'package:client_app/src/features/restaurant/pages/restaurant_details_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:client_app/src/core/res/media_res.dart';
 import 'package:client_app/l10n/app_localizations.dart';

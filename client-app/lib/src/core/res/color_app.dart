@@ -38,5 +38,6 @@ class ColorApp {
   static const Color premiumBannerGradientStart = Color(0xFF53A701);
   static const Color premiumBannerGradientEnd = Color(0xFF78DD15);
 
-  static const Color promoColor = Color(0xFF00FFB0);
+  static const Color promoGreenColor = Color(0xFF00FFB0);
+  static const Color promoYellowColor = Color(0xFFFFFB00);
 }

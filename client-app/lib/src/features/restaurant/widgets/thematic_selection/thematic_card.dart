@@ -86,7 +86,7 @@ class ThematicSelectionCard extends StatelessWidget {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: ColorApp.promoColor,
+                                color: ColorApp.promoGreenColor,
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
@@ -107,7 +107,7 @@ class ThematicSelectionCard extends StatelessWidget {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: ColorApp.promoColor,
+                                color: ColorApp.promoGreenColor,
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
