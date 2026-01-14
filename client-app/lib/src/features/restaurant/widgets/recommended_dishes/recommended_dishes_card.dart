@@ -1,5 +1,7 @@
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/features/restaurant/models/homepage_models.dart';
+import 'package:client_app/src/features/restaurant/models/restaurant_model.dart';
+import 'package:client_app/src/features/restaurant/pages/restaurant_details_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:client_app/src/core/res/media_res.dart';
@@ -22,11 +24,26 @@ class RecommendedDishCard extends StatelessWidget {
     final restaurant = dish.restaurant;
     final isFreeDelivery =
         restaurant?.deliveryFee == null || restaurant?.deliveryFee == 0;
-    final distanceText = '0.8 km';
-    final deliveryTimeText = '17 min';
-
+    final double? rating = dish.rating ?? restaurant?.rating;
+    final String distanceText = _buildDistanceText(dish.distance);
+    final String deliveryTimeText = _buildDeliveryTimeText(
+      dish.deliveryTimeMin,
+      dish.deliveryTimeMax,
+    );
     return GestureDetector(
-      onTap: onTap,
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) {
+            return RestaurantDetailsPage(
+                restaurant: RestaurantModel(
+                    name: '',
+                    id: dish.restaurantId,
+                    description: '',
+                    imageUrl: '',
+                    isPremium: false));
+          },
+        ));
+      },
       child: Container(
         width: 190,
         margin: const EdgeInsets.only(right: 16, bottom: 8),
@@ -61,7 +78,7 @@ class RecommendedDishCard extends StatelessWidget {
                         )
                       : _buildPlaceholderImage(),
                 ),
-                if (restaurant != null)
+                if (rating != null)
                   Positioned(
                     top: 8,
                     right: 8,
@@ -84,7 +101,7 @@ class RecommendedDishCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 3),
                           Text(
-                            restaurant.rating.toStringAsFixed(1),
+                            rating.toStringAsFixed(1),
                             style: const TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w600,
@@ -181,5 +198,20 @@ class RecommendedDishCard extends StatelessWidget {
       child:
           const Icon(Icons.restaurant_menu, size: 40, color: ColorApp.primary),
     );
+  }
+
+  String _buildDistanceText(double? distance) {
+    if (distance == null) return '';
+    final double distanceInKm = distance / 1000;
+    return '${distanceInKm.toStringAsFixed(1)} km';
+  }
+
+  String _buildDeliveryTimeText(int? minTime, int? maxTime) {
+    if (minTime == null && maxTime == null) return '';
+    if (minTime != null && maxTime != null && minTime != maxTime) {
+      return '$minTime-$maxTime min';
+    }
+    final int resolvedTime = minTime ?? maxTime ?? 0;
+    return '$resolvedTime min';
   }
 }

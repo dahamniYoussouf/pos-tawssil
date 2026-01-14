@@ -172,6 +172,13 @@ class RecommendedDishModel {
   final String? reason;
   final bool isActive;
   final RestaurantModel? restaurant;
+  final String? restaurantName;
+  final double? rating;
+  final double? distance;
+  final int? deliveryTimeMin;
+  final int? deliveryTimeMax;
+  final double? oldPrice;
+  final double? promotionPrice;
   final MenuItemBasicInfo? menuItem;
   final DateTime? createdAt;
   final DateTime? updatedAt;
@@ -183,12 +190,28 @@ class RecommendedDishModel {
     this.reason,
     required this.isActive,
     this.restaurant,
+    this.restaurantName,
+    this.rating,
+    this.distance,
+    this.deliveryTimeMin,
+    this.deliveryTimeMax,
+    this.oldPrice,
+    this.promotionPrice,
     this.menuItem,
     this.createdAt,
     this.updatedAt,
   });
 
   factory RecommendedDishModel.fromJson(Map<String, dynamic> json) {
+    final double? parsedRating = _parseNullableDouble(json['rating']);
+    final double? parsedDistance = _parseNullableDouble(json['distance']);
+    final int? parsedDeliveryTimeMin =
+        _parseNullableInt(json['delivery_time_min']);
+    final int? parsedDeliveryTimeMax =
+        _parseNullableInt(json['delivery_time_max']);
+    final double? parsedOldPrice = _parseNullableDouble(json['old_price']);
+    final double? parsedPromotionPrice =
+        _parseNullableDouble(json['promotion_price']);
     return RecommendedDishModel(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
       restaurantId: (json['restaurant_id'] ?? '').toString(),
@@ -198,6 +221,13 @@ class RecommendedDishModel {
       restaurant: json['restaurant'] != null
           ? RestaurantModel.fromJson(json['restaurant'] as Map<String, dynamic>)
           : null,
+      restaurantName: json['restaurant_name']?.toString(),
+      rating: parsedRating,
+      distance: parsedDistance,
+      deliveryTimeMin: parsedDeliveryTimeMin,
+      deliveryTimeMax: parsedDeliveryTimeMax,
+      oldPrice: parsedOldPrice,
+      promotionPrice: parsedPromotionPrice,
       menuItem: json['menu_item'] != null
           ? MenuItemBasicInfo.fromJson(
               json['menu_item'] as Map<String, dynamic>)
@@ -219,10 +249,30 @@ class RecommendedDishModel {
       if (reason != null) 'reason': reason,
       'is_active': isActive,
       if (restaurant != null) 'restaurant': restaurant!.toJson(),
+      if (restaurantName != null) 'restaurant_name': restaurantName,
+      if (rating != null) 'rating': rating,
+      if (distance != null) 'distance': distance,
+      if (deliveryTimeMin != null) 'delivery_time_min': deliveryTimeMin,
+      if (deliveryTimeMax != null) 'delivery_time_max': deliveryTimeMax,
+      if (oldPrice != null) 'old_price': oldPrice,
+      if (promotionPrice != null) 'promotion_price': promotionPrice,
       if (menuItem != null) 'menu_item': menuItem!.toJson(),
       if (createdAt != null) 'created_at': createdAt!.toIso8601String(),
       if (updatedAt != null) 'updated_at': updatedAt!.toIso8601String(),
     };
+  }
+
+  static double? _parseNullableDouble(dynamic value) {
+    if (value == null) return null;
+    return MenuModel.parsePrice(value);
+  }
+
+  static int? _parseNullableInt(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return value;
+    if (value is double) return value.toInt();
+    if (value is String) return int.tryParse(value);
+    return null;
   }
 }
 
