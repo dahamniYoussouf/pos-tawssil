@@ -1,4 +1,5 @@
 import 'package:client_app/src/core/res/color_app.dart';
+import 'package:client_app/src/core/utils/global_function.dart';
 import 'package:client_app/src/features/restaurant/models/restaurant_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -67,68 +68,53 @@ class DailyDealCard extends StatelessWidget {
                               _buildPlaceholderImage(),
                         ),
                       ),
-                      // Overlay badges (top-left)
                       Positioned(
                         top: 8,
                         left: 8,
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            // if (isExclusive)
-                            Container(
-                              margin: const EdgeInsets.only(bottom: 6),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: ColorApp.promoGreenColor,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                'En exclusivite',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge
-                                    ?.copyWith(
-                                      fontFamily: 'Inter',
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w900,
-                                      color: ColorApp.textBlack,
-                                    ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            // if (isFreeDelivery)
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: ColorApp.promoGreenColor,
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                'Livraison Gratuite',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .titleLarge
-                                    ?.copyWith(
-                                      fontFamily: 'Inter',
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w900,
-                                      color: ColorApp.textBlack,
-                                    ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
+                            spacing: 4,
+                            children: List.generate(
+                                restaurant.promotions.length,
+                                (index) => restaurant
+                                            .promotions[index].badgeText !=
+                                        null
+                                    ? Container(
+                                        margin:
+                                            const EdgeInsets.only(bottom: 6),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 4,
+                                          vertical: 2,
+                                        ),
+                                        decoration: BoxDecoration(
+                                          color: hasNumberInText(restaurant
+                                                      .promotions[index]
+                                                      .badgeText ??
+                                                  '')
+                                              ? ColorApp.promoYellowColor
+                                              : ColorApp.promoGreenColor,
+                                          borderRadius:
+                                              BorderRadius.circular(6),
+                                        ),
+                                        child: Text(
+                                          restaurant.promotions[index]
+                                                  .badgeText ??
+                                              '',
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleLarge
+                                              ?.copyWith(
+                                                fontFamily: 'Inter',
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.w900,
+                                                color: ColorApp.textBlack,
+                                              ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      )
+                                    : const SizedBox.shrink())),
                       ),
+
                       // Rating overlay (top-right)
                       Positioned(
                         top: 8,

@@ -1,5 +1,6 @@
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/core/res/media_res.dart';
+import 'package:client_app/src/core/utils/global_function.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
@@ -24,9 +25,6 @@ class RestaurantListItem extends StatelessWidget {
         // Check if delivery is free
         final isFreeDelivery =
             restaurant.deliveryFee == null || restaurant.deliveryFee == 0;
-        bool hasNumberInText(String text) {
-          return RegExp(r'\d').hasMatch(text);
-        }
 
         // Format distance and delivery time
         final distanceText = restaurant.distance != null

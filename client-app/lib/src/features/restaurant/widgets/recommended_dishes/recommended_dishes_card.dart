@@ -64,6 +64,32 @@ class RecommendedDishCard extends StatelessWidget {
                         )
                       : _buildPlaceholderImage(),
                 ),
+                Positioned(
+                    top: 8,
+                    left: 8,
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 6),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: ColorApp.grey,
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(color: ColorApp.white),
+                      ),
+                      child: Text(
+                        dish.menuItem?.nom ?? '',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontFamily: 'Inter',
+                              fontSize: 11,
+                              fontWeight: FontWeight.w900,
+                              color: ColorApp.white,
+                            ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    )),
                 if (rating != null)
                   Positioned(
                     top: 8,
@@ -109,7 +135,7 @@ class RecommendedDishCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      dishName,
+                      dish.restaurantName ?? '',
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.w800,
