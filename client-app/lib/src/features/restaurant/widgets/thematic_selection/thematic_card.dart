@@ -27,9 +27,6 @@ class ThematicSelectionCard extends StatelessWidget {
         final isFreeDelivery =
             restaurant.deliveryFee == null || restaurant.deliveryFee == 0;
 
-        // Check if restaurant is premium (exclusive)
-        final isExclusive = restaurant.isPremium;
-
         // Format distance and delivery time
         final distanceText = restaurant.distance != null
             ? '${(restaurant.distance! / 1000).toStringAsFixed(1)} km'

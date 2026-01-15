@@ -18,7 +18,6 @@ class RecommendedDishCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imageUrl = dish.menuItem?.photoUrl;
-    final dishName = dish.menuItem?.nom ?? '';
     final restaurant = dish.restaurant;
     final isFreeDelivery =
         restaurant?.deliveryFee == null || restaurant?.deliveryFee == 0;
