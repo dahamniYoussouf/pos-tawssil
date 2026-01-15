@@ -173,6 +173,14 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
                   _DeliveryAddressSection(
                     address: widget.deliveryAddress ?? 'Baraki, Sidi Moussa',
                   ),
+                const SizedBox(height: 12),
+                _PaymentMethodSection(
+                  selectedMethod: selectedPaymentMethod,
+                  onMethodSelected: (method) {
+                    setState(() => selectedPaymentMethod = method);
+                  },
+                ),
+                const SizedBox(height: 22),
                 _DeliveryTimeInfo(
                   showDeliveryFee:
                       selectedDeliveryOption == DeliveryOption.delivery,
@@ -191,16 +199,8 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
                 ),
                 const SizedBox(height: 20),
                 Divider(color: Colors.grey[300], thickness: 1),
-                const SizedBox(height: 12),
-                _PaymentMethodSection(
-                  selectedMethod: selectedPaymentMethod,
-                  onMethodSelected: (method) {
-                    setState(() => selectedPaymentMethod = method);
-                  },
-                ),
-                const SizedBox(height: 20),
-                Divider(color: Colors.grey[300], thickness: 1),
-                const SizedBox(height: 30),
+
+                const SizedBox(height: 200),
               ],
             ),
           );
@@ -377,33 +377,38 @@ class _DeliveryAddressSection extends StatelessWidget {
                 Row(
                   children: [
                     SvgPicture.asset(MediaRes.locationIcon,
-                        width: 20, height: 20),
-                    SizedBox(width: 12),
+                        width: 15, height: 15),
+                    SizedBox(width: 8),
                     Text(
                       AppLocalizations.of(context)!.deliveryAddress,
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w500,
-                        color: ColorApp.black,
+                        color: ColorApp.textBlack,
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 4),
                 Text(
                   address,
                   style: TextStyle(
                     fontSize: 14,
-                    color: ColorApp.black,
-                    fontWeight: FontWeight.w500,
+                    color: ColorApp.textBlack,
+                    fontWeight: FontWeight.w800,
+                    overflow: TextOverflow.ellipsis,
                   ),
+                  maxLines: 1,
                 ),
               ],
             ),
           ),
           IconButton(
             onPressed: () {},
-            icon: Icon(Icons.arrow_forward_ios, color: ColorApp.primary),
+            icon: SvgPicture.asset(MediaRes.arrowRightIcon,
+                width: 40,
+                height: 40,
+                colorFilter: ColorFilter.mode(ColorApp.black, BlendMode.srcIn)),
           ),
         ],
       ),
@@ -427,7 +432,7 @@ class _DeliveryTimeInfo extends StatelessWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -466,7 +471,7 @@ class _DeliveryTimeInfo extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -511,7 +516,7 @@ class _OrderDetailsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -540,7 +545,15 @@ class _OrderDetailsSection extends StatelessWidget {
               price: '${deliveryFee!.toStringAsFixed(0)} DA',
             ),
           ],
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
+          const Divider(
+            color: ColorApp.textBlack,
+            height: 1,
+            thickness: 1,
+            indent: 4,
+            endIndent: 4,
+          ),
+          const SizedBox(height: 16),
           PriceRowWidget(
             label: AppLocalizations.of(context)!.total,
             price: '${total.toDouble().toStringAsFixed(0)} DA',
@@ -601,21 +614,95 @@ class _PaymentMethodSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Text(
-            AppLocalizations.of(context)!.paymentMethod,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
+    return InkWell(
+      onTap: () => _showPaymentMethodDialog(context),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16.0),
+        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+        decoration: BoxDecoration(
+          color: ColorApp.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: ColorApp.grey.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, 10),
             ),
-          ),
+          ],
         ),
-        const SizedBox(height: 12),
-        SizedBox(
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SvgPicture.asset(MediaRes.cardIcon,
+                          width: 12,
+                          height: 12,
+                          colorFilter: ColorFilter.mode(
+                              ColorApp.primary, BlendMode.srcIn)),
+                      const SizedBox(width: 8),
+                      Text(
+                        AppLocalizations.of(context)!.paymentMethod,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: ColorApp.textBlack,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _getPaymentMethodLabel(context),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: ColorApp.textBlack,
+                      fontWeight: FontWeight.w800,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    maxLines: 1,
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+              onPressed: () => _showPaymentMethodDialog(context),
+              icon: SvgPicture.asset(MediaRes.arrowRightIcon,
+                  width: 40,
+                  height: 40,
+                  colorFilter:
+                      ColorFilter.mode(ColorApp.black, BlendMode.srcIn)),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getPaymentMethodLabel(BuildContext context) {
+    if (selectedMethod == 'baridi_mob') {
+      return AppLocalizations.of(context)!.baridiMob;
+    }
+    return AppLocalizations.of(context)!.cash;
+  }
+
+  void _showPaymentMethodDialog(BuildContext context) {
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          backgroundColor: ColorApp.white,
+          title: Text(AppLocalizations.of(dialogContext)!.paymentMethod),
+          content: SizedBox(
             height: 70,
             width: double.infinity,
             child: Row(
@@ -623,25 +710,38 @@ class _PaymentMethodSection extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 PaymentOptionWidget(
-                  label: AppLocalizations.of(context)!.cash,
+                  label: AppLocalizations.of(dialogContext)!.cash,
                   icon: MediaRes.cashIcon,
                   value: 'cash_on_delivery',
                   isSelected: selectedMethod == 'cash_on_delivery',
-                  onTap: () => onMethodSelected('cash_on_delivery'),
+                  onTap: () => _handleMethodSelection(
+                    dialogContext,
+                    'cash_on_delivery',
+                  ),
                   radiusLeft: 12,
                 ),
                 PaymentOptionWidget(
-                  label: AppLocalizations.of(context)!.baridiMob,
+                  label: AppLocalizations.of(dialogContext)!.baridiMob,
                   icon: MediaRes.cardIcon,
                   value: 'baridi_mob',
                   isSelected: selectedMethod == 'baridi_mob',
-                  onTap: () => onMethodSelected('baridi_mob'),
+                  onTap: () => _handleMethodSelection(
+                    dialogContext,
+                    'baridi_mob',
+                  ),
                   radiusRight: 12,
                 ),
               ],
-            )),
-      ],
+            ),
+          ),
+        );
+      },
     );
+  }
+
+  void _handleMethodSelection(BuildContext context, String value) {
+    Navigator.of(context).pop();
+    onMethodSelected(value);
   }
 }
 
@@ -728,33 +828,36 @@ class _VerifyButton extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
           color: ColorApp.primary,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(15),
           ),
           child: Container(
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 8),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(12)),
                 color: ColorApp.white,
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '${total.toStringAsFixed(0)} DA',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                        color: ColorApp.textBlack),
+                  Padding(
+                    padding: EdgeInsets.only(left: 24),
+                    child: Text(
+                      AppLocalizations.of(context)!.total +
+                          ' : ${total.toStringAsFixed(0)} DA',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                          color: ColorApp.textBlack),
+                    ),
                   ),
-                  const SizedBox(width: 32),
                   Container(
                     decoration: BoxDecoration(
                       color: ColorApp.primary,
-                      borderRadius: BorderRadius.circular(24),
+                      borderRadius: BorderRadius.circular(10),
                     ),
+                    margin: const EdgeInsets.all(8),
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 12),
+                        horizontal: 12, vertical: 12),
                     child: Text(
                       AppLocalizations.of(context)!.verifyAndFinalize,
                       style: const TextStyle(
