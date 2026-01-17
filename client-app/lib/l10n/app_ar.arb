@@ -114,7 +114,7 @@
   "newToDiscover": "جديد لاكتشافه ({count})",
   "noRestaurantFound": "لم يتم العثور على مطعم",
   "reload": "إعادة التحميل",
-  "searchRestaurantPlaceholder": "البحث عن المطاعم والطعام...",
+  "searchRestaurantPlaceholder": "البحث عن المطاعم ...",
   "navigationToCart": "التنقل إلى السلة",
   "noRestaurantNear": "لم يتم العثور على مطعم بالقرب منك.",
   "tryAgain": "حاول مرة أخرى",

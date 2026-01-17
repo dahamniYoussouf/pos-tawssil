@@ -217,7 +217,7 @@ class RestaurantListItem extends StatelessWidget {
                                           if (deliveryTimeText.isNotEmpty)
                                             TextSpan(text: deliveryTimeText),
                                           if (isFreeDelivery) ...[
-                                            const TextSpan(text: ' • '),
+                                            const TextSpan(text: '  •  '),
                                             const TextSpan(
                                               text: 'Gratuite',
                                               style: TextStyle(

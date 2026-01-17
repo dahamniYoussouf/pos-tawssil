@@ -372,7 +372,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get reload => 'إعادة التحميل';
 
   @override
-  String get searchRestaurantPlaceholder => 'البحث عن المطاعم والطعام...';
+  String get searchRestaurantPlaceholder => 'البحث عن المطاعم ...';
 
   @override
   String get navigationToCart => 'التنقل إلى السلة';

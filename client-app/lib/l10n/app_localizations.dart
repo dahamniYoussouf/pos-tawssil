@@ -787,7 +787,7 @@ abstract class AppLocalizations {
   /// Search restaurant placeholder
   ///
   /// In en, this message translates to:
-  /// **'Rechercher des restaurants, des aliments...'**
+  /// **'Rechercher des restaurants'**
   String get searchRestaurantPlaceholder;
 
   /// Navigation to cart message

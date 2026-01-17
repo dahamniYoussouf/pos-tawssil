@@ -486,7 +486,7 @@
   "@reload": {
     "description": "Reload button text"
   },
-  "searchRestaurantPlaceholder": "Rechercher des restaurants, des aliments...",
+  "searchRestaurantPlaceholder": "Rechercher des restaurants",
   "@searchRestaurantPlaceholder": {
     "description": "Search restaurant placeholder"
   },

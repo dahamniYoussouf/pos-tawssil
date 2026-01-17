@@ -70,7 +70,7 @@ class CategoryChipsList extends StatelessWidget {
       },
       child: Container(
         // height: 84,
-        margin: const EdgeInsets.only(right: 16),
+        margin: const EdgeInsets.only(right: 28),
         decoration: BoxDecoration(
           color: ColorApp.white,
           borderRadius: BorderRadius.circular(25),

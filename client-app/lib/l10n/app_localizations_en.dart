@@ -376,8 +376,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reload => 'Recharger';
 
   @override
-  String get searchRestaurantPlaceholder =>
-      'Rechercher des restaurants, des aliments...';
+  String get searchRestaurantPlaceholder => 'Rechercher des restaurants';
 
   @override
   String get navigationToCart => 'Navigation vers le panier';

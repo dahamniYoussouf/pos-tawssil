@@ -76,7 +76,7 @@ class _AnnouncementsWidgetState extends State<AnnouncementsWidget> {
         activeAnnouncements.where((a) => a.image != null).toList();
     if (activeAnnouncementsWithImage.isEmpty) return const SizedBox.shrink();
     return SizedBox(
-      height: 165,
+      height: 180,
       child: ListView.builder(
         controller: _scrollController,
         scrollDirection: Axis.horizontal,
