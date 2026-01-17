@@ -11,7 +11,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
   static const double _itemSize = 48;
   static const double _iconSize = 26;
   static const double _indicatorHeight = 6;
-  static const double _indicatorWidth = 50;
+  static const double _indicatorWidth = 80;
   static const double _horizontalPadding = 20;
   static const double _verticalPadding = 14;
   static const double _badgeOffset = -6;
@@ -109,7 +109,7 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
   double centerOffset(int index) {
     return index == 0
-        ? -4
+        ? -7
         : index == 1
             ? 1
             : index == 2
