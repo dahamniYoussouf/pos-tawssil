@@ -1,11 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:client_app/l10n/app_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:client_app/src/core/res/color_app.dart';
+import 'package:client_app/src/core/res/media_res.dart';
 import '../../cart/cubit/cart_cubit.dart';
 import '../../cart/states/cart_state.dart';
-import 'package:client_app/src/core/res/color_app.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
+  static const double _barHeight = 72;
+  static const double _itemSize = 48;
+  static const double _iconSize = 26;
+  static const double _indicatorHeight = 6;
+  static const double _indicatorWidth = 50;
+  static const double _horizontalPadding = 20;
+  static const double _verticalPadding = 14;
+  static const double _badgeOffset = -6;
+  static const double _badgePadding = 4;
+  static const double _badgeMinSize = 18;
+  static const double _badgeFontSize = 10;
   final int currentIndex;
   final Function(int)? onTap;
 
@@ -29,71 +41,107 @@ class CustomBottomNavigationBar extends StatelessWidget {
         ],
       ),
       child: SafeArea(
-        child: Container(
-          height: 65,
-          padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildNavItem(
-                context,
-                icon: Icons.home_outlined,
-                activeIcon: Icons.home,
-                label: AppLocalizations.of(context)!.home,
-                index: 0,
-              ),
-              _buildNavItem(
-                context,
-                icon: Icons.favorite_border,
-                activeIcon: Icons.favorite,
-                label: AppLocalizations.of(context)!.favorites,
-                index: 1,
-              ),
-              _buildNavItem(
-                context,
-                icon: Icons.history,
-                activeIcon: Icons.history,
-                label: AppLocalizations.of(context)!.history,
-                index: 2,
-              ),
-              _buildCartNavItem(context, index: 3),
-              _buildNavItem(
-                context,
-                icon: Icons.person_outline,
-                activeIcon: Icons.person,
-                label: AppLocalizations.of(context)!.profile,
-                index: 4,
-              ),
-            ],
+        child: SizedBox(
+          height: _barHeight,
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              final double itemWidth = constraints.maxWidth / 5;
+              return Stack(
+                alignment: Alignment.topCenter,
+                children: [
+                  AnimatedPositioned(
+                    duration: const Duration(milliseconds: 400),
+                    curve: Curves.easeInOutCubic,
+                    left: itemWidth * currentIndex +
+                        (itemWidth -
+                                _indicatorWidth -
+                                centerOffset(currentIndex)) /
+                            2,
+                    child: Container(
+                      height: _indicatorHeight,
+                      width: _indicatorWidth,
+                      decoration: BoxDecoration(
+                        color: ColorApp.primary,
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: _horizontalPadding,
+                      vertical: _verticalPadding,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _buildNavItem(
+                          context,
+                          iconPath: MediaRes.homeNavBarIcon,
+                          index: 0,
+                        ),
+                        _buildNavItem(
+                          context,
+                          iconPath: MediaRes.searchNavBarIcon,
+                          index: 1,
+                        ),
+                        _buildNavItem(
+                          context,
+                          iconPath: MediaRes.historyNavBarIcon,
+                          index: 2,
+                        ),
+                        _buildCartNavItem(context, index: 3),
+                        _buildNavItem(
+                          context,
+                          iconPath: MediaRes.profileNavBarIcon,
+                          index: 4,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
     );
   }
 
+  double centerOffset(int index) {
+    return index == 0
+        ? -4
+        : index == 1
+            ? 1
+            : index == 2
+                ? 5
+                : index == 3
+                    ? 5
+                    : index == 4
+                        ? 10
+                        : 0;
+  }
+
   Widget _buildNavItem(
     BuildContext context, {
-    required IconData icon,
-    required IconData activeIcon,
-    required String label,
+    required String iconPath,
     required int index,
   }) {
     final isActive = currentIndex == index;
-
     return GestureDetector(
       onTap: () => onTap?.call(index),
       behavior: HitTestBehavior.opaque,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color:
-              isActive ? ColorApp.primary.withOpacity(0.1) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Icon(
-          isActive ? activeIcon : icon,
-          color: isActive ? ColorApp.primary : Colors.grey[600],
-          size: 26,
+        width: _itemSize,
+        height: _itemSize,
+        alignment: Alignment.center,
+        child: SvgPicture.asset(
+          iconPath,
+          width: _iconSize,
+          height: _iconSize,
+          colorFilter: ColorFilter.mode(
+            isActive ? ColorApp.primary : ColorApp.navBarIconColor,
+            BlendMode.srcIn,
+          ),
         ),
       ),
     );
@@ -101,51 +149,50 @@ class CustomBottomNavigationBar extends StatelessWidget {
 
   Widget _buildCartNavItem(BuildContext context, {required int index}) {
     final isActive = currentIndex == index;
-
     return GestureDetector(
       onTap: () => onTap?.call(index),
       behavior: HitTestBehavior.opaque,
       child: Container(
-        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color:
-              isActive ? ColorApp.primary.withOpacity(0.1) : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
+        width: _itemSize,
+        height: _itemSize,
+        alignment: Alignment.center,
         child: BlocBuilder<CartCubit, CartState>(
           builder: (context, state) {
             int totalItems = 0;
             if (state is CartUpdated) {
               totalItems = state.totalItems;
             }
-
             return Stack(
               clipBehavior: Clip.none,
               children: [
-                Icon(
-                  isActive ? Icons.shopping_cart : Icons.shopping_cart_outlined,
-                  color: isActive ? ColorApp.primary : Colors.grey[600],
-                  size: 26,
+                SvgPicture.asset(
+                  MediaRes.cartNavBarIcon,
+                  width: _iconSize,
+                  height: _iconSize,
+                  colorFilter: ColorFilter.mode(
+                    isActive ? ColorApp.primary : ColorApp.navBarIconColor,
+                    BlendMode.srcIn,
+                  ),
                 ),
                 if (totalItems > 0)
                   Positioned(
-                    right: -6,
-                    top: -6,
+                    right: _badgeOffset,
+                    top: _badgeOffset,
                     child: Container(
-                      padding: EdgeInsets.all(4),
+                      padding: const EdgeInsets.all(_badgePadding),
                       decoration: BoxDecoration(
                         color: Colors.red,
                         shape: BoxShape.circle,
                       ),
                       constraints: BoxConstraints(
-                        minWidth: 18,
-                        minHeight: 18,
+                        minWidth: _badgeMinSize,
+                        minHeight: _badgeMinSize,
                       ),
                       child: Text(
                         '$totalItems',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 10,
+                          fontSize: _badgeFontSize,
                           fontWeight: FontWeight.bold,
                         ),
                         textAlign: TextAlign.center,

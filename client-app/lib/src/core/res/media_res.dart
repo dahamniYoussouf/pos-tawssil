@@ -86,4 +86,11 @@ class MediaRes {
   static const promoBackGroundImage = '$_baseImage/promo_background.png';
   static const thematicBackgroundImage = '$_baseImage/thematic_background.png';
   static const thematicBarImage = '$_baseImage/thematic_bar_image.png';
+
+  // nav bar icons
+  static const homeNavBarIcon = '$_baseImageIcon/home_nav_bar_icon.svg';
+  static const searchNavBarIcon = '$_baseImageIcon/search_nav_bar_icon.svg';
+  static const historyNavBarIcon = '$_baseImageIcon/history_nav_bar_icon.svg';
+  static const cartNavBarIcon = '$_baseImageIcon/cart_nav_bar_icon.svg';
+  static const profileNavBarIcon = '$_baseImageIcon/profile_nav_bar_icon.svg';
 }

@@ -40,4 +40,6 @@ class ColorApp {
 
   static const Color promoGreenColor = Color(0xFF00FFB0);
   static const Color promoYellowColor = Color(0xFFFFFB00);
+
+  static const Color navBarIconColor = Color(0xFF4B5563);
 }
