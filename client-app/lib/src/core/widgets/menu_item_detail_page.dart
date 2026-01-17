@@ -134,6 +134,7 @@ class _MenuItemDetailPageContentState
           .toList();
 
       cartCubit.addOrSetItem(
+        menuItem: widget.menuItem,
         menuItemId: widget.menuItem.id,
         menuItemName: widget.menuItem.nom,
         price: widget.menuItem.prix,
@@ -165,6 +166,7 @@ class _MenuItemDetailPageContentState
               .toList();
 
           cartCubit.addOrSetItem(
+            menuItem: widget.menuItem,
             menuItemId: widget.menuItem.id,
             menuItemName: widget.menuItem.nom,
             price: widget.menuItem.prix,
@@ -218,6 +220,7 @@ class _MenuItemDetailPageContentState
         .toList();
 
     cartCubit.addOrSetItem(
+      menuItem: widget.menuItem,
       menuItemId: widget.menuItem.id,
       menuItemName: widget.menuItem.nom,
       price: widget.menuItem.prix,

@@ -144,7 +144,7 @@ class _RestaurantDetailsViewState extends State<_RestaurantDetailsView> {
                                       : 'Restaurant',
                               rating: widget.restaurant.rating,
                               onBackPressed: () {
-                                context.read<CartCubit>().clearCart();
+                                // context.read<CartCubit>().clearCart();
                                 Navigator.pop(context);
                               },
                               onCartPressed: () => _navigateToCart(context),
@@ -180,6 +180,7 @@ class _RestaurantDetailsViewState extends State<_RestaurantDetailsView> {
                   if (!cartData.isEmpty)
                     FloatingCartButton(
                       onTap: () => _navigateToCart(context),
+                      restaurantId: widget.restaurant.id,
                     ),
                 ],
               );

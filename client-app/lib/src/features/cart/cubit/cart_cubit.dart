@@ -3,6 +3,7 @@ import 'package:client_app/src/features/restaurant/models/menu_model.dart';
 import '../states/cart_state.dart';
 
 class CartItem {
+  final MenuModel menuItem;
   final String menuItemId;
   final String menuItemName;
   final double price;
@@ -12,6 +13,7 @@ class CartItem {
   List<MenuItemAddition> additions;
 
   CartItem({
+    required this.menuItem,
     required this.menuItemId,
     required this.menuItemName,
     required this.price,
@@ -47,6 +49,12 @@ class CartCubit extends Cubit<CartState> {
     return _items.values.fold(0.0, (sum, item) => sum + item.totalPrice);
   }
 
+  double getTotalPriceForRestaurant(String restaurantId) {
+    return _items.values
+        .where((item) => item.menuItem.restaurantId == restaurantId)
+        .fold(0.0, (sum, item) => sum + item.totalPrice);
+  }
+
   bool get isEmpty => _items.isEmpty;
 
   bool get isNotEmpty => _items.isNotEmpty;
@@ -60,43 +68,8 @@ class CartCubit extends Cubit<CartState> {
     ));
   }
 
-  void addItem({
-    required String menuItemId,
-    required String menuItemName,
-    required double price,
-    required String imageUrl,
-    int quantity = 1,
-    String? note,
-    List<MenuItemAddition>? additions,
-  }) {
-    try {
-      if (_items.containsKey(menuItemId)) {
-        _items[menuItemId]!.quantity += quantity;
-        if (note != null && note.isNotEmpty) {
-          _items[menuItemId]!.note = note;
-        }
-        if (additions != null && additions.isNotEmpty) {
-          _items[menuItemId]!.additions = additions;
-        }
-      } else {
-        _items[menuItemId] = CartItem(
-          menuItemId: menuItemId,
-          menuItemName: menuItemName,
-          price: price,
-          imageUrl: imageUrl,
-          quantity: quantity,
-          note: note,
-          additions: additions,
-        );
-      }
-      _emitCurrentState();
-    } catch (e) {
-      emit(CartError(
-          message: 'Erreur lors de l\'ajout au panier: ${e.toString()}'));
-    }
-  }
-
   void addOrSetItem({
+    required MenuModel menuItem,
     required String menuItemId,
     required String menuItemName,
     required double price,
@@ -116,6 +89,7 @@ class CartCubit extends Cubit<CartState> {
         }
       } else {
         _items[menuItemId] = CartItem(
+          menuItem: menuItem,
           menuItemId: menuItemId,
           menuItemName: menuItemName,
           price: price,

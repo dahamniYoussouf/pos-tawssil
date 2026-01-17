@@ -1,4 +1,5 @@
 import 'package:client_app/src/core/res/color_app.dart';
+import 'package:client_app/src/core/widgets/menu_item_detail_page.dart';
 import 'package:client_app/src/features/order/widgets/cart_item_card.dart';
 import 'package:client_app/src/features/order/widgets/delivery_selection_option_widget.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +46,7 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
   double _subtotal(CartCubit cartCubit) {
     final state = cartCubit.state;
     if (state is CartUpdated) {
-      return state.totalPrice;
+      return cartCubit.getTotalPriceForRestaurant(widget.restaurantId!);
     }
     return 0.0;
   }
@@ -143,23 +144,32 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
                 // if (widget.restaurantName != null)
                 //   _RestaurantNameSection(name: widget.restaurantName!),
                 const SizedBox(height: 12),
-                ...cartState.items.values.map((item) => CartItemCard(
-                      item: item,
-                      onQuantityDecrease: () {
-                        if (item.quantity > 1) {
-                          cartCubit.updateQuantity(
-                              item.menuItemId, item.quantity - 1);
-                        } else {
-                          _showRemoveItemDialog(context, item);
-                        }
-                      },
-                      onQuantityIncrease: () {
-                        cartCubit.updateQuantity(
-                            item.menuItemId, item.quantity + 1);
-                      },
-                      onRemove: () => _showRemoveItemDialog(context, item),
-                      onEdit: () {},
-                    )),
+                ...cartState.items.values
+                    .where((item) =>
+                        item.menuItem.restaurantId == widget.restaurantId)
+                    .map((item) => CartItemCard(
+                          item: item,
+                          onQuantityDecrease: () {
+                            if (item.quantity > 1) {
+                              cartCubit.updateQuantity(
+                                  item.menuItemId, item.quantity - 1);
+                            } else {
+                              _showRemoveItemDialog(context, item);
+                            }
+                          },
+                          onQuantityIncrease: () {
+                            cartCubit.updateQuantity(
+                                item.menuItemId, item.quantity + 1);
+                          },
+                          onRemove: () => _showRemoveItemDialog(context, item),
+                          onEdit: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => MenuItemDetailPage(
+                                        menuItem: item.menuItem)));
+                          },
+                        )),
                 const SizedBox(height: 12),
                 DeliveryOptionSection(
                   selectedOption: selectedDeliveryOption.name,

@@ -6,18 +6,21 @@ import 'package:client_app/src/features/cart/cubit/cart_cubit.dart';
 import 'package:client_app/src/features/cart/states/cart_state.dart';
 
 class FloatingCartButton extends StatelessWidget {
+  final String restaurantId;
   final VoidCallback onTap;
 
   const FloatingCartButton({
-    super.key,
+    required this.restaurantId,
+    Key? key,
     required this.onTap,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<CartCubit, CartState>(
       builder: (context, state) {
-        final totalPrice = context.read<CartCubit>().totalPrice;
+        final totalPrice =
+            context.read<CartCubit>().getTotalPriceForRestaurant(restaurantId);
 
         return Positioned(
           left: 16,
