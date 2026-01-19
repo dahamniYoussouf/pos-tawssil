@@ -16,13 +16,14 @@ class MenuModel {
   final DateTime createdAt;
   final DateTime updatedAt;
   final MenuItemCategory? category;
-  final List<MenuItemAddition> additions;
-  final int additionsCount;
+  final List<MenuItemOptionGroup> optionGroups;
+  final int optionGroupsCount;
   final List<dynamic> promotions;
   final bool isFavorite;
   final String? favoriteId;
   final double? rating;
   final String categoryName;
+  final bool? recommended;
 
   MenuModel({
     required this.id,
@@ -42,13 +43,14 @@ class MenuModel {
     required this.createdAt,
     required this.updatedAt,
     this.category,
-    this.additions = const [],
-    this.additionsCount = 0,
+    this.optionGroups = const [],
+    this.optionGroupsCount = 0,
     this.promotions = const [],
     this.isFavorite = false,
     this.favoriteId,
     this.rating,
     required this.categoryName,
+    this.recommended = false,
   });
 
   factory MenuModel.fromJson(Map<String, dynamic> json, String categoryName) {
@@ -88,13 +90,13 @@ class MenuModel {
       return DateTime.now();
     }
 
-    final additionsList = json['additions'] as List<dynamic>?;
-    final additions = additionsList != null
-        ? additionsList
+    final optionGroupsList = json['option_groups'] as List<dynamic>?;
+    final optionGroups = optionGroupsList != null
+        ? optionGroupsList
             .map((item) =>
-                MenuItemAddition.fromJson(item as Map<String, dynamic>))
+                MenuItemOptionGroup.fromJson(item as Map<String, dynamic>))
             .toList()
-        : <MenuItemAddition>[];
+        : <MenuItemOptionGroup>[];
 
     final prixValue = parsePrice(
       json['prix'] ??
@@ -109,8 +111,8 @@ class MenuModel {
             ? parsePrice(json['display_price'])
             : null);
 
-    final additionsCountValue =
-        json['additions_count'] as int? ?? additions.length;
+    final optionGroupsCountValue =
+        json['options_count'] as int? ?? optionGroups.length;
 
     final promotionsList = json['promotions'] as List<dynamic>? ?? [];
 
@@ -140,8 +142,8 @@ class MenuModel {
       category: _asMap(json['category']) != null
           ? MenuItemCategory.fromJson(_asMap(json['category'])!)
           : null,
-      additions: additions,
-      additionsCount: additionsCountValue,
+      optionGroups: optionGroups,
+      optionGroupsCount: optionGroupsCountValue,
       promotions: promotionsList,
       isFavorite: (json['is_favorite'] ?? json['isFavorite']) as bool? ?? false,
       favoriteId: (json['favorite_id'] ?? json['favoriteId']) as String?,
@@ -150,6 +152,8 @@ class MenuModel {
           json['average_rating'] ??
           json['note']),
       categoryName: categoryName,
+      recommended:
+          (json['recommended'] ?? json['isRecommended']) as bool? ?? false,
     );
   }
 
@@ -190,12 +194,14 @@ class MenuModel {
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       if (category != null) 'category': category!.toJson(),
-      'additions': additions.map((addition) => addition.toJson()).toList(),
-      'additions_count': additionsCount,
+      'option_groups':
+          optionGroups.map((optionGroup) => optionGroup.toJson()).toList(),
+      'options_count': optionGroupsCount,
       'promotions': promotions,
       'is_favorite': isFavorite,
       if (favoriteId != null) 'favorite_id': favoriteId,
       if (rating != null) 'rating': rating,
+      'recommended': recommended,
     };
   }
 
@@ -250,29 +256,85 @@ class MenuItemCategory {
   }
 }
 
-class MenuItemAddition {
+class MenuItemOptionGroup {
+  final String id;
+  final String nom;
+  final String? description;
+  final bool isRequired;
+  final int ordreAffichage;
+  final List<MenuItemOption> options;
+  final int optionsCount;
+
+  MenuItemOptionGroup({
+    required this.id,
+    required this.nom,
+    this.description,
+    this.isRequired = false,
+    this.ordreAffichage = 0,
+    this.options = const [],
+    this.optionsCount = 0,
+  });
+
+  factory MenuItemOptionGroup.fromJson(Map<String, dynamic> json) {
+    final optionsList = json['options'] as List<dynamic>?;
+    final options = optionsList != null
+        ? optionsList
+            .map(
+                (item) => MenuItemOption.fromJson(item as Map<String, dynamic>))
+            .toList()
+        : <MenuItemOption>[];
+    return MenuItemOptionGroup(
+      id: (json['id'] ?? json['_id']).toString(),
+      nom: (json['nom'] ?? json['name'] ?? '').toString(),
+      description: json['description'] as String?,
+      isRequired: (json['is_required'] ?? json['isRequired']) as bool? ?? false,
+      ordreAffichage:
+          (json['ordre_affichage'] ?? json['ordreAffichage'] ?? 0) as int,
+      options: options,
+      optionsCount: json['options_count'] as int? ?? options.length,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'nom': nom,
+      if (description != null) 'description': description,
+      'is_required': isRequired,
+      'ordre_affichage': ordreAffichage,
+      'options': options.map((option) => option.toJson()).toList(),
+      'options_count': optionsCount,
+    };
+  }
+}
+
+class MenuItemOption {
   final String id;
   final String nom;
   final String? description;
   final double prix;
   final bool isAvailable;
+  final String? optionGroupId;
 
-  MenuItemAddition({
+  MenuItemOption({
     required this.id,
     required this.nom,
     this.description,
     required this.prix,
     required this.isAvailable,
+    this.optionGroupId,
   });
 
-  factory MenuItemAddition.fromJson(Map<String, dynamic> json) {
-    return MenuItemAddition(
+  factory MenuItemOption.fromJson(Map<String, dynamic> json) {
+    return MenuItemOption(
       id: (json['id'] ?? json['_id']).toString(),
       nom: (json['nom'] ?? json['name'] ?? '').toString(),
       description: json['description'] as String?,
       prix: MenuModel.parsePrice(json['prix'] ?? json['price']),
       isAvailable:
           (json['is_available'] ?? json['isAvailable']) as bool? ?? true,
+      optionGroupId:
+          (json['option_group_id'] ?? json['optionGroupId']) as String?,
     );
   }
 
@@ -283,6 +345,7 @@ class MenuItemAddition {
       if (description != null) 'description': description,
       'prix': prix,
       'is_available': isAvailable,
+      if (optionGroupId != null) 'option_group_id': optionGroupId,
     };
   }
 

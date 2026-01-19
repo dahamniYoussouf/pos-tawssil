@@ -10,6 +10,7 @@ class MenuItemDetailBottomBar extends StatelessWidget {
   final VoidCallback onButtonPressed;
   final String buttonText;
   final bool isRemoveButton;
+  final bool isButtonEnabled;
 
   const MenuItemDetailBottomBar({
     Key? key,
@@ -19,10 +20,12 @@ class MenuItemDetailBottomBar extends StatelessWidget {
     required this.onButtonPressed,
     required this.buttonText,
     this.isRemoveButton = false,
+    this.isButtonEnabled = true,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    final bool isDisabled = !isRemoveButton && !isButtonEnabled;
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       elevation: 8,
@@ -42,10 +45,13 @@ class MenuItemDetailBottomBar extends StatelessWidget {
             const SizedBox(width: 12),
             Expanded(
               child: ElevatedButton(
-                onPressed: onButtonPressed,
+                onPressed: isDisabled ? null : onButtonPressed,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      isRemoveButton ? ColorApp.redColor : ColorApp.primary,
+                  backgroundColor: isRemoveButton
+                      ? ColorApp.redColor
+                      : isDisabled
+                          ? ColorApp.greyMedium
+                          : ColorApp.primary,
                   foregroundColor: ColorApp.white,
                   minimumSize: const Size(0, 52),
                   shape: RoundedRectangleBorder(

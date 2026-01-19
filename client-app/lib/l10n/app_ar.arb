@@ -485,6 +485,49 @@
   "@additionalOptions": {
     "description": "عنوان قسم الخيارات الإضافية"
   },
+  "optionRequiredHint": "اختر خيارًا واحدًا",
+  "@optionRequiredHint": {
+    "description": "نص المساعدة لمجموعة الخيارات المطلوبة"
+  },
+  "optionOptionalHint": "من صفر إلى عدة خيارات ممكنة",
+  "@optionOptionalHint": {
+    "description": "نص المساعدة لمجموعة الخيارات الاختيارية"
+  },
+  "optionSelectionRequired": "{count}/1 محدد",
+  "@optionSelectionRequired": {
+    "description": "عداد الاختيارات لمجموعة مطلوبة",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "optionSelectionOptional": "{count} محدد",
+  "@optionSelectionOptional": {
+    "description": "عداد الاختيارات لمجموعة اختيارية",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "optionRequiredBadge": "إلزامي",
+  "@optionRequiredBadge": {
+    "description": "تسمية شارة مطلوب"
+  },
+  "optionOptionalBadge": "اختياري",
+  "@optionOptionalBadge": {
+    "description": "تسمية شارة اختياري"
+  },
+  "optionAdditionalPrice": "+ {price} دج",
+  "@optionAdditionalPrice": {
+    "description": "تسمية السعر الإضافي",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "noMenuItemsAvailable": "لا توجد عناصر قائمة متاحة",
   "@noMenuItemsAvailable": {
     "description": "رسالة عدم توفر عناصر القائمة"
@@ -503,4 +546,3 @@
     "description": "تسمية التوصيل المجاني"
   }
 }
-

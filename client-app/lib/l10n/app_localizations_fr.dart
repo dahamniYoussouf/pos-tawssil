@@ -859,6 +859,33 @@ class AppLocalizationsFr extends AppLocalizations {
   String get additionalOptions => 'Options supplémentaires :';
 
   @override
+  String get optionRequiredHint => 'Choisissez 1 option';
+
+  @override
+  String get optionOptionalHint => '0 à plusieurs choix possibles';
+
+  @override
+  String optionSelectionRequired(int count) {
+    return '$count/1 sélectionné';
+  }
+
+  @override
+  String optionSelectionOptional(int count) {
+    return '$count sélectionnés';
+  }
+
+  @override
+  String get optionRequiredBadge => 'Obligatoire';
+
+  @override
+  String get optionOptionalBadge => 'Optionnel';
+
+  @override
+  String optionAdditionalPrice(String price) {
+    return '+ $price DA';
+  }
+
+  @override
   String get ourDishes => 'Nos plats';
 
   @override

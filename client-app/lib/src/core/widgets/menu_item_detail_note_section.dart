@@ -42,12 +42,13 @@ class MenuItemDetailNoteSection extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           Container(
+            height: 115,
             decoration: BoxDecoration(
               color: ColorApp.white,
               borderRadius: BorderRadius.circular(8),
             ),
             child: TextField(
-              maxLines: 3,
+              maxLines: 4,
               decoration: InputDecoration(
                 hintText: AppLocalizations.of(context)!.noteForKitchen,
                 hintStyle: TextStyle(
@@ -77,9 +78,9 @@ class MenuItemDetailNoteSection extends StatelessWidget {
               onChanged: onNoteChanged,
             ),
           ),
+          const SizedBox(height: 150),
         ],
       ),
     );
   }
 }
-

@@ -835,6 +835,33 @@ class AppLocalizationsAr extends AppLocalizations {
   String get additionalOptions => 'خيارات إضافية :';
 
   @override
+  String get optionRequiredHint => 'اختر خيارًا واحدًا';
+
+  @override
+  String get optionOptionalHint => 'من صفر إلى عدة خيارات ممكنة';
+
+  @override
+  String optionSelectionRequired(int count) {
+    return '$count/1 محدد';
+  }
+
+  @override
+  String optionSelectionOptional(int count) {
+    return '$count محدد';
+  }
+
+  @override
+  String get optionRequiredBadge => 'إلزامي';
+
+  @override
+  String get optionOptionalBadge => 'اختياري';
+
+  @override
+  String optionAdditionalPrice(String price) {
+    return '+ $price دج';
+  }
+
+  @override
   String get ourDishes => 'أطباقنا';
 
   @override

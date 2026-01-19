@@ -1648,6 +1648,48 @@ abstract class AppLocalizations {
   /// **'Additional Options :'**
   String get additionalOptions;
 
+  /// Required option group helper text
+  ///
+  /// In en, this message translates to:
+  /// **'Choose 1 option'**
+  String get optionRequiredHint;
+
+  /// Optional option group helper text
+  ///
+  /// In en, this message translates to:
+  /// **'0 to many choices possible'**
+  String get optionOptionalHint;
+
+  /// Required option group selection count
+  ///
+  /// In en, this message translates to:
+  /// **'{count}/1 selected'**
+  String optionSelectionRequired(int count);
+
+  /// Optional option group selection count
+  ///
+  /// In en, this message translates to:
+  /// **'{count} selected'**
+  String optionSelectionOptional(int count);
+
+  /// Required badge label
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get optionRequiredBadge;
+
+  /// Optional badge label
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get optionOptionalBadge;
+
+  /// Additional option price label
+  ///
+  /// In en, this message translates to:
+  /// **'+ {price} DA'**
+  String optionAdditionalPrice(String price);
+
   /// Our dishes section title
   ///
   /// In en, this message translates to:

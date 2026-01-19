@@ -485,6 +485,49 @@
   "@additionalOptions": {
     "description": "Titre de la section des options supplémentaires"
   },
+  "optionRequiredHint": "Choisissez 1 option",
+  "@optionRequiredHint": {
+    "description": "Texte d'aide pour un groupe requis"
+  },
+  "optionOptionalHint": "0 à plusieurs choix possibles",
+  "@optionOptionalHint": {
+    "description": "Texte d'aide pour un groupe optionnel"
+  },
+  "optionSelectionRequired": "{count}/1 sélectionné",
+  "@optionSelectionRequired": {
+    "description": "Compteur de sélection pour un groupe requis",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "optionSelectionOptional": "{count} sélectionnés",
+  "@optionSelectionOptional": {
+    "description": "Compteur de sélection pour un groupe optionnel",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "optionRequiredBadge": "Obligatoire",
+  "@optionRequiredBadge": {
+    "description": "Libellé du badge requis"
+  },
+  "optionOptionalBadge": "Optionnel",
+  "@optionOptionalBadge": {
+    "description": "Libellé du badge optionnel"
+  },
+  "optionAdditionalPrice": "+ {price} DA",
+  "@optionAdditionalPrice": {
+    "description": "Libellé du prix supplémentaire",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "noMenuItemsAvailable": "Aucun élément de menu disponible",
   "@noMenuItemsAvailable": {
     "description": "Message aucun élément de menu disponible"
@@ -503,4 +546,3 @@
     "description": "Label for free delivery"
   }
 }
-

@@ -944,7 +944,6 @@
   "@logoutConfirmation": {
     "description": "Logout confirmation message"
   },
- 
   "orderedAt": "Ordered at {date}",
   "@orderedAt": {
     "description": "Order date label with formatted date",
@@ -1118,6 +1117,49 @@
   "@additionalOptions": {
     "description": "Additional options section title"
   },
+  "optionRequiredHint": "Choose 1 option",
+  "@optionRequiredHint": {
+    "description": "Required option group helper text"
+  },
+  "optionOptionalHint": "0 to many choices possible",
+  "@optionOptionalHint": {
+    "description": "Optional option group helper text"
+  },
+  "optionSelectionRequired": "{count}/1 selected",
+  "@optionSelectionRequired": {
+    "description": "Required option group selection count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "optionSelectionOptional": "{count} selected",
+  "@optionSelectionOptional": {
+    "description": "Optional option group selection count",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "optionRequiredBadge": "Required",
+  "@optionRequiredBadge": {
+    "description": "Required badge label"
+  },
+  "optionOptionalBadge": "Optional",
+  "@optionOptionalBadge": {
+    "description": "Optional badge label"
+  },
+  "optionAdditionalPrice": "+ {price} DA",
+  "@optionAdditionalPrice": {
+    "description": "Additional option price label",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "ourDishes": "Our Dishes",
   "@ourDishes": {
     "description": "Our dishes section title"
@@ -1128,4 +1170,3 @@
     "description": "Label for free delivery"
   }
 }
-

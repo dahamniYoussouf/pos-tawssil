@@ -10,7 +10,7 @@ class CartItem {
   final String imageUrl;
   int quantity;
   String? note;
-  List<MenuItemAddition> additions;
+  List<MenuItemOption> selectedOptions;
 
   CartItem({
     required this.menuItem,
@@ -20,15 +20,15 @@ class CartItem {
     required this.imageUrl,
     this.quantity = 1,
     this.note,
-    List<MenuItemAddition>? additions,
-  }) : additions = additions ?? [];
+    List<MenuItemOption>? selectedOptions,
+  }) : selectedOptions = selectedOptions ?? [];
 
   double get totalPrice {
-    double additionsTotal = 0.0;
-    for (final addition in additions) {
-      additionsTotal += addition.prix;
+    double optionsTotal = 0.0;
+    for (final option in selectedOptions) {
+      optionsTotal += option.prix;
     }
-    return (price + additionsTotal) * quantity;
+    return (price + optionsTotal) * quantity;
   }
 }
 
@@ -76,7 +76,7 @@ class CartCubit extends Cubit<CartState> {
     required String imageUrl,
     required int quantity,
     String? note,
-    List<MenuItemAddition>? additions,
+    List<MenuItemOption>? selectedOptions,
   }) {
     try {
       if (_items.containsKey(menuItemId)) {
@@ -84,8 +84,8 @@ class CartCubit extends Cubit<CartState> {
         if (note != null && note.isNotEmpty) {
           _items[menuItemId]!.note = note;
         }
-        if (additions != null && additions.isNotEmpty) {
-          _items[menuItemId]!.additions = additions;
+        if (selectedOptions != null) {
+          _items[menuItemId]!.selectedOptions = selectedOptions;
         }
       } else {
         _items[menuItemId] = CartItem(
@@ -96,7 +96,7 @@ class CartCubit extends Cubit<CartState> {
           imageUrl: imageUrl,
           quantity: quantity,
           note: note,
-          additions: additions,
+          selectedOptions: selectedOptions,
         );
       }
       _emitCurrentState();
@@ -162,28 +162,19 @@ class CartCubit extends Cubit<CartState> {
     return _items[menuItemId];
   }
 
-  void addAddition(String menuItemId, MenuItemAddition addition) {
+  void updateSelectedOptions(
+    String menuItemId,
+    List<MenuItemOption> selectedOptions,
+  ) {
     try {
       if (_items.containsKey(menuItemId)) {
-        _items[menuItemId]!.additions.add(addition);
-        _emitCurrentState();
-      }
-    } catch (e) {
-      emit(CartError(
-          message: 'Erreur lors de l\'ajout de l\'addition: ${e.toString()}'));
-    }
-  }
-
-  void removeAddition(String menuItemId, MenuItemAddition addition) {
-    try {
-      if (_items.containsKey(menuItemId)) {
-        _items[menuItemId]!.additions.remove(addition);
+        _items[menuItemId]!.selectedOptions = selectedOptions;
         _emitCurrentState();
       }
     } catch (e) {
       emit(CartError(
           message:
-              'Erreur lors de la suppression de l\'addition: ${e.toString()}'));
+              'Erreur lors de la mise à jour des options: ${e.toString()}'));
     }
   }
 }
