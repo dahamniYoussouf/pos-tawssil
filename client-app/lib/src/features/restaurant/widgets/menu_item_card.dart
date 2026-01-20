@@ -1,3 +1,4 @@
+import 'package:client_app/l10n/app_localizations.dart';
 import 'package:client_app/src/core/res/media_res.dart';
 import 'package:flutter/material.dart';
 import 'package:client_app/src/core/res/color_app.dart';
@@ -31,44 +32,102 @@ class MenuItemCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        height: 130,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        padding: const EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
-        decoration: BoxDecoration(
-          color: ColorApp.white,
-          borderRadius: BorderRadius.circular(17),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        onTap: onTap,
+        child: Stack(
           children: [
-            Expanded(
-              child: MenuItemDetails(
-                item: item,
-                rating: rating,
-                ratingCount: ratingCount,
-                isInCart: isInCart,
-                quantity: quantity,
+            Container(
+              height: 130,
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding:
+                  const EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 4),
+              decoration: BoxDecoration(
+                color: ColorApp.white,
+                borderRadius: BorderRadius.circular(17),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: MenuItemDetails(
+                      item: item,
+                      rating: rating,
+                      ratingCount: ratingCount,
+                      isInCart: isInCart,
+                      quantity: quantity,
+                    ),
+                  ),
+                  MenuItemImage(
+                    imageUrl: item.imageUrl,
+                    isAvailable: item.disponible,
+                    isInCart: isInCart,
+                    quantity: quantity,
+                  ),
+                ],
               ),
             ),
-            MenuItemImage(
-              imageUrl: item.imageUrl,
-              isAvailable: item.disponible,
-              isInCart: isInCart,
-              quantity: quantity,
-            ),
+            if (item.recommended == true)
+              Positioned(
+                top: 8,
+                right: 16,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        ColorApp.primary,
+                        ColorApp.primary.withOpacity(0.70),
+                      ],
+                    ),
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft: Radius.circular(12),
+                      topRight: Radius.circular(12),
+                      topLeft: Radius.circular(4),
+                      bottomRight: Radius.circular(4),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.12),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.star,
+                        size: 12,
+                        color: ColorApp.white,
+                      ),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          AppLocalizations.of(context)!.recommendedDishes,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: ColorApp.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
           ],
-        ),
-      ),
-    );
+        ));
   }
 }
 

@@ -57,8 +57,8 @@ class _MenuItemDetailPageContentState
   final ValueNotifier<int> _quantity = ValueNotifier<int>(1);
   final ValueNotifier<String> _note = ValueNotifier<String>('');
   final ValueNotifier<bool> _isFavorite = ValueNotifier<bool>(false);
-  final ValueNotifier<Set<String>> _selectedOptions =
-      ValueNotifier<Set<String>>({});
+  final ValueNotifier<Map<String, Set<String>>> _selectedOptionsByGroup =
+      ValueNotifier<Map<String, Set<String>>>({});
 
   @override
   void initState() {
@@ -78,11 +78,10 @@ class _MenuItemDetailPageContentState
           _note.value = cartItem.note!;
         }
 
-        // Restore selected options (additions)
-        if (cartItem.additions.isNotEmpty) {
-          final selectedOptionIds =
-              cartItem.additions.map((addition) => addition.id).toSet();
-          _selectedOptions.value = selectedOptionIds;
+        // Restore selected options
+        if (cartItem.selectedOptions.isNotEmpty) {
+          _selectedOptionsByGroup.value =
+              _buildSelectedOptionsByGroup(cartItem.selectedOptions);
         }
       }
     });
@@ -93,7 +92,7 @@ class _MenuItemDetailPageContentState
     _quantity.dispose();
     _note.dispose();
     _isFavorite.dispose();
-    _selectedOptions.dispose();
+    _selectedOptionsByGroup.dispose();
     super.dispose();
   }
 
@@ -122,17 +121,11 @@ class _MenuItemDetailPageContentState
     final cartCubit = context.read<CartCubit>();
     final newQuantity = _quantity.value + 1;
     _quantity.value = newQuantity;
-
     // If item is already in cart, update cart quantity
     if (cartCubit.hasItem(widget.menuItem.id)) {
       final note = _note.value.isNotEmpty ? _note.value : null;
-      final selectedAdditions = _selectedOptions.value
-          .map((optionId) => widget.menuItem.additions
-              .where((add) => add.id == optionId)
-              .toList())
-          .expand((list) => list)
-          .toList();
-
+      final selectedOptions =
+          _buildSelectedOptionsFromMap(_selectedOptionsByGroup.value);
       cartCubit.addOrSetItem(
         menuItem: widget.menuItem,
         menuItemId: widget.menuItem.id,
@@ -141,7 +134,7 @@ class _MenuItemDetailPageContentState
         imageUrl: widget.menuItem.imageUrl,
         quantity: newQuantity,
         note: note,
-        additions: selectedAdditions.isNotEmpty ? selectedAdditions : null,
+        selectedOptions: selectedOptions,
       );
     }
   }
@@ -158,13 +151,8 @@ class _MenuItemDetailPageContentState
           cartCubit.removeItem(widget.menuItem.id);
         } else {
           final note = _note.value.isNotEmpty ? _note.value : null;
-          final selectedAdditions = _selectedOptions.value
-              .map((optionId) => widget.menuItem.additions
-                  .where((add) => add.id == optionId)
-                  .toList())
-              .expand((list) => list)
-              .toList();
-
+          final selectedOptions =
+              _buildSelectedOptionsFromMap(_selectedOptionsByGroup.value);
           cartCubit.addOrSetItem(
             menuItem: widget.menuItem,
             menuItemId: widget.menuItem.id,
@@ -173,7 +161,7 @@ class _MenuItemDetailPageContentState
             imageUrl: widget.menuItem.imageUrl,
             quantity: newQuantity,
             note: note,
-            additions: selectedAdditions.isNotEmpty ? selectedAdditions : null,
+            selectedOptions: selectedOptions,
           );
         }
       }
@@ -184,27 +172,92 @@ class _MenuItemDetailPageContentState
     _isFavorite.value = !_isFavorite.value;
   }
 
-  void _toggleOption(String optionId) {
-    final currentOptions = Set<String>.from(_selectedOptions.value);
-    final additions =
-        widget.menuItem.additions.where((add) => add.id == optionId).toList();
-
-    if (additions.isEmpty) return;
-    final addition = additions.first;
-
-    final cartCubit = context.read<CartCubit>();
-    if (currentOptions.contains(optionId)) {
-      currentOptions.remove(optionId);
-      if (cartCubit.hasItem(widget.menuItem.id)) {
-        cartCubit.removeAddition(widget.menuItem.id, addition);
+  void _toggleOption(String groupId, String optionId, bool isRequired) {
+    final Map<String, Set<String>> currentSelections =
+        Map<String, Set<String>>.from(_selectedOptionsByGroup.value);
+    final Set<String> groupSelections =
+        Set<String>.from(currentSelections[groupId] ?? <String>{});
+    if (isRequired) {
+      if (groupSelections.contains(optionId)) {
+        return;
       }
+      currentSelections[groupId] = <String>{optionId};
     } else {
-      currentOptions.add(optionId);
-      if (cartCubit.hasItem(widget.menuItem.id)) {
-        cartCubit.addAddition(widget.menuItem.id, addition);
+      if (groupSelections.contains(optionId)) {
+        groupSelections.remove(optionId);
+      } else {
+        groupSelections.add(optionId);
+      }
+      currentSelections[groupId] = groupSelections;
+    }
+    final cartCubit = context.read<CartCubit>();
+    _selectedOptionsByGroup.value = currentSelections;
+    if (cartCubit.hasItem(widget.menuItem.id)) {
+      final selectedOptions = _buildSelectedOptionsFromMap(currentSelections);
+      cartCubit.updateSelectedOptions(widget.menuItem.id, selectedOptions);
+    }
+  }
+
+  Map<String, Set<String>> _buildSelectedOptionsByGroup(
+    List<MenuItemOption> selectedOptions,
+  ) {
+    final Map<String, Set<String>> selections = <String, Set<String>>{};
+    for (final MenuItemOption option in selectedOptions) {
+      final String? groupId =
+          option.optionGroupId ?? _findGroupIdForOption(option.id);
+      if (groupId == null) {
+        continue;
+      }
+      selections.putIfAbsent(groupId, () => <String>{});
+      selections[groupId]!.add(option.id);
+    }
+    return selections;
+  }
+
+  List<MenuItemOption> _buildSelectedOptionsFromMap(
+    Map<String, Set<String>> selectedOptionsByGroup,
+  ) {
+    final List<MenuItemOption> selectedOptions = <MenuItemOption>[];
+    for (final MenuItemOptionGroup group in widget.menuItem.optionGroups) {
+      final Set<String> selectedIds =
+          selectedOptionsByGroup[group.id] ?? <String>{};
+      for (final MenuItemOption option in group.options) {
+        if (selectedIds.contains(option.id)) {
+          selectedOptions.add(option);
+        }
       }
     }
-    _selectedOptions.value = currentOptions;
+    return selectedOptions;
+  }
+
+  bool _areRequiredOptionsSelected(
+    Map<String, Set<String>> selectedOptionsByGroup,
+  ) {
+    for (final MenuItemOptionGroup group in widget.menuItem.optionGroups) {
+      if (!group.isRequired) {
+        continue;
+      }
+      if (group.options.isEmpty) {
+        continue;
+      }
+      final Set<String> selectedIds =
+          selectedOptionsByGroup[group.id] ?? <String>{};
+      if (selectedIds.isEmpty) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  String? _findGroupIdForOption(String optionId) {
+    for (final MenuItemOptionGroup group in widget.menuItem.optionGroups) {
+      final bool hasOption =
+          group.options.any((MenuItemOption option) => option.id == optionId);
+      if (hasOption) {
+        return group.id;
+      }
+    }
+    return null;
   }
 
   void _addToCart() {
@@ -212,13 +265,8 @@ class _MenuItemDetailPageContentState
     final cartCubit = context.read<CartCubit>();
     final quantity = _quantity.value;
     final note = _note.value.isNotEmpty ? _note.value : null;
-    final selectedAdditions = _selectedOptions.value
-        .map((optionId) => widget.menuItem.additions
-            .where((add) => add.id == optionId)
-            .toList())
-        .expand((list) => list)
-        .toList();
-
+    final selectedOptions =
+        _buildSelectedOptionsFromMap(_selectedOptionsByGroup.value);
     cartCubit.addOrSetItem(
       menuItem: widget.menuItem,
       menuItemId: widget.menuItem.id,
@@ -227,7 +275,7 @@ class _MenuItemDetailPageContentState
       imageUrl: widget.menuItem.imageUrl,
       quantity: quantity,
       note: note,
-      additions: selectedAdditions.isNotEmpty ? selectedAdditions : null,
+      selectedOptions: selectedOptions,
     );
 
     detailsCubit.setSelectedItemId(widget.menuItem.id);
@@ -277,21 +325,28 @@ class _MenuItemDetailPageContentState
       floatingActionButton: ValueListenableBuilder<int>(
         valueListenable: _quantity,
         builder: (context, quantity, _) {
-          return BlocBuilder<CartCubit, CartState>(
-            builder: (context, cartState) {
-              final cartCubit = context.read<CartCubit>();
-              final isInCart = cartCubit.hasItem(widget.menuItem.id);
-              final localizations = AppLocalizations.of(context)!;
-
-              return MenuItemDetailBottomBar(
-                quantity: quantity,
-                onDecrementQuantity: _decrementQuantity,
-                onIncrementQuantity: _incrementQuantity,
-                onButtonPressed: isInCart ? _removeFromCart : _addToCart,
-                buttonText: isInCart
-                    ? localizations.removeFromCart
-                    : localizations.addToCart,
-                isRemoveButton: isInCart,
+          return ValueListenableBuilder<Map<String, Set<String>>>(
+            valueListenable: _selectedOptionsByGroup,
+            builder: (context, selectedOptionsByGroup, __) {
+              return BlocBuilder<CartCubit, CartState>(
+                builder: (context, cartState) {
+                  final cartCubit = context.read<CartCubit>();
+                  final isInCart = cartCubit.hasItem(widget.menuItem.id);
+                  final localizations = AppLocalizations.of(context)!;
+                  final bool hasRequiredSelections =
+                      _areRequiredOptionsSelected(selectedOptionsByGroup);
+                  return MenuItemDetailBottomBar(
+                    quantity: quantity,
+                    onDecrementQuantity: _decrementQuantity,
+                    onIncrementQuantity: _incrementQuantity,
+                    onButtonPressed: isInCart ? _removeFromCart : _addToCart,
+                    buttonText: isInCart
+                        ? localizations.removeFromCart
+                        : localizations.addToCart,
+                    isRemoveButton: isInCart,
+                    isButtonEnabled: isInCart ? true : hasRequiredSelections,
+                  );
+                },
               );
             },
           );
@@ -331,22 +386,31 @@ class _MenuItemDetailPageContentState
             },
           ),
           const SizedBox(height: 24),
-          ValueListenableBuilder<Set<String>>(
-            valueListenable: _selectedOptions,
-            builder: (context, selectedOptions, _) {
-              return MenuItemDetailOptionsSection(
-                options: widget.menuItem.additions
-                    .map((addition) => AdditionalOption(
-                          id: addition.id,
-                          name: addition.nom,
-                          price: addition.prix,
-                        ))
-                    .toList(),
-                selectedOptions: selectedOptions,
-                onOptionToggled: _toggleOption,
-              );
-            },
-          ),
+          if (widget.menuItem.optionGroups.isNotEmpty)
+            ValueListenableBuilder<Map<String, Set<String>>>(
+              valueListenable: _selectedOptionsByGroup,
+              builder: (context, selectedOptionsByGroup, _) {
+                return MenuItemDetailOptionsSection(
+                  optionGroups: widget.menuItem.optionGroups
+                      .map((group) => OptionGroupData(
+                            id: group.id,
+                            name: group.nom,
+                            isRequired: group.isRequired,
+                            options: group.options
+                                .map((option) => OptionItemData(
+                                      id: option.id,
+                                      name: option.nom,
+                                      price: option.prix,
+                                      isAvailable: option.isAvailable,
+                                    ))
+                                .toList(),
+                          ))
+                      .toList(),
+                  selectedOptionsByGroup: selectedOptionsByGroup,
+                  onOptionToggled: _toggleOption,
+                );
+              },
+            ),
           const SizedBox(height: 24),
           ValueListenableBuilder<String>(
             valueListenable: _note,

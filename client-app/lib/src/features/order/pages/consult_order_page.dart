@@ -186,9 +186,6 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
                 const SizedBox(height: 12),
                 _PaymentMethodSection(
                   selectedMethod: selectedPaymentMethod,
-                  onMethodSelected: (method) {
-                    setState(() => selectedPaymentMethod = method);
-                  },
                 ),
                 const SizedBox(height: 22),
                 _DeliveryTimeInfo(
@@ -413,13 +410,6 @@ class _DeliveryAddressSection extends StatelessWidget {
               ],
             ),
           ),
-          IconButton(
-            onPressed: () {},
-            icon: SvgPicture.asset(MediaRes.arrowRightIcon,
-                width: 40,
-                height: 40,
-                colorFilter: ColorFilter.mode(ColorApp.black, BlendMode.srcIn)),
-          ),
         ],
       ),
     );
@@ -615,19 +605,14 @@ class PriceRowWidget extends StatelessWidget {
 
 class _PaymentMethodSection extends StatelessWidget {
   final String selectedMethod;
-  final ValueChanged<String> onMethodSelected;
 
   const _PaymentMethodSection({
     required this.selectedMethod,
-    required this.onMethodSelected,
   });
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => _showPaymentMethodDialog(context),
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
+    return Container(
         padding: const EdgeInsets.all(16.0),
         margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
         decoration: BoxDecoration(
@@ -669,7 +654,7 @@ class _PaymentMethodSection extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    _getPaymentMethodLabel(context),
+                    AppLocalizations.of(context)!.cash,
                     style: TextStyle(
                       fontSize: 14,
                       color: ColorApp.textBlack,
@@ -681,77 +666,8 @@ class _PaymentMethodSection extends StatelessWidget {
                 ],
               ),
             ),
-            IconButton(
-              onPressed: () => _showPaymentMethodDialog(context),
-              icon: SvgPicture.asset(MediaRes.arrowRightIcon,
-                  width: 40,
-                  height: 40,
-                  colorFilter:
-                      ColorFilter.mode(ColorApp.black, BlendMode.srcIn)),
-            ),
           ],
-        ),
-      ),
-    );
-  }
-
-  String _getPaymentMethodLabel(BuildContext context) {
-    if (selectedMethod == 'baridi_mob') {
-      return AppLocalizations.of(context)!.baridiMob;
-    }
-    return AppLocalizations.of(context)!.cash;
-  }
-
-  void _showPaymentMethodDialog(BuildContext context) {
-    showDialog<void>(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          backgroundColor: ColorApp.white,
-          title: Text(AppLocalizations.of(dialogContext)!.paymentMethod),
-          content: SizedBox(
-            height: 70,
-            width: double.infinity,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                PaymentOptionWidget(
-                  label: AppLocalizations.of(dialogContext)!.cash,
-                  icon: MediaRes.cashIcon,
-                  value: 'cash_on_delivery',
-                  isSelected: selectedMethod == 'cash_on_delivery',
-                  onTap: () => _handleMethodSelection(
-                    dialogContext,
-                    'cash_on_delivery',
-                  ),
-                  radiusLeft: 12,
-                ),
-                PaymentOptionWidget(
-                  label: AppLocalizations.of(dialogContext)!.baridiMob,
-                  icon: MediaRes.cardIcon,
-                  value: 'baridi_mob',
-                  isSelected: selectedMethod == 'baridi_mob',
-                  onTap: () => _handleMethodSelection(
-                    dialogContext,
-                    'baridi_mob',
-                  ),
-                  radiusRight: 12,
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void _handleMethodSelection(BuildContext context, String value) {
-    Navigator.of(context).pop();
-    onMethodSelected(value);
+        ));
   }
 }
 

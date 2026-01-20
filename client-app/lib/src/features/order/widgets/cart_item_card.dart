@@ -2,6 +2,7 @@ import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/core/res/media_res.dart';
 import 'package:flutter/material.dart';
 import 'package:client_app/src/features/cart/cubit/cart_cubit.dart';
+import 'package:client_app/src/features/restaurant/models/menu_model.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import 'package:flutter_svg/svg.dart';
 
@@ -150,44 +151,12 @@ class CartItemCard extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ],
-            if (item.additions.isNotEmpty) ...[
+            if (item.selectedOptions.isNotEmpty) ...[
               const SizedBox(height: 12),
               Divider(height: 1, color: ColorApp.greyBorder),
               const SizedBox(height: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ...item.additions
-                      .where((addition) => addition.isAvailable)
-                      .map(
-                        (addition) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  addition.nom,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w900,
-                                    color: ColorApp.black,
-                                  ),
-                                ),
-                              ),
-                              Text(
-                                addition.priceFormatted,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w900,
-                                  color: ColorApp.primary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                ],
+              _CartItemSelectedOptions(
+                selectedOptionGroups: _buildSelectedOptionGroups(item),
               ),
             ],
           ])),
@@ -208,5 +177,129 @@ class CartItemCard extends StatelessWidget {
         ),
       ),
     ]);
+  }
+
+  List<_SelectedOptionGroup> _buildSelectedOptionGroups(CartItem item) {
+    final Map<String, List<MenuItemOption>> optionsByGroupId =
+        <String, List<MenuItemOption>>{};
+    for (final MenuItemOption option in item.selectedOptions) {
+      final String? groupId =
+          option.optionGroupId ?? _findGroupIdForOption(item, option.id);
+      if (groupId == null) {
+        continue;
+      }
+      optionsByGroupId.putIfAbsent(groupId, () => <MenuItemOption>[]);
+      optionsByGroupId[groupId]!.add(option);
+    }
+    final List<_SelectedOptionGroup> groups = <_SelectedOptionGroup>[];
+    for (final MapEntry<String, List<MenuItemOption>> entry
+        in optionsByGroupId.entries) {
+      final MenuItemOptionGroup? group =
+          _findGroupById(item.menuItem.optionGroups, entry.key);
+      groups.add(_SelectedOptionGroup(
+        title: group?.nom ?? 'Options',
+        options: entry.value,
+      ));
+    }
+    return groups;
+  }
+
+  MenuItemOptionGroup? _findGroupById(
+    List<MenuItemOptionGroup> groups,
+    String groupId,
+  ) {
+    for (final MenuItemOptionGroup group in groups) {
+      if (group.id == groupId) {
+        return group;
+      }
+    }
+    return null;
+  }
+
+  String? _findGroupIdForOption(CartItem item, String optionId) {
+    for (final MenuItemOptionGroup group in item.menuItem.optionGroups) {
+      final bool hasOption =
+          group.options.any((MenuItemOption option) => option.id == optionId);
+      if (hasOption) {
+        return group.id;
+      }
+    }
+    return null;
+  }
+}
+
+class _SelectedOptionGroup {
+  final String title;
+  final List<MenuItemOption> options;
+
+  const _SelectedOptionGroup({
+    required this.title,
+    required this.options,
+  });
+}
+
+class _CartItemSelectedOptions extends StatelessWidget {
+  final List<_SelectedOptionGroup> selectedOptionGroups;
+
+  const _CartItemSelectedOptions({
+    required this.selectedOptionGroups,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: selectedOptionGroups.map((group) {
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                group.title,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: ColorApp.black,
+                ),
+              ),
+              const SizedBox(height: 6),
+              ...group.options.map((option) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 6),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          option.nom,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: ColorApp.black,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        option.prix > 0
+                            ? '+ ${option.prix.toStringAsFixed(0)} DA'
+                            : 'Free',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: option.prix > 0
+                              ? ColorApp.primary
+                              : ColorApp.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }).toList(),
+            ],
+          ),
+        );
+      }).toList(),
+    );
   }
 }
