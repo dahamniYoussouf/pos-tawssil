@@ -78,6 +78,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get orderOverview => 'نظرة عامة على الطلب';
 
   @override
+  String get orderValidationTitle => 'طلبك شبه جاهز للإرسال';
+
+  @override
+  String get orderValidationDescription =>
+      'يرجى التحقق من المعلومات أدناه قبل التأكيد. بمجرد التحقق، ستبدأ التحضيرات فورًا.';
+
+  @override
   String get subtotal => 'المجموع الفرعي';
 
   @override

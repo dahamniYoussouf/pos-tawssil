@@ -93,4 +93,15 @@ class MediaRes {
   static const historyNavBarIcon = '$_baseImageIcon/history_nav_bar_icon.svg';
   static const cartNavBarIcon = '$_baseImageIcon/cart_nav_bar_icon.svg';
   static const profileNavBarIcon = '$_baseImageIcon/profile_nav_bar_icon.svg';
+
+  static const trackingOrderIconStep1 =
+      '$_baseImageIcon/tracking_order_icon_step1.svg';
+  static const trackingOrderIconStep2 =
+      '$_baseImageIcon/tracking_order_icon_step2.svg';
+  static const trackingOrderIconStep3 =
+      '$_baseImageIcon/tracking_order_icon_step3.svg';
+  static const trackingOrderIconStep4 =
+      '$_baseImageIcon/tracking_order_icon_step4.svg';
+  static const trackingOrderIconStep5 =
+      '$_baseImageIcon/tracking_icon_step5.svg';
 }

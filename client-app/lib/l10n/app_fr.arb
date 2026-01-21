@@ -20,6 +20,8 @@
   "estimatedDeliveryTime": "Temps de livraison estimé",
   "orderDetails": "Détails de la commande",
   "orderOverview": "Aperçu de la commande",
+  "orderValidationTitle": "Votre commande est presque prête à être envoyée",
+  "orderValidationDescription": "Veuillez vérifier les informations ci-dessous avant de confirmer. Une fois validée, la préparation commencera immédiatement.",
   "subtotal": "Sous-total",
   "platformFee": "Frais de plateforme",
   "total": "Total",

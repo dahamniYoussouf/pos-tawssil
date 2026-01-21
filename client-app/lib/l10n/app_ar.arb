@@ -20,6 +20,8 @@
   "estimatedDeliveryTime": "وقت التسليم المقدر",
   "orderDetails": "تفاصيل الطلب",
   "orderOverview": "نظرة عامة على الطلب",
+  "orderValidationTitle": "طلبك شبه جاهز للإرسال",
+  "orderValidationDescription": "يرجى التحقق من المعلومات أدناه قبل التأكيد. بمجرد التحقق، ستبدأ التحضيرات فورًا.",
   "subtotal": "المجموع الفرعي",
   "platformFee": "رسوم المنصة",
   "total": "الإجمالي",

@@ -79,6 +79,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orderOverview => 'Order Overview';
 
   @override
+  String get orderValidationTitle => 'Your order is almost ready to be sent';
+
+  @override
+  String get orderValidationDescription =>
+      'Please verify the information below before confirming. Once validated, preparation will start immediately.';
+
+  @override
   String get subtotal => 'Subtotal';
 
   @override

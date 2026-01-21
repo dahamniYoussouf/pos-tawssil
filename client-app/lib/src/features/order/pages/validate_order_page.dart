@@ -1,22 +1,27 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/features/order/widgets/validate/swip_to_confirm_button_widget.dart';
 import 'package:client_app/src/features/order/widgets/validate/validate_order_confirmation_dialog.dart';
 import 'package:client_app/src/features/order/widgets/validate/validate_order_info_widget.dart';
-import 'package:client_app/src/features/order/widgets/validate/validate_order_map_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import 'package:client_app/src/features/order/cubit/order_cubit.dart';
 import 'package:client_app/src/features/order/cubit/order_state.dart';
 import 'package:client_app/src/features/order/pages/order_tracking_page.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:latlong2/latlong.dart' as latlong;
 
 const Color _routeLineBlue = Color(0xFF2196F3);
 const Duration _snackBarDuration = Duration(seconds: 3);
 const Duration _navigationDelay = Duration(seconds: 2);
-const double _cardTopRadius = 24.0;
+const double _pageHorizontalPadding = 16.0;
+const double _contentBottomPadding = 140.0;
+const double _sectionSpacing = 16.0;
+const double _cardRadius = 17.0;
+const double _mapHeight = 200.0;
+const double _mapCameraPadding = 50.0;
 
 class ValidateOrderPage extends StatefulWidget {
   final String deliveryAddress;
@@ -26,8 +31,8 @@ class ValidateOrderPage extends StatefulWidget {
   final String paymentMethod;
   final String paymentMethodCode;
   final List<Map<String, dynamic>> orderItems;
-  final LatLng? pickupLocation;
-  final LatLng? deliveryLocation;
+  final latlong.LatLng? pickupLocation;
+  final latlong.LatLng? deliveryLocation;
   final String? restaurantName;
   final String? restaurantId;
   final String orderType;
@@ -54,11 +59,10 @@ class ValidateOrderPage extends StatefulWidget {
 }
 
 class _ValidateOrderPageState extends State<ValidateOrderPage> {
-  MapController? _mapController;
-  late final LatLng _pickupLatLng;
-  late final LatLng _deliveryLatLng;
-  late final List<Marker> _markers;
-  late final List<Polyline> _polylines;
+  GoogleMapController? _mapController;
+  late final latlong.LatLng _pickupLatLng;
+  late final latlong.LatLng _deliveryLatLng;
+  late final Set<Polyline> _polylines;
   late final List<ValidateOrderItemData> _orderItems;
   bool _isLoading = false;
   final GlobalKey<SwipeToConfirmButtonState> _swipeButtonKey =
@@ -68,14 +72,15 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
   void initState() {
     super.initState();
     _initializeLocations();
-    _markers = _createMarkers();
     _polylines = _createPolylines();
     _orderItems = _createOrderItems();
   }
 
   void _initializeLocations() {
-    _pickupLatLng = widget.pickupLocation ?? const LatLng(36.7538, 3.0588);
-    _deliveryLatLng = widget.deliveryLocation ?? const LatLng(36.7738, 3.0888);
+    _pickupLatLng =
+        widget.pickupLocation ?? const latlong.LatLng(36.7538, 3.0588);
+    _deliveryLatLng =
+        widget.deliveryLocation ?? const latlong.LatLng(36.7738, 3.0888);
   }
 
   List<ValidateOrderItemData> _createOrderItems() {
@@ -84,41 +89,64 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
         .toList(growable: false);
   }
 
-  List<Marker> _createMarkers() {
-    return <Marker>[
+  Set<Marker> _createMarkers(
+      {required String pickupLabel, required String deliveryLabel}) {
+    return <Marker>{
       Marker(
-        point: _pickupLatLng,
-        width: 44,
-        height: 44,
-        child: Tooltip(
-          message: widget.restaurantName ?? 'Pickup point',
-          child: const Icon(Icons.location_on, color: Colors.red, size: 32),
-        ),
-      ),
+          markerId: const MarkerId('pickup'),
+          position: _convertToGoogleLatLng(_pickupLatLng),
+          infoWindow: InfoWindow(title: widget.restaurantName ?? pickupLabel)),
       Marker(
-        point: _deliveryLatLng,
-        width: 44,
-        height: 44,
-        child: Tooltip(
-          message: widget.deliveryAddress,
-          child: const Icon(Icons.location_on, color: Colors.red, size: 32),
-        ),
-      ),
-    ];
+          markerId: const MarkerId('delivery'),
+          position: _convertToGoogleLatLng(_deliveryLatLng),
+          infoWindow: InfoWindow(title: deliveryLabel)),
+    };
   }
 
-  List<Polyline> _createPolylines() {
-    return <Polyline>[
+  Set<Polyline> _createPolylines() {
+    return <Polyline>{
       Polyline(
-        points: <LatLng>[_pickupLatLng, _deliveryLatLng],
+        polylineId: const PolylineId('route'),
+        points: <LatLng>[
+          _convertToGoogleLatLng(_pickupLatLng),
+          _convertToGoogleLatLng(_deliveryLatLng)
+        ],
         color: _routeLineBlue,
-        strokeWidth: 4,
+        width: 4,
       ),
-    ];
+    };
   }
 
-  void _onMapCreated(MapController controller) {
+  void _onMapCreated(GoogleMapController controller) {
     _mapController = controller;
+    _moveCameraToBounds(controller);
+  }
+
+  void _moveCameraToBounds(GoogleMapController controller) {
+    final LatLngBounds bounds = _createMapBounds();
+    controller
+        .animateCamera(CameraUpdate.newLatLngBounds(bounds, _mapCameraPadding));
+  }
+
+  LatLng _createMapCenter() {
+    final double latitude =
+        (_pickupLatLng.latitude + _deliveryLatLng.latitude) / 2;
+    final double longitude =
+        (_pickupLatLng.longitude + _deliveryLatLng.longitude) / 2;
+    return LatLng(latitude, longitude);
+  }
+
+  LatLngBounds _createMapBounds() {
+    final double south = min(_pickupLatLng.latitude, _deliveryLatLng.latitude);
+    final double west = min(_pickupLatLng.longitude, _deliveryLatLng.longitude);
+    final double north = max(_pickupLatLng.latitude, _deliveryLatLng.latitude);
+    final double east = max(_pickupLatLng.longitude, _deliveryLatLng.longitude);
+    return LatLngBounds(
+        southwest: LatLng(south, west), northeast: LatLng(north, east));
+  }
+
+  LatLng _convertToGoogleLatLng(latlong.LatLng value) {
+    return LatLng(value.latitude, value.longitude);
   }
 
   void _handleOrderState(BuildContext context, OrderState state) {
@@ -159,50 +187,60 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations localization = AppLocalizations.of(context)!;
+    final Set<Marker> markers = _createMarkers(
+        pickupLabel: localization.pickupPoint,
+        deliveryLabel: widget.deliveryAddress);
+    final LatLng mapCenter = _createMapCenter();
     return BlocListener<OrderCubit, OrderState>(
         listener: _handleOrderState,
         child: Scaffold(
+          backgroundColor: ColorApp.white,
           body: Stack(children: [
-            Container(
-                decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(_cardTopRadius),
-                        topRight: Radius.circular(_cardTopRadius))),
-                child: Column(mainAxisSize: MainAxisSize.min, children: [
-                  const SizedBox(height: 12),
-                  Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                          color: ColorApp.greyBorder,
-                          borderRadius: BorderRadius.circular(2))),
-                  const SizedBox(height: 16),
-                  Text(localization.orderOverview,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: ColorApp.textBlack)),
-                  const SizedBox(height: 16),
-                  ValidateOrderMapCard(
-                      pickupLatLng: _pickupLatLng,
-                      deliveryLatLng: _deliveryLatLng,
-                      markers: _markers,
-                      polylines: _polylines,
-                      onMapCreated: _onMapCreated,
-                      estimatedTime: widget.estimatedTime),
-                  Flexible(
-                      child: SingleChildScrollView(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: ValidateOrderDetailsSection(
-                              deliveryAddress: widget.deliveryAddress,
-                              estimatedTime: widget.estimatedTime,
-                              totalPrice: widget.totalPrice,
-                              paymentMethod: widget.paymentMethod,
-                              items: _orderItems,
-                              orderDetailsLabel: localization.orderDetailsLabel,
-                              localization: localization))),
-                ])),
+            SafeArea(
+                child: Column(children: [
+              const SizedBox(height: 12),
+              const _DragHandle(),
+              const SizedBox(height: 12),
+              Expanded(
+                  child: SingleChildScrollView(
+                      padding: const EdgeInsets.fromLTRB(_pageHorizontalPadding,
+                          0, _pageHorizontalPadding, _contentBottomPadding),
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _PageTitle(title: localization.orderOverview),
+                            const SizedBox(height: _sectionSpacing),
+                            _SectionCard(
+                                child: SizedBox(
+                                    height: _mapHeight,
+                                    child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(_cardRadius),
+                                        child: GoogleMap(
+                                          onMapCreated: _onMapCreated,
+                                          initialCameraPosition: CameraPosition(
+                                              target: mapCenter, zoom: 12),
+                                          markers: markers,
+                                          polylines: _polylines,
+                                          myLocationEnabled: false,
+                                          myLocationButtonEnabled: false,
+                                          mapToolbarEnabled: false,
+                                          zoomControlsEnabled: false,
+                                          compassEnabled: false,
+                                        )))),
+                            const SizedBox(height: _sectionSpacing),
+                            ValidateOrderDetailsSection(
+                                deliveryAddress: widget.deliveryAddress,
+                                estimatedTime: widget.estimatedTime,
+                                totalPrice: widget.totalPrice,
+                                paymentMethod: widget.paymentMethod,
+                                items: _orderItems,
+                                orderDetailsLabel:
+                                    localization.orderDetailsLabel,
+                                localization: localization,
+                                orderNumber: widget.orderNumber),
+                          ])))
+            ])),
             if (_isLoading)
               Container(
                   color: Colors.black.withOpacity(0.3),
@@ -245,7 +283,7 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
 
   void _showSuccessSnackBar(BuildContext context) {
     final AppLocalizations localization = AppLocalizations.of(context)!;
-    final Widget content = Row(children: <Widget>[
+    final Widget content = Row(children: [
       const Icon(Icons.check_circle, color: Colors.white),
       const SizedBox(width: 12),
       Expanded(
@@ -256,7 +294,7 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
   }
 
   void _showErrorSnackBar(BuildContext context, String message) {
-    final Widget content = Row(children: <Widget>[
+    final Widget content = Row(children: [
       const Icon(Icons.error_outline, color: Colors.white),
       const SizedBox(width: 12),
       Expanded(
@@ -280,5 +318,75 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
   void dispose() {
     _mapController?.dispose();
     super.dispose();
+  }
+}
+
+class _DragHandle extends StatelessWidget {
+  const _DragHandle();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        width: 40,
+        height: 4,
+        decoration: BoxDecoration(
+            color: ColorApp.greyBorder,
+            borderRadius: BorderRadius.circular(2)));
+  }
+}
+
+class _PageTitle extends StatelessWidget {
+  const _PageTitle({required this.title});
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text(
+        title,
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: ColorApp.textBlack),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+}
+
+class _PageDescription extends StatelessWidget {
+  const _PageDescription({required this.description});
+  final String description;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      description,
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          fontSize: 13, fontWeight: FontWeight.w500, color: ColorApp.textGrey),
+      textAlign: TextAlign.center,
+    );
+  }
+}
+
+class _SectionCard extends StatelessWidget {
+  const _SectionCard({required this.child});
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        decoration: BoxDecoration(
+          color: ColorApp.white,
+          borderRadius: BorderRadius.circular(_cardRadius),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            )
+          ],
+        ),
+        child: child);
   }
 }

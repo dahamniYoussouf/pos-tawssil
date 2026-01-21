@@ -10,13 +10,17 @@ class ValidateOrderMapCard extends StatefulWidget {
       required this.markers,
       required this.polylines,
       required this.onMapCreated,
-      required this.estimatedTime});
+      required this.estimatedTime,
+      this.height = 200,
+      this.borderRadius = 16});
   final LatLng pickupLatLng;
   final LatLng deliveryLatLng;
   final List<Marker> markers;
   final List<Polyline> polylines;
   final ValueChanged<MapController> onMapCreated;
   final String estimatedTime;
+  final double height;
+  final double borderRadius;
 
   @override
   State<ValidateOrderMapCard> createState() => _ValidateOrderMapCardState();
@@ -69,49 +73,35 @@ class _ValidateOrderMapCardState extends State<ValidateOrderMapCard> {
     final LatLng center = LatLng(
         (widget.pickupLatLng.latitude + widget.deliveryLatLng.latitude) / 2,
         (widget.pickupLatLng.longitude + widget.deliveryLatLng.longitude) / 2);
-    return Container(
-      height: 200,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: <BoxShadow>[
-          BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 2,
-              blurRadius: 8,
-              offset: const Offset(0, 2))
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: FlutterMap(
-          mapController: _mapController,
-          options: MapOptions(
-            initialCenter: center,
-            initialZoom: 12,
-            interactionOptions: const InteractionOptions(
-              flags: InteractiveFlag.drag |
-                  InteractiveFlag.flingAnimation |
-                  InteractiveFlag.pinchZoom |
-                  InteractiveFlag.doubleTapZoom,
-            ),
-          ),
-          children: <Widget>[
-            TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              userAgentPackageName: 'com.tawsil.delivery',
-            ),
-            if (widget.polylines.isNotEmpty)
-              PolylineLayer(
-                polylines: widget.polylines,
-              ),
-            if (widget.markers.isNotEmpty)
-              MarkerLayer(
-                markers: widget.markers,
-              ),
-          ],
-        ),
-      ),
-    );
+    return SizedBox(
+        height: widget.height,
+        child: ClipRRect(
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            child: FlutterMap(
+                mapController: _mapController,
+                options: MapOptions(
+                  initialCenter: center,
+                  initialZoom: 12,
+                  interactionOptions: const InteractionOptions(
+                    flags: InteractiveFlag.drag |
+                        InteractiveFlag.flingAnimation |
+                        InteractiveFlag.pinchZoom |
+                        InteractiveFlag.doubleTapZoom,
+                  ),
+                ),
+                children: <Widget>[
+                  TileLayer(
+                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.tawsil.delivery',
+                  ),
+                  if (widget.polylines.isNotEmpty)
+                    PolylineLayer(
+                      polylines: widget.polylines,
+                    ),
+                  if (widget.markers.isNotEmpty)
+                    MarkerLayer(
+                      markers: widget.markers,
+                    ),
+                ])));
   }
 }

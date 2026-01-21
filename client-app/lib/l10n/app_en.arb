@@ -85,6 +85,14 @@
   "@orderOverview": {
     "description": "Order overview title"
   },
+  "orderValidationTitle": "Your order is almost ready to be sent",
+  "@orderValidationTitle": {
+    "description": "Validate order page title"
+  },
+  "orderValidationDescription": "Please verify the information below before confirming. Once validated, preparation will start immediately.",
+  "@orderValidationDescription": {
+    "description": "Validate order page description"
+  },
   "subtotal": "Subtotal",
   "@subtotal": {
     "description": "Subtotal label"

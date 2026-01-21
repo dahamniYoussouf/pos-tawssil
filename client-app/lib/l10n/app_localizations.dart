@@ -220,6 +220,18 @@ abstract class AppLocalizations {
   /// **'Order Overview'**
   String get orderOverview;
 
+  /// Validate order page title
+  ///
+  /// In en, this message translates to:
+  /// **'Your order is almost ready to be sent'**
+  String get orderValidationTitle;
+
+  /// Validate order page description
+  ///
+  /// In en, this message translates to:
+  /// **'Please verify the information below before confirming. Once validated, preparation will start immediately.'**
+  String get orderValidationDescription;
+
   /// Subtotal label
   ///
   /// In en, this message translates to:
