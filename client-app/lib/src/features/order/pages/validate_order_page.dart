@@ -354,21 +354,6 @@ class _PageTitle extends StatelessWidget {
   }
 }
 
-class _PageDescription extends StatelessWidget {
-  const _PageDescription({required this.description});
-  final String description;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      description,
-      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-          fontSize: 13, fontWeight: FontWeight.w500, color: ColorApp.textGrey),
-      textAlign: TextAlign.center,
-    );
-  }
-}
-
 class _SectionCard extends StatelessWidget {
   const _SectionCard({required this.child});
   final Widget child;
