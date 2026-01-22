@@ -1,12 +1,19 @@
 import 'package:client_app/src/core/res/color_app.dart';
-import 'package:client_app/src/features/order/widgets/validate/validate_order_confirmation_dialog.dart';
+import 'package:client_app/src/features/cart/cubit/cart_cubit.dart';
+import 'package:client_app/src/features/order/index.dart';
+import 'package:client_app/src/features/order/widgets/order_tracking_steps_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:client_app/l10n/app_localizations.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 const double _cardRadius = 17.0;
 const double _cardPadding = 16.0;
 const double _rowSpacing = 12.0;
 const double _sectionSpacing = 16.0;
+const double _orderItemImageSize = 64.0;
+const double _orderItemImageRadius = 12.0;
+const double _orderItemImageSpacing = 12.0;
+const double _orderItemDescriptionSpacing = 4.0;
 
 class ValidateOrderDetailsSection extends StatelessWidget {
   const ValidateOrderDetailsSection(
@@ -23,7 +30,7 @@ class ValidateOrderDetailsSection extends StatelessWidget {
   final String estimatedTime;
   final double totalPrice;
   final String paymentMethod;
-  final List<ValidateOrderItemData> items;
+  final List<CartItem> items;
   final String orderDetailsLabel;
   final AppLocalizations localization;
   final String orderNumber;
@@ -43,30 +50,57 @@ class ValidateOrderDetailsSection extends StatelessWidget {
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 color: ColorApp.textGrey)),
+
+        // estimated time
+        OrderInformationRow(
+            title: localization.deliveryTime, value: estimatedTime),
+        const SizedBox(height: _sectionSpacing),
+
+        BlocBuilder<OrderCubit, OrderState>(builder: (context, state) {
+          final String orderStatus = _getOrderStatusFromState(state: state);
+          return OrderTrackingStepsWidget(orderStatus: orderStatus);
+        }),
         const SizedBox(height: _rowSpacing),
+        Divider(indent: 4, endIndent: 4, color: ColorApp.greyBorder),
+
+        const SizedBox(height: _rowSpacing),
+
         OrderInformationRow(
             title: localization.deliveryAddressLabel,
             value: deliveryAddress.substring(0, 10) + '...'),
         const SizedBox(height: _rowSpacing),
-        // estimated time
-        OrderInformationRow(
-            title: localization.deliveryTime, value: estimatedTime),
-        const SizedBox(height: _rowSpacing),
-        OrderInformationRow(
-            title: localization.totalLabel,
-            value: localization.totalValue(totalPrice.toStringAsFixed(2))),
+        Divider(indent: 4, endIndent: 4, color: ColorApp.textBlack),
       ]),
-      const SizedBox(height: _sectionSpacing),
       _OrderInfoCard(children: [
-        Text(orderDetailsLabel,
+        Text(localization.products(items.length),
             style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
                 color: ColorApp.textBlack)),
         const SizedBox(height: _rowSpacing),
         OrderItemsList(items: items),
+        const SizedBox(height: _rowSpacing),
+        OrderInformationRow(
+            title: localization.totalLabel,
+            value: localization.totalValue(totalPrice.toStringAsFixed(2))),
       ])
     ]);
+  }
+
+  String _getOrderStatusFromState({required OrderState state}) {
+    if (state is OrderLoaded) {
+      return state.order.status;
+    }
+    if (state is OrderCreated) {
+      return state.order.status;
+    }
+    if (state is OrderRefused) {
+      return state.order.status;
+    }
+    if (state is OrderDelayed) {
+      return state.order.status;
+    }
+    return OrderStatus.pending;
   }
 }
 
@@ -98,13 +132,13 @@ class OrderInformationRow extends StatelessWidget {
 
 class OrderItemsList extends StatelessWidget {
   const OrderItemsList({super.key, required this.items});
-  final List<ValidateOrderItemData> items;
+  final List<CartItem> items;
 
   @override
   Widget build(BuildContext context) {
     final List<Widget> itemWidgets = [];
     for (int i = 0; i < items.length; i++) {
-      final ValidateOrderItemData item = items[i];
+      final CartItem item = items[i];
       itemWidgets.add(_OrderItemRow(item: item));
       if (i != items.length - 1) {
         itemWidgets.add(const Divider(height: 16, color: ColorApp.greyDivider));
@@ -117,24 +151,79 @@ class OrderItemsList extends StatelessWidget {
 
 class _OrderItemRow extends StatelessWidget {
   const _OrderItemRow({required this.item});
-  final ValidateOrderItemData item;
+  final CartItem item;
 
   @override
   Widget build(BuildContext context) {
-    return Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+    final String formattedPrice = item.totalPrice.toStringAsFixed(0);
+    final String description = item.menuItem.description?.trim() ?? '';
+    final bool hasDescription = description.isNotEmpty;
+    return Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      _OrderItemImage(imageUrl: item.imageUrl),
+      const SizedBox(width: _orderItemImageSpacing),
       Expanded(
-          child: Text('${item.name} x${item.quantity}',
-              style: const TextStyle(
-                  fontSize: 14,
-                  color: ColorApp.textBlack,
-                  fontWeight: FontWeight.w600))),
-      if (item.price != null)
-        Text('${item.price} DA',
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Text('${item.menuItemName} x${item.quantity}',
             style: const TextStyle(
-                fontSize: 14,
+                fontSize: 16,
                 color: ColorApp.textBlack,
-                fontWeight: FontWeight.w700))
+                fontWeight: FontWeight.w700),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis),
+        if (hasDescription)
+          const SizedBox(height: _orderItemDescriptionSpacing),
+        if (hasDescription)
+          Text(description,
+              style: const TextStyle(
+                  fontSize: 13,
+                  color: ColorApp.textGrey,
+                  fontWeight: FontWeight.w500),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis),
+      ])),
+      const SizedBox(width: _orderItemImageSpacing),
+      Text('$formattedPrice DA',
+          style: const TextStyle(
+              fontSize: 14,
+              color: ColorApp.textBlack,
+              fontWeight: FontWeight.w700))
     ]);
+  }
+}
+
+class _OrderItemImage extends StatelessWidget {
+  const _OrderItemImage({required this.imageUrl});
+  final String imageUrl;
+
+  @override
+  Widget build(BuildContext context) {
+    if (imageUrl.isEmpty) {
+      return const _OrderItemImagePlaceholder();
+    }
+    return ClipRRect(
+        borderRadius: BorderRadius.circular(_orderItemImageRadius),
+        child: Image.network(imageUrl,
+            width: _orderItemImageSize,
+            height: _orderItemImageSize,
+            fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) {
+          return const _OrderItemImagePlaceholder();
+        }));
+  }
+}
+
+class _OrderItemImagePlaceholder extends StatelessWidget {
+  const _OrderItemImagePlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        width: _orderItemImageSize,
+        height: _orderItemImageSize,
+        decoration: BoxDecoration(
+            color: ColorApp.backgroundGrey,
+            borderRadius: BorderRadius.circular(_orderItemImageRadius)),
+        child: const Icon(Icons.restaurant, size: 28, color: ColorApp.grey));
   }
 }
 
@@ -145,7 +234,8 @@ class _OrderInfoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: const EdgeInsets.all(_cardPadding),
+        padding: const EdgeInsets.only(
+            left: _cardPadding, right: _cardPadding, bottom: _cardPadding),
         decoration: BoxDecoration(
           color: ColorApp.white,
           borderRadius: BorderRadius.circular(_cardRadius),

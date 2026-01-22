@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:math';
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/features/order/widgets/validate/swip_to_confirm_button_widget.dart';
-import 'package:client_app/src/features/order/widgets/validate/validate_order_confirmation_dialog.dart';
 import 'package:client_app/src/features/order/widgets/validate/validate_order_info_widget.dart';
+import 'package:client_app/src/features/cart/cubit/cart_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/l10n/app_localizations.dart';
@@ -63,7 +63,6 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
   late final latlong.LatLng _pickupLatLng;
   late final latlong.LatLng _deliveryLatLng;
   late final Set<Polyline> _polylines;
-  late final List<ValidateOrderItemData> _orderItems;
   bool _isLoading = false;
   final GlobalKey<SwipeToConfirmButtonState> _swipeButtonKey =
       GlobalKey<SwipeToConfirmButtonState>();
@@ -73,7 +72,6 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
     super.initState();
     _initializeLocations();
     _polylines = _createPolylines();
-    _orderItems = _createOrderItems();
   }
 
   void _initializeLocations() {
@@ -83,10 +81,13 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
         widget.deliveryLocation ?? const latlong.LatLng(36.7738, 3.0888);
   }
 
-  List<ValidateOrderItemData> _createOrderItems() {
-    return widget.orderItems
-        .map((Map<String, dynamic> item) => ValidateOrderItemData.fromMap(item))
-        .toList(growable: false);
+  List<CartItem> _getOrderItemsForRestaurant(BuildContext context) {
+    final String? restaurantId = widget.restaurantId;
+    if (restaurantId == null) {
+      return const <CartItem>[];
+    }
+    final CartCubit cartCubit = context.watch<CartCubit>();
+    return cartCubit.getItemsForRestaurant(restaurantId: restaurantId);
   }
 
   Set<Marker> _createMarkers(
@@ -187,6 +188,7 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
   @override
   Widget build(BuildContext context) {
     final AppLocalizations localization = AppLocalizations.of(context)!;
+    final List<CartItem> orderItems = _getOrderItemsForRestaurant(context);
     final Set<Marker> markers = _createMarkers(
         pickupLabel: localization.pickupPoint,
         deliveryLabel: widget.deliveryAddress);
@@ -234,7 +236,7 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
                                 estimatedTime: widget.estimatedTime,
                                 totalPrice: widget.totalPrice,
                                 paymentMethod: widget.paymentMethod,
-                                items: _orderItems,
+                                items: orderItems,
                                 orderDetailsLabel:
                                     localization.orderDetailsLabel,
                                 localization: localization,

@@ -49,6 +49,12 @@ class CartCubit extends Cubit<CartState> {
     return _items.values.fold(0.0, (sum, item) => sum + item.totalPrice);
   }
 
+  List<CartItem> getItemsForRestaurant({required String restaurantId}) {
+    return _items.values
+        .where((CartItem item) => item.menuItem.restaurantId == restaurantId)
+        .toList(growable: false);
+  }
+
   double getTotalPriceForRestaurant(String restaurantId) {
     return _items.values
         .where((item) => item.menuItem.restaurantId == restaurantId)

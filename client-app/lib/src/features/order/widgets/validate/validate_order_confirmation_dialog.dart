@@ -27,22 +27,3 @@ class OrderSummaryRow extends StatelessWidget {
         ]);
   }
 }
-
-class ValidateOrderItemData {
-  const ValidateOrderItemData(
-      {required this.name, required this.quantity, this.price});
-  final String name;
-  final int quantity;
-  final String? price;
-
-  factory ValidateOrderItemData.fromMap(Map<String, dynamic> map) {
-    final dynamic rawQuantity = map['quantity'];
-    final dynamic rawPrice = map['price'];
-    final int parsedQuantity =
-        rawQuantity is int ? rawQuantity : int.tryParse('$rawQuantity') ?? 0;
-    return ValidateOrderItemData(
-        name: '${map['name']}',
-        quantity: parsedQuantity,
-        price: rawPrice?.toString());
-  }
-}
