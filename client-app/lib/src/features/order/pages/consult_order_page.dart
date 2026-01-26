@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import 'package:client_app/src/core/res/media_res.dart';
+import 'package:client_app/src/features/restaurant/models/menu_model.dart';
 import '../../cart/cubit/cart_cubit.dart';
 import '../../cart/states/cart_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -277,6 +278,9 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
         'name': item.menuItemName, // For display purposes
         'quantity': item.quantity,
         'special_instructions': item.note,
+        'additions': item.selectedOptions
+            .map((MenuItemOption option) => option.toJson())
+            .toList(growable: false),
         'price': item.price.toStringAsFixed(0), // For display purposes
       };
     }).toList();

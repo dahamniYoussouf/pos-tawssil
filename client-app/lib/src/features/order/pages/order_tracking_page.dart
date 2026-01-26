@@ -6,10 +6,10 @@ import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/features/home/pages/home_page.dart';
 import 'package:client_app/src/features/order/widgets/delivery_person_card_widget.dart';
 import 'package:client_app/src/features/order/widgets/order_details_card_widget.dart';
-import 'package:client_app/src/features/order/widgets/order_timeline_widget.dart';
 import 'package:client_app/src/features/order/widgets/order_tracking_map_widget.dart';
 import 'package:client_app/src/features/order/widgets/restaurant_info_card_widget.dart';
 import 'package:client_app/src/features/order/widgets/status_card_widget.dart';
+import 'package:client_app/src/features/order/widgets/order_tracking_steps_widget.dart';
 import 'package:client_app/src/features/order/widgets/validate_order_button_widget.dart';
 import 'package:client_app/src/features/order/widgets/declined_order_widget.dart';
 import 'package:client_app/src/features/review/index.dart';
@@ -200,7 +200,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
       children: [
         if (isDelivery) ...[
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.5,
+            height: MediaQuery.of(context).size.height * 0.6,
             child: OrderTrackingMap(
               order: order,
             ),
@@ -267,8 +267,8 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
       // delivery order
       return DraggableScrollableSheet(
         initialChildSize: 0.55,
-        minChildSize: 0.55,
-        maxChildSize: 0.95,
+        minChildSize: 0.40,
+        maxChildSize: 0.70,
         builder: (BuildContext context, ScrollController scrollController) {
           return Container(
             decoration: const BoxDecoration(
@@ -307,6 +307,11 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
             ),
           ),
         StatusCardWidget(order: order),
+        const SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: OrderTrackingStepsWidget(orderStatus: order.status),
+        ),
         if (order.isDelivering && order.deliveryPerson != null)
           const SizedBox(height: 16),
         if (order.isDelivering && order.deliveryPerson != null)
@@ -316,9 +321,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
         RestaurantInfoCard(order: order),
         const SizedBox(height: 16),
         OrderDetailsCard(order: order),
-        const SizedBox(height: 16),
-        OrderTimeline(order: order, localization: localization),
-        const SizedBox(height: 16),
         if (order.isDelivered) const ValidateOrderButtonWidget(),
       ],
     );

@@ -8,17 +8,23 @@ class OrderTrackingStepsWidget extends StatelessWidget {
   final String orderStatus;
   const OrderTrackingStepsWidget({super.key, required this.orderStatus});
 
-  static const List<String> _icons = <String>[
-    MediaRes.trackingOrderIconStep1,
-    MediaRes.trackingOrderIconStep2,
-    MediaRes.trackingOrderIconStep3,
-    MediaRes.trackingOrderIconStep4,
-  ];
-  static const List<String> _stepStatuses = <String>[
-    OrderStatus.accepted,
-    OrderStatus.assigned,
-    OrderStatus.delivering,
-    OrderStatus.collected,
+  static const List<_StepData> _steps = <_StepData>[
+    _StepData(
+      iconAsset: MediaRes.trackingOrderIconStep1,
+      status: OrderStatus.pending,
+    ),
+    _StepData(
+      iconAsset: MediaRes.trackingOrderIconStep2,
+      status: OrderStatus.accepted,
+    ),
+    _StepData(
+      iconAsset: MediaRes.trackingOrderIconStep3,
+      status: OrderStatus.preparing,
+    ),
+    _StepData(
+      iconAsset: MediaRes.trackingOrderIconStep4,
+      status: OrderStatus.delivering,
+    ),
   ];
 
   @override
@@ -29,43 +35,107 @@ class OrderTrackingStepsWidget extends StatelessWidget {
   List<Widget> _buildStepWidgets() {
     final int activeIndex = _getActiveStepIndex();
     final List<Widget> widgets = <Widget>[];
-    for (int i = 0; i < _icons.length; i++) {
+    for (int i = 0; i < _steps.length; i++) {
       final bool isActive = i <= activeIndex && activeIndex != -1;
-      widgets.add(_buildStepIcon(asset: _icons[i], isActive: isActive));
-      if (i < _icons.length - 1) {
-        widgets.add(_buildConnector());
+      final bool isCompleted = i < activeIndex;
+      widgets.add(
+        _StepIconWidget(
+          iconAsset: _steps[i].iconAsset,
+          isActive: isActive,
+          isCompleted: isCompleted,
+        ),
+      );
+      if (i < _steps.length - 1) {
+        widgets.add(_ConnectorWidget(isActive: isCompleted));
       }
     }
     return widgets;
   }
 
   int _getActiveStepIndex() {
-    return _stepStatuses.indexOf(orderStatus);
+    final List<String> statusHierarchy = <String>[
+      OrderStatus.pending,
+      OrderStatus.accepted,
+      OrderStatus.preparing,
+      OrderStatus.assigned,
+      OrderStatus.delivering,
+      OrderStatus.delivered,
+      OrderStatus.collected,
+    ];
+    final int currentStatusIndex = statusHierarchy.indexOf(orderStatus);
+    if (currentStatusIndex == -1) return -1;
+    for (int i = _steps.length - 1; i >= 0; i--) {
+      final int stepStatusIndex = statusHierarchy.indexOf(_steps[i].status);
+      if (currentStatusIndex >= stepStatusIndex) {
+        return i;
+      }
+    }
+    return -1;
   }
+}
 
-  Widget _buildStepIcon({required String asset, required bool isActive}) {
+class _StepData {
+  final String iconAsset;
+  final String status;
+
+  const _StepData({
+    required this.iconAsset,
+    required this.status,
+  });
+}
+
+class _StepIconWidget extends StatelessWidget {
+  final String iconAsset;
+  final bool isActive;
+  final bool isCompleted;
+
+  const _StepIconWidget({
+    required this.iconAsset,
+    required this.isActive,
+    required this.isCompleted,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final Color backgroundColor =
+        isActive ? ColorApp.primary.withOpacity(0.1) : ColorApp.white;
+    final Color borderColor =
+        isActive || isCompleted ? ColorApp.primary : ColorApp.greyBorder;
     final Color iconColor =
-        isActive ? ColorApp.primary : ColorApp.greyIconColor;
+        isActive || isCompleted ? ColorApp.primary : ColorApp.greyIconColor;
     return Container(
-        width: 37,
-        height: 37,
-        alignment: Alignment.center,
-        padding: EdgeInsets.all(4),
-        decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: ColorApp.white,
-            border: Border.all(color: ColorApp.greyBorder, width: 2)),
-        child: SvgPicture.asset(asset,
-            width: 24,
-            height: 24,
-            colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn)));
+      width: 40,
+      height: 40,
+      alignment: Alignment.center,
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: backgroundColor,
+        border: Border.all(color: borderColor, width: 2),
+      ),
+      child: SvgPicture.asset(
+        iconAsset,
+        width: 20,
+        height: 20,
+        colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
+      ),
+    );
   }
+}
 
-  Widget _buildConnector() {
+class _ConnectorWidget extends StatelessWidget {
+  final bool isActive;
+
+  const _ConnectorWidget({required this.isActive});
+
+  @override
+  Widget build(BuildContext context) {
     return Expanded(
-        child: Container(
-            height: 2,
-            margin: const EdgeInsets.symmetric(horizontal: 8),
-            color: ColorApp.greyBorder));
+      child: Container(
+        height: 2,
+        margin: const EdgeInsets.symmetric(horizontal: 8),
+        color: isActive ? ColorApp.primary : ColorApp.greyBorder,
+      ),
+    );
   }
 }

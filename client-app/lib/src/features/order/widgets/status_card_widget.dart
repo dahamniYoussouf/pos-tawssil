@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:client_app/l10n/app_localizations.dart';
+import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/features/order/index.dart';
 
 class StatusCardWidget extends StatefulWidget {
@@ -66,59 +66,110 @@ class _StatusCardWidgetState extends State<StatusCardWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
+    final statusInfo = _getStatusInfo(widget.order.status);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF00695C),
+        color: ColorApp.white,
         borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: ColorApp.grey.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _StatusIcon(icon: statusInfo.icon),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      statusInfo.title,
+                      style: const TextStyle(
+                        color: ColorApp.textBlack,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      statusInfo.description,
+                      style: TextStyle(
+                        color: ColorApp.textBlack.withOpacity(0.7),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (_remainingTime != null) ...[
+            const SizedBox(height: 12),
+            _EstimatedTimeWidget(remainingTime: _remainingTime),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _StatusIcon extends StatelessWidget {
+  final String icon;
+  const _StatusIcon({required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 40,
+      height: 40,
+      alignment: Alignment.center,
+      child: Text(
+        icon,
+        style: const TextStyle(fontSize: 24),
+      ),
+    );
+  }
+}
+
+class _EstimatedTimeWidget extends StatelessWidget {
+  final Duration? remainingTime;
+  const _EstimatedTimeWidget({required this.remainingTime});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: ColorApp.primary.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          // Countdown Timer Circle
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.white, width: 2, style: BorderStyle.solid),
-            ),
-            child: Center(
-              child: Text(
-                _formatDuration(_remainingTime),
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
+          Icon(
+            Icons.access_time,
+            size: 16,
+            color: ColorApp.primary,
           ),
-          const SizedBox(width: 16),
-          // Status Text
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _getStatusText(widget.order.status, l10n!),
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  _getStatusDescription(widget.order.status, l10n),
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
+          const SizedBox(width: 6),
+          Text(
+            'Temps estimé : ${_formatDuration(remainingTime)}',
+            style: TextStyle(
+              color: ColorApp.primary,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
             ),
           ),
         ],
@@ -128,53 +179,78 @@ class _StatusCardWidgetState extends State<StatusCardWidget> {
 }
 
 String _formatDuration(Duration? duration) {
-  if (duration == null) return '-- min';
-  if (duration.isNegative || duration.inMinutes <= 0) return '0 min';
-  return '${duration.inMinutes} min';
+  if (duration == null) return '-- minutes';
+  if (duration.isNegative || duration.inMinutes <= 0) return '0 minutes';
+  return '${duration.inMinutes} minutes';
 }
 
-String _getStatusText(String status, AppLocalizations l10n) {
-  switch (status) {
-    case OrderStatus.pending:
-      return l10n.orderStatusPending;
-    case OrderStatus.accepted:
-      return l10n.orderStatusAccepted;
-    case OrderStatus.preparing:
-      return l10n.orderStatusPreparing;
-    case OrderStatus.assigned:
-      return l10n.orderStatusAssigned;
-    case OrderStatus.delivering:
-      return l10n.orderStatusDelivering;
-    case OrderStatus.delivered:
-      return l10n.orderStatusDelivered;
-    case OrderStatus.readyToCollect:
-      return l10n.orderStatusPretRecuperer;
-    case OrderStatus.collected:
-      return l10n.orderStatusRecuperer;
-    default:
-      return status;
-  }
+class _OrderStatusInfo {
+  final String icon;
+  final String title;
+  final String description;
+
+  const _OrderStatusInfo({
+    required this.icon,
+    required this.title,
+    required this.description,
+  });
 }
 
-String _getStatusDescription(String status, AppLocalizations l10n) {
+_OrderStatusInfo _getStatusInfo(String status) {
   switch (status) {
     case OrderStatus.pending:
-      return l10n.orderStatusPendingDescription;
+      return const _OrderStatusInfo(
+        icon: '⏳',
+        title: 'Commande en attente',
+        description: 'Votre commande a bien été transmise au restaurant et est en attente de confirmation.',
+      );
     case OrderStatus.accepted:
-      return l10n.orderStatusAcceptedDescription;
+      return const _OrderStatusInfo(
+        icon: '✅',
+        title: 'Commande acceptée',
+        description: 'Le restaurant a accepté votre commande et va commencer la préparation.',
+      );
     case OrderStatus.preparing:
-      return l10n.orderStatusPreparingDescription;
+      return const _OrderStatusInfo(
+        icon: '🍳',
+        title: 'Commande en préparation',
+        description: 'Votre commande est actuellement en cours de préparation au restaurant.',
+      );
     case OrderStatus.assigned:
-      return l10n.orderStatusAssignedDescription;
+      return const _OrderStatusInfo(
+        icon: '🛵',
+        title: 'Livreur assigné',
+        description: 'Un livreur a été assigné à votre commande.',
+      );
     case OrderStatus.delivering:
-      return l10n.orderStatusDeliveringDescription;
+      return const _OrderStatusInfo(
+        icon: '🛵',
+        title: 'Livreur en route vers vous',
+        description: 'Le livreur est en route vers votre adresse et arrivera prochainement.',
+      );
     case OrderStatus.delivered:
-      return l10n.orderStatusDeliveredDescription;
+      return const _OrderStatusInfo(
+        icon: '✅',
+        title: 'Commande livrée',
+        description: 'Votre commande a été livrée avec succès.',
+      );
     case OrderStatus.readyToCollect:
-      return l10n.orderStatusPretRecupererDescription;
+      return const _OrderStatusInfo(
+        icon: '✅',
+        title: 'Prêt à récupérer',
+        description: 'Votre commande est prête à être récupérée.',
+      );
     case OrderStatus.collected:
-      return l10n.orderStatusRecupererDescription;
+      return const _OrderStatusInfo(
+        icon: '✅',
+        title: 'Commande récupérée',
+        description: 'Votre commande a été récupérée avec succès.',
+      );
     default:
-      return '';
+      return const _OrderStatusInfo(
+        icon: '⏳',
+        title: 'En cours',
+        description: 'Votre commande est en cours de traitement.',
+      );
   }
 }

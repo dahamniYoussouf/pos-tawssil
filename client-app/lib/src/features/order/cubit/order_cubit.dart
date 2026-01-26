@@ -40,7 +40,9 @@ class OrderCubit extends Cubit<OrderState> {
 
       if (isClosed) return;
 
-      if (response['success'] == true || response['id'] != null || response['_id'] != null) {
+      if (response['success'] == true ||
+          response['id'] != null ||
+          response['_id'] != null) {
         final order = _orderService.parseOrder(response);
 
         if (order == null) {
@@ -108,7 +110,9 @@ class OrderCubit extends Cubit<OrderState> {
 
       if (isClosed) return;
 
-      if (response['success'] == true || response['id'] != null || response['_id'] != null) {
+      if (response['success'] == true ||
+          response['id'] != null ||
+          response['_id'] != null) {
         final order = _orderService.parseOrder(response);
 
         if (order == null) {
@@ -187,7 +191,9 @@ class OrderCubit extends Cubit<OrderState> {
 
       if (isClosed) return;
 
-      if (response['success'] == true || response['id'] != null || response['_id'] != null) {
+      if (response['success'] == true ||
+          response['id'] != null ||
+          response['_id'] != null) {
         // Clear cart after successful order creation
         locator<CartCubit>().clearCart();
         final order = _orderService.parseOrder(response);
@@ -234,13 +240,15 @@ class OrderCubit extends Cubit<OrderState> {
   }
 
   /// Sanitize order items to ensure special_instructions is always a string
-  List<Map<String, dynamic>> _sanitizeOrderItems(List<Map<String, dynamic>> items) {
+  List<Map<String, dynamic>> _sanitizeOrderItems(
+      List<Map<String, dynamic>> items) {
     return items.map((item) {
       final sanitizedItem = Map<String, dynamic>.from(item);
       if (sanitizedItem['special_instructions'] == null) {
         sanitizedItem['special_instructions'] = '';
       } else {
-        sanitizedItem['special_instructions'] = sanitizedItem['special_instructions'].toString();
+        sanitizedItem['special_instructions'] =
+            sanitizedItem['special_instructions'].toString();
       }
       return sanitizedItem;
     }).toList();

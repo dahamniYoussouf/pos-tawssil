@@ -59,6 +59,8 @@ class ValidateOrderPage extends StatefulWidget {
 
 class _ValidateOrderPageState extends State<ValidateOrderPage> {
   GoogleMapController? _mapController;
+  AppLocalizations? _localizations;
+  ScaffoldMessengerState? _scaffoldMessenger;
   late final latlong.LatLng _pickupLatLng;
   late final latlong.LatLng _deliveryLatLng;
   bool _isLoading = false;
@@ -134,6 +136,9 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
   }
 
   void _handleOrderState(BuildContext context, OrderState state) {
+    if (!mounted) {
+      return;
+    }
     if (state is OrderCreated) {
       _onOrderCreated(context, state.order.id);
     } else if (state is OrderError) {
@@ -166,6 +171,13 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
   void _onOrderCreating() {
     setState(() => _isLoading = true);
     _swipeButtonKey.currentState?.reset();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _localizations = AppLocalizations.of(context);
+    _scaffoldMessenger = ScaffoldMessenger.maybeOf(context);
   }
 
   @override
@@ -266,7 +278,10 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
   }
 
   void _showSuccessSnackBar(BuildContext context) {
-    final AppLocalizations localization = AppLocalizations.of(context)!;
+    final AppLocalizations? localization = _localizations;
+    if (localization == null) {
+      return;
+    }
     final Widget content = Row(children: [
       const Icon(Icons.check_circle, color: Colors.white),
       const SizedBox(width: 12),
@@ -290,12 +305,16 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
 
   void _showSnackBar(
       BuildContext context, Widget content, Color backgroundColor) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: content,
-        backgroundColor: backgroundColor,
-        duration: _snackBarDuration,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))));
+    if (!mounted || _scaffoldMessenger == null) {
+      return;
+    }
+    _scaffoldMessenger!.showSnackBar(SnackBar(
+      content: content,
+      backgroundColor: backgroundColor,
+      duration: _snackBarDuration,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+    ));
   }
 
   @override

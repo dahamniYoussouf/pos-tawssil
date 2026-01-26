@@ -1,9 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/features/order/models/order_model.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class OrderTrackingMapState {
   final List<Marker> markers;
@@ -62,7 +60,7 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
       markers: List<Marker>.unmodifiable(markers),
       polylines: List<Polyline>.unmodifiable(polylines),
       center: restaurantLatLng,
-      bounds: LatLngBounds.fromPoints(boundPoints),
+      bounds: _createBounds(boundPoints),
     ));
   }
 
@@ -81,22 +79,16 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
   List<Marker> _buildMarkers(OrderModel order, LatLng restaurantLatLng, LatLng deliveryLatLng, List<LatLng> boundPoints) {
     final List<Marker> markers = <Marker>[
       Marker(
-        point: restaurantLatLng,
-        width: 44,
-        height: 44,
-        child: Tooltip(
-          message: order.restaurantName ?? 'Restaurant',
-          child: const Icon(Icons.location_on, color: ColorApp.redColor, size: 32),
-        ),
+        markerId: const MarkerId('restaurant'),
+        position: restaurantLatLng,
+        infoWindow: InfoWindow(title: order.restaurantName ?? 'Restaurant'),
+        icon: _createMarkerIcon(BitmapDescriptor.hueRed),
       ),
       Marker(
-        point: deliveryLatLng,
-        width: 44,
-        height: 44,
-        child: Tooltip(
-          message: order.deliveryAddress ?? 'Destination',
-          child: const Icon(Icons.location_on, color: ColorApp.primary, size: 32),
-        ),
+        markerId: const MarkerId('destination'),
+        position: deliveryLatLng,
+        infoWindow: InfoWindow(title: order.deliveryAddress ?? 'Destination'),
+        icon: _createMarkerIcon(BitmapDescriptor.hueAzure),
       ),
     ];
 
@@ -107,13 +99,10 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
         boundPoints.add(courierPoint);
         markers.add(
           Marker(
-            point: courierPoint,
-            width: 44,
-            height: 44,
-            child: Tooltip(
-              message: person.name,
-              child: const Icon(Icons.delivery_dining, color: ColorApp.blueAccentColor, size: 32),
-            ),
+            markerId: const MarkerId('courier'),
+            position: courierPoint,
+            infoWindow: InfoWindow(title: person.name),
+            icon: _createMarkerIcon(BitmapDescriptor.hueBlue),
           ),
         );
       }
@@ -124,9 +113,31 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
 
   Polyline _buildRoutePolyline(LatLng restaurantLatLng, LatLng deliveryLatLng) {
     return Polyline(
+      polylineId: const PolylineId('route'),
       points: <LatLng>[restaurantLatLng, deliveryLatLng],
       color: ColorApp.primary,
-      strokeWidth: 4,
+      width: 4,
+    );
+  }
+
+  BitmapDescriptor _createMarkerIcon(double hue) {
+    return BitmapDescriptor.defaultMarkerWithHue(hue);
+  }
+
+  LatLngBounds _createBounds(List<LatLng> points) {
+    double minLatitude = points.first.latitude;
+    double maxLatitude = points.first.latitude;
+    double minLongitude = points.first.longitude;
+    double maxLongitude = points.first.longitude;
+    for (final LatLng point in points) {
+      minLatitude = point.latitude < minLatitude ? point.latitude : minLatitude;
+      maxLatitude = point.latitude > maxLatitude ? point.latitude : maxLatitude;
+      minLongitude = point.longitude < minLongitude ? point.longitude : minLongitude;
+      maxLongitude = point.longitude > maxLongitude ? point.longitude : maxLongitude;
+    }
+    return LatLngBounds(
+      southwest: LatLng(minLatitude, minLongitude),
+      northeast: LatLng(maxLatitude, maxLongitude),
     );
   }
 }
