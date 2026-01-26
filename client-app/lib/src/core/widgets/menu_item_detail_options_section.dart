@@ -58,7 +58,6 @@ class MenuItemDetailOptionsSection extends StatelessWidget {
               selectedOptionIds:
                   selectedOptionsByGroup[optionGroups[index].id] ?? <String>{},
               onOptionToggled: onOptionToggled,
-              isListView: index == 0,
             );
           },
         ),
@@ -72,13 +71,11 @@ class _OptionGroupSection extends StatelessWidget {
   final Set<String> selectedOptionIds;
   final void Function(String groupId, String optionId, bool isRequired)
       onOptionToggled;
-  final bool isListView;
 
   const _OptionGroupSection({
     required this.group,
     required this.selectedOptionIds,
     required this.onOptionToggled,
-    this.isListView = false,
   });
 
   @override
@@ -95,48 +92,46 @@ class _OptionGroupSection extends StatelessWidget {
             selectedCount: selectedCount,
           ),
           const SizedBox(height: 10),
-          if (isListView)
-            ListView.builder(
-              itemCount: group.options.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (context, index) {
-                return _OptionItemTile(
-                  option: group.options[index],
-                  isRequiredGroup: group.isRequired,
-                  isSelected:
-                      selectedOptionIds.contains(group.options[index].id),
-                  onTap: group.options[index].isAvailable
-                      ? () => onOptionToggled(
-                          group.id, group.options[index].id, group.isRequired)
-                      : null,
-                );
-              },
-            ),
-          if (!isListView)
-            GridView.builder(
-              itemCount: group.options.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 1,
-                crossAxisSpacing: 4,
-                childAspectRatio: 2.8,
-              ),
-              itemBuilder: (context, index) {
-                return _OptionItemTile(
-                  option: group.options[index],
-                  isRequiredGroup: group.isRequired,
-                  isSelected:
-                      selectedOptionIds.contains(group.options[index].id),
-                  onTap: group.options[index].isAvailable
-                      ? () => onOptionToggled(
-                          group.id, group.options[index].id, group.isRequired)
-                      : null,
-                );
-              },
-            ),
+          ListView.builder(
+            itemCount: group.options.length,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              return _OptionItemTile(
+                option: group.options[index],
+                isRequiredGroup: group.isRequired,
+                isSelected: selectedOptionIds.contains(group.options[index].id),
+                onTap: group.options[index].isAvailable
+                    ? () => onOptionToggled(
+                        group.id, group.options[index].id, group.isRequired)
+                    : null,
+              );
+            },
+          ),
+          // if (!isListView)
+          //   GridView.builder(
+          //     itemCount: group.options.length,
+          //     shrinkWrap: true,
+          //     physics: const NeverScrollableScrollPhysics(),
+          //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          //       crossAxisCount: 2,
+          //       mainAxisSpacing: 1,
+          //       crossAxisSpacing: 4,
+          //       childAspectRatio: 2.8,
+          //     ),
+          //     itemBuilder: (context, index) {
+          //       return _OptionItemTile(
+          //         option: group.options[index],
+          //         isRequiredGroup: group.isRequired,
+          //         isSelected:
+          //             selectedOptionIds.contains(group.options[index].id),
+          //         onTap: group.options[index].isAvailable
+          //             ? () => onOptionToggled(
+          //                 group.id, group.options[index].id, group.isRequired)
+          //             : null,
+          //       );
+          //     },
+          //   ),
         ],
       ),
     );
@@ -254,7 +249,7 @@ class _OptionItemTile extends StatelessWidget {
         ? localizations.optionAdditionalPrice(option.price.toStringAsFixed(0))
         : localizations.free;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.only(bottom: 6),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(10),

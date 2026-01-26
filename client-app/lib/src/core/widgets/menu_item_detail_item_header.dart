@@ -30,7 +30,7 @@ class MenuItemDetailItemHeader extends StatelessWidget {
             color: ColorApp.black,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 2),
         if (itemDescription.isNotEmpty)
           Text(
             itemDescription,
@@ -40,7 +40,7 @@ class MenuItemDetailItemHeader extends StatelessWidget {
               height: 1.4,
             ),
           ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 4),
         _MenuDetailPriceSection(
           itemPrice: itemPrice,
           itemOldPrice: itemOldPrice,
@@ -70,7 +70,7 @@ class _MenuDetailPriceSection extends StatelessWidget {
           Text(
             '${itemOldPrice.toStringAsFixed(0)} DA',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 18,
               fontWeight: FontWeight.w400,
               color: ColorApp.grey,
               decoration: TextDecoration.lineThrough,
@@ -90,4 +90,3 @@ class _MenuDetailPriceSection extends StatelessWidget {
     );
   }
 }
-

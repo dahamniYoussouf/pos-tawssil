@@ -13,7 +13,6 @@ import 'package:client_app/src/features/order/pages/order_tracking_page.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:latlong2/latlong.dart' as latlong;
 
-const Color _routeLineBlue = Color(0xFF2196F3);
 const Duration _snackBarDuration = Duration(seconds: 3);
 const Duration _navigationDelay = Duration(seconds: 2);
 const double _pageHorizontalPadding = 16.0;
@@ -62,7 +61,6 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
   GoogleMapController? _mapController;
   late final latlong.LatLng _pickupLatLng;
   late final latlong.LatLng _deliveryLatLng;
-  late final Set<Polyline> _polylines;
   bool _isLoading = false;
   final GlobalKey<SwipeToConfirmButtonState> _swipeButtonKey =
       GlobalKey<SwipeToConfirmButtonState>();
@@ -71,7 +69,6 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
   void initState() {
     super.initState();
     _initializeLocations();
-    _polylines = _createPolylines();
   }
 
   void _initializeLocations() {
@@ -101,20 +98,6 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
           markerId: const MarkerId('delivery'),
           position: _convertToGoogleLatLng(_deliveryLatLng),
           infoWindow: InfoWindow(title: deliveryLabel)),
-    };
-  }
-
-  Set<Polyline> _createPolylines() {
-    return <Polyline>{
-      Polyline(
-        polylineId: const PolylineId('route'),
-        points: <LatLng>[
-          _convertToGoogleLatLng(_pickupLatLng),
-          _convertToGoogleLatLng(_deliveryLatLng)
-        ],
-        color: _routeLineBlue,
-        width: 4,
-      ),
     };
   }
 
@@ -223,12 +206,11 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
                                           initialCameraPosition: CameraPosition(
                                               target: mapCenter, zoom: 12),
                                           markers: markers,
-                                          polylines: _polylines,
                                           myLocationEnabled: false,
                                           myLocationButtonEnabled: false,
-                                          mapToolbarEnabled: false,
-                                          zoomControlsEnabled: false,
-                                          compassEnabled: false,
+                                          mapToolbarEnabled: true,
+                                          zoomControlsEnabled: true,
+                                          compassEnabled: true,
                                         )))),
                             const SizedBox(height: _sectionSpacing),
                             ValidateOrderDetailsSection(

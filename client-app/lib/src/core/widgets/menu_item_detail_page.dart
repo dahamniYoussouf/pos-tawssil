@@ -370,22 +370,6 @@ class _MenuItemDetailPageContentState
             itemOldPrice: _itemOldPrice,
             hasDiscount: _hasDiscount,
           ),
-          const SizedBox(height: 28),
-          MenuItemDetailRatingSection(
-            rating: MenuItemDetailPage.defaultRating,
-            reviewCount: MenuItemDetailPage.defaultReviewCount,
-            onSeeAllReviews: () {
-              // TODO: Navigate to reviews page
-            },
-          ),
-          const SizedBox(height: 24),
-          MenuItemDetailDescriptionSection(
-            description: _itemDescription,
-            onShowAll: () {
-              // TODO: Show full description
-            },
-          ),
-          const SizedBox(height: 24),
           if (widget.menuItem.optionGroups.isNotEmpty)
             ValueListenableBuilder<Map<String, Set<String>>>(
               valueListenable: _selectedOptionsByGroup,
@@ -411,7 +395,6 @@ class _MenuItemDetailPageContentState
                 );
               },
             ),
-          const SizedBox(height: 24),
           ValueListenableBuilder<String>(
             valueListenable: _note,
             builder: (context, note, _) {
@@ -423,7 +406,6 @@ class _MenuItemDetailPageContentState
               );
             },
           ),
-          const SizedBox(height: 120),
         ],
       ),
     );

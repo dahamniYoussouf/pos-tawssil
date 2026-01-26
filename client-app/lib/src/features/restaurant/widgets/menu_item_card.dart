@@ -82,8 +82,8 @@ class MenuItemCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        ColorApp.primary,
-                        ColorApp.primary.withOpacity(0.70),
+                        ColorApp.redColor,
+                        ColorApp.redColor.withOpacity(0.70),
                       ],
                     ),
                     borderRadius: const BorderRadius.only(

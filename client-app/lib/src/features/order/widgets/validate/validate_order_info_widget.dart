@@ -50,6 +50,7 @@ class ValidateOrderDetailsSection extends StatelessWidget {
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 color: ColorApp.textGrey)),
+        const SizedBox(height: 8),
 
         // estimated time
         OrderInformationRow(

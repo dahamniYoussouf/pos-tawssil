@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:client_app/src/features/cart/pages/cart_menu_page.dart';
 import 'package:client_app/src/features/restaurant/pages/restaurant_suggestion_page.dart';
 import 'package:client_app/src/features/restaurant/widgets/custom_bottom_navigation_bar.dart';
 import 'package:client_app/src/features/profile/pages/profile_page.dart';
@@ -25,11 +26,7 @@ class _HomePageState extends State<HomePage> {
       title: 'Order History',
       subtitle: 'Track past orders once this feature is ready.',
     ),
-    const _PlaceholderView(
-      icon: Icons.shopping_cart_outlined,
-      title: 'Cart',
-      subtitle: 'Items you add will be available here.',
-    ),
+    const CartMenuPage(),
     const ProfilePage(),
   ];
 

@@ -10,7 +10,7 @@ class SearchInitialWidget extends StatelessWidget {
     final localizations = AppLocalizations.of(context)!;
     return Center(
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 32),
+        margin: const EdgeInsets.symmetric(horizontal: 8),
         padding: const EdgeInsets.all(40),
         decoration: BoxDecoration(
           color: ColorApp.white,
@@ -63,4 +63,3 @@ class SearchInitialWidget extends StatelessWidget {
     );
   }
 }
-
