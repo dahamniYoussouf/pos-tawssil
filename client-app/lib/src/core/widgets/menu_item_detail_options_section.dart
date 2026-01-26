@@ -50,6 +50,7 @@ class MenuItemDetailOptionsSection extends StatelessWidget {
       children: [
         ListView.builder(
           itemCount: optionGroups.length,
+          padding: EdgeInsets.only(top: 8),
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, index) {
@@ -91,9 +92,9 @@ class _OptionGroupSection extends StatelessWidget {
             isRequired: group.isRequired,
             selectedCount: selectedCount,
           ),
-          const SizedBox(height: 10),
           ListView.builder(
             itemCount: group.options.length,
+            padding: EdgeInsets.only(top: 4),
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
@@ -108,30 +109,6 @@ class _OptionGroupSection extends StatelessWidget {
               );
             },
           ),
-          // if (!isListView)
-          //   GridView.builder(
-          //     itemCount: group.options.length,
-          //     shrinkWrap: true,
-          //     physics: const NeverScrollableScrollPhysics(),
-          //     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          //       crossAxisCount: 2,
-          //       mainAxisSpacing: 1,
-          //       crossAxisSpacing: 4,
-          //       childAspectRatio: 2.8,
-          //     ),
-          //     itemBuilder: (context, index) {
-          //       return _OptionItemTile(
-          //         option: group.options[index],
-          //         isRequiredGroup: group.isRequired,
-          //         isSelected:
-          //             selectedOptionIds.contains(group.options[index].id),
-          //         onTap: group.options[index].isAvailable
-          //             ? () => onOptionToggled(
-          //                 group.id, group.options[index].id, group.isRequired)
-          //             : null,
-          //       );
-          //     },
-          //   ),
         ],
       ),
     );
@@ -159,6 +136,7 @@ class _OptionGroupHeader extends StatelessWidget {
         ? localizations.optionRequiredHint
         : localizations.optionOptionalHint;
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(

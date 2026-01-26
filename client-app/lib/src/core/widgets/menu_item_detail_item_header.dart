@@ -7,6 +7,8 @@ class MenuItemDetailItemHeader extends StatelessWidget {
   final double itemPrice;
   final double itemOldPrice;
   final bool hasDiscount;
+  final double rating;
+  final int reviewCount;
 
   const MenuItemDetailItemHeader({
     Key? key,
@@ -15,6 +17,8 @@ class MenuItemDetailItemHeader extends StatelessWidget {
     required this.itemPrice,
     required this.itemOldPrice,
     required this.hasDiscount,
+    required this.rating,
+    required this.reviewCount,
   }) : super(key: key);
 
   @override
@@ -22,13 +26,31 @@ class MenuItemDetailItemHeader extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          itemName,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w900,
-            color: ColorApp.black,
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              itemName,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w900,
+                color: ColorApp.black,
+              ),
+            ),
+            Row(
+              children: [
+                Icon(Icons.star, color: ColorApp.premiumColor, size: 20),
+                Text(
+                  '${rating.toStringAsFixed(1)} (${reviewCount.toString()})',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    color: ColorApp.black,
+                  ),
+                ),
+              ],
+            )
+          ],
         ),
         const SizedBox(height: 2),
         if (itemDescription.isNotEmpty)

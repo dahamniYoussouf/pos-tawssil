@@ -3,7 +3,9 @@ class ApiConfig {
 
   static const String localBaseUrl = 'http://192.168.100.36:3000';
 
-  static const String remoteBaseUrl = 'https://tawssilbackyou.onrender.com';
+  static const String remoteBaseUrl =
+      "https://wpricoh14061.icosnetcloud.com/api";
+  //  'https://tawssilbackyou.onrender.com';
 
   // SMS Service API Configuration
   static const String smsBaseUrl = 'https://www.theagencytest.online/api';

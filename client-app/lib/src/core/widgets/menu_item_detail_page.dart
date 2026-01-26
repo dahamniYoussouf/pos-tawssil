@@ -9,8 +9,6 @@ import '../../features/restaurant/cubit/restaurant_details_cubit.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import 'menu_item_detail_image_section.dart';
 import 'menu_item_detail_item_header.dart';
-import 'menu_item_detail_rating_section.dart';
-import 'menu_item_detail_description_section.dart';
 import 'menu_item_detail_note_section.dart';
 import 'menu_item_detail_bottom_bar.dart';
 
@@ -369,6 +367,8 @@ class _MenuItemDetailPageContentState
             itemPrice: _itemPrice,
             itemOldPrice: _itemOldPrice,
             hasDiscount: _hasDiscount,
+            rating: widget.menuItem.rating ?? 0,
+            reviewCount: 0,
           ),
           if (widget.menuItem.optionGroups.isNotEmpty)
             ValueListenableBuilder<Map<String, Set<String>>>(
