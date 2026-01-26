@@ -136,6 +136,7 @@ class _RestaurantSuggestionHeaderState
           ),
           SizedBox(height: 18),
           GestureDetector(
+            behavior: HitTestBehavior.opaque,
             onTap: () {
               Navigator.push(
                 context,
@@ -144,7 +145,9 @@ class _RestaurantSuggestionHeaderState
                 ),
               );
             },
-            child: RestaurantSearchBar(readOnly: true),
+            child: const IgnorePointer(
+              child: RestaurantSearchBar(readOnly: true),
+            ),
           ),
         ],
       ),

@@ -36,15 +36,15 @@ class SearchBarWidget extends StatelessWidget {
             child: TextField(
               controller: controller,
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontSize: 15,
+                    fontSize: 14,
                     fontWeight: FontWeight.w400,
                     color: ColorApp.textBlack,
                   ),
               decoration: InputDecoration(
                 hintText: hintText ?? localizations.searchRestaurantPlaceholder,
                 hintStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: ColorApp.textGrey,
-                      fontSize: 15,
+                      color: ColorApp.textBlack,
+                      fontSize: 14,
                       fontWeight: FontWeight.w400,
                     ),
                 border: InputBorder.none,

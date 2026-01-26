@@ -81,11 +81,11 @@ class _RestaurantSearchBarState extends State<RestaurantSearchBar> {
                 hintText: widget.hintText ??
                     AppLocalizations.of(context)?.searchRestaurantPlaceholder ??
                     'Rechercher des restaurant...',
-                hintStyle: TextStyle(
-                  color: ColorApp.textBlack,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+                hintStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: ColorApp.textBlack,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
                 border: InputBorder.none,
                 contentPadding: EdgeInsets.zero,
                 isDense: true,
