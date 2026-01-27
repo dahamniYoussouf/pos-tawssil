@@ -1176,5 +1176,81 @@
   "free": "Free",
   "@free": {
     "description": "Label for free delivery"
+  },
+  "minutes": "minutes",
+  "@minutes": {
+    "description": "Label for minutes unit"
+  },
+  "statusCardPendingTitle": "Order pending",
+  "@statusCardPendingTitle": {
+    "description": "Status card title for pending order"
+  },
+  "statusCardPendingDescription": "Your order has been successfully transmitted to the restaurant and is awaiting confirmation.",
+  "@statusCardPendingDescription": {
+    "description": "Status card description for pending order"
+  },
+  "statusCardAcceptedTitle": "Order accepted",
+  "@statusCardAcceptedTitle": {
+    "description": "Status card title for accepted order"
+  },
+  "statusCardAcceptedDescription": "The restaurant has accepted your order and will start preparation.",
+  "@statusCardAcceptedDescription": {
+    "description": "Status card description for accepted order"
+  },
+  "statusCardPreparingTitle": "Order in preparation",
+  "@statusCardPreparingTitle": {
+    "description": "Status card title for preparing order"
+  },
+  "statusCardPreparingDescription": "Your order is currently being prepared at the restaurant.",
+  "@statusCardPreparingDescription": {
+    "description": "Status card description for preparing order"
+  },
+  "statusCardAssignedTitle": "Delivery person assigned",
+  "@statusCardAssignedTitle": {
+    "description": "Status card title for assigned order"
+  },
+  "statusCardAssignedDescription": "A delivery person has been assigned to your order.",
+  "@statusCardAssignedDescription": {
+    "description": "Status card description for assigned order"
+  },
+  "statusCardDeliveringTitle": "Delivery person on the way",
+  "@statusCardDeliveringTitle": {
+    "description": "Status card title for delivering order"
+  },
+  "statusCardDeliveringDescription": "The delivery person is on the way to your address and will arrive shortly.",
+  "@statusCardDeliveringDescription": {
+    "description": "Status card description for delivering order"
+  },
+  "statusCardDeliveredTitle": "Order delivered",
+  "@statusCardDeliveredTitle": {
+    "description": "Status card title for delivered order"
+  },
+  "statusCardDeliveredDescription": "Your order has been successfully delivered.",
+  "@statusCardDeliveredDescription": {
+    "description": "Status card description for delivered order"
+  },
+  "statusCardReadyToCollectTitle": "Ready for pickup",
+  "@statusCardReadyToCollectTitle": {
+    "description": "Status card title for ready to collect order"
+  },
+  "statusCardReadyToCollectDescription": "Your order is ready to be picked up.",
+  "@statusCardReadyToCollectDescription": {
+    "description": "Status card description for ready to collect order"
+  },
+  "statusCardCollectedTitle": "Order collected",
+  "@statusCardCollectedTitle": {
+    "description": "Status card title for collected order"
+  },
+  "statusCardCollectedDescription": "Your order has been successfully collected.",
+  "@statusCardCollectedDescription": {
+    "description": "Status card description for collected order"
+  },
+  "statusCardDefaultTitle": "In progress",
+  "@statusCardDefaultTitle": {
+    "description": "Status card title for default/unknown status"
+  },
+  "statusCardDefaultDescription": "Your order is being processed.",
+  "@statusCardDefaultDescription": {
+    "description": "Status card description for default/unknown status"
   }
 }

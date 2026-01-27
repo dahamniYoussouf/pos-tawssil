@@ -546,5 +546,81 @@
   "free": "Gratuite",
   "@free": {
     "description": "Label for free delivery"
+  },
+  "minutes": "minutes",
+  "@minutes": {
+    "description": "Label for minutes unit"
+  },
+  "statusCardPendingTitle": "Commande en attente",
+  "@statusCardPendingTitle": {
+    "description": "Status card title for pending order"
+  },
+  "statusCardPendingDescription": "Votre commande a bien été transmise au restaurant et est en attente de confirmation.",
+  "@statusCardPendingDescription": {
+    "description": "Status card description for pending order"
+  },
+  "statusCardAcceptedTitle": "Commande acceptée",
+  "@statusCardAcceptedTitle": {
+    "description": "Status card title for accepted order"
+  },
+  "statusCardAcceptedDescription": "Le restaurant a accepté votre commande et va commencer la préparation.",
+  "@statusCardAcceptedDescription": {
+    "description": "Status card description for accepted order"
+  },
+  "statusCardPreparingTitle": "Commande en préparation",
+  "@statusCardPreparingTitle": {
+    "description": "Status card title for preparing order"
+  },
+  "statusCardPreparingDescription": "Votre commande est actuellement en cours de préparation au restaurant.",
+  "@statusCardPreparingDescription": {
+    "description": "Status card description for preparing order"
+  },
+  "statusCardAssignedTitle": "Livreur assigné",
+  "@statusCardAssignedTitle": {
+    "description": "Status card title for assigned order"
+  },
+  "statusCardAssignedDescription": "Un livreur a été assigné à votre commande.",
+  "@statusCardAssignedDescription": {
+    "description": "Status card description for assigned order"
+  },
+  "statusCardDeliveringTitle": "Livreur en route vers vous",
+  "@statusCardDeliveringTitle": {
+    "description": "Status card title for delivering order"
+  },
+  "statusCardDeliveringDescription": "Le livreur est en route vers votre adresse et arrivera prochainement.",
+  "@statusCardDeliveringDescription": {
+    "description": "Status card description for delivering order"
+  },
+  "statusCardDeliveredTitle": "Commande livrée",
+  "@statusCardDeliveredTitle": {
+    "description": "Status card title for delivered order"
+  },
+  "statusCardDeliveredDescription": "Votre commande a été livrée avec succès.",
+  "@statusCardDeliveredDescription": {
+    "description": "Status card description for delivered order"
+  },
+  "statusCardReadyToCollectTitle": "Prêt à récupérer",
+  "@statusCardReadyToCollectTitle": {
+    "description": "Status card title for ready to collect order"
+  },
+  "statusCardReadyToCollectDescription": "Votre commande est prête à être récupérée.",
+  "@statusCardReadyToCollectDescription": {
+    "description": "Status card description for ready to collect order"
+  },
+  "statusCardCollectedTitle": "Commande récupérée",
+  "@statusCardCollectedTitle": {
+    "description": "Status card title for collected order"
+  },
+  "statusCardCollectedDescription": "Votre commande a été récupérée avec succès.",
+  "@statusCardCollectedDescription": {
+    "description": "Status card description for collected order"
+  },
+  "statusCardDefaultTitle": "En cours",
+  "@statusCardDefaultTitle": {
+    "description": "Status card title for default/unknown status"
+  },
+  "statusCardDefaultDescription": "Votre commande est en cours de traitement.",
+  "@statusCardDefaultDescription": {
+    "description": "Status card description for default/unknown status"
   }
 }

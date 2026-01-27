@@ -888,4 +888,69 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get free => 'Free';
+
+  @override
+  String get minutes => 'minutes';
+
+  @override
+  String get statusCardPendingTitle => 'Order pending';
+
+  @override
+  String get statusCardPendingDescription =>
+      'Your order has been successfully transmitted to the restaurant and is awaiting confirmation.';
+
+  @override
+  String get statusCardAcceptedTitle => 'Order accepted';
+
+  @override
+  String get statusCardAcceptedDescription =>
+      'The restaurant has accepted your order and will start preparation.';
+
+  @override
+  String get statusCardPreparingTitle => 'Order in preparation';
+
+  @override
+  String get statusCardPreparingDescription =>
+      'Your order is currently being prepared at the restaurant.';
+
+  @override
+  String get statusCardAssignedTitle => 'Delivery person assigned';
+
+  @override
+  String get statusCardAssignedDescription =>
+      'A delivery person has been assigned to your order.';
+
+  @override
+  String get statusCardDeliveringTitle => 'Delivery person on the way';
+
+  @override
+  String get statusCardDeliveringDescription =>
+      'The delivery person is on the way to your address and will arrive shortly.';
+
+  @override
+  String get statusCardDeliveredTitle => 'Order delivered';
+
+  @override
+  String get statusCardDeliveredDescription =>
+      'Your order has been successfully delivered.';
+
+  @override
+  String get statusCardReadyToCollectTitle => 'Ready for pickup';
+
+  @override
+  String get statusCardReadyToCollectDescription =>
+      'Your order is ready to be picked up.';
+
+  @override
+  String get statusCardCollectedTitle => 'Order collected';
+
+  @override
+  String get statusCardCollectedDescription =>
+      'Your order has been successfully collected.';
+
+  @override
+  String get statusCardDefaultTitle => 'In progress';
+
+  @override
+  String get statusCardDefaultDescription => 'Your order is being processed.';
 }

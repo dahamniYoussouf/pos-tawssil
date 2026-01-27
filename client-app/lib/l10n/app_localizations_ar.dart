@@ -876,4 +876,64 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get free => 'مجاني';
+
+  @override
+  String get minutes => 'دقائق';
+
+  @override
+  String get statusCardPendingTitle => 'الطلب قيد الانتظار';
+
+  @override
+  String get statusCardPendingDescription =>
+      'تم إرسال طلبك بنجاح إلى المطعم وهو في انتظار التأكيد.';
+
+  @override
+  String get statusCardAcceptedTitle => 'تم قبول الطلب';
+
+  @override
+  String get statusCardAcceptedDescription => 'قبل المطعم طلبك وسيبدأ التحضير.';
+
+  @override
+  String get statusCardPreparingTitle => 'الطلب قيد التحضير';
+
+  @override
+  String get statusCardPreparingDescription =>
+      'طلبك قيد التحضير حاليًا في المطعم.';
+
+  @override
+  String get statusCardAssignedTitle => 'تم تعيين مندوب التوصيل';
+
+  @override
+  String get statusCardAssignedDescription => 'تم تعيين مندوب توصيل لطلبك.';
+
+  @override
+  String get statusCardDeliveringTitle => 'مندوب التوصيل في الطريق';
+
+  @override
+  String get statusCardDeliveringDescription =>
+      'مندوب التوصيل في الطريق إلى عنوانك وسيصل قريبًا.';
+
+  @override
+  String get statusCardDeliveredTitle => 'تم توصيل الطلب';
+
+  @override
+  String get statusCardDeliveredDescription => 'تم توصيل طلبك بنجاح.';
+
+  @override
+  String get statusCardReadyToCollectTitle => 'جاهز للاستلام';
+
+  @override
+  String get statusCardReadyToCollectDescription => 'طلبك جاهز للاستلام.';
+
+  @override
+  String get statusCardCollectedTitle => 'تم استلام الطلب';
+
+  @override
+  String get statusCardCollectedDescription => 'تم استلام طلبك بنجاح.';
+
+  @override
+  String get statusCardDefaultTitle => 'قيد المعالجة';
+
+  @override
+  String get statusCardDefaultDescription => 'طلبك قيد المعالجة.';
 }

@@ -14,149 +14,174 @@ class OrderDetailsCard extends StatefulWidget {
 }
 
 class _OrderDetailsCardState extends State<OrderDetailsCard> {
+  String _truncateString(String? text, int maxLength) {
+    if (text == null || text.isEmpty) return '';
+    if (text.length <= maxLength) return text;
+    return '${text.substring(0, maxLength)}...';
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withValues(alpha: 0.6),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Order Number
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: ColorApp.black.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: ColorApp.primary, width: 1),
-            ),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Icon(Icons.receipt, size: 20, color: Colors.black),
-                const SizedBox(width: 8),
+                Text(
+                  '${l10n!.orderNumber}: ',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  '${widget.order.orderNumber.toString().substring(widget.order.orderNumber.length - 4, widget.order.orderNumber.length)}',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          // order address
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  '${l10n.deliveryAddress}: ',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                      ),
+                  overflow: TextOverflow.ellipsis,
+                ),
                 Flexible(
                   child: Text(
-                    '${l10n!.orderNumber}: ${widget.order.orderNumber.toString().substring(widget.order.orderNumber.length - 4, widget.order.orderNumber.length)}',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    overflow: TextOverflow.ellipsis,
+                    _truncateString(widget.order.deliveryAddress, 10),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
                   ),
                 ),
               ],
             ),
           ),
           const SizedBox(height: 16),
+          Divider(indent: 4, endIndent: 4, color: ColorApp.textBlack),
+          const SizedBox(height: 16),
           // Ordered Products
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: ColorApp.black.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: ColorApp.primary, width: 1),
-            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    const Icon(Icons.shopping_cart, size: 20, color: Colors.black),
-                    const SizedBox(width: 8),
-                    Text(
-                      l10n.orderedProducts,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                Text(
+                  l10n.orderedProducts,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+
                 const SizedBox(height: 12),
                 ...widget.order.items.map((item) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8, left: 16),
+                      padding: const EdgeInsets.only(bottom: 8),
                       child: Row(
                         children: [
-                          Container(
-                            width: 24,
-                            height: 24,
-                            decoration: BoxDecoration(
-                              color: ColorApp.black.withValues(alpha: 0.1),
-                              shape: BoxShape.rectangle,
-                              border: Border.all(color: ColorApp.primary, width: 1),
-                            ),
-                            child: Center(
-                              child: Text(
-                                '${item.quantity}',
-                                style: const TextStyle(
-                                  color: ColorApp.primary,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              item.name,
-                              style: const TextStyle(fontSize: 14),
+                              item.name + ' x${item.quantity}',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleLarge
+                                  ?.copyWith(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                             ),
                           ),
                           Text(
                             '${item.totalPrice.toStringAsFixed(0)} DA',
-                            style: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleLarge
+                                ?.copyWith(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w600,
+                                ),
                           ),
                         ],
                       ),
                     )),
-                const Divider(height: 24),
+                const SizedBox(height: 16),
+                const Divider(height: 32),
+                const SizedBox(height: 16),
                 // Total
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        SvgPicture.asset(MediaRes.cashIcon, height: 14, width: 14, color: ColorApp.primary),
-                        const SizedBox(width: 8),
-                        Text(
-                          l10n.totalLabel,
-                          style: const TextStyle(
+                    Text(
+                      l10n.totalLabel,
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
+                            color: ColorApp.textBlack,
                           ),
-                        ),
-                      ],
                     ),
                     Text(
                       '${widget.order.totalPrice.toStringAsFixed(0)} DA',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: ColorApp.primary,
-                      ),
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: ColorApp.textBlack,
+                          ),
                     ),
                   ],
                 ),
               ],
             ),
           ),
+          const SizedBox(height: 16),
+          // payment method
+          Container(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  l10n.paymentMethod,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: ColorApp.textBlack),
+                ),
+                Text(
+                  l10n.cash,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: ColorApp.textBlack),
+                ),
+              ],
+            ),
+          )
         ],
       ),
     );

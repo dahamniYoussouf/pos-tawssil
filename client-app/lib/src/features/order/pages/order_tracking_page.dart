@@ -7,7 +7,6 @@ import 'package:client_app/src/features/home/pages/home_page.dart';
 import 'package:client_app/src/features/order/widgets/delivery_person_card_widget.dart';
 import 'package:client_app/src/features/order/widgets/order_details_card_widget.dart';
 import 'package:client_app/src/features/order/widgets/order_tracking_map_widget.dart';
-import 'package:client_app/src/features/order/widgets/restaurant_info_card_widget.dart';
 import 'package:client_app/src/features/order/widgets/status_card_widget.dart';
 import 'package:client_app/src/features/order/widgets/order_tracking_steps_widget.dart';
 import 'package:client_app/src/features/order/widgets/validate_order_button_widget.dart';
@@ -312,16 +311,16 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: OrderTrackingStepsWidget(orderStatus: order.status),
         ),
+        const SizedBox(height: 8),
+        Divider(indent: 4, endIndent: 4, color: ColorApp.greyBorder),
+        const SizedBox(height: 16),
+        OrderDetailsCard(order: order),
+        if (order.isDelivered) const ValidateOrderButtonWidget(),
         if (order.isDelivering && order.deliveryPerson != null)
           const SizedBox(height: 16),
         if (order.isDelivering && order.deliveryPerson != null)
           DeliveryPersonCard(
               person: order.deliveryPerson!, localization: localization),
-        const SizedBox(height: 16),
-        RestaurantInfoCard(order: order),
-        const SizedBox(height: 16),
-        OrderDetailsCard(order: order),
-        if (order.isDelivered) const ValidateOrderButtonWidget(),
       ],
     );
   }

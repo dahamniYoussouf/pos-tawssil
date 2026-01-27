@@ -546,5 +546,81 @@
   "free": "مجاني",
   "@free": {
     "description": "تسمية التوصيل المجاني"
+  },
+  "minutes": "دقائق",
+  "@minutes": {
+    "description": "تسمية وحدة الدقائق"
+  },
+  "statusCardPendingTitle": "الطلب قيد الانتظار",
+  "@statusCardPendingTitle": {
+    "description": "عنوان بطاقة الحالة للطلب المعلق"
+  },
+  "statusCardPendingDescription": "تم إرسال طلبك بنجاح إلى المطعم وهو في انتظار التأكيد.",
+  "@statusCardPendingDescription": {
+    "description": "وصف بطاقة الحالة للطلب المعلق"
+  },
+  "statusCardAcceptedTitle": "تم قبول الطلب",
+  "@statusCardAcceptedTitle": {
+    "description": "عنوان بطاقة الحالة للطلب المقبول"
+  },
+  "statusCardAcceptedDescription": "قبل المطعم طلبك وسيبدأ التحضير.",
+  "@statusCardAcceptedDescription": {
+    "description": "وصف بطاقة الحالة للطلب المقبول"
+  },
+  "statusCardPreparingTitle": "الطلب قيد التحضير",
+  "@statusCardPreparingTitle": {
+    "description": "عنوان بطاقة الحالة للطلب قيد التحضير"
+  },
+  "statusCardPreparingDescription": "طلبك قيد التحضير حاليًا في المطعم.",
+  "@statusCardPreparingDescription": {
+    "description": "وصف بطاقة الحالة للطلب قيد التحضير"
+  },
+  "statusCardAssignedTitle": "تم تعيين مندوب التوصيل",
+  "@statusCardAssignedTitle": {
+    "description": "عنوان بطاقة الحالة للطلب المعين"
+  },
+  "statusCardAssignedDescription": "تم تعيين مندوب توصيل لطلبك.",
+  "@statusCardAssignedDescription": {
+    "description": "وصف بطاقة الحالة للطلب المعين"
+  },
+  "statusCardDeliveringTitle": "مندوب التوصيل في الطريق",
+  "@statusCardDeliveringTitle": {
+    "description": "عنوان بطاقة الحالة للطلب قيد التوصيل"
+  },
+  "statusCardDeliveringDescription": "مندوب التوصيل في الطريق إلى عنوانك وسيصل قريبًا.",
+  "@statusCardDeliveringDescription": {
+    "description": "وصف بطاقة الحالة للطلب قيد التوصيل"
+  },
+  "statusCardDeliveredTitle": "تم توصيل الطلب",
+  "@statusCardDeliveredTitle": {
+    "description": "عنوان بطاقة الحالة للطلب المسلم"
+  },
+  "statusCardDeliveredDescription": "تم توصيل طلبك بنجاح.",
+  "@statusCardDeliveredDescription": {
+    "description": "وصف بطاقة الحالة للطلب المسلم"
+  },
+  "statusCardReadyToCollectTitle": "جاهز للاستلام",
+  "@statusCardReadyToCollectTitle": {
+    "description": "عنوان بطاقة الحالة للطلب الجاهز للاستلام"
+  },
+  "statusCardReadyToCollectDescription": "طلبك جاهز للاستلام.",
+  "@statusCardReadyToCollectDescription": {
+    "description": "وصف بطاقة الحالة للطلب الجاهز للاستلام"
+  },
+  "statusCardCollectedTitle": "تم استلام الطلب",
+  "@statusCardCollectedTitle": {
+    "description": "عنوان بطاقة الحالة للطلب المستلم"
+  },
+  "statusCardCollectedDescription": "تم استلام طلبك بنجاح.",
+  "@statusCardCollectedDescription": {
+    "description": "وصف بطاقة الحالة للطلب المستلم"
+  },
+  "statusCardDefaultTitle": "قيد المعالجة",
+  "@statusCardDefaultTitle": {
+    "description": "عنوان بطاقة الحالة للحالة الافتراضية/غير المعروفة"
+  },
+  "statusCardDefaultDescription": "طلبك قيد المعالجة.",
+  "@statusCardDefaultDescription": {
+    "description": "وصف بطاقة الحالة للحالة الافتراضية/غير المعروفة"
   }
 }

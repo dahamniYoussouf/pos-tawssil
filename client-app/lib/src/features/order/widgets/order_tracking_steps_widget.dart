@@ -36,12 +36,12 @@ class OrderTrackingStepsWidget extends StatelessWidget {
     final int activeIndex = _getActiveStepIndex();
     final List<Widget> widgets = <Widget>[];
     for (int i = 0; i < _steps.length; i++) {
-      final bool isActive = i <= activeIndex && activeIndex != -1;
+      final bool isPrimary = _shouldStepBePrimary(i, activeIndex);
       final bool isCompleted = i < activeIndex;
       widgets.add(
         _StepIconWidget(
           iconAsset: _steps[i].iconAsset,
-          isActive: isActive,
+          isPrimary: isPrimary,
           isCompleted: isCompleted,
         ),
       );
@@ -50,6 +50,18 @@ class OrderTrackingStepsWidget extends StatelessWidget {
       }
     }
     return widgets;
+  }
+
+  bool _shouldStepBePrimary(int stepIndex, int activeIndex) {
+    if (activeIndex == -1) return false;
+    // Step should be primary when we've moved past its status
+    if (stepIndex < activeIndex) return true;
+    // Special case: last step becomes primary when delivered or collected
+    if (stepIndex == _steps.length - 1 && stepIndex == activeIndex) {
+      return orderStatus == OrderStatus.delivered ||
+          orderStatus == OrderStatus.collected;
+    }
+    return false;
   }
 
   int _getActiveStepIndex() {
@@ -86,28 +98,28 @@ class _StepData {
 
 class _StepIconWidget extends StatelessWidget {
   final String iconAsset;
-  final bool isActive;
+  final bool isPrimary;
   final bool isCompleted;
 
   const _StepIconWidget({
     required this.iconAsset,
-    required this.isActive,
+    required this.isPrimary,
     required this.isCompleted,
   });
 
   @override
   Widget build(BuildContext context) {
     final Color backgroundColor =
-        isActive ? ColorApp.primary.withOpacity(0.1) : ColorApp.white;
+        isPrimary ? ColorApp.primary.withOpacity(0.1) : ColorApp.white;
     final Color borderColor =
-        isActive || isCompleted ? ColorApp.primary : ColorApp.greyBorder;
+        isPrimary ? ColorApp.primary : ColorApp.greyBorder;
     final Color iconColor =
-        isActive || isCompleted ? ColorApp.primary : ColorApp.greyIconColor;
+        isPrimary ? ColorApp.primary : ColorApp.greyIconColor;
     return Container(
       width: 40,
       height: 40,
       alignment: Alignment.center,
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.all(6),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: backgroundColor,

@@ -901,4 +901,70 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get free => 'Gratuite';
+
+  @override
+  String get minutes => 'minutes';
+
+  @override
+  String get statusCardPendingTitle => 'Commande en attente';
+
+  @override
+  String get statusCardPendingDescription =>
+      'Votre commande a bien été transmise au restaurant et est en attente de confirmation.';
+
+  @override
+  String get statusCardAcceptedTitle => 'Commande acceptée';
+
+  @override
+  String get statusCardAcceptedDescription =>
+      'Le restaurant a accepté votre commande et va commencer la préparation.';
+
+  @override
+  String get statusCardPreparingTitle => 'Commande en préparation';
+
+  @override
+  String get statusCardPreparingDescription =>
+      'Votre commande est actuellement en cours de préparation au restaurant.';
+
+  @override
+  String get statusCardAssignedTitle => 'Livreur assigné';
+
+  @override
+  String get statusCardAssignedDescription =>
+      'Un livreur a été assigné à votre commande.';
+
+  @override
+  String get statusCardDeliveringTitle => 'Livreur en route vers vous';
+
+  @override
+  String get statusCardDeliveringDescription =>
+      'Le livreur est en route vers votre adresse et arrivera prochainement.';
+
+  @override
+  String get statusCardDeliveredTitle => 'Commande livrée';
+
+  @override
+  String get statusCardDeliveredDescription =>
+      'Votre commande a été livrée avec succès.';
+
+  @override
+  String get statusCardReadyToCollectTitle => 'Prêt à récupérer';
+
+  @override
+  String get statusCardReadyToCollectDescription =>
+      'Votre commande est prête à être récupérée.';
+
+  @override
+  String get statusCardCollectedTitle => 'Commande récupérée';
+
+  @override
+  String get statusCardCollectedDescription =>
+      'Votre commande a été récupérée avec succès.';
+
+  @override
+  String get statusCardDefaultTitle => 'En cours';
+
+  @override
+  String get statusCardDefaultDescription =>
+      'Votre commande est en cours de traitement.';
 }

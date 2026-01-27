@@ -1719,6 +1719,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Free'**
   String get free;
+
+  /// Label for minutes unit
+  ///
+  /// In en, this message translates to:
+  /// **'minutes'**
+  String get minutes;
+
+  /// Status card title for pending order
+  ///
+  /// In en, this message translates to:
+  /// **'Order pending'**
+  String get statusCardPendingTitle;
+
+  /// Status card description for pending order
+  ///
+  /// In en, this message translates to:
+  /// **'Your order has been successfully transmitted to the restaurant and is awaiting confirmation.'**
+  String get statusCardPendingDescription;
+
+  /// Status card title for accepted order
+  ///
+  /// In en, this message translates to:
+  /// **'Order accepted'**
+  String get statusCardAcceptedTitle;
+
+  /// Status card description for accepted order
+  ///
+  /// In en, this message translates to:
+  /// **'The restaurant has accepted your order and will start preparation.'**
+  String get statusCardAcceptedDescription;
+
+  /// Status card title for preparing order
+  ///
+  /// In en, this message translates to:
+  /// **'Order in preparation'**
+  String get statusCardPreparingTitle;
+
+  /// Status card description for preparing order
+  ///
+  /// In en, this message translates to:
+  /// **'Your order is currently being prepared at the restaurant.'**
+  String get statusCardPreparingDescription;
+
+  /// Status card title for assigned order
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery person assigned'**
+  String get statusCardAssignedTitle;
+
+  /// Status card description for assigned order
+  ///
+  /// In en, this message translates to:
+  /// **'A delivery person has been assigned to your order.'**
+  String get statusCardAssignedDescription;
+
+  /// Status card title for delivering order
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery person on the way'**
+  String get statusCardDeliveringTitle;
+
+  /// Status card description for delivering order
+  ///
+  /// In en, this message translates to:
+  /// **'The delivery person is on the way to your address and will arrive shortly.'**
+  String get statusCardDeliveringDescription;
+
+  /// Status card title for delivered order
+  ///
+  /// In en, this message translates to:
+  /// **'Order delivered'**
+  String get statusCardDeliveredTitle;
+
+  /// Status card description for delivered order
+  ///
+  /// In en, this message translates to:
+  /// **'Your order has been successfully delivered.'**
+  String get statusCardDeliveredDescription;
+
+  /// Status card title for ready to collect order
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for pickup'**
+  String get statusCardReadyToCollectTitle;
+
+  /// Status card description for ready to collect order
+  ///
+  /// In en, this message translates to:
+  /// **'Your order is ready to be picked up.'**
+  String get statusCardReadyToCollectDescription;
+
+  /// Status card title for collected order
+  ///
+  /// In en, this message translates to:
+  /// **'Order collected'**
+  String get statusCardCollectedTitle;
+
+  /// Status card description for collected order
+  ///
+  /// In en, this message translates to:
+  /// **'Your order has been successfully collected.'**
+  String get statusCardCollectedDescription;
+
+  /// Status card title for default/unknown status
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get statusCardDefaultTitle;
+
+  /// Status card description for default/unknown status
+  ///
+  /// In en, this message translates to:
+  /// **'Your order is being processed.'**
+  String get statusCardDefaultDescription;
 }
 
 class _AppLocalizationsDelegate
