@@ -1252,5 +1252,25 @@
   "statusCardDefaultDescription": "Your order is being processed.",
   "@statusCardDefaultDescription": {
     "description": "Status card description for default/unknown status"
+  },
+  "orderHistory": "Order History",
+  "@orderHistory": {
+    "description": "Order history page title"
+  },
+  "totalOrders": "Total Orders",
+  "@totalOrders": {
+    "description": "Total orders label"
+  },
+  "ordersCompleted": "Orders Completed",
+  "@ordersCompleted": {
+    "description": "Orders completed label"
+  },
+  "noOrdersYet": "No Orders Yet",
+  "@noOrdersYet": {
+    "description": "No orders yet message"
+  },
+  "startOrderingNow": "Start ordering now to see your history",
+  "@startOrderingNow": {
+    "description": "Start ordering now message"
   }
 }

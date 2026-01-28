@@ -953,4 +953,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statusCardDefaultDescription => 'Your order is being processed.';
+
+  @override
+  String get orderHistory => 'Order History';
+
+  @override
+  String get totalOrders => 'Total Orders';
+
+  @override
+  String get ordersCompleted => 'Orders Completed';
+
+  @override
+  String get noOrdersYet => 'No Orders Yet';
+
+  @override
+  String get startOrderingNow => 'Start ordering now to see your history';
 }

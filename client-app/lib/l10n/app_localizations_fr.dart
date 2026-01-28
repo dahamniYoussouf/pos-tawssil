@@ -967,4 +967,20 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get statusCardDefaultDescription =>
       'Votre commande est en cours de traitement.';
+
+  @override
+  String get orderHistory => 'Historique des commandes';
+
+  @override
+  String get totalOrders => 'Total des commandes';
+
+  @override
+  String get ordersCompleted => 'Commandes terminées';
+
+  @override
+  String get noOrdersYet => 'Aucune commande pour l\'instant';
+
+  @override
+  String get startOrderingNow =>
+      'Commencez à commander maintenant pour voir votre historique';
 }

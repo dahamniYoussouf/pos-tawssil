@@ -622,5 +622,25 @@
   "statusCardDefaultDescription": "طلبك قيد المعالجة.",
   "@statusCardDefaultDescription": {
     "description": "وصف بطاقة الحالة للحالة الافتراضية/غير المعروفة"
+  },
+  "orderHistory": "سجل الطلبات",
+  "@orderHistory": {
+    "description": "عنوان صفحة سجل الطلبات"
+  },
+  "totalOrders": "إجمالي الطلبات",
+  "@totalOrders": {
+    "description": "تسمية إجمالي الطلبات"
+  },
+  "ordersCompleted": "الطلبات المكتملة",
+  "@ordersCompleted": {
+    "description": "تسمية الطلبات المكتملة"
+  },
+  "noOrdersYet": "لا توجد طلبات بعد",
+  "@noOrdersYet": {
+    "description": "رسالة عدم وجود طلبات بعد"
+  },
+  "startOrderingNow": "ابدأ الطلب الآن لرؤية سجلك",
+  "@startOrderingNow": {
+    "description": "رسالة ابدأ الطلب الآن"
   }
 }

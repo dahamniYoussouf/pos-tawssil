@@ -622,5 +622,25 @@
   "statusCardDefaultDescription": "Votre commande est en cours de traitement.",
   "@statusCardDefaultDescription": {
     "description": "Status card description for default/unknown status"
+  },
+  "orderHistory": "Historique des commandes",
+  "@orderHistory": {
+    "description": "Titre de la page d'historique des commandes"
+  },
+  "totalOrders": "Total des commandes",
+  "@totalOrders": {
+    "description": "Libellé du total des commandes"
+  },
+  "ordersCompleted": "Commandes terminées",
+  "@ordersCompleted": {
+    "description": "Libellé des commandes terminées"
+  },
+  "noOrdersYet": "Aucune commande pour l'instant",
+  "@noOrdersYet": {
+    "description": "Message aucune commande pour l'instant"
+  },
+  "startOrderingNow": "Commencez à commander maintenant pour voir votre historique",
+  "@startOrderingNow": {
+    "description": "Message commencez à commander maintenant"
   }
 }

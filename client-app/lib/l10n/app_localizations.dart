@@ -1833,6 +1833,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your order is being processed.'**
   String get statusCardDefaultDescription;
+
+  /// Order history page title
+  ///
+  /// In en, this message translates to:
+  /// **'Order History'**
+  String get orderHistory;
+
+  /// Total orders label
+  ///
+  /// In en, this message translates to:
+  /// **'Total Orders'**
+  String get totalOrders;
+
+  /// Orders completed label
+  ///
+  /// In en, this message translates to:
+  /// **'Orders Completed'**
+  String get ordersCompleted;
+
+  /// No orders yet message
+  ///
+  /// In en, this message translates to:
+  /// **'No Orders Yet'**
+  String get noOrdersYet;
+
+  /// Start ordering now message
+  ///
+  /// In en, this message translates to:
+  /// **'Start ordering now to see your history'**
+  String get startOrderingNow;
 }
 
 class _AppLocalizationsDelegate

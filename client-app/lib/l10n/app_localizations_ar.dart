@@ -936,4 +936,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get statusCardDefaultDescription => 'طلبك قيد المعالجة.';
+
+  @override
+  String get orderHistory => 'سجل الطلبات';
+
+  @override
+  String get totalOrders => 'إجمالي الطلبات';
+
+  @override
+  String get ordersCompleted => 'الطلبات المكتملة';
+
+  @override
+  String get noOrdersYet => 'لا توجد طلبات بعد';
+
+  @override
+  String get startOrderingNow => 'ابدأ الطلب الآن لرؤية سجلك';
 }
