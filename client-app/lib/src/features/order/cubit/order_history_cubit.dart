@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'order_history_state.dart';
 import '../repositories/order_history_repository.dart';
+import '../models/order_model.dart';
+import '../widgets/history/order_history_filter_bar.dart';
 
 class OrderHistoryCubit extends Cubit<OrderHistoryState> {
   final OrderHistoryRepository _orderHistoryRepository;
@@ -45,6 +47,31 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
         ),
       ),
     );
+  }
+
+  Future<void> filterBy(OrderHistoryFilter filter) async {
+    List<String>? status;
+    switch (filter) {
+      case OrderHistoryFilter.ongoing:
+        status = [
+          OrderStatus.pending,
+          OrderStatus.accepted,
+          OrderStatus.preparing,
+          OrderStatus.delivering,
+          OrderStatus.assigned,
+        ];
+        break;
+      case OrderHistoryFilter.delivered:
+        status = [OrderStatus.delivered, OrderStatus.collected];
+        break;
+      case OrderHistoryFilter.cancelled:
+        status = [OrderStatus.declined];
+        break;
+      case OrderHistoryFilter.all:
+      default:
+        status = null;
+    }
+    await fetchOrderHistory(status: status);
   }
 
   Future<void> refreshOrderHistory() async {

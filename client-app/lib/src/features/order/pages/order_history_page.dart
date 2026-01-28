@@ -1,67 +1,146 @@
+import 'package:client_app/src/core/res/color_app.dart';
+import 'package:client_app/src/features/order/widgets/history/order_history_card.dart';
+import 'package:client_app/src/features/order/widgets/history/order_history_filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/l10n/app_localizations.dart';
+import 'package:intl/intl.dart';
 import '../cubit/order_history_cubit.dart';
 import '../cubit/order_history_state.dart';
+import '../models/order_model.dart';
 
-class OrderHistoryPage extends StatelessWidget {
+class OrderHistoryPage extends StatefulWidget {
   const OrderHistoryPage({super.key});
+
+  @override
+  State<OrderHistoryPage> createState() => _OrderHistoryPageState();
+}
+
+class _OrderHistoryPageState extends State<OrderHistoryPage> {
+  OrderHistoryFilter _activeFilter = OrderHistoryFilter.all;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => OrderHistoryCubit()..fetchOrderHistory(),
-      child: const _OrderHistoryView(),
-    );
-  }
-}
-
-class _OrderHistoryView extends StatelessWidget {
-  const _OrderHistoryView();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.orderHistory),
-        centerTitle: true,
-      ),
-      body: BlocBuilder<OrderHistoryCubit, OrderHistoryState>(
+      child: BlocBuilder<OrderHistoryCubit, OrderHistoryState>(
         builder: (context, state) {
-          if (state is OrderHistoryInitial) {
-            return const Center(
-              child: Text(''),
-            );
-          } else if (state is OrderHistoryLoading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (state is OrderHistoryLoaded) {
-            if (state.orders.isEmpty) {
-              return _buildEmptyState(context, l10n);
-            }
-            return RefreshIndicator(
-              onRefresh: () async {
-                await context.read<OrderHistoryCubit>().refreshOrderHistory();
-              },
-              child: ListView(
-                padding: const EdgeInsets.all(16),
-                children: [
-                  const SizedBox(height: 16),
-                  ...state.orders.map(
-                    (order) => _buildOrderItem(context, order),
-                  ),
-                ],
-              ),
-            );
-          } else if (state is OrderHistoryError) {
-            return _buildErrorState(context, l10n, state.message);
-          }
-          return const SizedBox();
+          final l10n = AppLocalizations.of(context)!;
+          return Scaffold(
+            backgroundColor: ColorApp.white,
+            appBar: AppBar(
+              title: Text(l10n.orderHistory),
+              centerTitle: true,
+              actions: [
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.more_horiz),
+                ),
+              ],
+            ),
+            body: Column(
+              children: [
+                OrderHistoryFilterBar(
+                  activeFilter: _activeFilter,
+                  onFilterChanged: (filter) {
+                    setState(() {
+                      _activeFilter = filter;
+                    });
+                    context.read<OrderHistoryCubit>().filterBy(filter);
+                  },
+                ),
+                Expanded(
+                  child: _buildBody(context, state, l10n),
+                ),
+              ],
+            ),
+          );
         },
       ),
+    );
+  }
+
+  Widget _buildBody(
+      BuildContext context, OrderHistoryState state, AppLocalizations l10n) {
+    if (state is OrderHistoryInitial || state is OrderHistoryLoading) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (state is OrderHistoryLoaded) {
+      if (state.orders.isEmpty) {
+        return _buildEmptyState(context, l10n);
+      }
+      return RefreshIndicator(
+        onRefresh: () async {
+          await context.read<OrderHistoryCubit>().filterBy(_activeFilter);
+        },
+        child: _buildGroupedOrderList(state.orders, l10n),
+      );
+    } else if (state is OrderHistoryError) {
+      return _buildErrorState(context, l10n, state.message);
+    }
+    return const SizedBox();
+  }
+
+  Widget _buildGroupedOrderList(
+      List<OrderModel> orders, AppLocalizations l10n) {
+    // Group orders by date
+    final Map<String, List<OrderModel>> groupedOrders = {};
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+
+    for (var order in orders) {
+      if (order.createdAt == null) continue;
+      final orderDate = DateTime(
+          order.createdAt!.year, order.createdAt!.month, order.createdAt!.day);
+      String dateLabel;
+
+      if (orderDate == today) {
+        dateLabel =
+            "Aujourd'hui - ${DateFormat('dd MMMM yyyy').format(order.createdAt!)}";
+      } else if (orderDate == yesterday) {
+        dateLabel =
+            "Hier - ${DateFormat('dd MMMM yyyy').format(order.createdAt!)}";
+      } else {
+        dateLabel = DateFormat('dd MMMM yyyy').format(order.createdAt!);
+      }
+
+      if (!groupedOrders.containsKey(dateLabel)) {
+        groupedOrders[dateLabel] = [];
+      }
+      groupedOrders[dateLabel]!.add(order);
+    }
+
+    final sortedKeys =
+        groupedOrders.keys.toList(); // Assuming they come sorted from API
+
+    return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 24),
+      itemCount: sortedKeys.length,
+      itemBuilder: (context, index) {
+        final dateLabel = sortedKeys[index];
+        final dayOrders = groupedOrders[dateLabel]!;
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text(
+                dateLabel,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ),
+            ...dayOrders.map((order) => OrderHistoryCard(
+                  order: order,
+                  onTap: () {
+                    // Navigate to details
+                  },
+                )),
+          ],
+        );
+      },
     );
   }
 
@@ -70,22 +149,16 @@ class _OrderHistoryView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.shopping_bag_outlined,
-            size: 80,
-            color: Colors.grey[400],
-          ),
+          Icon(Icons.shopping_bag_outlined, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
-          Text(
-            l10n.noOrdersYet,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
+          Text(l10n.noOrdersYet, style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 8),
           Text(
             l10n.startOrderingNow,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey[600],
-                ),
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: Colors.grey[600]),
           ),
         ],
       ),
@@ -93,106 +166,35 @@ class _OrderHistoryView extends StatelessWidget {
   }
 
   Widget _buildErrorState(
-    BuildContext context,
-    AppLocalizations l10n,
-    String message,
-  ) {
+      BuildContext context, AppLocalizations l10n, String message) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.error_outline,
-            size: 80,
-            color: Colors.red[400],
-          ),
+          Icon(Icons.error_outline, size: 80, color: Colors.red[400]),
           const SizedBox(height: 16),
-          Text(
-            l10n.error,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
+          Text(l10n.error, style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
               message,
               textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  ?.copyWith(color: Colors.grey[600]),
             ),
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () {
-              context.read<OrderHistoryCubit>().refreshOrderHistory();
+              context.read<OrderHistoryCubit>().filterBy(_activeFilter);
             },
             icon: const Icon(Icons.refresh),
             label: Text(l10n.retry),
           ),
         ],
-      ),
-    );
-  }
-
-// todo : create new card for it (new class)
-  Widget _buildOrderItem(BuildContext context, order) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        leading: CircleAvatar(
-          child: Text('#${order.orderNumber}'),
-        ),
-        title: Text(
-          order.restaurantName ?? 'Restaurant',
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(
-          '${order.items.length} items - ${order.totalPrice.toStringAsFixed(2)} DA',
-        ),
-        trailing: _buildStatusChip(context, order.status),
-        onTap: () {
-          // Navigate to order details
-        },
-      ),
-    );
-  }
-
-  Widget _buildStatusChip(BuildContext context, String status) {
-    Color backgroundColor;
-    Color textColor;
-
-    switch (status) {
-      case 'delivered':
-        backgroundColor = Colors.green[100]!;
-        textColor = Colors.green[800]!;
-        break;
-      case 'declined':
-        backgroundColor = Colors.red[100]!;
-        textColor = Colors.red[800]!;
-        break;
-      case 'pending':
-        backgroundColor = Colors.orange[100]!;
-        textColor = Colors.orange[800]!;
-        break;
-      default:
-        backgroundColor = Colors.blue[100]!;
-        textColor = Colors.blue[800]!;
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        status,
-        style: TextStyle(
-          color: textColor,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
       ),
     );
   }
