@@ -7,56 +7,66 @@ import 'package:client_app/l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import '../cubit/order_history_cubit.dart';
 import '../cubit/order_history_state.dart';
+import '../pages/order_tracking_page.dart';
 import '../models/order_model.dart';
 
-class OrderHistoryPage extends StatefulWidget {
+class OrderHistoryPage extends StatelessWidget {
   const OrderHistoryPage({super.key});
-
-  @override
-  State<OrderHistoryPage> createState() => _OrderHistoryPageState();
-}
-
-class _OrderHistoryPageState extends State<OrderHistoryPage> {
-  OrderHistoryFilter _activeFilter = OrderHistoryFilter.all;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => OrderHistoryCubit()..fetchOrderHistory(),
-      child: BlocBuilder<OrderHistoryCubit, OrderHistoryState>(
-        builder: (context, state) {
-          final l10n = AppLocalizations.of(context)!;
-          return Scaffold(
-            backgroundColor: ColorApp.white,
-            appBar: AppBar(
-              title: Text(l10n.orderHistory),
-              centerTitle: true,
-              actions: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.more_horiz),
-                ),
-              ],
-            ),
-            body: Column(
-              children: [
-                OrderHistoryFilterBar(
-                  activeFilter: _activeFilter,
-                  onFilterChanged: (filter) {
-                    setState(() {
-                      _activeFilter = filter;
-                    });
-                    context.read<OrderHistoryCubit>().filterBy(filter);
-                  },
-                ),
-                Expanded(
-                  child: _buildBody(context, state, l10n),
-                ),
-              ],
-            ),
-          );
-        },
-      ),
+      child: const OrderHistoryView(),
+    );
+  }
+}
+
+class OrderHistoryView extends StatefulWidget {
+  const OrderHistoryView({super.key});
+
+  @override
+  State<OrderHistoryView> createState() => _OrderHistoryViewState();
+}
+
+class _OrderHistoryViewState extends State<OrderHistoryView> {
+  OrderHistoryFilter _activeFilter = OrderHistoryFilter.all;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return BlocBuilder<OrderHistoryCubit, OrderHistoryState>(
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: ColorApp.white,
+          appBar: AppBar(
+            title: Text(l10n.orderHistory),
+            centerTitle: true,
+            actions: [
+              IconButton(
+                onPressed: () {},
+                icon: const Icon(Icons.more_horiz),
+              ),
+            ],
+          ),
+          body: Column(
+            children: [
+              OrderHistoryFilterBar(
+                activeFilter: _activeFilter,
+                onFilterChanged: (filter) {
+                  setState(() {
+                    _activeFilter = filter;
+                  });
+                  context.read<OrderHistoryCubit>().filterBy(filter);
+                },
+              ),
+              Expanded(
+                child: _buildBody(context, state, l10n),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -135,7 +145,13 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
             ...dayOrders.map((order) => OrderHistoryCard(
                   order: order,
                   onTap: () {
-                    // Navigate to details
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            OrderTrackingPage(orderId: order.id),
+                      ),
+                    );
                   },
                 )),
           ],

@@ -15,7 +15,7 @@ class OrderHistoryService extends BaseApiService {
     final queryParameters = <String, dynamic>{};
 
     if (status != null && status.isNotEmpty) {
-      queryParameters['status'] = status.join(',');
+      queryParameters['status'] = status;
     }
 
     if (orderType != null && orderType.isNotEmpty) {

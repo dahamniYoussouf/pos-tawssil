@@ -62,7 +62,7 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
         ];
         break;
       case OrderHistoryFilter.delivered:
-        status = [OrderStatus.delivered, OrderStatus.collected];
+        status = [OrderStatus.delivered];
         break;
       case OrderHistoryFilter.cancelled:
         status = [OrderStatus.declined];

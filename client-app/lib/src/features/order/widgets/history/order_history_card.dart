@@ -4,7 +4,7 @@ import 'package:client_app/src/features/order/widgets/order_tracking_steps_widge
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class OrderHistoryCard extends StatelessWidget {
+class OrderHistoryCard extends StatefulWidget {
   final OrderModel order;
   final VoidCallback? onTap;
 
@@ -15,19 +15,38 @@ class OrderHistoryCard extends StatelessWidget {
   });
 
   @override
+  State<OrderHistoryCard> createState() => _OrderHistoryCardState();
+}
+
+class _OrderHistoryCardState extends State<OrderHistoryCard> {
+  bool _isExpanded = false;
+
+  @override
   Widget build(BuildContext context) {
     // final localization = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final dateStr = order.createdAt != null
-        ? DateFormat('dd sp yyyy, HH:mm').format(order.createdAt!)
+    final dateStr = widget.order.createdAt != null
+        ? DateFormat('dd MMM yyyy, HH:mm').format(widget.order.createdAt!)
         : '';
+
+    final isOngoing = widget.order.status != OrderStatus.delivered &&
+        widget.order.status != OrderStatus.collected &&
+        widget.order.status != OrderStatus.declined;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      elevation: 0,
+      color: ColorApp.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: ColorApp.greyBorder, width: 1),
+      ),
       child: InkWell(
-        onTap: onTap,
+        onTap: () {
+          setState(() {
+            _isExpanded = !_isExpanded;
+          });
+        },
         borderRadius: BorderRadius.circular(16),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -42,17 +61,21 @@ class OrderHistoryCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Commande #${order.orderNumber}',
+                          '#${widget.order.orderNumber}',
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: ColorApp.textBlack,
+                            fontSize: 20,
                           ),
                         ),
-                        if (order.restaurantAddress != null)
+                        if (widget.order.restaurantAddress != null ||
+                            widget.order.restaurantName != null)
                           Text(
-                            order.restaurantAddress!,
+                            widget.order.restaurantName ??
+                                widget.order.restaurantAddress!,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: ColorApp.greyIconColor,
+                              fontSize: 14,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -61,99 +84,119 @@ class OrderHistoryCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  _buildStatusBadge(context, order.status),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  dateStr,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: ColorApp.greyIconColor,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // Progress Bar
-              OrderTrackingStepsWidget(orderStatus: order.status),
-
-              const SizedBox(height: 16),
-              Text(
-                'Details',
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-
-              // Items list (snippet)
-              ...order.items.take(2).map((item) => Padding(
-                    padding: const EdgeInsets.only(bottom: 4),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '${item.name} x${item.quantity}',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: ColorApp.textGrey,
-                          ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      _buildStatusBadge(context, widget.order.status),
+                      const SizedBox(height: 4),
+                      Text(
+                        dateStr,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: ColorApp.greyIconColor,
+                          fontSize: 12,
                         ),
-                        Text(
-                          '${item.price.toStringAsFixed(0)} DA',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: ColorApp.textGrey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )),
-
-              if (order.items.length > 2)
-                Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Text(
-                    'See more',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: ColorApp.primary,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-
-              const Divider(
-                  height: 24, thickness: 1, color: ColorApp.greyBorder),
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Total',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    '${order.totalPrice.toStringAsFixed(0)} DA',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               ),
               const SizedBox(height: 12),
+
+              // Progress Bar (Always show if it's ongoing, or based on mockup)
+              if (isOngoing || _isExpanded)
+                OrderTrackingStepsWidget(orderStatus: widget.order.status),
+
               Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  'See Details',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: ColorApp.primary,
+                alignment: Alignment.center,
+                child: Icon(
+                  _isExpanded
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                  color: ColorApp.greyIconColor,
+                ),
+              ),
+
+              if (_isExpanded) ...[
+                const SizedBox(height: 16),
+                Text(
+                  'Détails',
+                  style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
-                    decoration: TextDecoration.underline,
+                    fontSize: 16,
                   ),
                 ),
-              ),
+                const SizedBox(height: 12),
+
+                // Items list
+                ...widget.order.items.map((item) => Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '${item.name} x${item.quantity}',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: ColorApp.textGrey,
+                            ),
+                          ),
+                          Text(
+                            '${item.price.toStringAsFixed(0)} DA',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: ColorApp.textGrey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )),
+
+                const Divider(
+                    height: 24, thickness: 1, color: ColorApp.greyBorder),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Total',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                    Text(
+                      '${widget.order.totalPrice.toStringAsFixed(0)} DA',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+
+                // Suivre la commande Button
+                if (isOngoing)
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: widget.onTap,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF111827), // Dark button
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'Suivre la commande',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+              ],
             ],
           ),
         ),
@@ -168,39 +211,40 @@ class OrderHistoryCard extends StatelessWidget {
 
     switch (status) {
       case OrderStatus.delivered:
-        backgroundColor = Colors.blue;
-        textColor = Colors.white;
-        label = 'Livré';
+        backgroundColor = const Color(0xFFE0E7FF); // Indigo light
+        textColor = const Color(0xFF4338CA); // Indigo dark
+        label = 'LIVRÉ';
         break;
       case OrderStatus.declined:
-        backgroundColor = Colors.red;
-        textColor = Colors.white;
-        label = 'Annulée';
+        backgroundColor = const Color(0xFFFEE2E2); // Red light
+        textColor = const Color(0xFFB91C1C); // Red dark
+        label = 'ANNULÉE';
         break;
       case OrderStatus.pending:
       case OrderStatus.accepted:
       case OrderStatus.preparing:
       case OrderStatus.delivering:
-        backgroundColor = ColorApp.primary;
-        textColor = Colors.white;
-        label = 'En cours';
+        backgroundColor = const Color(0xFFD1FAE5); // Green light
+        textColor = const Color(0xFF065F46); // Green dark
+        label = 'EN COURS';
         break;
       default:
-        backgroundColor = Colors.grey;
-        textColor = Colors.white;
+        backgroundColor = Colors.grey[200]!;
+        textColor = Colors.grey[700]!;
+        label = status.toUpperCase();
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         label,
         style: TextStyle(
           color: textColor,
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: FontWeight.bold,
         ),
       ),
