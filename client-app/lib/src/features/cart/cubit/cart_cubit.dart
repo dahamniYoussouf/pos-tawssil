@@ -55,6 +55,20 @@ class CartCubit extends Cubit<CartState> {
         .toList(growable: false);
   }
 
+  void clearItemsByRestaurant({required String restaurantId}) {
+    try {
+      _items.removeWhere(
+        (String key, CartItem item) =>
+            item.menuItem.restaurantId == restaurantId,
+      );
+      _emitCurrentState();
+    } catch (e) {
+      emit(CartError(
+        message: 'Erreur lors de la suppression des articles: ${e.toString()}',
+      ));
+    }
+  }
+
   double getTotalPriceForRestaurant(String restaurantId) {
     return _items.values
         .where((item) => item.menuItem.restaurantId == restaurantId)

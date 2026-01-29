@@ -1186,6 +1186,12 @@ abstract class AppLocalizations {
   /// **'Delivery person'**
   String get deliveryPerson;
 
+  /// Searching for delivery person label
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery person in progress'**
+  String get searchingForDeliveryPerson;
+
   /// Order refused message
   ///
   /// In en, this message translates to:

@@ -148,9 +148,17 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
     }
   }
 
-  void _onOrderCreated(BuildContext context, String orderId) {
+  void _onOrderCreated(
+    BuildContext context,
+    String orderId,
+  ) {
     setState(() => _isLoading = false);
     _showSuccessSnackBar(context);
+    // clear the panier
+    context
+        .read<CartCubit>()
+        .clearItemsByRestaurant(restaurantId: widget.restaurantId ?? "");
+
     Future<void>.delayed(_navigationDelay, () {
       if (!mounted) return;
       Navigator.push(

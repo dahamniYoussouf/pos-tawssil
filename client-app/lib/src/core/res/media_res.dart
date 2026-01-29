@@ -54,6 +54,7 @@ class MediaRes {
   static const inviteIcon = '$_baseImageIcon/invite_icon.svg';
   static const walletIcon = '$_baseImageIcon/wallet_icon.svg';
   static const logoutIcon = '$_baseImageIcon/logOut_icon.svg';
+  static const phoneIcon = '$_baseImageIcon/phone_icon.svg';
 
   static const orderComingSoonIcon =
       '$_baseImageIcon/order_coming_soon_icon.svg';
@@ -93,6 +94,9 @@ class MediaRes {
   static const historyNavBarIcon = '$_baseImageIcon/history_nav_bar_icon.svg';
   static const cartNavBarIcon = '$_baseImageIcon/cart_nav_bar_icon.svg';
   static const profileNavBarIcon = '$_baseImageIcon/profile_nav_bar_icon.svg';
+
+  // avatar picture
+  static const avatarPicture = '$_baseImage/Avatar.png';
 
   static const trackingOrderIconStep1 =
       '$_baseImageIcon/tracking_order_icon_step_1.svg';

@@ -56,7 +56,9 @@ class SwipeToConfirmButtonState extends State<SwipeToConfirmButton> {
       final double buttonHeight = 56.0;
       final double iconSize = 44.0;
       final double padding = 6.0;
-      final double maxDragDistance = maxWidth - iconSize - (padding * 2);
+      final double containerMargin = 16.0;
+      final double maxDragDistance =
+          maxWidth - (containerMargin * 2) - iconSize - (padding * 2);
       final double threshold = maxDragDistance * 0.85;
       final double clampedPosition = _dragPosition.clamp(0.0, maxDragDistance);
       return GestureDetector(
@@ -86,7 +88,7 @@ class SwipeToConfirmButtonState extends State<SwipeToConfirmButton> {
                         blurRadius: 4,
                         offset: const Offset(0, 2))
                   ]),
-              child: Stack(clipBehavior: Clip.none, children: <Widget>[
+              child: Stack(clipBehavior: Clip.hardEdge, children: <Widget>[
                 Positioned.fill(
                     child: Center(
                         child: Text(widget.label,

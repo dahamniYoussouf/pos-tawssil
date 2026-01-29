@@ -597,6 +597,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get deliveryPerson => 'مندوب التوصيل';
 
   @override
+  String get searchingForDeliveryPerson => 'مندوب التوصيل في الطريق';
+
+  @override
   String get orderRefused => 'تم رفض الطلب';
 
   @override

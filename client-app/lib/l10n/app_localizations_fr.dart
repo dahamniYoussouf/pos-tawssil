@@ -615,6 +615,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deliveryPerson => 'Livreur';
 
   @override
+  String get searchingForDeliveryPerson => 'Livreur en cours';
+
+  @override
   String get orderRefused => 'Commande refusée';
 
   @override

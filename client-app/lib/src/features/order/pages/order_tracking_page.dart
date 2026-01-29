@@ -272,7 +272,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
           return Container(
             decoration: const BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
             ),
             child: SingleChildScrollView(
               controller: scrollController,
@@ -297,11 +297,11 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
           Center(
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 8),
-              width: 40,
-              height: 4,
+              width: 75,
+              height: 8,
               decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(2),
+                color: ColorApp.greyBorder,
+                borderRadius: BorderRadius.circular(12),
               ),
             ),
           ),
@@ -316,11 +316,9 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
         const SizedBox(height: 16),
         OrderDetailsCard(order: order),
         if (order.isDelivered) const ValidateOrderButtonWidget(),
-        if (order.isDelivering && order.deliveryPerson != null)
-          const SizedBox(height: 16),
-        if (order.isDelivering && order.deliveryPerson != null)
-          DeliveryPersonCard(
-              person: order.deliveryPerson!, localization: localization),
+        const SizedBox(height: 16),
+        DeliveryPersonCard(
+            person: order.deliveryPerson, localization: localization),
       ],
     );
   }

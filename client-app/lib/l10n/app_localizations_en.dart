@@ -607,6 +607,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deliveryPerson => 'Delivery person';
 
   @override
+  String get searchingForDeliveryPerson => 'Delivery person in progress';
+
+  @override
   String get orderRefused => 'Order refused';
 
   @override

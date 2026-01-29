@@ -190,6 +190,7 @@
   "orderStatusRecuperer": "تم الاستلام",
   "orderStatusRecupererDescription": "تم استلام طلبك",
   "deliveryPerson": "مندوب التوصيل",
+  "searchingForDeliveryPerson": "مندوب التوصيل في الطريق",
   "orderRefused": "تم رفض الطلب",
   "orderDelayed": "تأخر الطلب",
   "orderDeclinedByRestaurant": "تم رفض الطلب",

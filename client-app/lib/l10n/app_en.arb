@@ -799,6 +799,10 @@
   "@deliveryPerson": {
     "description": "Delivery person label"
   },
+  "searchingForDeliveryPerson": "Delivery person in progress",
+  "@searchingForDeliveryPerson": {
+    "description": "Searching for delivery person label"
+  },
   "orderRefused": "Order refused",
   "@orderRefused": {
     "description": "Order refused message"

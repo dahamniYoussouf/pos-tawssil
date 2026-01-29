@@ -190,6 +190,7 @@
   "orderStatusRecuperer": "Récupéré",
   "orderStatusRecupererDescription": "Votre commande a été récupérée",
   "deliveryPerson": "Livreur",
+  "searchingForDeliveryPerson": "Livreur en cours",
   "orderRefused": "Commande refusée",
   "orderDelayed": "Commande retardée",
   "orderDeclinedByRestaurant": "Commande Refusée",
