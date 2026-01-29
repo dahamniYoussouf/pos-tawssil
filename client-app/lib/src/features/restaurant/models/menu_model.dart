@@ -340,7 +340,7 @@ class MenuItemOption {
 
   Map<String, dynamic> toJson() {
     return {
-      'addition_id': id,
+      'option_id': id,
       'nom': nom,
       if (description != null) 'description': description,
       'prix': prix,

@@ -278,7 +278,7 @@ class _ConsultOrderPageState extends State<ConsultOrderPage> {
         'name': item.menuItemName, // For display purposes
         'quantity': item.quantity,
         'special_instructions': item.note,
-        'additions': item.selectedOptions
+        'options': item.selectedOptions
             .map((MenuItemOption option) => option.toJson())
             .toList(growable: false),
         'price': item.price.toStringAsFixed(0), // For display purposes
