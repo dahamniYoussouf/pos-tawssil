@@ -52,6 +52,7 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
           ),
           body: Column(
             children: [
+              //asks Cubit to load orders based on selected filter
               OrderHistoryFilterBar(
                 activeFilter: _activeFilter,
                 onFilterChanged: (filter) {
@@ -80,6 +81,7 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
         return _buildEmptyState(context, l10n);
       }
       return RefreshIndicator(
+        //reload order
         onRefresh: () async {
           await context.read<OrderHistoryCubit>().filterBy(_activeFilter);
         },
