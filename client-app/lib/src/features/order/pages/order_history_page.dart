@@ -40,6 +40,7 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
         return Scaffold(
           backgroundColor: ColorApp.white,
           appBar: AppBar(
+            backgroundColor: ColorApp.white,
             title: Text(l10n.orderHistory),
             centerTitle: true,
             actions: [

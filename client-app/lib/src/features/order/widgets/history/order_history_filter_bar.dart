@@ -1,6 +1,6 @@
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:flutter/material.dart';
-
+//filter
 enum OrderHistoryFilter { all, ongoing, delivered, cancelled }
 
 class OrderHistoryFilterBar extends StatelessWidget {
@@ -47,7 +47,7 @@ class OrderHistoryFilterBar extends StatelessWidget {
       ),
     );
   }
-
+// here the filter switcher
   String _getFilterLabel(OrderHistoryFilter filter) {
     switch (filter) {
       case OrderHistoryFilter.all:
