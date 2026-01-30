@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'order_history_state.dart';
 import '../repositories/order_history_repository.dart';
 import '../models/order_model.dart';
@@ -14,6 +15,7 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
         super(OrderHistoryInitial());
 
   Future<void> fetchOrderHistory({
+    OrderHistoryFilter filter = OrderHistoryFilter.all,
     List<String>? status,
     String? orderType,
     String? dateFrom,
@@ -24,10 +26,14 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
     int page = 1,
     int limit = 50,
   }) async {
+    // Keep reference to previous state if it was loaded to preserve expansion
+    final previousState =
+        state is OrderHistoryLoaded ? state as OrderHistoryLoaded : null;
+
     emit(OrderHistoryLoading());
 
     final result = await _orderHistoryRepository.fetchOrderHistory(
-      status: status,
+      status: status ?? _mapFilterToStatuses(filter),
       orderType: orderType,
       dateFrom: dateFrom,
       dateTo: dateTo,
@@ -40,41 +46,92 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
 
     result.fold(
       (error) => emit(OrderHistoryError(message: error)),
-      (orders) => emit(
-        OrderHistoryLoaded(
-          orders: orders,
-          totalCount: orders.length,
-        ),
-      ),
+      (orders) {
+        final grouped = _groupOrdersByDate(orders);
+        emit(
+          OrderHistoryLoaded(
+            orders: orders,
+            groupedOrders: grouped,
+            activeFilter: filter,
+            expandedOrderIds: previousState?.expandedOrderIds ?? {},
+            totalCount: orders.length,
+          ),
+        );
+      },
     );
   }
 
   Future<void> filterBy(OrderHistoryFilter filter) async {
-    List<String>? status;
+    await fetchOrderHistory(filter: filter);
+  }
+
+  void toggleOrderExpansion(String orderId) {
+    if (state is OrderHistoryLoaded) {
+      final currentState = state as OrderHistoryLoaded;
+      final newExpandedIds = Set<String>.from(currentState.expandedOrderIds);
+      if (newExpandedIds.contains(orderId)) {
+        newExpandedIds.remove(orderId);
+      } else {
+        newExpandedIds.add(orderId);
+      }
+      emit(currentState.copyWith(expandedOrderIds: newExpandedIds));
+    }
+  }
+
+  Map<String, List<OrderModel>> _groupOrdersByDate(List<OrderModel> orders) {
+    final Map<String, List<OrderModel>> groupedOrders = {};
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final yesterday = today.subtract(const Duration(days: 1));
+
+    for (var order in orders) {
+      if (order.createdAt == null) continue;
+      final orderDate = DateTime(
+          order.createdAt!.year, order.createdAt!.month, order.createdAt!.day);
+      String dateLabel;
+
+      if (orderDate == today) {
+        dateLabel =
+            "TODAY|${DateFormat('dd MMMM yyyy').format(order.createdAt!)}";
+      } else if (orderDate == yesterday) {
+        dateLabel =
+            "YESTERDAY|${DateFormat('dd MMMM yyyy').format(order.createdAt!)}";
+      } else {
+        dateLabel = DateFormat('dd MMMM yyyy').format(order.createdAt!);
+      }
+
+      if (!groupedOrders.containsKey(dateLabel)) {
+        groupedOrders[dateLabel] = [];
+      }
+      groupedOrders[dateLabel]!.add(order);
+    }
+    return groupedOrders;
+  }
+
+  List<String>? _mapFilterToStatuses(OrderHistoryFilter filter) {
     switch (filter) {
       case OrderHistoryFilter.ongoing:
-        status = [
+        return [
           OrderStatus.pending,
           OrderStatus.accepted,
           OrderStatus.preparing,
           OrderStatus.delivering,
           OrderStatus.assigned,
         ];
-        break;
       case OrderHistoryFilter.delivered:
-        status = [OrderStatus.delivered];
-        break;
+        return [OrderStatus.delivered];
       case OrderHistoryFilter.cancelled:
-        status = [OrderStatus.declined];
-        break;
+        return [OrderStatus.declined];
       case OrderHistoryFilter.all:
       default:
-        status = null;
+        return null;
     }
-    await fetchOrderHistory(status: status);
   }
 
   Future<void> refreshOrderHistory() async {
-    await fetchOrderHistory();
+    final filter = state is OrderHistoryLoaded
+        ? (state as OrderHistoryLoaded).activeFilter
+        : OrderHistoryFilter.all;
+    await fetchOrderHistory(filter: filter);
   }
 }

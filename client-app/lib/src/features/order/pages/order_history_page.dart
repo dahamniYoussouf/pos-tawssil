@@ -4,7 +4,6 @@ import 'package:client_app/src/features/order/widgets/history/order_history_filt
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:client_app/l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
 import '../cubit/order_history_cubit.dart';
 import '../cubit/order_history_state.dart';
 import '../pages/order_tracking_page.dart';
@@ -22,21 +21,17 @@ class OrderHistoryPage extends StatelessWidget {
   }
 }
 
-class OrderHistoryView extends StatefulWidget {
+class OrderHistoryView extends StatelessWidget {
   const OrderHistoryView({super.key});
-
-  @override
-  State<OrderHistoryView> createState() => _OrderHistoryViewState();
-}
-
-class _OrderHistoryViewState extends State<OrderHistoryView> {
-  OrderHistoryFilter _activeFilter = OrderHistoryFilter.all;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<OrderHistoryCubit, OrderHistoryState>(
       builder: (context, state) {
+        final activeFilter = state is OrderHistoryLoaded
+            ? state.activeFilter
+            : OrderHistoryFilter.all;
         return Scaffold(
           backgroundColor: ColorApp.white,
           appBar: AppBar(
@@ -54,11 +49,8 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
             children: [
               //asks Cubit to load orders based on selected filter
               OrderHistoryFilterBar(
-                activeFilter: _activeFilter,
+                activeFilter: activeFilter,
                 onFilterChanged: (filter) {
-                  setState(() {
-                    _activeFilter = filter;
-                  });
                   context.read<OrderHistoryCubit>().filterBy(filter);
                 },
               ),
@@ -83,9 +75,9 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
       return RefreshIndicator(
         //reload order
         onRefresh: () async {
-          await context.read<OrderHistoryCubit>().filterBy(_activeFilter);
+          await context.read<OrderHistoryCubit>().refreshOrderHistory();
         },
-        child: _buildGroupedOrderList(state.orders, l10n),
+        child: _buildGroupedOrderList(context, state.groupedOrders, l10n),
       );
     } else if (state is OrderHistoryError) {
       return _buildErrorState(context, l10n, state.message);
@@ -93,38 +85,9 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
     return const SizedBox();
   }
 
-  Widget _buildGroupedOrderList(
-      List<OrderModel> orders, AppLocalizations l10n) {
-    // Group orders by date
-    final Map<String, List<OrderModel>> groupedOrders = {};
-    final now = DateTime.now();
-    final today = DateTime(now.year, now.month, now.day);
-    final yesterday = today.subtract(const Duration(days: 1));
-
-    for (var order in orders) {
-      if (order.createdAt == null) continue;
-      final orderDate = DateTime(
-          order.createdAt!.year, order.createdAt!.month, order.createdAt!.day);
-      String dateLabel;
-
-      if (orderDate == today) {
-        dateLabel =
-            "Aujourd'hui - ${DateFormat('dd MMMM yyyy').format(order.createdAt!)}";
-      } else if (orderDate == yesterday) {
-        dateLabel =
-            "Hier - ${DateFormat('dd MMMM yyyy').format(order.createdAt!)}";
-      } else {
-        dateLabel = DateFormat('dd MMMM yyyy').format(order.createdAt!);
-      }
-
-      if (!groupedOrders.containsKey(dateLabel)) {
-        groupedOrders[dateLabel] = [];
-      }
-      groupedOrders[dateLabel]!.add(order);
-    }
-
-    final sortedKeys =
-        groupedOrders.keys.toList(); // Assuming they come sorted from API
+  Widget _buildGroupedOrderList(BuildContext context,
+      Map<String, List<OrderModel>> groupedOrders, AppLocalizations l10n) {
+    final sortedKeys = groupedOrders.keys.toList();
 
     return ListView.builder(
       padding: const EdgeInsets.only(bottom: 24),
@@ -133,13 +96,20 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
         final dateLabel = sortedKeys[index];
         final dayOrders = groupedOrders[dateLabel]!;
 
+        String displayDate = dateLabel;
+        if (dateLabel.startsWith('TODAY|')) {
+          displayDate = '${l10n.todayLabel} - ${dateLabel.substring(6)}';
+        } else if (dateLabel.startsWith('YESTERDAY|')) {
+          displayDate = '${l10n.yesterdayLabel} - ${dateLabel.substring(10)}';
+        }
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
               child: Text(
-                dateLabel,
+                displayDate,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -208,7 +178,13 @@ class _OrderHistoryViewState extends State<OrderHistoryView> {
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () {
-              context.read<OrderHistoryCubit>().filterBy(_activeFilter);
+              final activeFilter =
+                  context.read<OrderHistoryCubit>().state is OrderHistoryLoaded
+                      ? (context.read<OrderHistoryCubit>().state
+                              as OrderHistoryLoaded)
+                          .activeFilter
+                      : OrderHistoryFilter.all;
+              context.read<OrderHistoryCubit>().filterBy(activeFilter);
             },
             icon: const Icon(Icons.refresh),
             label: Text(l10n.retry),

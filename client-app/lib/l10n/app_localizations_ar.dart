@@ -951,4 +951,25 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get startOrderingNow => 'ابدأ الطلب الآن لرؤية سجلك';
+
+  @override
+  String get details => 'التفاصيل';
+
+  @override
+  String get statusOngoing => 'قيد التنفيذ';
+
+  @override
+  String get statusDelivered => 'تم التوصيل';
+
+  @override
+  String get statusCancelled => 'ملغاة';
+
+  @override
+  String get todayLabel => 'اليوم';
+
+  @override
+  String get yesterdayLabel => 'أمس';
+
+  @override
+  String get trackOrder => 'تتبع الطلب';
 }

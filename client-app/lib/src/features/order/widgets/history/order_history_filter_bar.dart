@@ -1,5 +1,7 @@
 import 'package:client_app/src/core/res/color_app.dart';
 import 'package:flutter/material.dart';
+import 'package:client_app/l10n/app_localizations.dart';
+
 //filter
 enum OrderHistoryFilter { all, ongoing, delivered, cancelled }
 
@@ -24,7 +26,7 @@ class OrderHistoryFilterBar extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.only(right: 8),
             child: FilterChip(
-              label: Text(_getFilterLabel(filter)),
+              label: Text(_getFilterLabel(context, filter)),
               selected: isSelected,
               onSelected: (_) => onFilterChanged(filter),
               selectedColor: ColorApp.primary,
@@ -47,17 +49,18 @@ class OrderHistoryFilterBar extends StatelessWidget {
       ),
     );
   }
-// here the filter switcher
-  String _getFilterLabel(OrderHistoryFilter filter) {
+
+  String _getFilterLabel(BuildContext context, OrderHistoryFilter filter) {
+    final l10n = AppLocalizations.of(context)!;
     switch (filter) {
       case OrderHistoryFilter.all:
-        return 'Tous';
+        return l10n.all;
       case OrderHistoryFilter.ongoing:
-        return 'En cours';
+        return l10n.statusOngoing;
       case OrderHistoryFilter.delivered:
-        return 'Livré';
+        return l10n.statusDelivered;
       case OrderHistoryFilter.cancelled:
-        return 'Annulé';
+        return l10n.statusCancelled;
     }
   }
 }

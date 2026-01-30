@@ -642,5 +642,12 @@
   "startOrderingNow": "Commencez à commander maintenant pour voir votre historique",
   "@startOrderingNow": {
     "description": "Message commencez à commander maintenant"
-  }
+  },
+  "details": "Détails",
+  "statusOngoing": "En cours",
+  "statusDelivered": "Livré",
+  "statusCancelled": "Annulée",
+  "todayLabel": "Aujourd'hui",
+  "yesterdayLabel": "Hier",
+  "trackOrder": "Suivre la commande"
 }

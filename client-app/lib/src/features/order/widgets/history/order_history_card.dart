@@ -2,9 +2,13 @@ import 'package:client_app/src/core/res/color_app.dart';
 import 'package:client_app/src/features/order/models/order_model.dart';
 import 'package:client_app/src/features/order/widgets/order_tracking_steps_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:client_app/l10n/app_localizations.dart';
+import '../../cubit/order_history_cubit.dart';
+import '../../cubit/order_history_state.dart';
 
-class OrderHistoryCard extends StatefulWidget {
+class OrderHistoryCard extends StatelessWidget {
   final OrderModel order;
   final VoidCallback? onTap;
 
@@ -15,196 +19,203 @@ class OrderHistoryCard extends StatefulWidget {
   });
 
   @override
-  State<OrderHistoryCard> createState() => _OrderHistoryCardState();
-}
-
-class _OrderHistoryCardState extends State<OrderHistoryCard> {
-  bool _isExpanded = false;
-
-  @override
   Widget build(BuildContext context) {
-    // final localization = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final dateStr = widget.order.createdAt != null
-        ? DateFormat('dd MMM yyyy, HH:mm').format(widget.order.createdAt!)
+    final l10n = AppLocalizations.of(context)!;
+    final dateStr = order.createdAt != null
+        ? DateFormat('dd MMM yyyy, HH:mm').format(order.createdAt!)
         : '';
 
-    final isOngoing = widget.order.status != OrderStatus.delivered &&
-        widget.order.status != OrderStatus.collected &&
-        widget.order.status != OrderStatus.declined;
+    final isOngoing = order.status != OrderStatus.delivered &&
+        order.status != OrderStatus.collected &&
+        order.status != OrderStatus.declined;
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 0,
-      color: ColorApp.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: ColorApp.greyBorder, width: 1),
-      ),
-      child: InkWell(
-        onTap: () {
-          setState(() {
-            _isExpanded = !_isExpanded;
-          });
-        },
-        borderRadius: BorderRadius.circular(16),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return BlocBuilder<OrderHistoryCubit, OrderHistoryState>(
+      buildWhen: (previous, current) {
+        if (previous is OrderHistoryLoaded && current is OrderHistoryLoaded) {
+          return previous.expandedOrderIds.contains(order.id) !=
+              current.expandedOrderIds.contains(order.id);
+        }
+        return true;
+      },
+      builder: (context, state) {
+        final isExpanded = state is OrderHistoryLoaded &&
+            state.expandedOrderIds.contains(order.id);
+
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          elevation: 0,
+          color: ColorApp.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+            side: const BorderSide(color: ColorApp.greyBorder, width: 1),
+          ),
+          child: InkWell(
+            onTap: () {
+              context.read<OrderHistoryCubit>().toggleOrderExpansion(order.id);
+            },
+            borderRadius: BorderRadius.circular(16),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '#${widget.order.orderNumber}',
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: ColorApp.textBlack,
-                            fontSize: 20,
-                          ),
-                        ),
-                        if (widget.order.restaurantAddress != null ||
-                            widget.order.restaurantName != null)
-                          Text(
-                            widget.order.restaurantName ??
-                                widget.order.restaurantAddress!,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: ColorApp.greyIconColor,
-                              fontSize: 14,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      _buildStatusBadge(context, widget.order.status),
-                      const SizedBox(height: 4),
-                      Text(
-                        dateStr,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: ColorApp.greyIconColor,
-                          fontSize: 12,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '#${order.orderNumber}',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: ColorApp.textBlack,
+                                fontSize: 20,
+                              ),
+                            ),
+                            if (order.restaurantAddress != null ||
+                                order.restaurantName != null)
+                              Text(
+                                order.restaurantName ??
+                                    order.restaurantAddress!,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: ColorApp.greyIconColor,
+                                  fontSize: 14,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Progress Bar (Always show if it's ongoing, or based on mockup)
-              if (isOngoing || _isExpanded)
-                OrderTrackingStepsWidget(orderStatus: widget.order.status),
-
-              Align(
-                alignment: Alignment.center,
-                child: Icon(
-                  _isExpanded
-                      ? Icons.keyboard_arrow_up
-                      : Icons.keyboard_arrow_down,
-                  color: ColorApp.greyIconColor,
-                ),
-              ),
-
-              if (_isExpanded) ...[
-                const SizedBox(height: 16),
-                Text(
-                  'Détails',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 12),
-
-                // Items list
-                ...widget.order.items.map((item) => Padding(
-                      padding: const EdgeInsets.only(bottom: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      const SizedBox(width: 8),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
+                          _buildStatusBadge(context, order.status),
+                          const SizedBox(height: 4),
                           Text(
-                            '${item.name} x${item.quantity}',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: ColorApp.textGrey,
-                            ),
-                          ),
-                          Text(
-                            '${item.price.toStringAsFixed(0)} DA',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: ColorApp.textGrey,
+                            dateStr,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: ColorApp.greyIconColor,
+                              fontSize: 12,
                             ),
                           ),
                         ],
                       ),
-                    )),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
 
-                const Divider(
-                    height: 24, thickness: 1, color: ColorApp.greyBorder),
+                  // Progress Bar
+                  if (isOngoing || isExpanded)
+                    OrderTrackingStepsWidget(orderStatus: order.status),
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Total',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    Text(
-                      '${widget.order.totalPrice.toStringAsFixed(0)} DA',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                // Suivre la commande Button
-                if (isOngoing)
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: widget.onTap,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF111827), // Dark button
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      child: const Text(
-                        'Suivre la commande',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                        ),
-                      ),
+                  Align(
+                    alignment: Alignment.center,
+                    child: Icon(
+                      isExpanded
+                          ? Icons.keyboard_arrow_up
+                          : Icons.keyboard_arrow_down,
+                      color: ColorApp.greyIconColor,
                     ),
                   ),
-              ],
-            ],
+
+                  if (isExpanded) ...[
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.details,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Items list
+                    ...order.items.map((item) => Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '${item.name} x${item.quantity}',
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: ColorApp.textGrey,
+                                ),
+                              ),
+                              Text(
+                                l10n.totalValue(item.price.toStringAsFixed(0)),
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: ColorApp.textGrey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )),
+
+                    const Divider(
+                        height: 24, thickness: 1, color: ColorApp.greyBorder),
+
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          l10n.total,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        Text(
+                          l10n.totalValue(order.totalPrice.toStringAsFixed(0)),
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Suivre la commande Button
+                    if (isOngoing)
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          onPressed: onTap,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                const Color(0xFF111827), // Dark button
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: Text(
+                            l10n.trackOrder,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ],
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
   Widget _buildStatusBadge(BuildContext context, String status) {
+    final l10n = AppLocalizations.of(context)!;
     Color backgroundColor;
     Color textColor;
     String label = status;
@@ -213,12 +224,12 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
       case OrderStatus.delivered:
         backgroundColor = const Color(0xFFE0E7FF); // Indigo light
         textColor = const Color(0xFF4338CA); // Indigo dark
-        label = 'LIVRÉ';
+        label = l10n.statusDelivered;
         break;
       case OrderStatus.declined:
         backgroundColor = const Color(0xFFFEE2E2); // Red light
         textColor = const Color(0xFFB91C1C); // Red dark
-        label = 'ANNULÉE';
+        label = l10n.statusCancelled;
         break;
       case OrderStatus.pending:
       case OrderStatus.accepted:
@@ -226,7 +237,7 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
       case OrderStatus.delivering:
         backgroundColor = const Color(0xFFD1FAE5); // Green light
         textColor = const Color(0xFF065F46); // Green dark
-        label = 'EN COURS';
+        label = l10n.statusOngoing;
         break;
       default:
         backgroundColor = Colors.grey[200]!;
