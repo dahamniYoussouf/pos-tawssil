@@ -606,6 +606,45 @@ class AppLocalizationsAr extends AppLocalizations {
   String get orderDelayed => 'تأخر الطلب';
 
   @override
+  String get orderPending => 'الطلب قيد الانتظار';
+
+  @override
+  String get orderAccepted => 'تم قبول الطلب';
+
+  @override
+  String get orderPreparing => 'قيد التحضير';
+
+  @override
+  String get orderAssigned => 'تم تعيين التوصيل';
+
+  @override
+  String get orderDelivering => 'في الطريق';
+
+  @override
+  String get orderDelivered => 'تم التوصيل';
+
+  @override
+  String get orderCollected => 'تم الاستلام';
+
+  @override
+  String get orderDeclined => 'تم رفض الطلب';
+
+  @override
+  String get orderReadyToCollect => 'جاهز للاستلام';
+
+  @override
+  String get trackOrder => 'تتبع الطلب';
+
+  @override
+  String get track => 'تتبع';
+
+  @override
+  String get items => 'عناصر';
+
+  @override
+  String get order => 'الطلب';
+
+  @override
   String get orderDeclinedByRestaurant => 'تم رفض الطلب';
 
   @override

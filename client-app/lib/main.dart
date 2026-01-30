@@ -27,6 +27,7 @@ import 'src/features/restaurant/cubit/search_history_cubit.dart';
 import 'src/features/restaurant/cubit/homepage_cubit.dart';
 import 'src/features/order/cubit/order_cubit.dart';
 import 'src/core/localization/locale_cubit.dart';
+import 'src/core/services/notification_service.dart';
 
 // Screen Imports
 import 'src/features/auth/pages/phone_number_page.dart';
@@ -43,6 +44,11 @@ void main() async {
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: HydratedStorageDirectory(storageDirectory.path),
   );
+  
+  // Connect notification service for real-time order updates
+  final notificationService = locator<NotificationService>();
+  await notificationService.connect();
+  
   runApp(MyApp());
 }
 

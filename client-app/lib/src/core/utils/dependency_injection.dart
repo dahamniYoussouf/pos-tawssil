@@ -18,6 +18,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:client_app/src/core/localization/locale_cubit.dart';
 import 'package:client_app/src/core/utils/constant.dart';
 import 'package:client_app/src/core/services/token_storage_service.dart';
+import 'package:client_app/src/core/services/notification_service.dart';
 import 'package:get_it/get_it.dart';
 import 'package:dio/dio.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -51,6 +52,9 @@ void setupLocator() {
   );
   locator.registerLazySingleton<TokenStorageService>(
     () => TokenStorageService(),
+  );
+  locator.registerLazySingleton<NotificationService>(
+    () => NotificationService(),
   );
   locator.registerLazySingleton<OrderService>(() => OrderService());
 

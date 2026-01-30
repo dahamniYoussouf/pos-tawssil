@@ -31,19 +31,11 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
   @override
   void initState() {
     super.initState();
-    final orderCubit = locator<OrderCubit>();
-    // Stop any existing polling and reset state before starting new one
-    orderCubit.stopPolling();
-    // Only reset if cubit is not closed (shouldn't happen with singleton, but safety check)
-    if (!orderCubit.isClosed) {
-      orderCubit.reset();
-    }
     _executeInitialLoad();
   }
 
   @override
   void dispose() {
-    locator<OrderCubit>().stopPolling();
     super.dispose();
   }
 
@@ -51,7 +43,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     final orderCubit = locator<OrderCubit>();
     if (!orderCubit.isClosed) {
       orderCubit.fetchOrder(widget.orderId);
-      orderCubit.startPolling();
     }
   }
 
@@ -223,7 +214,6 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
             child: IconButton(
               icon: const Icon(Icons.arrow_back, color: ColorApp.black),
               onPressed: () {
-                locator<OrderCubit>().stopPolling();
                 Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (context) => const HomePage()),

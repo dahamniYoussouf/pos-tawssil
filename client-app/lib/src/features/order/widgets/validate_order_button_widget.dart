@@ -11,8 +11,10 @@ class ValidateOrderButtonWidget extends StatelessWidget {
   });
 
   void _onValidatePressed(BuildContext context) {
-    // Stop polling
-    locator<OrderCubit>().stopPolling();
+    final orderCubit = locator<OrderCubit>();
+    
+    // Clear persisted order
+    orderCubit.clearPersistedOrder();
 
     // Navigate to home page and remove all previous routes
     Navigator.pushAndRemoveUntil(

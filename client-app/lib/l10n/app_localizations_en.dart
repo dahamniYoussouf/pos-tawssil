@@ -616,6 +616,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get orderDelayed => 'Order delayed';
 
   @override
+  String get orderPending => 'Order Pending';
+
+  @override
+  String get orderAccepted => 'Order Accepted';
+
+  @override
+  String get orderPreparing => 'Preparing';
+
+  @override
+  String get orderAssigned => 'Delivery Assigned';
+
+  @override
+  String get orderDelivering => 'On the Way';
+
+  @override
+  String get orderDelivered => 'Delivered';
+
+  @override
+  String get orderCollected => 'Collected';
+
+  @override
+  String get orderDeclined => 'Order Declined';
+
+  @override
+  String get orderReadyToCollect => 'Ready to Collect';
+
+  @override
+  String get trackOrder => 'Track Order';
+
+  @override
+  String get track => 'Track';
+
+  @override
+  String get items => 'items';
+
+  @override
+  String get order => 'Order';
+
+  @override
   String get orderDeclinedByRestaurant => 'Order Declined';
 
   @override

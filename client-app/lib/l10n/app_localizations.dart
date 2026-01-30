@@ -1204,6 +1204,84 @@ abstract class AppLocalizations {
   /// **'Order delayed'**
   String get orderDelayed;
 
+  /// Order pending status
+  ///
+  /// In en, this message translates to:
+  /// **'Order Pending'**
+  String get orderPending;
+
+  /// Order accepted status
+  ///
+  /// In en, this message translates to:
+  /// **'Order Accepted'**
+  String get orderAccepted;
+
+  /// Order preparing status
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing'**
+  String get orderPreparing;
+
+  /// Order assigned status
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery Assigned'**
+  String get orderAssigned;
+
+  /// Order delivering status
+  ///
+  /// In en, this message translates to:
+  /// **'On the Way'**
+  String get orderDelivering;
+
+  /// Order delivered status
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get orderDelivered;
+
+  /// Order collected status
+  ///
+  /// In en, this message translates to:
+  /// **'Collected'**
+  String get orderCollected;
+
+  /// Order declined status
+  ///
+  /// In en, this message translates to:
+  /// **'Order Declined'**
+  String get orderDeclined;
+
+  /// Order ready to collect status
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to Collect'**
+  String get orderReadyToCollect;
+
+  /// Track order button
+  ///
+  /// In en, this message translates to:
+  /// **'Track Order'**
+  String get trackOrder;
+
+  /// Track button
+  ///
+  /// In en, this message translates to:
+  /// **'Track'**
+  String get track;
+
+  /// Items label
+  ///
+  /// In en, this message translates to:
+  /// **'items'**
+  String get items;
+
+  /// Order label
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get order;
+
   /// Order declined by restaurant title
   ///
   /// In en, this message translates to:

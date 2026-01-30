@@ -624,6 +624,45 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orderDelayed => 'Commande retardée';
 
   @override
+  String get orderPending => 'Commande en Attente';
+
+  @override
+  String get orderAccepted => 'Commande Acceptée';
+
+  @override
+  String get orderPreparing => 'En Préparation';
+
+  @override
+  String get orderAssigned => 'Livraison Assignée';
+
+  @override
+  String get orderDelivering => 'En Cours de Livraison';
+
+  @override
+  String get orderDelivered => 'Livrée';
+
+  @override
+  String get orderCollected => 'Récupérée';
+
+  @override
+  String get orderDeclined => 'Commande Refusée';
+
+  @override
+  String get orderReadyToCollect => 'Prête à Récupérer';
+
+  @override
+  String get trackOrder => 'Suivre la Commande';
+
+  @override
+  String get track => 'Suivre';
+
+  @override
+  String get items => 'articles';
+
+  @override
+  String get order => 'Commande';
+
+  @override
   String get orderDeclinedByRestaurant => 'Commande Refusée';
 
   @override

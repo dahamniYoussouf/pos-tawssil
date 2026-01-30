@@ -811,6 +811,58 @@
   "@orderDelayed": {
     "description": "Order delayed message"
   },
+  "orderPending": "Order Pending",
+  "@orderPending": {
+    "description": "Order pending status"
+  },
+  "orderAccepted": "Order Accepted",
+  "@orderAccepted": {
+    "description": "Order accepted status"
+  },
+  "orderPreparing": "Preparing",
+  "@orderPreparing": {
+    "description": "Order preparing status"
+  },
+  "orderAssigned": "Delivery Assigned",
+  "@orderAssigned": {
+    "description": "Order assigned status"
+  },
+  "orderDelivering": "On the Way",
+  "@orderDelivering": {
+    "description": "Order delivering status"
+  },
+  "orderDelivered": "Delivered",
+  "@orderDelivered": {
+    "description": "Order delivered status"
+  },
+  "orderCollected": "Collected",
+  "@orderCollected": {
+    "description": "Order collected status"
+  },
+  "orderDeclined": "Order Declined",
+  "@orderDeclined": {
+    "description": "Order declined status"
+  },
+  "orderReadyToCollect": "Ready to Collect",
+  "@orderReadyToCollect": {
+    "description": "Order ready to collect status"
+  },
+  "trackOrder": "Track Order",
+  "@trackOrder": {
+    "description": "Track order button"
+  },
+  "track": "Track",
+  "@track": {
+    "description": "Track button"
+  },
+  "items": "items",
+  "@items": {
+    "description": "Items label"
+  },
+  "order": "Order",
+  "@order": {
+    "description": "Order label"
+  },
   "orderDeclinedByRestaurant": "Order Declined",
   "@orderDeclinedByRestaurant": {
     "description": "Order declined by restaurant title"
