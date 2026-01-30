@@ -30,7 +30,7 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
     final previousState =
         state is OrderHistoryLoaded ? state as OrderHistoryLoaded : null;
 
-    emit(OrderHistoryLoading());
+    emit(OrderHistoryLoading(activeFilter: filter));
 
     final result = await _orderHistoryRepository.fetchOrderHistory(
       status: status ?? _mapFilterToStatuses(filter),
@@ -45,7 +45,7 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
     );
 
     result.fold(
-      (error) => emit(OrderHistoryError(message: error)),
+      (error) => emit(OrderHistoryError(message: error, activeFilter: filter)),
       (orders) {
         final grouped = _groupOrdersByDate(orders);
         emit(
@@ -129,9 +129,6 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
   }
 
   Future<void> refreshOrderHistory() async {
-    final filter = state is OrderHistoryLoaded
-        ? (state as OrderHistoryLoaded).activeFilter
-        : OrderHistoryFilter.all;
-    await fetchOrderHistory(filter: filter);
+    await fetchOrderHistory(filter: state.activeFilter);
   }
 }

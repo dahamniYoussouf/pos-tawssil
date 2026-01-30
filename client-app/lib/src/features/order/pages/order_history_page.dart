@@ -29,9 +29,7 @@ class OrderHistoryView extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<OrderHistoryCubit, OrderHistoryState>(
       builder: (context, state) {
-        final activeFilter = state is OrderHistoryLoaded
-            ? state.activeFilter
-            : OrderHistoryFilter.all;
+        final activeFilter = state.activeFilter;
         return Scaffold(
           backgroundColor: ColorApp.white,
           appBar: AppBar(

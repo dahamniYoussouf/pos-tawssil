@@ -3,27 +3,31 @@ import '../models/order_model.dart';
 import '../widgets/history/order_history_filter_bar.dart';
 
 abstract class OrderHistoryState extends Equatable {
-  const OrderHistoryState();
+  final OrderHistoryFilter activeFilter;
+  const OrderHistoryState({this.activeFilter = OrderHistoryFilter.all});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [activeFilter];
 }
 
-class OrderHistoryInitial extends OrderHistoryState {}
+class OrderHistoryInitial extends OrderHistoryState {
+  const OrderHistoryInitial() : super(activeFilter: OrderHistoryFilter.all);
+}
 
-class OrderHistoryLoading extends OrderHistoryState {}
+class OrderHistoryLoading extends OrderHistoryState {
+  const OrderHistoryLoading({super.activeFilter});
+}
 
 class OrderHistoryLoaded extends OrderHistoryState {
   final List<OrderModel> orders;
   final Map<String, List<OrderModel>> groupedOrders;
-  final OrderHistoryFilter activeFilter;
   final Set<String> expandedOrderIds;
   final int totalCount;
 
   const OrderHistoryLoaded({
     required this.orders,
     required this.groupedOrders,
-    this.activeFilter = OrderHistoryFilter.all,
+    super.activeFilter,
     this.expandedOrderIds = const {},
     required this.totalCount,
   });
@@ -52,8 +56,8 @@ class OrderHistoryLoaded extends OrderHistoryState {
 class OrderHistoryError extends OrderHistoryState {
   final String message;
 
-  const OrderHistoryError({required this.message});
+  const OrderHistoryError({required this.message, super.activeFilter});
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [message, activeFilter];
 }
