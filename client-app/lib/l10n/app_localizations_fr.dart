@@ -651,7 +651,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get orderReadyToCollect => 'Prête à Récupérer';
 
   @override
-  String get trackOrder => 'Suivre la Commande';
+  String get trackOrder => 'Suivre la commande';
 
   @override
   String get track => 'Suivre';
@@ -1043,7 +1043,4 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get yesterdayLabel => 'Hier';
-
-  @override
-  String get trackOrder => 'Suivre la commande';
 }

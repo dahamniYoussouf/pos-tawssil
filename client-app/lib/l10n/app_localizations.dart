@@ -1983,12 +1983,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Yesterday'**
   String get yesterdayLabel;
-
-  /// No description provided for @trackOrder.
-  ///
-  /// In en, this message translates to:
-  /// **'Track Order'**
-  String get trackOrder;
 }
 
 class _AppLocalizationsDelegate
