@@ -428,6 +428,15 @@ class _OtpInputSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    double fieldSize = (screenWidth - 80) / 6;
+
+    if (fieldSize > 47) fieldSize = 47;
+    if (fieldSize < 35) fieldSize = 35;
+
+    // Proportional padding
+    final horizontalPadding = (fieldSize * 0.12).clamp(4.0, 6.0);
+
     return PinCodeTextField(
       appContext: context,
       length: 6,
@@ -437,15 +446,15 @@ class _OtpInputSection extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       pinTheme: PinTheme(
         shape: PinCodeFieldShape.circle,
-        fieldHeight: 46,
-        fieldWidth: 46,
+        fieldHeight: fieldSize,
+        fieldWidth: fieldSize,
         activeFillColor: ColorApp.backgroundGrey,
         inactiveFillColor: ColorApp.backgroundGrey,
         selectedFillColor: ColorApp.backgroundGrey,
         inactiveColor: ColorApp.greyBorder,
         selectedColor: ColorApp.greyBorder,
         borderWidth: 0.1,
-        fieldOuterPadding: const EdgeInsets.symmetric(horizontal: 7),
+        fieldOuterPadding: EdgeInsets.symmetric(horizontal: horizontalPadding),
       ),
       textStyle: const TextStyle(
         fontSize: 14,
