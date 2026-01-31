@@ -656,5 +656,12 @@
   "startOrderingNow": "ابدأ الطلب الآن لرؤية سجلك",
   "@startOrderingNow": {
     "description": "رسالة ابدأ الطلب الآن"
-  }
+  },
+  "details": "التفاصيل",
+  "statusOngoing": "قيد التنفيذ",
+  "statusDelivered": "تم التوصيل",
+  "statusCancelled": "ملغاة",
+  "todayLabel": "اليوم",
+  "yesterdayLabel": "أمس",
+  "trackOrder": "تتبع الطلب"
 }

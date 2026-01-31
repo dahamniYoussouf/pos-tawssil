@@ -1328,5 +1328,12 @@
   "startOrderingNow": "Start ordering now to see your history",
   "@startOrderingNow": {
     "description": "Start ordering now message"
-  }
+  },
+  "details": "Details",
+  "statusOngoing": "Ongoing",
+  "statusDelivered": "Delivered",
+  "statusCancelled": "Cancelled",
+  "todayLabel": "Today",
+  "yesterdayLabel": "Yesterday",
+  "trackOrder": "Track Order"
 }

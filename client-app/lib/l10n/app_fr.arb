@@ -637,7 +637,7 @@
   "@statusCardDefaultDescription": {
     "description": "Status card description for default/unknown status"
   },
-  "orderHistory": "Historique des commandes",
+  "orderHistory": "Historique",
   "@orderHistory": {
     "description": "Titre de la page d'historique des commandes"
   },
@@ -656,5 +656,12 @@
   "startOrderingNow": "Commencez à commander maintenant pour voir votre historique",
   "@startOrderingNow": {
     "description": "Message commencez à commander maintenant"
-  }
+  },
+  "details": "Détails",
+  "statusOngoing": "En cours",
+  "statusDelivered": "Livré",
+  "statusCancelled": "Annulée",
+  "todayLabel": "Aujourd'hui",
+  "yesterdayLabel": "Hier",
+  "trackOrder": "Suivre la commande"
 }

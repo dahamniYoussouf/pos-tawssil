@@ -1011,7 +1011,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Votre commande est en cours de traitement.';
 
   @override
-  String get orderHistory => 'Historique des commandes';
+  String get orderHistory => 'Historique';
 
   @override
   String get totalOrders => 'Total des commandes';
@@ -1025,4 +1025,25 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get startOrderingNow =>
       'Commencez à commander maintenant pour voir votre historique';
+
+  @override
+  String get details => 'Détails';
+
+  @override
+  String get statusOngoing => 'En cours';
+
+  @override
+  String get statusDelivered => 'Livré';
+
+  @override
+  String get statusCancelled => 'Annulée';
+
+  @override
+  String get todayLabel => 'Aujourd\'hui';
+
+  @override
+  String get yesterdayLabel => 'Hier';
+
+  @override
+  String get trackOrder => 'Suivre la commande';
 }
