@@ -623,7 +623,7 @@
   "@statusCardDefaultDescription": {
     "description": "Status card description for default/unknown status"
   },
-  "orderHistory": "Historique des commandes",
+  "orderHistory": "Historique",
   "@orderHistory": {
     "description": "Titre de la page d'historique des commandes"
   },

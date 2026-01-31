@@ -969,7 +969,7 @@ class AppLocalizationsFr extends AppLocalizations {
       'Votre commande est en cours de traitement.';
 
   @override
-  String get orderHistory => 'Historique des commandes';
+  String get orderHistory => 'Historique';
 
   @override
   String get totalOrders => 'Total des commandes';
