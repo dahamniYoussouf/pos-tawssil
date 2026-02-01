@@ -179,7 +179,7 @@ class RecommendedDishCard extends StatelessWidget {
                                       text: AppLocalizations.of(context)!.free,
                                       style: TextStyle(
                                         color: ColorApp.primary,
-                                        fontSize: 13,
+                                        fontSize: 12,
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),

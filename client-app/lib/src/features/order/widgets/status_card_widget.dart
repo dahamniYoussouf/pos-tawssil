@@ -206,6 +206,7 @@ _OrderStatusInfo _getStatusInfo(BuildContext context, String status) {
         title: localizations.statusCardPreparingTitle,
         description: localizations.statusCardPreparingDescription,
       );
+    // todo : delete this message
     case OrderStatus.assigned:
       return _OrderStatusInfo(
         icon: '🛵',
