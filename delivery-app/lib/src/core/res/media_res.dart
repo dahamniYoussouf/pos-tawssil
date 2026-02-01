@@ -15,6 +15,8 @@ class MediaRes {
   static const String routeIcon = '$_baseImageIcon/route_icon.svg';
   static const String prepareIcon = '$_baseImageIcon/prepare_icon.svg';
   static const String deliveryEndIcon = '$_baseImageIcon/delivery_end_icon.svg';
-  static const String pretRecupererIcon = '$_baseImageIcon/pret_recuperer_icon.svg';
+  static const String pretRecupererIcon =
+      '$_baseImageIcon/pret_recuperer_icon.svg';
   static const String recupererIcon = '$_baseImageIcon/recuperer_icon.svg';
+  static const String algeriaFlag = '$_baseImageIcon/algeriaFlag.png';
 }

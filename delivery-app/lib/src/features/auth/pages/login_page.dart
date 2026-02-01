@@ -38,79 +38,147 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: BlocConsumer<AuthCubit, AuthState>(
-            listener: (context, state) {
-              if (state is AuthError) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: Colors.red,
+      backgroundColor: AppColors.scaffoldBackground,
+      body: BlocConsumer<AuthCubit, AuthState>(
+        listener: (context, state) {
+          if (state is AuthError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+            context.read<AuthCubit>().clearError();
+          } else if (state is AuthSuccess) {
+            Navigator.of(context).pushReplacementNamed('/home');
+          }
+        },
+        builder: (context, state) {
+          final isLoading = state is AuthLoading;
+
+          return SingleChildScrollView(
+            child: SizedBox(
+              height: size.height,
+              child: Column(
+                children: [
+                  // Top Logo Section
+                  Container(
+                    height: size.height * 0.28,
+                    padding: const EdgeInsets.only(top: 40),
+                    width: double.infinity,
+                    color: AppColors.scaffoldBackground,
+                    child: Center(
+                      child: Image.asset(
+                        MediaRes.logo,
+                        width: size.width * 0.6,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
-                );
-                context.read<AuthCubit>().clearError();
-              } else if (state is AuthSuccess) {
-                Navigator.of(context).pushReplacementNamed('/home');
-              }
-            },
-            builder: (context, state) {
-              final isLoading = state is AuthLoading;
-
-              return Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    const SizedBox(height: 16),
-                    _buildLogo(),
-                    const SizedBox(height: 40),
-                    Text(
-                      localizations.welcome,
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                  // Bottom Form Section (White Card)
+                  Expanded(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 40),
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(32),
+                          topRight: Radius.circular(32),
+                        ),
+                      ),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text(
+                              localizations.welcome,
+                              style: const TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.black,
+                                letterSpacing: -0.5,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              localizations.loginSubtitle,
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                color: Color(0xFF4B5563),
+                                height: 1.4,
+                              ),
+                            ),
+                            const SizedBox(height: 32),
+                            _buildEmailField(localizations),
+                            const SizedBox(height: 20),
+                            _buildPasswordField(localizations),
+                            const SizedBox(height: 12),
+                            // Remember me and Forgot password
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: Checkbox(
+                                        value: true, // Static for UI mock
+                                        onChanged: (v) {},
+                                        activeColor: AppColors.primaryColor,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(4),
+                                        ),
+                                        side: const BorderSide(
+                                            color: Color(0xFFE5E7EB)),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      "Rester connecté(e)",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                TextButton(
+                                  onPressed: () {},
+                                  child: Text(
+                                    "Mot de passe oublié?",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 24),
+                            _buildLoginButton(localizations, isLoading),
+                            const SizedBox(height: 24),
+                            _buildBecomePartnerLink(localizations),
+                            const SizedBox(height: 10),
+                            _buildTermsText(localizations),
+                            const Spacer(),
+                          ],
+                        ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      localizations.loginSubtitle,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    _buildEmailField(localizations),
-                    const SizedBox(height: 20),
-                    _buildPasswordField(localizations),
-                    const SizedBox(height: 32),
-                    _buildLoginButton(localizations, isLoading),
-                    const SizedBox(height: 16),
-                    _buildTermsText(localizations),
-                    const SizedBox(height: 24),
-                    _buildBecomePartnerLink(localizations),
-                  ],
-                ),
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLogo() {
-    return Center(
-      child: Image.asset(
-        MediaRes.logo,
-        height: 100,
-        fit: BoxFit.contain,
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -119,33 +187,28 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          localizations.email,
-          style: const TextStyle(
+        const Text(
+          "Nom d’utilisateur",
+          style: TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
           ),
         ),
         const SizedBox(height: 8),
         TextFormField(
           controller: _emailController,
           decoration: InputDecoration(
-            hintText: localizations.emailHint,
-            hintStyle: const TextStyle(color: Colors.grey),
+            hintText: "Entrez votre identifiant",
+            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+            filled: true,
+            fillColor: AppColors.inputBackground,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide.none,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -162,12 +225,12 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          localizations.password,
-          style: const TextStyle(
+        const Text(
+          "Mot de passe",
+          style: TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
           ),
         ),
         const SizedBox(height: 8),
@@ -175,25 +238,23 @@ class _LoginPageState extends State<LoginPage> {
           controller: _passwordController,
           obscureText: _obscurePassword,
           decoration: InputDecoration(
-            hintText: localizations.passwordHint,
-            hintStyle: const TextStyle(color: Colors.grey),
+            hintText: "Entrez votre mot de passe",
+            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+            filled: true,
+            fillColor: AppColors.inputBackground,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide.none,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             suffixIcon: IconButton(
               icon: Icon(
-                _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                color: Colors.grey,
+                _obscurePassword
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
+                color: Colors.grey[400],
+                size: 20,
               ),
               onPressed: () {
                 setState(() {
@@ -214,64 +275,81 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildLoginButton(AppLocalizations localizations, bool isLoading) {
-    return ElevatedButton(
-      onPressed: isLoading ? null : _handleLogin,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primaryColor,
-        foregroundColor: Colors.black87,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: isLoading ? null : _handleLogin,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primaryColor,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          elevation: 0,
         ),
-        elevation: 0,
+        child: isLoading
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : Text(
+                localizations.login,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
       ),
-      child: isLoading
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.black87),
-              ),
-            )
-          : Text(
-              localizations.login,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
     );
   }
 
   Widget _buildTermsText(AppLocalizations localizations) {
-    return Center(
-      child: Text(
-        localizations.termsAndConditions,
-        style: const TextStyle(
-          fontSize: 12,
-          color: Colors.grey,
-        ),
-        textAlign: TextAlign.center,
+    return RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+        style: TextStyle(fontSize: 13, color: Colors.grey[500], height: 1.5),
+        children: const [
+          TextSpan(text: "En vous connectant, vous acceptez nos\n"),
+          TextSpan(
+            text: "Conditions D’utilisation",
+            style: TextStyle(decoration: TextDecoration.underline),
+          ),
+          TextSpan(text: " et "),
+          TextSpan(
+            text: "Politique De Confidentialité",
+            style: TextStyle(decoration: TextDecoration.underline),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildBecomePartnerLink(AppLocalizations localizations) {
-    return Center(
-      child: GestureDetector(
-        onTap: () {
-          Navigator.of(context).pushNamed('/signup');
-        },
-        child: Text(
-          localizations.becomePartner,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.black87,
-            fontWeight: FontWeight.w500,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Text(
+          "Vous n’avez pas encore de compte? ",
+          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+        ),
+        GestureDetector(
+          onTap: () => Navigator.of(context).pushNamed('/signup'),
+          child: Text(
+            "Inscrivez-vous",
+            style: TextStyle(
+              fontSize: 13,
+              color: AppColors.primaryColor,
+              fontWeight: FontWeight.bold,
+              decoration: TextDecoration.underline,
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
 }
