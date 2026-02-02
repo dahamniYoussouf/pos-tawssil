@@ -42,4 +42,7 @@ class MediaRes {
   static const String ShieldUserIcon = '$_baseImageIcon/svg/ShieldUser.svg';
   static const String mailIcon = '$_baseImageIcon/svg/mail.svg';
   static const String manageIcon = '$_baseImageIcon/svg/manage_icon.svg';
+  static const String homeIcon = '$_baseImageIcon/svg/home.svg';
+  static const String boxIcon = '$_baseImageIcon/svg/Box.svg';
+  static const String avatar = '$_baseImageIcon/Avatar.png';
 }

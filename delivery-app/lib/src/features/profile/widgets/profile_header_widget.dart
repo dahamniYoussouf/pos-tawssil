@@ -30,9 +30,7 @@ class ProfileHeaderWidget extends StatelessWidget {
         CircleAvatar(
           radius: 50,
           backgroundColor: Colors.grey[200],
-          backgroundImage: const NetworkImage(
-            'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200',
-          ),
+          backgroundImage: const AssetImage(MediaRes.avatar),
         ),
         const SizedBox(height: 10),
         Text(

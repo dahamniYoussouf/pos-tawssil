@@ -4,6 +4,7 @@ import 'package:delivery_app/src/features/orders/cubit/orders_state.dart';
 import 'package:delivery_app/src/core/res/media_res.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:delivery_app/l10n/app_localizations.dart';
 import 'package:delivery_app/src/core/res/color_app.dart';
@@ -123,63 +124,21 @@ class NearbyOrderCard extends StatelessWidget {
     int totalTime,
     String? restaurantPhoneNumber,
   ) {
-    return Column(
-      children: [
-        _buildTimelineItem(
-          iconPath: MediaRes
-              .suivIcon, // Using an existing icon or building a generic one
-          title: restaurantName,
-          subtitle: restaurantPhoneNumber,
-          address: restaurantAddress,
-          distance: restaurantDistance,
-          time: restaurantTime,
-          isFirst: true,
-          useCustomIcon: true,
-        ),
-        _buildTimelineConnector(),
-        _buildTimelineItem(
-          iconPath: MediaRes.deliveryEndIcon,
-          title: "Home",
-          address: deliveryAddress,
-          distance: totalDistance,
-          time: totalTime,
-          isFirst: false,
-          useCustomIcon: true,
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTimelineItem({
-    required String iconPath,
-    required String title,
-    String? subtitle,
-    required String address,
-    required double distance,
-    required int time,
-    required bool isFirst,
-    bool useCustomIcon = false,
-  }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Column(
           children: [
+            _buildIconContainer(MediaRes.homeIcon),
             Container(
-              width: 40,
-              height: 40,
+              width: 1.5,
+              height: 50,
               decoration: BoxDecoration(
-                color: const Color(0xFFF3F4F6),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Center(
-                child: Icon(
-                  isFirst ? Icons.storefront : Icons.inventory_2_outlined,
-                  color: const Color(0xFF4B5563),
-                  size: 20,
-                ),
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(1),
               ),
             ),
+            _buildIconContainer(MediaRes.boxIcon),
           ],
         ),
         const SizedBox(width: 16),
@@ -187,55 +146,19 @@ class NearbyOrderCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
+              _buildLocationInfo(
+                title: restaurantName,
+                subtitle: restaurantPhoneNumber,
+                address: restaurantAddress,
+                distance: restaurantDistance,
+                time: restaurantTime,
               ),
-              if (subtitle != null)
-                Text(
-                  subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              Text(
-                address,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              Row(
-                children: [
-                  Icon(Icons.location_on, size: 14, color: Colors.grey[400]),
-                  const SizedBox(width: 4),
-                  Text(
-                    "$distance KM",
-                    style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(width: 12),
-                  const Text("—", style: TextStyle(color: Colors.grey)),
-                  const SizedBox(width: 12),
-                  Icon(Icons.access_time, size: 14, color: Colors.grey[400]),
-                  const SizedBox(width: 4),
-                  Text(
-                    "$time min",
-                    style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                        fontWeight: FontWeight.bold),
-                  ),
-                ],
+              const SizedBox(height: 25),
+              _buildLocationInfo(
+                title: "Home",
+                address: deliveryAddress,
+                distance: totalDistance,
+                time: totalTime,
               ),
             ],
           ),
@@ -244,16 +167,85 @@ class NearbyOrderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTimelineConnector() {
-    return Container(
+  Widget _buildIconContainer(String iconPath) {
+    return SizedBox(
       width: 40,
       height: 40,
-      alignment: Alignment.center,
-      child: Container(
-        width: 1,
-        height: double.infinity,
-        color: Colors.grey[300],
+      child: Center(
+        child: SvgPicture.asset(
+          iconPath,
+          width: 20,
+          height: 20,
+          colorFilter: const ColorFilter.mode(
+            Color(0xFF4B5563),
+            BlendMode.srcIn,
+          ),
+        ),
       ),
+    );
+  }
+
+  Widget _buildLocationInfo({
+    required String title,
+    String? subtitle,
+    required String address,
+    required double distance,
+    required int time,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+        if (subtitle != null)
+          Text(
+            subtitle,
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[600],
+            ),
+          ),
+        Text(
+          address,
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey[600],
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        Row(
+          children: [
+            Icon(Icons.location_on, size: 14, color: Colors.grey[400]),
+            const SizedBox(width: 4),
+            Text(
+              "$distance KM",
+              style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(width: 12),
+            const Text("—", style: TextStyle(color: Colors.grey)),
+            const SizedBox(width: 12),
+            Icon(Icons.access_time, size: 14, color: Colors.grey[400]),
+            const SizedBox(width: 4),
+            Text(
+              "$time min",
+              style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                  fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
