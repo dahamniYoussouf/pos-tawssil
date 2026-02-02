@@ -2,6 +2,7 @@ import 'package:delivery_app/src/core/utils/dependency_injection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:delivery_app/l10n/app_localizations.dart';
+import 'package:delivery_app/src/core/res/media_res.dart';
 import 'package:delivery_app/src/core/res/color_app.dart';
 import 'package:delivery_app/src/features/orders/cubit/orders_cubit.dart';
 import 'package:delivery_app/src/features/orders/cubit/orders_state.dart';
@@ -9,7 +10,10 @@ import 'package:delivery_app/src/features/orders/models/order_model.dart';
 import 'package:delivery_app/src/features/orders/pages/order_assigned_page.dart';
 import 'package:delivery_app/src/features/orders/widgets/nearby_order_card.dart';
 import 'package:delivery_app/src/features/orders/widgets/order_tracking_map_widget.dart';
-import 'package:delivery_app/src/features/orders/widgets/empty_orders_map_widget.dart';
+import 'package:delivery_app/src/features/driver/cubit/driver_cubit.dart';
+import 'package:delivery_app/src/features/driver/cubit/driver_state.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 
 class TrackOrdersPage extends StatefulWidget {
   const TrackOrdersPage({
@@ -42,7 +46,8 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
   void _handleStateChanges(BuildContext context, OrdersState state) {
     final localizations = AppLocalizations.of(context)!;
     if (state is OrderActionError) {
-      _showErrorSnackBar(context, _translateErrorMessage(state.message, localizations));
+      _showErrorSnackBar(
+          context, _translateErrorMessage(state.message, localizations));
     } else if (state is OrderActionSuccess) {
       if (state.orderId != null) {
         Navigator.of(context).push(
@@ -53,38 +58,139 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
           ),
         );
       } else {
-        _showSuccessSnackBar(context, _translateSuccessMessage(state.message, localizations));
+        _showSuccessSnackBar(
+            context, _translateSuccessMessage(state.message, localizations));
       }
     }
   }
 
   Widget _buildContent(BuildContext context, OrdersState state) {
+    final size = MediaQuery.of(context).size;
+    List<OrderModel> orders = [];
+    Widget mapContent;
+
     if (state is OrdersLoading) {
-      return _buildLoadingState();
-    } else if (state is OrdersLoaded) {
-      if (state.orders.isEmpty) {
-        return _buildEmptyState();
+      mapContent = _buildLoadingState();
+    } else {
+      if (state is OrdersLoaded) {
+        orders = state.orders;
+      } else if (state is OrderActionLoading) {
+        orders = state.orders;
+      } else if (state is OrderActionSuccess) {
+        orders = state.orders;
+      } else if (state is OrderActionError) {
+        orders = state.orders;
       }
-      return _buildMapWithCards(state);
-    } else if (state is OrderActionLoading) {
-      if (state.orders.isEmpty) {
-        return _buildEmptyState();
+
+      if (orders.isEmpty && state is! OrdersLoading) {
+        mapContent = _buildMapOnly();
+      } else {
+        mapContent = OrderTrackingMap(orders: orders);
       }
-      return _buildMapWithCardsFromList(state.orders);
-    } else if (state is OrderActionSuccess) {
-      if (state.orders.isEmpty) {
-        return _buildEmptyState();
-      }
-      return _buildMapWithCardsFromList(state.orders);
-    } else if (state is OrderActionError) {
-      if (state.orders.isEmpty) {
-        return _buildEmptyState();
-      }
-      return _buildMapWithCardsFromList(state.orders);
-    } else if (state is OrdersError) {
-      return _buildErrorState(state.message);
     }
-    return _buildLoadingState();
+
+    return Stack(
+      children: [
+        // Full screen map or loading
+        Positioned.fill(child: mapContent),
+
+        // Top Logo Overlay
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            height: size.height * 0.2,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.white.withOpacity(0.8),
+                  Colors.white.withOpacity(0.0),
+                ],
+              ),
+            ),
+            child: SafeArea(
+              child: Center(
+                child: Image.asset(
+                  MediaRes.logo,
+                  height: 48,
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // Floating "Radar des trajets" Button
+        Positioned(
+          top: size.height * 0.45,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: GestureDetector(
+              onTap: () {
+                if (state is! OrdersLoading) {
+                  locator<OrdersCubit>().fetchOrdersNearby();
+                }
+              },
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF111827), // Very dark blue/black
+                  borderRadius: BorderRadius.circular(30),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (state is OrdersLoading)
+                      Container(
+                        width: 16,
+                        height: 16,
+                        margin: const EdgeInsets.only(right: 8),
+                        child: const CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      ),
+                    const Text(
+                      "Radar des trajets",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // Bottom Order Cards
+        if (orders.isNotEmpty)
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: _buildOrdersCards(orders),
+          ),
+
+        // Error handling if needed
+        if (state is OrdersError) _buildErrorOverlay(state.message),
+      ],
+    );
   }
 
   Widget _buildLoadingState() {
@@ -93,38 +199,50 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
     );
   }
 
-  Widget _buildMapWithCards(OrdersLoaded state) {
-    return _buildMapWithCardsFromList(state.orders);
+  Widget _buildMapOnly() {
+    return BlocBuilder<DriverCubit, DriverState>(
+      builder: (context, state) {
+        final LatLng center =
+            state is DriverLoaded && state.driver.latitude != null
+                ? LatLng(state.driver.latitude!, state.driver.longitude!)
+                : const LatLng(36.7538, 3.0588);
+        return FlutterMap(
+          options: MapOptions(
+            initialCenter: center,
+            initialZoom: 15.0,
+          ),
+          children: [
+            TileLayer(
+              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              userAgentPackageName: 'com.tawsil.delivery',
+            ),
+          ],
+        );
+      },
+    );
   }
 
-  Widget _buildMapWithCardsFromList(List<OrderModel> orders) {
-    return Stack(
-      children: [
-        OrderTrackingMap(
-          orders: orders,
-        ),
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: _buildOrdersCards(orders),
-        ),
-      ],
+  Widget _buildErrorOverlay(String message) {
+    return Container(
+      color: Colors.black.withOpacity(0.5),
+      child: _buildErrorState(message),
     );
   }
 
   Widget _buildOrdersCards(List<OrderModel> orders) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.6,
-      decoration: const BoxDecoration(
-        color: Colors.transparent,
+      padding: const EdgeInsets.only(bottom: 20), // Spacing from nav bar
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.5,
       ),
-      child: ListView.builder(
-        padding: const EdgeInsets.only(bottom: 16),
-        itemCount: orders.length,
-        itemBuilder: (context, index) {
-          return _buildOrderCard(orders[index]);
-        },
+      child: SingleChildScrollView(
+        reverse: true, // Start from the bottom if multiple
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          verticalDirection: VerticalDirection
+              .up, // Stack new ones at top or keep logic simple
+          children: orders.map((order) => _buildOrderCard(order)).toList(),
+        ),
       ),
     );
   }
@@ -155,14 +273,6 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
         content: Text(message),
         backgroundColor: AppColors.primaryColor,
       ),
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return EmptyOrdersMapWidget(
-      onRefresh: () {
-        context.read<OrdersCubit>().fetchOrdersNearby();
-      },
     );
   }
 
@@ -213,7 +323,8 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
     );
   }
 
-  String _translateSuccessMessage(String message, AppLocalizations localizations) {
+  String _translateSuccessMessage(
+      String message, AppLocalizations localizations) {
     if (message.contains('accepted successfully')) {
       return localizations.orderAcceptedSuccess;
     } else if (message.contains('declined successfully')) {
@@ -224,7 +335,8 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
     return message;
   }
 
-  String _translateErrorMessage(String message, AppLocalizations localizations) {
+  String _translateErrorMessage(
+      String message, AppLocalizations localizations) {
     if (message.contains('Invalid response format')) {
       return localizations.errorInvalidResponseFormat;
     } else if (message.contains('Failed to fetch orders')) {
@@ -232,7 +344,8 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
     } else if (message.contains('Failed to accept order')) {
       return localizations.errorFailedToAcceptOrder;
     } else if (message.contains('Error accepting order:')) {
-      final errorMatch = RegExp(r'Error accepting order: (.+)').firstMatch(message);
+      final errorMatch =
+          RegExp(r'Error accepting order: (.+)').firstMatch(message);
       if (errorMatch != null) {
         return localizations.errorAcceptingOrder(errorMatch.group(1) ?? '');
       }
@@ -240,7 +353,8 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
     } else if (message.contains('Failed to decline order')) {
       return localizations.errorFailedToRefuseOrder;
     } else if (message.contains('Error declining order:')) {
-      final errorMatch = RegExp(r'Error declining order: (.+)').firstMatch(message);
+      final errorMatch =
+          RegExp(r'Error declining order: (.+)').firstMatch(message);
       if (errorMatch != null) {
         return localizations.errorRefusingOrder(errorMatch.group(1) ?? '');
       }
@@ -248,7 +362,8 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
     } else if (message.contains('Failed to refuse order')) {
       return localizations.errorFailedToRefuseOrder;
     } else if (message.contains('Error refusing order:')) {
-      final errorMatch = RegExp(r'Error refusing order: (.+)').firstMatch(message);
+      final errorMatch =
+          RegExp(r'Error refusing order: (.+)').firstMatch(message);
       if (errorMatch != null) {
         return localizations.errorRefusingOrder(errorMatch.group(1) ?? '');
       }

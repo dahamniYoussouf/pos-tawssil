@@ -276,4 +276,44 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get startDelivery => 'Démarrer la livraison';
+
+  @override
+  String get profile => 'Profil';
+
+  @override
+  String get myPromotions => 'Mes Promotions';
+
+  @override
+  String get paymentMethods => 'Moyens de paiement';
+
+  @override
+  String get messages => 'Messages';
+
+  @override
+  String get inviteFriends => 'Inviter des amis';
+
+  @override
+  String get security => 'Sécurité';
+
+  @override
+  String get manageAccount => 'Gérer votre compte';
+
+  @override
+  String get logout => 'Déconnexion';
+
+  @override
+  String get rating => 'Évaluation';
+
+  @override
+  String get deliveries => 'Livraisons';
+
+  @override
+  String get yearsJoined => 'Années d\'ancienneté';
+
+  @override
+  String get logoutConfirmation =>
+      'Êtes-vous sûr de vouloir vous déconnecter ?';
+
+  @override
+  String get ok => 'OK';
 }

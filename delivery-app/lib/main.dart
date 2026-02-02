@@ -7,9 +7,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:delivery_app/src/core/res/app_theme.dart';
 import 'package:delivery_app/src/core/utils/dependency_injection.dart';
-import 'package:delivery_app/src/core/res/color_app.dart';
 import 'package:delivery_app/src/features/auth/cubit/auth_cubit.dart';
 import 'package:delivery_app/src/features/auth/cubit/auth_state.dart';
 import 'package:delivery_app/src/features/auth/services/auth_service.dart';
@@ -71,17 +70,7 @@ class MyApp extends StatelessWidget {
           Locale('ar', 'DZ'),
         ],
         locale: const Locale('fr', 'FR'),
-        theme: ThemeData(
-          primaryColor: AppColors.primaryColor,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: AppColors.primaryColor,
-            primary: AppColors.primaryColor,
-          ),
-          textTheme: GoogleFonts.poppinsTextTheme(
-            ThemeData.light().textTheme,
-          ),
-          useMaterial3: true,
-        ),
+        theme: AppTheme.lightTheme,
         initialRoute: '/home',
         routes: {
           '/login': (context) => const LoginPage(),
@@ -124,7 +113,8 @@ class _AuthWrapperState extends State<AuthWrapper> {
       builder: (context, authState) {
         if (authState is AuthSuccess) {
           return BlocListener<AuthCubit, AuthState>(
-            listenWhen: (previous, current) => current is AuthSuccess && previous is! AuthSuccess,
+            listenWhen: (previous, current) =>
+                current is AuthSuccess && previous is! AuthSuccess,
             listener: (context, state) {
               if (state is AuthSuccess) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {

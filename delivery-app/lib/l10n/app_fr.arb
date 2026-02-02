@@ -104,6 +104,19 @@
   "clientOrderTitle": "Commande client",
   "total": "Total",
   "clientLabel": "Client",
-  "startDelivery": "Démarrer la livraison"
+  "startDelivery": "Démarrer la livraison",
+  "profile": "Profil",
+  "myPromotions": "Mes Promotions",
+  "paymentMethods": "Moyens de paiement",
+  "messages": "Messages",
+  "inviteFriends": "Inviter des amis",
+  "security": "Sécurité",
+  "manageAccount": "Gérer votre compte",
+  "logout": "Déconnexion",
+  "rating": "Évaluation",
+  "deliveries": "Livraisons",
+  "yearsJoined": "Années d'ancienneté",
+  "logoutConfirmation": "Êtes-vous sûr de vouloir vous déconnecter ?",
+  "ok": "OK"
 }
 

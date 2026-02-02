@@ -19,4 +19,27 @@ class MediaRes {
       '$_baseImageIcon/pret_recuperer_icon.svg';
   static const String recupererIcon = '$_baseImageIcon/recuperer_icon.svg';
   static const String algeriaFlag = '$_baseImageIcon/algeriaFlag.png';
+
+  // nav bar icons
+  static const String radarNavBarIcon =
+      '$_baseImageIcon/svg/home_nav_bar_icon.svg';
+  static const String listNavBarIcon = '$_baseImageIcon/svg/list_icon.svg';
+  static const String historyNavBarIcon = '$_baseImageIcon/svg/cart.svg';
+  static const String profileNavBarIcon =
+      '$_baseImageIcon/svg/profile_nav_bar_icon.svg';
+
+  // profile icons
+  static const String promotionIcon = '$_baseImageIcon/svg/promotion_icon.svg';
+  static const String walletIcon = '$_baseImageIcon/svg/wallet_icon.svg';
+  static const String messageIcon = '$_baseImageIcon/svg/message_icon.svg';
+  static const String usersIcon = '$_baseImageIcon/svg/users_icon.svg';
+  static const String editIcon = '$_baseImageIcon/svg/edit_icon.svg';
+  static const String logoutIcon = '$_baseImageIcon/svg/logOut_icon.svg';
+  static const String arrowRightIcon =
+      '$_baseImageIcon/svg/arrow_right_icon.svg';
+
+  // new profile icons requested by user
+  static const String ShieldUserIcon = '$_baseImageIcon/svg/ShieldUser.svg';
+  static const String mailIcon = '$_baseImageIcon/svg/mail.svg';
+  static const String manageIcon = '$_baseImageIcon/svg/manage_icon.svg';
 }

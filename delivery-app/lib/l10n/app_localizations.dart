@@ -603,6 +603,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start delivery'**
   String get startDelivery;
+
+  /// Profile page title
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
+
+  /// My Promotions menu item
+  ///
+  /// In en, this message translates to:
+  /// **'My Promotions'**
+  String get myPromotions;
+
+  /// Payment Methods menu item
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Methods'**
+  String get paymentMethods;
+
+  /// Messages menu item
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get messages;
+
+  /// Invite Friends menu item
+  ///
+  /// In en, this message translates to:
+  /// **'Invite Friends'**
+  String get inviteFriends;
+
+  /// Security menu item
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get security;
+
+  /// Manage Account menu item
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Your Account'**
+  String get manageAccount;
+
+  /// Logout button text
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logout;
+
+  /// Rating label
+  ///
+  /// In en, this message translates to:
+  /// **'Rating'**
+  String get rating;
+
+  /// Deliveries label
+  ///
+  /// In en, this message translates to:
+  /// **'Deliveries'**
+  String get deliveries;
+
+  /// No description provided for @yearsJoined.
+  ///
+  /// In en, this message translates to:
+  /// **'Years Joined'**
+  String get yearsJoined;
+
+  /// No description provided for @logoutConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out?'**
+  String get logoutConfirmation;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
 }
 
 class _AppLocalizationsDelegate

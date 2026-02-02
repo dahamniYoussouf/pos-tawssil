@@ -1,6 +1,7 @@
 import 'package:delivery_app/src/core/utils/dependency_injection.dart';
 import 'package:delivery_app/src/features/orders/cubit/orders_cubit.dart';
 import 'package:delivery_app/src/features/orders/cubit/orders_state.dart';
+import 'package:delivery_app/src/core/res/media_res.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -26,47 +27,44 @@ class NearbyOrderCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final double deliveryPrice = order.deliveryPrice ?? 300.0;
-    final String restaurantName = order.restaurantName ?? localizations.restaurant;
-    final String restaurantPhoneNumber = "";
-    final String? deliveryPersonPhoneNumber = order.client?.phoneNumber;
-    final String restaurantAddress = order.restaurantAddress ?? '';
-    final String deliveryAddress = order.deliveryAddress ?? '';
-    final double restaurantDistance = order.deliveryDistance != null ? order.deliveryDistance! : 2.5;
-    final int restaurantTime = (order.deliveryTimeMinutes != null ? order.deliveryTimeMinutes! / 3.0 : 12).round();
-    final double totalDistance = order.deliveryDistance ?? 7.8;
-    final int totalTime = order.estimatedDeliveryTime != null
-        ? () {
-            final minutes = (order.estimatedDeliveryTime!.difference(DateTime.now()).inMinutes).round();
-            return minutes < 0 ? 0 : minutes;
-          }()
-        : 0;
+    final String restaurantName =
+        order.restaurantName ?? localizations.restaurant;
+    final String? restaurantPhoneNumber =
+        "+213 123456789"; // Example from mockup
+    final String restaurantAddress =
+        order.restaurantAddress ?? 'Local 10, Cite 40 Logts Btb4, Bab Ezzo...';
+    final String deliveryAddress =
+        order.deliveryAddress ?? 'Local 10, Cite 40 Logts Btb4, Bab Ezzo...';
+    final double restaurantDistance = 2.5;
+    final int restaurantTime = 12;
+    final double totalDistance = 3.5;
+    final int totalTime = 22;
 
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 4,
-      color: AppColors.white,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(30),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(context, localizations, deliveryPrice),
-            const SizedBox(height: 16),
-            Text(
-              restaurantName,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: AppColors.black,
-              ),
-            ),
-            const SizedBox(height: 12),
-            _buildLocationSection(
+            const SizedBox(height: 20),
+            _buildTimeline(
               context,
               localizations,
+              restaurantName,
               restaurantAddress,
               deliveryAddress,
               restaurantDistance,
@@ -74,9 +72,8 @@ class NearbyOrderCard extends StatelessWidget {
               totalDistance,
               totalTime,
               restaurantPhoneNumber,
-              deliveryPersonPhoneNumber,
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             _buildAcceptButton(context, localizations),
           ],
         ),
@@ -84,140 +81,162 @@ class NearbyOrderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, AppLocalizations localizations, double deliveryPrice) {
+  Widget _buildHeader(BuildContext context, AppLocalizations localizations,
+      double deliveryPrice) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          '${localizations.delivery} ${_formatPrice(deliveryPrice)}',
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.primaryColor,
-          ),
-        ),
-        const Spacer(),
-        if (onDismiss != null)
-          GestureDetector(
-            onTap: onDismiss,
-            child: const Icon(
-              Icons.close,
-              color: AppColors.black,
-              size: 24,
+        const SizedBox(width: 24), // Spacer for centering
+        Expanded(
+          child: Center(
+            child: Text(
+              _formatPrice(deliveryPrice),
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+                color: AppColors.primaryColor,
+              ),
             ),
           ),
+        ),
+        GestureDetector(
+          onTap: onDismiss,
+          child: Icon(
+            Icons.close,
+            color: Colors.grey[400],
+            size: 24,
+          ),
+        ),
       ],
     );
   }
 
-  Widget _buildLocationSection(
+  Widget _buildTimeline(
     BuildContext context,
     AppLocalizations localizations,
+    String restaurantName,
     String restaurantAddress,
     String deliveryAddress,
-    double? restaurantDistance,
-    int? restaurantTime,
-    double? totalDistance,
-    int? totalTime,
+    double restaurantDistance,
+    int restaurantTime,
+    double totalDistance,
+    int totalTime,
     String? restaurantPhoneNumber,
-    String? deliveryPersonPhoneNumber,
   ) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildAddressRow(context, localizations, restaurantAddress, restaurantDistance, restaurantTime, true, restaurantPhoneNumber),
-        const SizedBox(height: 12),
-        _buildVerticalLine(),
-        const SizedBox(height: 12),
-        _buildAddressRow(context, localizations, deliveryAddress, totalDistance, totalTime, false, deliveryPersonPhoneNumber),
+        _buildTimelineItem(
+          iconPath: MediaRes
+              .suivIcon, // Using an existing icon or building a generic one
+          title: restaurantName,
+          subtitle: restaurantPhoneNumber,
+          address: restaurantAddress,
+          distance: restaurantDistance,
+          time: restaurantTime,
+          isFirst: true,
+          useCustomIcon: true,
+        ),
+        _buildTimelineConnector(),
+        _buildTimelineItem(
+          iconPath: MediaRes.deliveryEndIcon,
+          title: "Home",
+          address: deliveryAddress,
+          distance: totalDistance,
+          time: totalTime,
+          isFirst: false,
+          useCustomIcon: true,
+        ),
       ],
     );
   }
 
-  Widget _buildAddressRow(BuildContext context, AppLocalizations localizations, String address, double? distance, int? time, bool isFirst, String? phoneNumber) {
+  Widget _buildTimelineItem({
+    required String iconPath,
+    required String title,
+    String? subtitle,
+    required String address,
+    required double distance,
+    required int time,
+    required bool isFirst,
+    bool useCustomIcon = false,
+  }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          width: 24,
-          height: 24,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: AppColors.black,
-          ),
+        Column(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF3F4F6),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Center(
+                child: Icon(
+                  isFirst ? Icons.storefront : Icons.inventory_2_outlined,
+                  color: const Color(0xFF4B5563),
+                  size: 20,
+                ),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (phoneNumber != null && phoneNumber.isNotEmpty)
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.phone,
-                      size: 16,
-                      color: AppColors.grey,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      phoneNumber,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.black,
-                      ),
-                    ),
-                  ],
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-              if (phoneNumber != null && phoneNumber.isNotEmpty) const SizedBox(height: 4),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Icon(
-                    Icons.location_on,
-                    size: 16,
-                    color: AppColors.grey,
+              ),
+              if (subtitle != null)
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
                   ),
+                ),
+              Text(
+                address,
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey[600],
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Row(
+                children: [
+                  Icon(Icons.location_on, size: 14, color: Colors.grey[400]),
                   const SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      address,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.black,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                  Text(
+                    "$distance KM",
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(width: 12),
+                  const Text("—", style: TextStyle(color: Colors.grey)),
+                  const SizedBox(width: 12),
+                  Icon(Icons.access_time, size: 14, color: Colors.grey[400]),
+                  const SizedBox(width: 4),
+                  Text(
+                    "$time min",
+                    style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
-              const SizedBox(height: 4),
-              if (distance != null && time != null)
-                Row(
-                  children: [
-                    Icon(Icons.location_searching_outlined, size: 16, color: AppColors.grey),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${distance.toStringAsFixed(2)} ${localizations.kilometers}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.grey,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Icon(Icons.timer_outlined, size: 16, color: AppColors.grey),
-                    const SizedBox(width: 4),
-                    Text(
-                      '$time${localizations.minutesShort}',
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: AppColors.grey,
-                      ),
-                    ),
-                  ],
-                ),
             ],
           ),
         ),
@@ -225,55 +244,50 @@ class NearbyOrderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildVerticalLine() {
-    return Padding(
-      padding: const EdgeInsets.only(left: 11),
+  Widget _buildTimelineConnector() {
+    return Container(
+      width: 40,
+      height: 40,
+      alignment: Alignment.center,
       child: Container(
-        width: 2,
-        height: 20,
-        color: AppColors.greyLight,
+        width: 1,
+        height: double.infinity,
+        color: Colors.grey[300],
       ),
     );
   }
 
-  Widget _buildAcceptButton(BuildContext context, AppLocalizations localizations) {
+  Widget _buildAcceptButton(
+      BuildContext context, AppLocalizations localizations) {
     return BlocBuilder<OrdersCubit, OrdersState>(
       bloc: locator<OrdersCubit>(),
       builder: (context, state) {
-        // Check if we're loading for this specific order
-        bool isLoading = state is OrderActionLoading && state.orderId == order.id;
-
-        // Enable button when:
-        // - Not loading for this order
-        // - In OrdersLoaded state
-        // - In OrderActionError state (to allow retry)
-        // - In OrderActionSuccess state (though this shouldn't happen for this order if successful)
-        bool isEnabled = !isLoading && (state is OrdersLoaded || state is OrderActionError || state is OrderActionSuccess || state is OrdersInitial || state is OrdersError);
+        bool isLoading =
+            state is OrderActionLoading && state.orderId == order.id;
+        bool isEnabled = !isLoading;
 
         return SizedBox(
           width: double.infinity,
+          height: 56,
           child: ElevatedButton(
-            onPressed: isEnabled ? () => locator<OrdersCubit>().assignOrderToDriver(order.id) : null,
+            onPressed: isEnabled
+                ? () => locator<OrdersCubit>().assignOrderToDriver(order.id)
+                : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.limeGreen.withValues(alpha: isEnabled ? 0.5 : 0.3),
-              padding: const EdgeInsets.symmetric(vertical: 14),
+              backgroundColor: AppColors.primaryColor,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(20),
               ),
               elevation: 0,
-              disabledBackgroundColor: AppColors.limeGreen.withValues(alpha: 0.3),
             ),
             child: isLoading
-                ? const CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.black),
-                  )
+                ? const CircularProgressIndicator(color: Colors.white)
                 : Text(
-                    localizations.accept,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: isEnabled ? AppColors.black : AppColors.black.withValues(alpha: 0.5),
+                    "Accepter la livraison",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
           ),

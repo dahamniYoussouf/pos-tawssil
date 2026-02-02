@@ -104,6 +104,19 @@
   "clientOrderTitle": "طلب العميل",
   "total": "الإجمالي",
   "clientLabel": "العميل",
-  "startDelivery": "بدء التوصيل"
+  "startDelivery": "بدء التوصيل",
+  "profile": "الملف الشخصي",
+  "myPromotions": "عروضي",
+  "paymentMethods": "طرق الدفع",
+  "messages": "الرسائل",
+  "inviteFriends": "دعوة أصدقاء",
+  "security": "الحماية",
+  "manageAccount": "إدارة حسابك",
+  "logout": "تسجيل الخروج",
+  "rating": "التقييم",
+  "deliveries": "التوصيلات",
+  "yearsJoined": "سنوات الانضمام",
+  "logoutConfirmation": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+  "ok": "موافق"
 }
 

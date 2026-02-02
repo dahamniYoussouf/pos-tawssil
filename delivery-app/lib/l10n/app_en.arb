@@ -278,6 +278,48 @@
   "startDelivery": "Start delivery",
   "@startDelivery": {
     "description": "Start delivery button text"
-  }
+  },
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile page title"
+  },
+  "myPromotions": "My Promotions",
+  "@myPromotions": {
+    "description": "My Promotions menu item"
+  },
+  "paymentMethods": "Payment Methods",
+  "@paymentMethods": {
+    "description": "Payment Methods menu item"
+  },
+  "messages": "Messages",
+  "@messages": {
+    "description": "Messages menu item"
+  },
+  "inviteFriends": "Invite Friends",
+  "@inviteFriends": {
+    "description": "Invite Friends menu item"
+  },
+  "security": "Security",
+  "@security": {
+    "description": "Security menu item"
+  },
+  "manageAccount": "Manage Your Account",
+  "@manageAccount": {
+    "description": "Manage Account menu item"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  "rating": "Rating",
+  "@rating": {
+    "description": "Rating label"
+  },
+  "deliveries": "Deliveries",
+  "@deliveries": {
+    "description": "Deliveries label"
+  },
+  "yearsJoined": "Years Joined",
+  "logoutConfirmation": "Are you sure you want to log out?",
+  "ok": "OK"
 }
-

@@ -269,4 +269,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get startDelivery => 'Start delivery';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get myPromotions => 'My Promotions';
+
+  @override
+  String get paymentMethods => 'Payment Methods';
+
+  @override
+  String get messages => 'Messages';
+
+  @override
+  String get inviteFriends => 'Invite Friends';
+
+  @override
+  String get security => 'Security';
+
+  @override
+  String get manageAccount => 'Manage Your Account';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String get rating => 'Rating';
+
+  @override
+  String get deliveries => 'Deliveries';
+
+  @override
+  String get yearsJoined => 'Years Joined';
+
+  @override
+  String get logoutConfirmation => 'Are you sure you want to log out?';
+
+  @override
+  String get ok => 'OK';
 }

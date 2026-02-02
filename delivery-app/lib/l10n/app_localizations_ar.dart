@@ -268,4 +268,43 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get startDelivery => 'بدء التوصيل';
+
+  @override
+  String get profile => 'الملف الشخصي';
+
+  @override
+  String get myPromotions => 'عروضي';
+
+  @override
+  String get paymentMethods => 'طرق الدفع';
+
+  @override
+  String get messages => 'الرسائل';
+
+  @override
+  String get inviteFriends => 'دعوة أصدقاء';
+
+  @override
+  String get security => 'الحماية';
+
+  @override
+  String get manageAccount => 'إدارة حسابك';
+
+  @override
+  String get logout => 'تسجيل الخروج';
+
+  @override
+  String get rating => 'التقييم';
+
+  @override
+  String get deliveries => 'التوصيلات';
+
+  @override
+  String get yearsJoined => 'سنوات الانضمام';
+
+  @override
+  String get logoutConfirmation => 'هل أنت متأكد أنك تريد تسجيل الخروج؟';
+
+  @override
+  String get ok => 'موافق';
 }
