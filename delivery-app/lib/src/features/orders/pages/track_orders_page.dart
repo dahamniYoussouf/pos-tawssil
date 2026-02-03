@@ -66,28 +66,36 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
 
   Widget _buildContent(BuildContext context, OrdersState state) {
     final size = MediaQuery.of(context).size;
+    final localizations = AppLocalizations.of(context)!;
     List<OrderModel> orders = [];
     Widget mapContent;
 
     if (state is OrdersLoading) {
-      mapContent = _buildLoadingState();
-    } else {
-      if (state is OrdersLoaded) {
-        orders = state.orders;
-      } else if (state is OrderActionLoading) {
-        orders = state.orders;
-      } else if (state is OrderActionSuccess) {
-        orders = state.orders;
-      } else if (state is OrderActionError) {
-        orders = state.orders;
-      }
-
-      if (orders.isEmpty && state is! OrdersLoading) {
-        mapContent = _buildMapOnly();
-      } else {
-        mapContent = OrderTrackingMap(orders: orders);
-      }
+      orders = state.orders;
+    } else if (state is OrdersLoaded) {
+      orders = state.orders;
+    } else if (state is OrderActionLoading) {
+      orders = state.orders;
+    } else if (state is OrderActionSuccess) {
+      orders = state.orders;
+    } else if (state is OrderActionError) {
+      orders = state.orders;
+    } else if (state is OrdersError) {
+      orders = state.orders;
     }
+
+    if (orders.isEmpty && state is OrdersLoading) {
+      mapContent = _buildLoadingState();
+    } else if (orders.isEmpty) {
+      mapContent = _buildMapOnly();
+    } else {
+      mapContent = OrderTrackingMap(orders: orders);
+    }
+
+    // Calculate dynamic position for radar button
+    // If cards exist, position radar above them
+    final double radarTopPosition =
+        orders.isEmpty ? size.height * 0.45 : size.height * 0.33;
 
     return Stack(
       children: [
@@ -123,9 +131,16 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
           ),
         ),
 
-        // Floating "Radar des trajets" Button
+        // hna Bottom Order Cards (u can scroll and u shows 2 cards)
+        if (orders.isNotEmpty)
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: _buildOrdersCards(orders),
+          ),
         Positioned(
-          top: size.height * 0.45,
+          top: radarTopPosition,
           left: 0,
           right: 0,
           child: Center(
@@ -137,7 +152,7 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
               },
               child: Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    const EdgeInsets.symmetric(horizontal: 70, vertical: 12),
                 decoration: BoxDecoration(
                   color: const Color(0xFF111827), // Very dark blue/black
                   borderRadius: BorderRadius.circular(30),
@@ -152,7 +167,7 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (state is OrdersLoading)
+                    if (state is OrdersLoading && orders.isEmpty)
                       Container(
                         width: 16,
                         height: 16,
@@ -163,11 +178,11 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
                               AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       ),
-                    const Text(
-                      "Radar des trajets",
-                      style: TextStyle(
+                    Text(
+                      localizations.radarButton,
+                      style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 18,
+                        fontSize: 22,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -177,15 +192,6 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
             ),
           ),
         ),
-
-        // Bottom Order Cards
-        if (orders.isNotEmpty)
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: _buildOrdersCards(orders),
-          ),
 
         // Error handling if needed
         if (state is OrdersError) _buildErrorOverlay(state.message),
@@ -252,7 +258,9 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
       builder: (context, currentState) {
         return NearbyOrderCard(
           order: order,
-          onDismiss: () {},
+          onDismiss: () {
+            context.read<OrdersCubit>().dismissOrder(order.id);
+          },
         );
       },
     );

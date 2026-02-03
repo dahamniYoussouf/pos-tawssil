@@ -120,11 +120,11 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                         fit: BoxFit.cover,
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 15),
 
                     // Delivery Address
-                    _buildSectionHeader("Adresse De Livraison"),
-                    const SizedBox(height: 8),
+                    _buildSectionHeader(localizations.deliveryAddressHeader),
+                    const SizedBox(height: 5),
                     Text(
                       order.restaurantAddress ?? "Baraki, Sidi Moussa",
                       style: AppTextStyles.gilmerMedium.copyWith(
@@ -132,11 +132,11 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                         color: AppColors.textMedium,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
 
                     // Delivery Time
-                    _buildSectionHeader("Temps De Livraison"),
-                    const SizedBox(height: 8),
+                    _buildSectionHeader(localizations.deliveryTimeHeader),
+                    const SizedBox(height: 5),
                     Text(
                       "${order.deliveryTimeMinutes ?? '25-35'} min",
                       style: AppTextStyles.gilmerMedium.copyWith(
@@ -144,11 +144,11 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                         color: AppColors.textMedium,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
 
                     // Order Number
-                    _buildSectionHeader("Numero De Commande"),
-                    const SizedBox(height: 8),
+                    _buildSectionHeader(localizations.orderNumberHeader),
+                    const SizedBox(height: 5),
                     Text(
                       "#${order.orderNumber}",
                       style: AppTextStyles.gilmerMedium.copyWith(
@@ -156,11 +156,11 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                         color: AppColors.textMedium,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
 
                     // Total
                     _buildSectionHeader(localizations.total),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 5),
                     Text(
                       _formatPrice(order.totalPrice),
                       style: AppTextStyles.gilmerMedium.copyWith(
@@ -168,23 +168,23 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                         color: AppColors.textMedium,
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
 
                     // Payment Method
-                    _buildSectionHeader("Méthode De Paiement"),
-                    const SizedBox(height: 8),
+                    _buildSectionHeader(localizations.paymentMethodHeader),
+                    const SizedBox(height: 5),
                     Text(
-                      "Cash",
+                      localizations.cashPayment,
                       style: AppTextStyles.gilmerMedium.copyWith(
                         fontSize: 16,
                         color: AppColors.textMedium,
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 10),
 
                     // Order Details
-                    _buildSectionHeader("Détails De La Commande"),
-                    const SizedBox(height: 16),
+                    _buildSectionHeader(localizations.orderDetailsHeader),
+                    const SizedBox(height: 5),
                     ...order.items.map((item) => Padding(
                           padding: const EdgeInsets.only(bottom: 12),
                           child: Row(
@@ -242,7 +242,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         }
         final OrderModel order = state.order!;
         return Container(
-          padding: const EdgeInsets.fromLTRB(24, 16, 24, 20),
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
           decoration: const BoxDecoration(
             color: AppColors.white,
           ),

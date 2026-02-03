@@ -35,12 +35,24 @@ class OrderAssignedCard extends StatelessWidget {
 
         return Container(
           width: double.infinity,
-          decoration: const BoxDecoration(
+          margin: isDelivering
+              ? const EdgeInsets.fromLTRB(16, 0, 16, 50)
+              : EdgeInsets.zero,
+          decoration: BoxDecoration(
             color: AppColors.white,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(32),
-              topRight: Radius.circular(32),
-            ),
+            borderRadius: isDelivering
+                ? BorderRadius.circular(32)
+                : const BorderRadius.only(
+                    topLeft: Radius.circular(32),
+                    topRight: Radius.circular(32),
+                  ),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
           child: Column(
@@ -146,9 +158,7 @@ class OrderAssignedCard extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
-            color: AppColors.backgroundLight,
             shape: BoxShape.circle,
-            border: Border.all(color: AppColors.borderLight),
           ),
           child: SvgPicture.asset(
             MediaRes.clientIcon,
@@ -183,29 +193,10 @@ class OrderAssignedCard extends StatelessWidget {
         // Message and Call Buttons
         Row(
           children: [
-            _buildActionIconSvg(MediaRes.chatIcon),
-            const SizedBox(width: 12),
             _buildActionIcon(Icons.phone_outlined),
           ],
         ),
       ],
-    );
-  }
-
-  Widget _buildActionIconSvg(String assetPath) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: AppColors.backgroundLight,
-        shape: BoxShape.circle,
-        border: Border.all(color: AppColors.borderLight),
-      ),
-      child: SvgPicture.asset(
-        assetPath,
-        width: 24,
-        height: 24,
-        colorFilter: const ColorFilter.mode(AppColors.black, BlendMode.srcIn),
-      ),
     );
   }
 
@@ -260,8 +251,8 @@ class OrderAssignedCard extends StatelessWidget {
             colorFilter:
                 const ColorFilter.mode(AppColors.textMedium, BlendMode.srcIn),
           ),
-          title: const Text(
-            "Détails De La Commande",
+          title: Text(
+            localizations.orderDetailsHeader,
             style: AppTextStyles.gilmerBold,
           ),
           children: [
@@ -371,65 +362,62 @@ class OrderAssignedCard extends StatelessWidget {
     bool isLoading,
     bool isDelivering,
   ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: SizedBox(
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: isLoading
-              ? null
-              : () {
-                  if (isDelivering) {
-                    context
-                        .read<AssignedOrderCubit>()
-                        .completeDelivery(orderId)
-                        .whenComplete(() {
-                      // delivered status go home pick new one
-                      if (context.mounted) {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => HomePage(),
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: isLoading
+            ? null
+            : () {
+                if (isDelivering) {
+                  context
+                      .read<AssignedOrderCubit>()
+                      .completeDelivery(orderId)
+                      .whenComplete(() {
+                    // delivered status go home pick new one
+                    if (context.mounted) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => HomePage(),
+                        ),
+                      );
+                    }
+                  });
+                } else {
+                  final cubit = context.read<AssignedOrderCubit>();
+                  cubit.markOrderArrived(orderId).whenComplete(() {
+                    if (context.mounted) {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => OrderDetailsPage(
+                            orderId: orderId,
+                            cubit: cubit,
                           ),
-                        );
-                      }
-                    });
-                  } else {
-                    final cubit = context.read<AssignedOrderCubit>();
-                    cubit.markOrderArrived(orderId).whenComplete(() {
-                      if (context.mounted) {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (context) => OrderDetailsPage(
-                              orderId: orderId,
-                              cubit: cubit,
-                            ),
-                          ),
-                        );
-                      }
-                    });
-                  }
-                },
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primaryColor,
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(24),
-            ),
-            elevation: 0,
+                        ),
+                      );
+                    }
+                  });
+                }
+              },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primaryColor,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
           ),
-          child: isLoading
-              ? const CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.black),
-                )
-              : Text(
-                  isDelivering ? localizations.delivered : localizations.arrive,
-                  style: AppTextStyles.gilmerBold.copyWith(
-                    fontSize: 18,
-                    color: AppColors.white,
-                  ),
-                ),
+          elevation: 0,
         ),
+        child: isLoading
+            ? const CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(AppColors.black),
+              )
+            : Text(
+                localizations.arrive,
+                style: AppTextStyles.gilmerBold.copyWith(
+                  fontSize: 18,
+                  color: AppColors.white,
+                ),
+              ),
       ),
     );
   }
@@ -440,44 +428,53 @@ class OrderAssignedCard extends StatelessWidget {
     String orderId,
     bool isLoading,
   ) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: SizedBox(
-        width: double.infinity,
-        child: OutlinedButton(
-          onPressed: isLoading
-              ? null
-              : () {
-                  showDialog(
-                    context: context,
-                    builder: (childContext) => CancellationReasonModal(
-                      onConfirm: (reason, otherReason) {
-                        final finalReason =
-                            otherReason != null && otherReason.isNotEmpty
-                                ? '$reason: $otherReason'
-                                : reason;
-                        context.read<AssignedOrderCubit>().driverCancelOrder(
-                              orderId,
-                              reason: finalReason,
-                            );
-                      },
-                    ),
-                  );
-                },
-          style: OutlinedButton.styleFrom(
-            side: const BorderSide(color: Color(0xFFF14336), width: 1),
-            backgroundColor: const Color(0xFFFEF2F2), // Very light red
-            padding: const EdgeInsets.symmetric(vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30),
-            ),
+    return SizedBox(
+      width: double.infinity,
+      child: OutlinedButton(
+        onPressed: isLoading
+            ? null
+            : () {
+                showDialog(
+                  context: context,
+                  builder: (childContext) => CancellationReasonModal(
+                    onConfirm: (reason, otherReason) {
+                      final finalReason =
+                          otherReason != null && otherReason.isNotEmpty
+                              ? '$reason: $otherReason'
+                              : reason;
+                      context
+                          .read<AssignedOrderCubit>()
+                          .driverCancelOrder(
+                            orderId,
+                            reason: finalReason,
+                          )
+                          .then((_) {
+                        if (context.mounted) {
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(
+                              builder: (context) => const HomePage(),
+                            ),
+                            (route) => false,
+                          );
+                        }
+                      });
+                    },
+                  ),
+                );
+              },
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: Color(0xFFF14336), width: 1),
+          backgroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 12),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
           ),
-          child: Text(
-            localizations.cancel,
-            style: AppTextStyles.gilmerBold.copyWith(
-              fontSize: 18,
-              color: const Color(0xFFF14336),
-            ),
+        ),
+        child: Text(
+          localizations.cancel,
+          style: AppTextStyles.gilmerBold.copyWith(
+            fontSize: 18,
+            color: const Color(0xFFF14336),
           ),
         ),
       ),

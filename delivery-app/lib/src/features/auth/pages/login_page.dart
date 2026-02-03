@@ -148,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
                                         const SizedBox(width: 8),
                                         Flexible(
                                           child: Text(
-                                            "Rester connecté(e)",
+                                            localizations.rememberMe,
                                             style: TextStyle(
                                               fontSize: 12,
                                               color: Colors.grey[600],
@@ -162,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
                                   TextButton(
                                     onPressed: () {},
                                     child: Text(
-                                      "Mot de passe oublié?",
+                                      localizations.forgotPassword,
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: Colors.grey[600],
@@ -197,9 +197,9 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Nom d’utilisateur",
-          style: TextStyle(
+        Text(
+          localizations.username,
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
             color: Colors.black,
@@ -209,7 +209,7 @@ class _LoginPageState extends State<LoginPage> {
         TextFormField(
           controller: _emailController,
           decoration: InputDecoration(
-            hintText: "Entrez votre identifiant",
+            hintText: localizations.usernameHint,
             hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
             filled: true,
             fillColor: AppColors.inputBackground,
@@ -235,9 +235,9 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          "Mot de passe",
-          style: TextStyle(
+        Text(
+          localizations.password,
+          style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
             color: Colors.black,
@@ -248,7 +248,7 @@ class _LoginPageState extends State<LoginPage> {
           controller: _passwordController,
           obscureText: _obscurePassword,
           decoration: InputDecoration(
-            hintText: "Entrez votre mot de passe",
+            hintText: localizations.passwordHint,
             hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
             filled: true,
             fillColor: AppColors.inputBackground,
@@ -324,16 +324,16 @@ class _LoginPageState extends State<LoginPage> {
       textAlign: TextAlign.center,
       text: TextSpan(
         style: TextStyle(fontSize: 13, color: Colors.grey[500], height: 1.5),
-        children: const [
-          TextSpan(text: "En vous connectant, vous acceptez nos\n"),
+        children: [
+          TextSpan(text: localizations.termsPrefix),
           TextSpan(
-            text: "Conditions D’utilisation",
-            style: TextStyle(decoration: TextDecoration.underline),
+            text: localizations.termsLabel,
+            style: const TextStyle(decoration: TextDecoration.underline),
           ),
-          TextSpan(text: " et "),
+          TextSpan(text: localizations.termsAnd),
           TextSpan(
-            text: "Politique De Confidentialité",
-            style: TextStyle(decoration: TextDecoration.underline),
+            text: localizations.privacyPolicyLabel,
+            style: const TextStyle(decoration: TextDecoration.underline),
           ),
         ],
       ),
@@ -345,16 +345,16 @@ class _LoginPageState extends State<LoginPage> {
       TextSpan(
         style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
         children: [
-          const TextSpan(
-            text: "Vous n’avez pas encore de compte? ",
-            style: TextStyle(color: Colors.black),
+          TextSpan(
+            text: localizations.dontHaveAccount,
+            style: const TextStyle(color: Colors.black),
           ),
           WidgetSpan(
             alignment: PlaceholderAlignment.middle,
             child: GestureDetector(
               onTap: () => Navigator.of(context).pushNamed('/signup'),
               child: Text(
-                "Inscrivez-vous",
+                localizations.signUpAction,
                 style: TextStyle(
                   fontSize: 13,
                   color: AppColors.primaryColor,

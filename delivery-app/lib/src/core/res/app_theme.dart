@@ -41,7 +41,7 @@ class AppTextStyles {
 
   static const TextStyle gilmerBold = TextStyle(
     fontFamily: fontFamily,
-    fontWeight: FontWeight.w900,
+    fontWeight: FontWeight.w700,
     color: AppColors.textDark,
   );
 

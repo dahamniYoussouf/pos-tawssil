@@ -33,6 +33,10 @@
     "description": "Login button text"
   },
   "termsAndConditions": "By logging in, you accept our Terms of Use",
+  "termsPrefix": "By logging in, you accept our\n",
+  "termsLabel": "Terms of Use",
+  "termsAnd": " and ",
+  "privacyPolicyLabel": "Privacy Policy",
   "@termsAndConditions": {
     "description": "Terms and conditions text"
   },
@@ -377,5 +381,89 @@
   "viewDetails": "View Details",
   "newOrderAvailable": "NEW ORDER AVAILABLE",
   "view": "View",
-  "orderDetailsHeader": "Order Details"
+  "orderDetailsHeader": "Order Details",
+  "rememberMe": "Remember me",
+  "@rememberMe": {
+    "description": "Remember me checkbox label"
+  },
+  "forgotPassword": "Forgot password?",
+  "@forgotPassword": {
+    "description": "Forgot password button label"
+  },
+  "deliveryAddressHeader": "Delivery Address",
+  "@deliveryAddressHeader": {
+    "description": "Delivery address section header"
+  },
+  "deliveryTimeHeader": "Delivery Time",
+  "@deliveryTimeHeader": {
+    "description": "Delivery time section header"
+  },
+  "orderNumberHeader": "Order Number",
+  "@orderNumberHeader": {
+    "description": "Order number section header"
+  },
+  "paymentMethodHeader": "Payment Method",
+  "@paymentMethodHeader": {
+    "description": "Payment method section header"
+  },
+  "cashPayment": "Cash",
+  "@cashPayment": {
+    "description": "Cash payment method"
+  },
+  "radarButton": "Traffic Radar",
+  "@radarButton": {
+    "description": "Radar button text"
+  },
+  "dontHaveAccount": "Don't have an account yet? ",
+  "@dontHaveAccount": {
+    "description": "Don't have account text"
+  },
+  "signUpAction": "Sign up",
+  "@signUpAction": {
+    "description": "Sign up action link"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language label"
+  },
+  "selectLanguage": "Select Language",
+  "@selectLanguage": {
+    "description": "Select language dialog title"
+  },
+  "arabic": "Arabic",
+  "@arabic": {
+    "description": "Arabic language"
+  },
+  "french": "French",
+  "@french": {
+    "description": "French language"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language"
+  },
+  "cancelModalTitle": "Why do you want to cancel this order?",
+  "@cancelModalTitle": {
+    "description": "Cancellation modal title"
+  },
+  "cancelModalSubtitle": "Help us improve your experience.",
+  "@cancelModalSubtitle": {
+    "description": "Cancellation modal subtitle"
+  },
+  "otherReasonHint": "Enter your reason here...",
+  "@otherReasonHint": {
+    "description": "Hint for other reason text field"
+  },
+  "confirmCancellation": "Confirm Cancellation",
+  "@confirmCancellation": {
+    "description": "Confirm cancellation button"
+  },
+  "back": "Back",
+  "@back": {
+    "description": "Back button"
+  },
+  "acceptDelivery": "Accept delivery",
+  "@acceptDelivery": {
+    "description": "Accept delivery button text"
+  }
 }

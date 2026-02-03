@@ -23,7 +23,8 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   void _listenToNotifications() {
     if (_notificationsCubit != null) {
-      _notificationSubscription = _notificationsCubit!.stream.listen((notificationState) {
+      _notificationSubscription =
+          _notificationsCubit!.stream.listen((notificationState) {
         if (notificationState is NotificationReceived) {
           _handleNotification(notificationState);
         }
@@ -42,7 +43,9 @@ class OrdersCubit extends Cubit<OrdersState> {
         break;
       case 'notification':
         final notificationType = data['type'] as String?;
-        if (notificationType == 'order_assigned' || notificationType == 'delivery_complete' || notificationType == 'order_location') {
+        if (notificationType == 'order_assigned' ||
+            notificationType == 'delivery_complete' ||
+            notificationType == 'order_location') {
           refreshOrders();
         }
         break;
@@ -66,9 +69,24 @@ class OrdersCubit extends Cubit<OrdersState> {
   }) async {
     if (isClosed) return;
     final selectedStatus = status ?? state.selectedStatus;
+    List<OrderModel> currentOrders = [];
+    if (state is OrdersLoaded) {
+      currentOrders = (state as OrdersLoaded).orders;
+    } else if (state is OrderActionLoading) {
+      currentOrders = (state as OrderActionLoading).orders;
+    } else if (state is OrderActionSuccess) {
+      currentOrders = (state as OrderActionSuccess).orders;
+    } else if (state is OrderActionError) {
+      currentOrders = (state as OrderActionError).orders;
+    } else if (state is OrdersLoading) {
+      currentOrders = (state as OrdersLoading).orders;
+    }
+
     if (!loadMore) {
-      if (isClosed) return;
-      emit(OrdersLoading(selectedStatus: selectedStatus));
+      emit(OrdersLoading(
+        selectedStatus: selectedStatus,
+        orders: currentOrders,
+      ));
     }
     final result = await _orderRepository.fetchOrders(
       page: page,
@@ -79,7 +97,11 @@ class OrdersCubit extends Cubit<OrdersState> {
     result.fold(
       (error) {
         if (isClosed) return;
-        emit(OrdersError(message: error, selectedStatus: selectedStatus));
+        emit(OrdersError(
+          message: error,
+          selectedStatus: selectedStatus,
+          orders: currentOrders,
+        ));
       },
       (orders) {
         if (isClosed) return;
@@ -106,13 +128,33 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   Future<void> fetchOrdersNearby() async {
     if (isClosed) return;
-    emit(OrdersLoading(selectedStatus: state.selectedStatus));
+    List<OrderModel> currentOrders = [];
+    if (state is OrdersLoaded) {
+      currentOrders = (state as OrdersLoaded).orders;
+    } else if (state is OrderActionLoading) {
+      currentOrders = (state as OrderActionLoading).orders;
+    } else if (state is OrderActionSuccess) {
+      currentOrders = (state as OrderActionSuccess).orders;
+    } else if (state is OrderActionError) {
+      currentOrders = (state as OrderActionError).orders;
+    } else if (state is OrdersLoading) {
+      currentOrders = (state as OrdersLoading).orders;
+    }
+
+    emit(OrdersLoading(
+      selectedStatus: state.selectedStatus,
+      orders: currentOrders,
+    ));
     final result = await _orderRepository.fetchOrdersNearby();
     if (isClosed) return;
     result.fold(
       (error) {
         if (isClosed) return;
-        emit(OrdersError(message: error, selectedStatus: state.selectedStatus));
+        emit(OrdersError(
+          message: error,
+          selectedStatus: state.selectedStatus,
+          orders: currentOrders,
+        ));
       },
       (orders) {
         if (isClosed) return;
@@ -158,7 +200,8 @@ class OrdersCubit extends Cubit<OrdersState> {
       final currentState = state as OrderActionError;
       orders = currentState.orders;
       selectedStatus = currentState.selectedStatus;
-      hasMore = true; // Default value, will be preserved from previous OrdersLoaded if needed
+      hasMore =
+          true; // Default value, will be preserved from previous OrdersLoaded if needed
       currentPage = 1; // Default value
     } else if (state is OrderActionLoading) {
       // Prevent duplicate calls while loading
@@ -198,7 +241,8 @@ class OrdersCubit extends Cubit<OrdersState> {
       },
       (_) {
         if (isClosed) return;
-        final updatedOrders = orders.where((order) => order.id != orderId).toList();
+        final updatedOrders =
+            orders.where((order) => order.id != orderId).toList();
         emit(OrderActionSuccess(
           orders: updatedOrders,
           message: 'Order assigned to driver successfully',
@@ -239,7 +283,8 @@ class OrdersCubit extends Cubit<OrdersState> {
       },
       (_) {
         if (isClosed) return;
-        final updatedOrders = currentState.orders.where((order) => order.id != orderId).toList();
+        final updatedOrders =
+            currentState.orders.where((order) => order.id != orderId).toList();
         emit(OrderActionSuccess(
           orders: updatedOrders,
           message: 'Order declined successfully',
@@ -278,7 +323,8 @@ class OrdersCubit extends Cubit<OrdersState> {
       },
       (_) {
         if (isClosed) return;
-        final updatedOrders = currentState.orders.where((order) => order.id != orderId).toList();
+        final updatedOrders =
+            currentState.orders.where((order) => order.id != orderId).toList();
         emit(OrderActionSuccess(
           orders: updatedOrders,
           message: 'Order refused successfully',
@@ -302,6 +348,34 @@ class OrdersCubit extends Cubit<OrdersState> {
   void changeStatus(String status) {
     if (state.selectedStatus != status) {
       fetchOrders(status: status);
+    }
+  }
+
+  void dismissOrder(String orderId) {
+    if (isClosed) return;
+    List<OrderModel> currentOrders = [];
+    if (state is OrdersLoaded) {
+      currentOrders = (state as OrdersLoaded).orders;
+    } else if (state is OrderActionLoading) {
+      currentOrders = (state as OrderActionLoading).orders;
+    } else if (state is OrderActionSuccess) {
+      currentOrders = (state as OrderActionSuccess).orders;
+    } else if (state is OrderActionError) {
+      currentOrders = (state as OrderActionError).orders;
+    } else if (state is OrdersLoading) {
+      currentOrders = (state as OrdersLoading).orders;
+    }
+
+    if (currentOrders.isNotEmpty) {
+      final updatedOrders =
+          currentOrders.where((order) => order.id != orderId).toList();
+      emit(OrdersLoaded(
+        orders: updatedOrders,
+        selectedStatus: state.selectedStatus,
+        hasMore: state is OrdersLoaded ? (state as OrdersLoaded).hasMore : true,
+        currentPage:
+            state is OrdersLoaded ? (state as OrdersLoaded).currentPage : 1,
+      ));
     }
   }
 

@@ -15,7 +15,14 @@ class OrdersInitial extends OrdersState {
 }
 
 class OrdersLoading extends OrdersState {
-  const OrdersLoading({required super.selectedStatus});
+  final List<OrderModel> orders;
+  const OrdersLoading({
+    required super.selectedStatus,
+    this.orders = const [],
+  });
+
+  @override
+  List<Object?> get props => [selectedStatus, orders];
 }
 
 class OrdersLoaded extends OrdersState {
@@ -50,14 +57,16 @@ class OrdersLoaded extends OrdersState {
 
 class OrdersError extends OrdersState {
   final String message;
+  final List<OrderModel> orders;
 
   const OrdersError({
     required this.message,
     required super.selectedStatus,
+    this.orders = const [],
   });
 
   @override
-  List<Object?> get props => [message, selectedStatus];
+  List<Object?> get props => [message, selectedStatus, orders];
 }
 
 class OrderActionLoading extends OrdersState {

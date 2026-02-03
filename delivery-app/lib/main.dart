@@ -16,6 +16,7 @@ import 'package:delivery_app/src/features/auth/pages/login_page.dart';
 import 'package:delivery_app/src/features/auth/pages/signup_page.dart';
 import 'package:delivery_app/src/features/home/pages/home_page.dart';
 import 'package:delivery_app/l10n/app_localizations.dart';
+import 'package:delivery_app/src/core/localization/locale_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,28 +55,35 @@ class MyApp extends StatelessWidget {
         BlocProvider<DriverCubit>(
           create: (context) => locator<DriverCubit>(),
         ),
+        BlocProvider<LocaleCubit>(
+          create: (context) => LocaleCubit(),
+        ),
       ],
-      child: MaterialApp(
-        title: 'Tawsil Delivery',
-        debugShowCheckedModeBanner: false,
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('en', 'US'),
-          Locale('fr', 'FR'),
-          Locale('ar', 'DZ'),
-        ],
-        locale: const Locale('fr', 'FR'),
-        theme: AppTheme.lightTheme,
-        initialRoute: '/home',
-        routes: {
-          '/login': (context) => const LoginPage(),
-          '/signup': (context) => const SignupPage(),
-          '/home': (context) => const AuthWrapper(),
+      child: BlocBuilder<LocaleCubit, LocaleState>(
+        builder: (context, state) {
+          return MaterialApp(
+            title: 'Tawsil Delivery',
+            debugShowCheckedModeBanner: false,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en', 'US'),
+              Locale('fr', 'FR'),
+              Locale('ar', 'DZ'),
+            ],
+            locale: state.locale,
+            theme: AppTheme.lightTheme,
+            initialRoute: '/home',
+            routes: {
+              '/login': (context) => const LoginPage(),
+              '/signup': (context) => const SignupPage(),
+              '/home': (context) => const AuthWrapper(),
+            },
+          );
         },
       ),
     );

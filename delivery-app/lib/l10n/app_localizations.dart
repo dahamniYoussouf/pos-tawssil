@@ -154,6 +154,30 @@ abstract class AppLocalizations {
   /// **'By logging in, you accept our Terms of Use'**
   String get termsAndConditions;
 
+  /// No description provided for @termsPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'By logging in, you accept our\n'**
+  String get termsPrefix;
+
+  /// No description provided for @termsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Use'**
+  String get termsLabel;
+
+  /// No description provided for @termsAnd.
+  ///
+  /// In en, this message translates to:
+  /// **' and '**
+  String get termsAnd;
+
+  /// No description provided for @privacyPolicyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicyLabel;
+
   /// Become partner link
   ///
   /// In en, this message translates to:
@@ -783,6 +807,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Order Details'**
   String get orderDetailsHeader;
+
+  /// Remember me checkbox label
+  ///
+  /// In en, this message translates to:
+  /// **'Remember me'**
+  String get rememberMe;
+
+  /// Forgot password button label
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get forgotPassword;
+
+  /// Delivery address section header
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery Address'**
+  String get deliveryAddressHeader;
+
+  /// Delivery time section header
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery Time'**
+  String get deliveryTimeHeader;
+
+  /// Order number section header
+  ///
+  /// In en, this message translates to:
+  /// **'Order Number'**
+  String get orderNumberHeader;
+
+  /// Payment method section header
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Method'**
+  String get paymentMethodHeader;
+
+  /// Cash payment method
+  ///
+  /// In en, this message translates to:
+  /// **'Cash'**
+  String get cashPayment;
+
+  /// Radar button text
+  ///
+  /// In en, this message translates to:
+  /// **'Traffic Radar'**
+  String get radarButton;
+
+  /// Don't have account text
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account yet? '**
+  String get dontHaveAccount;
+
+  /// Sign up action link
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up'**
+  String get signUpAction;
+
+  /// Language label
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// Select language dialog title
+  ///
+  /// In en, this message translates to:
+  /// **'Select Language'**
+  String get selectLanguage;
+
+  /// Arabic language
+  ///
+  /// In en, this message translates to:
+  /// **'Arabic'**
+  String get arabic;
+
+  /// French language
+  ///
+  /// In en, this message translates to:
+  /// **'French'**
+  String get french;
+
+  /// English language
+  ///
+  /// In en, this message translates to:
+  /// **'English'**
+  String get english;
+
+  /// Cancellation modal title
+  ///
+  /// In en, this message translates to:
+  /// **'Why do you want to cancel this order?'**
+  String get cancelModalTitle;
+
+  /// Cancellation modal subtitle
+  ///
+  /// In en, this message translates to:
+  /// **'Help us improve your experience.'**
+  String get cancelModalSubtitle;
+
+  /// Hint for other reason text field
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your reason here...'**
+  String get otherReasonHint;
+
+  /// Confirm cancellation button
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Cancellation'**
+  String get confirmCancellation;
+
+  /// Back button
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get back;
+
+  /// Accept delivery button text
+  ///
+  /// In en, this message translates to:
+  /// **'Accept delivery'**
+  String get acceptDelivery;
 }
 
 class _AppLocalizationsDelegate

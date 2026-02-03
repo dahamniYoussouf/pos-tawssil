@@ -62,16 +62,16 @@ class _CancellationReasonModalState extends State<CancellationReasonModal> {
             ),
 
             Text(
-              "Pourquoi souhaitez-vous annuler cette commande ?",
+              localizations.cancelModalTitle,
               style: AppTextStyles.gilmerBold.copyWith(
                 fontSize: 20,
                 color: AppColors.textDark,
               ),
             ),
             const SizedBox(height: 8),
-            const Text(
-              "Aidez-nous à améliorer votre expérience.",
-              style: TextStyle(
+            Text(
+              localizations.cancelModalSubtitle,
+              style: const TextStyle(
                 color: AppColors.textMedium,
                 fontSize: 14,
               ),
@@ -142,7 +142,7 @@ class _CancellationReasonModalState extends State<CancellationReasonModal> {
               TextField(
                 controller: _otherReasonController,
                 decoration: InputDecoration(
-                  hintText: "Saisissez votre raison ici...",
+                  hintText: localizations.otherReasonHint,
                   fillColor: AppColors.backgroundLight,
                   filled: true,
                   border: OutlineInputBorder(
@@ -183,9 +183,9 @@ class _CancellationReasonModalState extends State<CancellationReasonModal> {
                   ),
                   elevation: 0,
                 ),
-                child: const Text(
-                  "Confirmer L'annulation",
-                  style: TextStyle(
+                child: Text(
+                  localizations.confirmCancellation,
+                  style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
                   ),
@@ -197,9 +197,9 @@ class _CancellationReasonModalState extends State<CancellationReasonModal> {
             Center(
               child: TextButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text(
-                  "Retour",
-                  style: TextStyle(
+                child: Text(
+                  localizations.back,
+                  style: const TextStyle(
                     color: AppColors.black,
                     fontWeight: FontWeight.bold,
                     fontSize: 16,

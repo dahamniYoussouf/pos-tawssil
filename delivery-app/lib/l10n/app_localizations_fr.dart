@@ -38,6 +38,18 @@ class AppLocalizationsFr extends AppLocalizations {
       'En vous connectant, vous acceptez nos Condition d\'utulisation';
 
   @override
+  String get termsPrefix => 'En vous connectant, vous acceptez nos\n';
+
+  @override
+  String get termsLabel => 'Conditions D’utilisation';
+
+  @override
+  String get termsAnd => ' et ';
+
+  @override
+  String get privacyPolicyLabel => 'Politique De Confidentialité';
+
+  @override
   String get becomePartner => 'Devenez livreur-partenaire →';
 
   @override
@@ -367,4 +379,68 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get orderDetailsHeader => 'Détails De La Commande';
+
+  @override
+  String get rememberMe => 'Rester connecté(e)';
+
+  @override
+  String get forgotPassword => 'Mot de passe oublié?';
+
+  @override
+  String get deliveryAddressHeader => 'Adresse De Livraison';
+
+  @override
+  String get deliveryTimeHeader => 'Temps De Livraison';
+
+  @override
+  String get orderNumberHeader => 'Numero De Commande';
+
+  @override
+  String get paymentMethodHeader => 'Méthode De Paiement';
+
+  @override
+  String get cashPayment => 'Cash';
+
+  @override
+  String get radarButton => 'Radar des trajets';
+
+  @override
+  String get dontHaveAccount => 'Vous n’avez pas encore de compte? ';
+
+  @override
+  String get signUpAction => 'Inscrivez-vous';
+
+  @override
+  String get language => 'Langue';
+
+  @override
+  String get selectLanguage => 'Choisir la langue';
+
+  @override
+  String get arabic => 'Arabe';
+
+  @override
+  String get french => 'Français';
+
+  @override
+  String get english => 'Anglais';
+
+  @override
+  String get cancelModalTitle =>
+      'Pourquoi souhaitez-vous annuler cette commande ?';
+
+  @override
+  String get cancelModalSubtitle => 'Aidez-nous à améliorer votre expérience.';
+
+  @override
+  String get otherReasonHint => 'Saisissez votre raison ici...';
+
+  @override
+  String get confirmCancellation => 'Confirmer L\'annulation';
+
+  @override
+  String get back => 'Retour';
+
+  @override
+  String get acceptDelivery => 'Accepter la livraison';
 }

@@ -37,6 +37,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get termsAndConditions => 'By logging in, you accept our Terms of Use';
 
   @override
+  String get termsPrefix => 'By logging in, you accept our\n';
+
+  @override
+  String get termsLabel => 'Terms of Use';
+
+  @override
+  String get termsAnd => ' and ';
+
+  @override
+  String get privacyPolicyLabel => 'Privacy Policy';
+
+  @override
   String get becomePartner => 'Become a delivery partner →';
 
   @override
@@ -359,4 +371,67 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get orderDetailsHeader => 'Order Details';
+
+  @override
+  String get rememberMe => 'Remember me';
+
+  @override
+  String get forgotPassword => 'Forgot password?';
+
+  @override
+  String get deliveryAddressHeader => 'Delivery Address';
+
+  @override
+  String get deliveryTimeHeader => 'Delivery Time';
+
+  @override
+  String get orderNumberHeader => 'Order Number';
+
+  @override
+  String get paymentMethodHeader => 'Payment Method';
+
+  @override
+  String get cashPayment => 'Cash';
+
+  @override
+  String get radarButton => 'Traffic Radar';
+
+  @override
+  String get dontHaveAccount => 'Don\'t have an account yet? ';
+
+  @override
+  String get signUpAction => 'Sign up';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get selectLanguage => 'Select Language';
+
+  @override
+  String get arabic => 'Arabic';
+
+  @override
+  String get french => 'French';
+
+  @override
+  String get english => 'English';
+
+  @override
+  String get cancelModalTitle => 'Why do you want to cancel this order?';
+
+  @override
+  String get cancelModalSubtitle => 'Help us improve your experience.';
+
+  @override
+  String get otherReasonHint => 'Enter your reason here...';
+
+  @override
+  String get confirmCancellation => 'Confirm Cancellation';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get acceptDelivery => 'Accept delivery';
 }

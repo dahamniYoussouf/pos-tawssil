@@ -31,7 +31,7 @@ class NearbyOrderCard extends StatelessWidget {
     final String restaurantName =
         order.restaurantName ?? localizations.restaurant;
     final String? restaurantPhoneNumber =
-        "+213 123456789"; // Example from mockup
+        "+213 123456789"; 
     final String restaurantAddress =
         order.restaurantAddress ?? 'Local 10, Cite 40 Logts Btb4, Bab Ezzo...';
     final String deliveryAddress =
@@ -55,13 +55,13 @@ class NearbyOrderCard extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeader(context, localizations, deliveryPrice),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12),
             _buildTimeline(
               context,
               localizations,
@@ -74,7 +74,7 @@ class NearbyOrderCard extends StatelessWidget {
               totalTime,
               restaurantPhoneNumber,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 16),
             _buildAcceptButton(context, localizations),
           ],
         ),
@@ -132,7 +132,7 @@ class NearbyOrderCard extends StatelessWidget {
             _buildIconContainer(MediaRes.homeIcon),
             Container(
               width: 1.5,
-              height: 50,
+              height: 75,
               decoration: BoxDecoration(
                 color: Colors.grey[300],
                 borderRadius: BorderRadius.circular(1),
@@ -153,9 +153,9 @@ class NearbyOrderCard extends StatelessWidget {
                 distance: restaurantDistance,
                 time: restaurantTime,
               ),
-              const SizedBox(height: 25),
+              const SizedBox(height: 16),
               _buildLocationInfo(
-                title: "Home",
+                title: localizations.home,
                 address: deliveryAddress,
                 distance: totalDistance,
                 time: totalTime,
@@ -260,7 +260,7 @@ class NearbyOrderCard extends StatelessWidget {
 
         return SizedBox(
           width: double.infinity,
-          height: 56,
+          height: 44,
           child: ElevatedButton(
             onPressed: isEnabled
                 ? () => locator<OrdersCubit>().assignOrderToDriver(order.id)
@@ -275,9 +275,9 @@ class NearbyOrderCard extends StatelessWidget {
             child: isLoading
                 ? const CircularProgressIndicator(color: Colors.white)
                 : Text(
-                    "Accepter la livraison",
+                    localizations.acceptDelivery,
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),

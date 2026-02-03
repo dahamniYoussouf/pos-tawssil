@@ -8,6 +8,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../widgets/profile_header_widget.dart';
 import '../widgets/profile_stats_widget.dart';
 import '../widgets/profile_menu_list_widget.dart';
+import '../widgets/language_selector_widget.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -81,6 +82,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   children: [
                     ProfileHeaderWidget(driver: state.driver),
                     ProfileStatsWidget(driver: state.driver),
+                    const LanguageSelectorWidget(),
+                    const SizedBox(height: 24),
                     const ProfileMenuListWidget(),
                     const SizedBox(height: 24),
                   ],
