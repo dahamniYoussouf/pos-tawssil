@@ -56,4 +56,5 @@ class MediaRes {
   static const String restaurantIcon = '$_baseImageIcon/svg/Icon.svg';
   static const String distanceIcon = '$_baseImageIcon/svg/locationTogo.svg';
   static const String clientIcon = '$_baseImageIcon/svg/clientIcon.svg';
+  static const String chatIcon = '$_baseImageIcon/svg/chat.svg';
 }

@@ -154,9 +154,19 @@ class OrderRepository {
       if (response['success'] == true) {
         return const Right(null);
       } else {
+        // Simulator Mode Fallback: Success for fake IDs
+        if (orderId.length < 5) {
+          FakeOrdersData.updateOrderStatus(orderId, OrderStatus.arrived);
+          return const Right(null);
+        }
         return Left(response['message'] ?? 'Failed to mark order as arrived');
       }
     } catch (e) {
+      // Simulator Mode Fallback: Success for fake IDs
+      if (orderId.length < 5) {
+        FakeOrdersData.updateOrderStatus(orderId, OrderStatus.arrived);
+        return const Right(null);
+      }
       return Left('Error marking order as arrived: ${e.toString()}');
     }
   }
@@ -167,9 +177,19 @@ class OrderRepository {
       if (response['success'] == true) {
         return const Right(null);
       } else {
+        // Simulator Mode Fallback: Success for fake IDs
+        if (orderId.length < 5) {
+          FakeOrdersData.updateOrderStatus(orderId, OrderStatus.delivering);
+          return const Right(null);
+        }
         return Left(response['message'] ?? 'Failed to start delivery');
       }
     } catch (e) {
+      // Simulator Mode Fallback: Success for fake IDs
+      if (orderId.length < 5) {
+        FakeOrdersData.updateOrderStatus(orderId, OrderStatus.delivering);
+        return const Right(null);
+      }
       return Left('Error starting delivery: ${e.toString()}');
     }
   }

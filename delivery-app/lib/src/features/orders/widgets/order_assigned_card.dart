@@ -165,7 +165,7 @@ class OrderAssignedCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                order.client?.name ?? 'khouloud Benq',
+                order.client?.name ?? 'moncef azzouz',
                 style: AppTextStyles.gilmerBold.copyWith(
                   fontSize: 24,
                 ),
@@ -183,12 +183,29 @@ class OrderAssignedCard extends StatelessWidget {
         // Message and Call Buttons
         Row(
           children: [
-            _buildActionIcon(Icons.chat_bubble_outline),
+            _buildActionIconSvg(MediaRes.chatIcon),
             const SizedBox(width: 12),
             _buildActionIcon(Icons.phone_outlined),
           ],
         ),
       ],
+    );
+  }
+
+  Widget _buildActionIconSvg(String assetPath) {
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: AppColors.backgroundLight,
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.borderLight),
+      ),
+      child: SvgPicture.asset(
+        assetPath,
+        width: 24,
+        height: 24,
+        colorFilter: const ColorFilter.mode(AppColors.black, BlendMode.srcIn),
+      ),
     );
   }
 
@@ -394,7 +411,7 @@ class OrderAssignedCard extends StatelessWidget {
                 },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primaryColor,
-            padding: const EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(24),
             ),
@@ -450,7 +467,7 @@ class OrderAssignedCard extends StatelessWidget {
           style: OutlinedButton.styleFrom(
             side: const BorderSide(color: Color(0xFFF14336), width: 1),
             backgroundColor: const Color(0xFFFEF2F2), // Very light red
-            padding: const EdgeInsets.symmetric(vertical: 16),
+            padding: const EdgeInsets.symmetric(vertical: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(30),
             ),
