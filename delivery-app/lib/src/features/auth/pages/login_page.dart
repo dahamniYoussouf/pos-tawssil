@@ -60,121 +60,131 @@ class _LoginPageState extends State<LoginPage> {
           final isLoading = state is AuthLoading;
 
           return SingleChildScrollView(
-            child: SizedBox(
-              height: size.height,
-              child: Column(
-                children: [
-                  // Top Logo Section
-                  Container(
-                    height: size.height * 0.28,
-                    padding: const EdgeInsets.only(top: 40),
-                    width: double.infinity,
-                    color: AppColors.scaffoldBackground,
-                    child: Center(
-                      child: Image.asset(
-                        MediaRes.logo,
-                        width: size.width * 0.6,
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                  // Bottom Form Section (White Card)
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 40),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(32),
-                          topRight: Radius.circular(32),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: size.height,
+              ),
+              child: IntrinsicHeight(
+                child: Column(
+                  children: [
+                    // Top Logo Section
+                    Container(
+                      height: size.height * 0.28,
+                      padding: const EdgeInsets.only(top: 40),
+                      width: double.infinity,
+                      color: AppColors.scaffoldBackground,
+                      child: Center(
+                        child: Image.asset(
+                          MediaRes.logo,
+                          width: size.width * 0.6,
+                          fit: BoxFit.contain,
                         ),
                       ),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              localizations.welcome,
-                              style: const TextStyle(
-                                fontSize: 24,
-                                fontWeight: FontWeight.w900,
-                                color: Colors.black,
-                                letterSpacing: -0.5,
+                    ),
+                    // Bottom Form Section (White Card)
+                    Expanded(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 40),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(32),
+                            topRight: Radius.circular(32),
+                          ),
+                        ),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Text(
+                                localizations.welcome,
+                                style: const TextStyle(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.black,
+                                  letterSpacing: -0.5,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              localizations.loginSubtitle,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: Color(0xFF4B5563),
-                                height: 1.4,
+                              const SizedBox(height: 12),
+                              Text(
+                                localizations.loginSubtitle,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Color(0xFF4B5563),
+                                  height: 1.4,
+                                ),
                               ),
-                            ),
-                            const SizedBox(height: 32),
-                            _buildEmailField(localizations),
-                            const SizedBox(height: 20),
-                            _buildPasswordField(localizations),
-                            const SizedBox(height: 12),
-                            // Remember me and Forgot password
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    SizedBox(
-                                      height: 24,
-                                      width: 24,
-                                      child: Checkbox(
-                                        value: true, // Static for UI mock
-                                        onChanged: (v) {},
-                                        activeColor: AppColors.primaryColor,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(4),
+                              const SizedBox(height: 32),
+                              _buildEmailField(localizations),
+                              const SizedBox(height: 20),
+                              _buildPasswordField(localizations),
+                              const SizedBox(height: 12),
+                              // Remember me and Forgot password
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Flexible(
+                                    child: Row(
+                                      children: [
+                                        SizedBox(
+                                          height: 24,
+                                          width: 24,
+                                          child: Checkbox(
+                                            value: true, // Static for UI mock
+                                            onChanged: (v) {},
+                                            activeColor: AppColors.primaryColor,
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4),
+                                            ),
+                                            side: const BorderSide(
+                                                color: Color(0xFFE5E7EB)),
+                                          ),
                                         ),
-                                        side: const BorderSide(
-                                            color: Color(0xFFE5E7EB)),
-                                      ),
+                                        const SizedBox(width: 8),
+                                        Flexible(
+                                          child: Text(
+                                            "Rester connecté(e)",
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey[600],
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      "Rester connecté(e)",
+                                  ),
+                                  TextButton(
+                                    onPressed: () {},
+                                    child: Text(
+                                      "Mot de passe oublié?",
                                       style: TextStyle(
                                         fontSize: 12,
                                         color: Colors.grey[600],
                                       ),
                                     ),
-                                  ],
-                                ),
-                                TextButton(
-                                  onPressed: () {},
-                                  child: Text(
-                                    "Mot de passe oublié?",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey[600],
-                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 24),
-                            _buildLoginButton(localizations, isLoading),
-                            const SizedBox(height: 24),
-                            _buildBecomePartnerLink(localizations),
-                            const SizedBox(height: 10),
-                            _buildTermsText(localizations),
-                            const Spacer(),
-                          ],
+                                ],
+                              ),
+                              const SizedBox(height: 24),
+                              _buildLoginButton(localizations, isLoading),
+                              const SizedBox(height: 24),
+                              _buildBecomePartnerLink(localizations),
+                              const SizedBox(height: 10),
+                              _buildTermsText(localizations),
+                              const SizedBox(height: 20),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
@@ -331,26 +341,32 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildBecomePartnerLink(AppLocalizations localizations) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Text(
-          "Vous n’avez pas encore de compte? ",
-          style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
-        ),
-        GestureDetector(
-          onTap: () => Navigator.of(context).pushNamed('/signup'),
-          child: Text(
-            "Inscrivez-vous",
-            style: TextStyle(
-              fontSize: 13,
-              color: AppColors.primaryColor,
-              fontWeight: FontWeight.bold,
-              decoration: TextDecoration.underline,
+    return Text.rich(
+      TextSpan(
+        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold),
+        children: [
+          const TextSpan(
+            text: "Vous n’avez pas encore de compte? ",
+            style: TextStyle(color: Colors.black),
+          ),
+          WidgetSpan(
+            alignment: PlaceholderAlignment.middle,
+            child: GestureDetector(
+              onTap: () => Navigator.of(context).pushNamed('/signup'),
+              child: Text(
+                "Inscrivez-vous",
+                style: TextStyle(
+                  fontSize: 13,
+                  color: AppColors.primaryColor,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
+      textAlign: TextAlign.center,
     );
   }
 }
