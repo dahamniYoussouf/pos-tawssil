@@ -117,6 +117,29 @@
   "deliveries": "Livraisons",
   "yearsJoined": "Années d'ancienneté",
   "logoutConfirmation": "Êtes-vous sûr de vouloir vous déconnecter ?",
-  "ok": "OK"
+  "ok": "OK",
+  "orderHistory": "Historique des commandes",
+  "all": "Tout",
+  "statusOngoing": "En cours",
+  "statusDelivered": "Livré",
+  "statusCancelled": "Annulé",
+  "noOrdersYet": "Aucune commande pour le moment",
+  "startOrderingNow": "Commencez à commander maintenant",
+  "todayLabel": "Aujourd'hui",
+  "yesterdayLabel": "Hier",
+  "details": "Détails",
+  "trackOrder": "Suivre la commande",
+  "from": "de:",
+  "@from": {
+    "description": "From label"
+  },
+  "to": "à:",
+  "@to": {
+    "description": "To label"
+  },
+  "viewDetails": "Voir les détails",
+  "@viewDetails": {
+    "description": "View details button text"
+  }
 }
 

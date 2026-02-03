@@ -45,4 +45,8 @@ class MediaRes {
   static const String homeIcon = '$_baseImageIcon/svg/home.svg';
   static const String boxIcon = '$_baseImageIcon/svg/Box.svg';
   static const String avatar = '$_baseImageIcon/Avatar.png';
+
+  // order history icons
+  static const String orderIcon = '$_baseImageIcon/svg/order_icon.svg';
+  static const String locationIcon = '$_baseImageIcon/svg/location_icon.svg';
 }

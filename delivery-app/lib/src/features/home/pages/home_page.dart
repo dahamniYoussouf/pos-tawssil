@@ -1,4 +1,5 @@
 import 'package:delivery_app/src/features/home/widgets/custom_bottom_navigation_bar.dart';
+import 'package:delivery_app/src/features/orders/pages/order_history_page.dart';
 import 'package:delivery_app/src/features/orders/pages/track_orders_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -36,7 +37,7 @@ class _HomePageState extends State<HomePage> {
   late final List<Widget> _pages = [
     const TrackOrdersPage(),
     const _PlaceholderView(title: 'Mes Commandes'),
-    const _PlaceholderView(title: 'Historique'),
+    const OrderHistoryPage(),
     const ProfilePage(),
   ];
 

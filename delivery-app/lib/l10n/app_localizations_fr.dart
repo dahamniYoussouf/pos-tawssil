@@ -316,4 +316,46 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get ok => 'OK';
+
+  @override
+  String get orderHistory => 'Historique des commandes';
+
+  @override
+  String get all => 'Tout';
+
+  @override
+  String get statusOngoing => 'En cours';
+
+  @override
+  String get statusDelivered => 'Livré';
+
+  @override
+  String get statusCancelled => 'Annulé';
+
+  @override
+  String get noOrdersYet => 'Aucune commande pour le moment';
+
+  @override
+  String get startOrderingNow => 'Commencez à commander maintenant';
+
+  @override
+  String get todayLabel => 'Aujourd\'hui';
+
+  @override
+  String get yesterdayLabel => 'Hier';
+
+  @override
+  String get details => 'Détails';
+
+  @override
+  String get trackOrder => 'Suivre la commande';
+
+  @override
+  String get from => 'de:';
+
+  @override
+  String get to => 'à:';
+
+  @override
+  String get viewDetails => 'Voir les détails';
 }

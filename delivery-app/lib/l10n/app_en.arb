@@ -321,5 +321,61 @@
   },
   "yearsJoined": "Years Joined",
   "logoutConfirmation": "Are you sure you want to log out?",
-  "ok": "OK"
+  "ok": "OK",
+  "orderHistory": "Order History",
+  "@orderHistory": {
+    "description": "Order history page title"
+  },
+  "all": "All",
+  "@all": {
+    "description": "All filter label"
+  },
+  "statusOngoing": "Ongoing",
+  "@statusOngoing": {
+    "description": "Ongoing status label"
+  },
+  "statusDelivered": "Delivered",
+  "@statusDelivered": {
+    "description": "Delivered status label"
+  },
+  "statusCancelled": "Cancelled",
+  "@statusCancelled": {
+    "description": "Cancelled status label"
+  },
+  "noOrdersYet": "No orders yet",
+  "@noOrdersYet": {
+    "description": "No orders yet message"
+  },
+  "startOrderingNow": "Start ordering now",
+  "@startOrderingNow": {
+    "description": "Start ordering now message"
+  },
+  "todayLabel": "Today",
+  "@todayLabel": {
+    "description": "Today label"
+  },
+  "yesterdayLabel": "Yesterday",
+  "@yesterdayLabel": {
+    "description": "Yesterday label"
+  },
+  "details": "Details",
+  "@details": {
+    "description": "Details label"
+  },
+  "trackOrder": "Track Order",
+  "@trackOrder": {
+    "description": "Track order button text"
+  },
+  "from": "from:",
+  "@from": {
+    "description": "From label"
+  },
+  "to": "to:",
+  "@to": {
+    "description": "To label"
+  },
+  "viewDetails": "View Details",
+  "@viewDetails": {
+    "description": "View details button text"
+  }
 }

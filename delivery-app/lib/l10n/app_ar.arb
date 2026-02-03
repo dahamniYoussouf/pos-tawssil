@@ -117,6 +117,29 @@
   "deliveries": "التوصيلات",
   "yearsJoined": "سنوات الانضمام",
   "logoutConfirmation": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
-  "ok": "موافق"
+  "ok": "موافق",
+  "orderHistory": "سجل الطلبات",
+  "all": "الكل",
+  "statusOngoing": "جارية",
+  "statusDelivered": "تم التسليم",
+  "statusCancelled": "ملغى",
+  "noOrdersYet": "لا توجد طلبات حتى الآن",
+  "startOrderingNow": "ابدأ الطلب الآن",
+  "todayLabel": "اليوم",
+  "yesterdayLabel": "أمس",
+  "details": "التفاصيل",
+  "trackOrder": "تتبع الطلب",
+  "from": "من:",
+  "@from": {
+    "description": "From label"
+  },
+  "to": "إلى:",
+  "@to": {
+    "description": "To label"
+  },
+  "viewDetails": "عرض التفاصيل",
+  "@viewDetails": {
+    "description": "View details button text"
+  }
 }
 

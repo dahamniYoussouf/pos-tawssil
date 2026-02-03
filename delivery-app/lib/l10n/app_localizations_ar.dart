@@ -307,4 +307,46 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get ok => 'موافق';
+
+  @override
+  String get orderHistory => 'سجل الطلبات';
+
+  @override
+  String get all => 'الكل';
+
+  @override
+  String get statusOngoing => 'جارية';
+
+  @override
+  String get statusDelivered => 'تم التسليم';
+
+  @override
+  String get statusCancelled => 'ملغى';
+
+  @override
+  String get noOrdersYet => 'لا توجد طلبات حتى الآن';
+
+  @override
+  String get startOrderingNow => 'ابدأ الطلب الآن';
+
+  @override
+  String get todayLabel => 'اليوم';
+
+  @override
+  String get yesterdayLabel => 'أمس';
+
+  @override
+  String get details => 'التفاصيل';
+
+  @override
+  String get trackOrder => 'تتبع الطلب';
+
+  @override
+  String get from => 'من:';
+
+  @override
+  String get to => 'إلى:';
+
+  @override
+  String get viewDetails => 'عرض التفاصيل';
 }
