@@ -261,7 +261,7 @@ class OrderHistoryCard extends StatelessWidget {
         textColor = AppColors.primaryColor1;
         label = l10n.statusDelivered;
         break;
-      case OrderStatus.refused:
+      case OrderStatus.declined:
         backgroundColor = AppColors.redColor.withOpacity(0.2);
         textColor = AppColors.redColor;
         label = l10n.statusCancelled;

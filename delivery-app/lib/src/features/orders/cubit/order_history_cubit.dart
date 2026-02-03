@@ -120,7 +120,7 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
       case OrderHistoryFilter.delivered:
         return [OrderStatus.delivered];
       case OrderHistoryFilter.cancelled:
-        return [OrderStatus.refused];
+        return [OrderStatus.declined];
       case OrderHistoryFilter.all:
       default:
         return null;

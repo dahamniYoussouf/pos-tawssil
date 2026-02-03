@@ -8,7 +8,7 @@ class OrderStatus {
   static const String arrived = 'arrived';
   static const String delivering = 'delivering';
   static const String delivered = 'delivered';
-  static const String refused = 'refused';
+  static const String declined = 'declined';
   static const String delayed = 'delayed';
   static const String readyToCollect = 'readyToCollect';
   static const String collected = 'collected';
@@ -84,9 +84,14 @@ class MenuItem {
       name: json['nom'] ?? json['name'] ?? '',
       description: json['description'],
       price: parseDouble(json['prix'] ?? json['price']),
-      photoUrl: json['photo_url'] ?? json['photoUrl'] ?? json['image'] ?? json['image_url'],
+      photoUrl: json['photo_url'] ??
+          json['photoUrl'] ??
+          json['image'] ??
+          json['image_url'],
       isAvailable: json['is_available'] ?? json['isAvailable'] ?? true,
-      preparationTimeMinutes: parseInt(json['temps_preparation'] ?? json['preparation_time'] ?? json['preparationTimeMinutes']),
+      preparationTimeMinutes: parseInt(json['temps_preparation'] ??
+          json['preparation_time'] ??
+          json['preparationTimeMinutes']),
       createdAt: parseDate(json['created_at'] ?? json['createdAt']),
       updatedAt: parseDate(json['updated_at'] ?? json['updatedAt']),
       restaurantId: json['restaurant_id']?.toString(),
@@ -156,7 +161,8 @@ class OrderItem {
     }
 
     final menuItemJson = json['menu_item'] as Map<String, dynamic>?;
-    final MenuItem? menuItem = menuItemJson != null ? MenuItem.fromJson(menuItemJson) : null;
+    final MenuItem? menuItem =
+        menuItemJson != null ? MenuItem.fromJson(menuItemJson) : null;
 
     final String name;
     final double price;
@@ -169,11 +175,19 @@ class OrderItem {
       final menuItemData = json['menu_item'] as Map<String, dynamic>?;
       if (menuItemData != null) {
         name = menuItemData['nom'] ?? menuItemData['name'] ?? '';
-        price = parseDouble(menuItemData['prix'] ?? menuItemData['price'] ?? json['prix_unitaire'] ?? json['price']);
-        imageUrl = menuItemData['image'] ?? menuItemData['image_url'] ?? menuItemData['imageUrl'] ?? menuItemData['photo_url'] ?? menuItemData['photoUrl'];
+        price = parseDouble(menuItemData['prix'] ??
+            menuItemData['price'] ??
+            json['prix_unitaire'] ??
+            json['price']);
+        imageUrl = menuItemData['image'] ??
+            menuItemData['image_url'] ??
+            menuItemData['imageUrl'] ??
+            menuItemData['photo_url'] ??
+            menuItemData['photoUrl'];
       } else {
         name = json['name'] ?? json['nom'] ?? '';
-        price = parseDouble(json['price'] ?? json['prix'] ?? json['prix_unitaire']);
+        price =
+            parseDouble(json['price'] ?? json['prix'] ?? json['prix_unitaire']);
         imageUrl = json['image'] ?? json['image_url'] ?? json['imageUrl'];
       }
     }
@@ -185,9 +199,12 @@ class OrderItem {
       name: name,
       quantity: json['quantity'] ?? json['quantite'] ?? 1,
       price: price,
-      totalPrice: parseNullableDouble(json['prix_total'] ?? json['total_price'] ?? json['totalPrice']),
+      totalPrice: parseNullableDouble(
+          json['prix_total'] ?? json['total_price'] ?? json['totalPrice']),
       imageUrl: imageUrl,
-      specialInstructions: json['instructions_speciales'] ?? json['special_instructions'] ?? json['specialInstructions'],
+      specialInstructions: json['instructions_speciales'] ??
+          json['special_instructions'] ??
+          json['specialInstructions'],
       createdAt: parseDate(json['created_at'] ?? json['createdAt']),
       updatedAt: parseDate(json['updated_at'] ?? json['updatedAt']),
       menuItem: menuItem,
@@ -233,7 +250,9 @@ class DeliveryPerson {
     double? latitude;
     double? longitude;
     final currentLocation = json['current_location'] as Map<String, dynamic>?;
-    if (currentLocation != null && currentLocation['type'] == 'Point' && currentLocation['coordinates'] != null) {
+    if (currentLocation != null &&
+        currentLocation['type'] == 'Point' &&
+        currentLocation['coordinates'] != null) {
       final coords = currentLocation['coordinates'] as List;
       if (coords.length >= 2) {
         longitude = (coords[0] as num).toDouble();
@@ -241,14 +260,24 @@ class DeliveryPerson {
       }
     }
 
-    latitude ??= json['latitude'] != null ? (json['latitude'] as num).toDouble() : null;
-    longitude ??= json['longitude'] != null ? (json['longitude'] as num).toDouble() : null;
+    latitude ??=
+        json['latitude'] != null ? (json['latitude'] as num).toDouble() : null;
+    longitude ??= json['longitude'] != null
+        ? (json['longitude'] as num).toDouble()
+        : null;
 
     return DeliveryPerson(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
-      firstName: json['first_name'] ?? json['firstName'] ?? json['name'] ?? json['nom'] ?? '',
+      firstName: json['first_name'] ??
+          json['firstName'] ??
+          json['name'] ??
+          json['nom'] ??
+          '',
       lastName: json['last_name'] ?? json['lastName'] ?? '',
-      phoneNumber: json['phone'] ?? json['phoneNumber'] ?? json['phone_number'] ?? json['tel'],
+      phoneNumber: json['phone'] ??
+          json['phoneNumber'] ??
+          json['phone_number'] ??
+          json['tel'],
       vehicleType: json['vehicle_type'] ?? json['vehicleType'],
       rating: json['rating']?.toString(),
       latitude: latitude,
@@ -313,15 +342,21 @@ class OrderModel {
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
-    final itemsList = json['items'] ?? json['orderItems'] ?? json['order_items'] ?? [];
-    final List<OrderItem> items = (itemsList as List).map((item) => OrderItem.fromJson(item as Map<String, dynamic>)).toList();
+    final itemsList =
+        json['items'] ?? json['orderItems'] ?? json['order_items'] ?? [];
+    final List<OrderItem> items = (itemsList as List)
+        .map((item) => OrderItem.fromJson(item as Map<String, dynamic>))
+        .toList();
 
     DeliveryPerson? deliveryPerson;
     if (json['driver'] != null) {
-      deliveryPerson = DeliveryPerson.fromJson(json['driver'] as Map<String, dynamic>?);
-    } else if (json['deliveryPerson'] != null || json['delivery_person'] != null) {
+      deliveryPerson =
+          DeliveryPerson.fromJson(json['driver'] as Map<String, dynamic>?);
+    } else if (json['deliveryPerson'] != null ||
+        json['delivery_person'] != null) {
       deliveryPerson = DeliveryPerson.fromJson(
-        (json['deliveryPerson'] ?? json['delivery_person']) as Map<String, dynamic>?,
+        (json['deliveryPerson'] ?? json['delivery_person'])
+            as Map<String, dynamic>?,
       );
     }
 
@@ -348,7 +383,9 @@ class OrderModel {
     double? restaurantLng;
     Map<String, dynamic>? restaurantJson;
     if (json['restaurant'] != null) {
-      restaurantJson = json['restaurant'] is Map ? json['restaurant'] as Map<String, dynamic> : null;
+      restaurantJson = json['restaurant'] is Map
+          ? json['restaurant'] as Map<String, dynamic>
+          : null;
       if (restaurantJson != null) {
         final location = restaurantJson['location'] as Map<String, dynamic>?;
         final coords = parseGeoJsonPoint(location);
@@ -356,30 +393,49 @@ class OrderModel {
           restaurantLng = coords[0];
           restaurantLat = coords[1];
         } else {
-          restaurantLat = restaurantJson['latitude'] != null ? (restaurantJson['latitude'] as num).toDouble() : null;
-          restaurantLng = restaurantJson['longitude'] != null ? (restaurantJson['longitude'] as num).toDouble() : null;
+          restaurantLat = restaurantJson['latitude'] != null
+              ? (restaurantJson['latitude'] as num).toDouble()
+              : null;
+          restaurantLng = restaurantJson['longitude'] != null
+              ? (restaurantJson['longitude'] as num).toDouble()
+              : null;
         }
       }
     }
-    restaurantLat ??= json['restaurantLatitude'] != null ? (json['restaurantLatitude'] as num).toDouble() : null;
-    restaurantLng ??= json['restaurantLongitude'] != null ? (json['restaurantLongitude'] as num).toDouble() : null;
+    restaurantLat ??= json['restaurantLatitude'] != null
+        ? (json['restaurantLatitude'] as num).toDouble()
+        : null;
+    restaurantLng ??= json['restaurantLongitude'] != null
+        ? (json['restaurantLongitude'] as num).toDouble()
+        : null;
 
     double? deliveryLat;
     double? deliveryLng;
-    final deliveryLocation = json['deliveryLocation'] ?? json['delivery_location'];
+    final deliveryLocation =
+        json['deliveryLocation'] ?? json['delivery_location'];
     if (deliveryLocation != null) {
-      final location = deliveryLocation is Map ? deliveryLocation as Map<String, dynamic> : null;
+      final location = deliveryLocation is Map
+          ? deliveryLocation as Map<String, dynamic>
+          : null;
       final coords = parseGeoJsonPoint(location);
       if (coords != null) {
         deliveryLng = coords[0];
         deliveryLat = coords[1];
       } else {
-        deliveryLat = location?['latitude'] != null ? (location!['latitude'] as num).toDouble() : null;
-        deliveryLng = location?['longitude'] != null ? (location!['longitude'] as num).toDouble() : null;
+        deliveryLat = location?['latitude'] != null
+            ? (location!['latitude'] as num).toDouble()
+            : null;
+        deliveryLng = location?['longitude'] != null
+            ? (location!['longitude'] as num).toDouble()
+            : null;
       }
     }
-    deliveryLat ??= json['deliveryLatitude'] != null ? (json['deliveryLatitude'] as num).toDouble() : null;
-    deliveryLng ??= json['deliveryLongitude'] != null ? (json['deliveryLongitude'] as num).toDouble() : null;
+    deliveryLat ??= json['deliveryLatitude'] != null
+        ? (json['deliveryLatitude'] as num).toDouble()
+        : null;
+    deliveryLng ??= json['deliveryLongitude'] != null
+        ? (json['deliveryLongitude'] as num).toDouble()
+        : null;
 
     String? restaurantName;
     restaurantName = json['restaurantName'] ?? json['restaurant_name'];
@@ -387,11 +443,16 @@ class OrderModel {
     String? restaurantImageUrl;
     if (restaurantJson != null) {
       restaurantName ??= restaurantJson['name'] ?? restaurantJson['nom'];
-      restaurantAddress = restaurantJson['address'] ?? restaurantJson['adresse'];
-      final dynamic cover = restaurantJson['coverImage'] ?? restaurantJson['cover_image'] ?? restaurantJson['image'] ?? restaurantJson['image_url'];
+      restaurantAddress =
+          restaurantJson['address'] ?? restaurantJson['adresse'];
+      final dynamic cover = restaurantJson['coverImage'] ??
+          restaurantJson['cover_image'] ??
+          restaurantJson['image'] ??
+          restaurantJson['image_url'];
       if (cover is String && cover.isNotEmpty) {
         restaurantImageUrl = cover;
-      } else if (restaurantJson['images'] is List && (restaurantJson['images'] as List).isNotEmpty) {
+      } else if (restaurantJson['images'] is List &&
+          (restaurantJson['images'] as List).isNotEmpty) {
         final first = (restaurantJson['images'] as List).first;
         if (first is String) {
           restaurantImageUrl = first;
@@ -400,8 +461,10 @@ class OrderModel {
         }
       }
     }
-    restaurantAddress ??= json['restaurantAddress'] ?? json['restaurant_address'];
-    restaurantImageUrl ??= json['restaurantImageUrl'] ?? json['restaurant_image_url'];
+    restaurantAddress ??=
+        json['restaurantAddress'] ?? json['restaurant_address'];
+    restaurantImageUrl ??=
+        json['restaurantImageUrl'] ?? json['restaurant_image_url'];
 
     DateTime? parseDate(dynamic value) {
       if (value == null) return null;
@@ -446,11 +509,17 @@ class OrderModel {
 
     return OrderModel(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
-      orderNumber: json['orderNumber'] ?? json['order_number'] ?? json['number'] ?? '',
+      orderNumber:
+          json['orderNumber'] ?? json['order_number'] ?? json['number'] ?? '',
       status: json['status'] ?? OrderStatus.pending,
       items: items,
-      totalPrice: parseDouble(json['totalPrice'] ?? json['total_price'] ?? json['total_amount'] ?? json['total']),
-      deliveryAddress: json['deliveryAddress'] ?? json['delivery_address'] ?? json['address'],
+      totalPrice: parseDouble(json['totalPrice'] ??
+          json['total_price'] ??
+          json['total_amount'] ??
+          json['total']),
+      deliveryAddress: json['deliveryAddress'] ??
+          json['delivery_address'] ??
+          json['address'],
       restaurantLatitude: restaurantLat,
       restaurantLongitude: restaurantLng,
       deliveryLatitude: deliveryLat,
@@ -459,22 +528,29 @@ class OrderModel {
       restaurantAddress: restaurantAddress,
       restaurantImageUrl: restaurantImageUrl,
       deliveryPerson: deliveryPerson,
-      estimatedDeliveryTime: parseDate(json['estimated_delivery_time'] ?? json['estimated_delivery_time'] ?? json['delivery_time']),
+      estimatedDeliveryTime: parseDate(json['estimated_delivery_time'] ??
+          json['estimated_delivery_time'] ??
+          json['delivery_time']),
       createdAt: parseDate(json['createdAt'] ?? json['created_at']),
       updatedAt: parseDate(json['updatedAt'] ?? json['updated_at']),
       paymentMethod: json['paymentMethod'] ?? json['payment_method'],
-      refusalReason: json['refusalReason'] ?? json['refusal_reason'] ?? json['decline_reason'],
+      refusalReason: json['refusalReason'] ??
+          json['refusal_reason'] ??
+          json['decline_reason'],
       delayReason: json['delayReason'] ?? json['delay_reason'],
       orderType: json['order_type'] ?? "delivery",
-      deliveryDistance: parseNullableDouble(json['distance_km'] ?? json['distance'] ?? json['distance_m']),
-      deliveryTimeMinutes: parseInt(json['deliveryTimeMinutes'] ?? json['delivery_time_minutes']),
-      deliveryPrice: parseNullableDouble(json['delivery_fee'] ?? json['delivery_fee'] ?? json['delivery_fee']),
+      deliveryDistance: parseNullableDouble(
+          json['distance_km'] ?? json['distance'] ?? json['distance_m']),
+      deliveryTimeMinutes: parseInt(
+          json['deliveryTimeMinutes'] ?? json['delivery_time_minutes']),
+      deliveryPrice: parseNullableDouble(
+          json['delivery_fee'] ?? json['delivery_fee'] ?? json['delivery_fee']),
       client: client,
     );
   }
 
   bool get isDelivering => status == OrderStatus.delivering;
   bool get isDelivered => status == OrderStatus.delivered;
-  bool get isRefused => status == OrderStatus.refused;
+  bool get isRefused => status == OrderStatus.declined;
   bool get isDelayed => status == OrderStatus.delayed;
 }
