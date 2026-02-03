@@ -1,5 +1,6 @@
 import 'package:delivery_app/src/features/home/widgets/custom_bottom_navigation_bar.dart';
 import 'package:delivery_app/src/features/orders/pages/order_history_page.dart';
+import 'package:delivery_app/src/features/orders/pages/order_page.dart';
 import 'package:delivery_app/src/features/orders/pages/track_orders_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,6 +8,8 @@ import 'package:delivery_app/src/features/notifications/cubit/notifications_cubi
 import 'package:delivery_app/src/features/driver/cubit/driver_cubit.dart';
 import 'package:delivery_app/src/features/driver/cubit/driver_state.dart';
 import 'package:delivery_app/src/features/profile/pages/profile_page.dart';
+import 'package:delivery_app/src/features/home/cubit/navigation_cubit.dart';
+import 'package:delivery_app/src/features/home/cubit/navigation_state.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -16,8 +19,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _currentIndex = 0;
-
   @override
   void initState() {
     super.initState();
@@ -27,51 +28,31 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _onNavTap(int index) {
-    if (_currentIndex == index) return;
-    setState(() {
-      _currentIndex = index;
-    });
-  }
-
-  late final List<Widget> _pages = [
-    const TrackOrdersPage(),
-    const _PlaceholderView(title: 'Mes Commandes'),
-    const OrderHistoryPage(),
-    const ProfilePage(),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<DriverCubit, DriverState>(
-      builder: (context, driverState) {
-        return Scaffold(
-          backgroundColor: Colors.white,
-          body: IndexedStack(
-            index: _currentIndex,
-            children: _pages,
-          ),
-          bottomNavigationBar: CustomBottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: _onNavTap,
-          ),
+    return BlocBuilder<NavigationCubit, NavigationState>(
+      builder: (context, navigationState) {
+        return BlocBuilder<DriverCubit, DriverState>(
+          builder: (context, driverState) {
+            return Scaffold(
+              backgroundColor: Colors.white,
+              body: IndexedStack(
+                index: navigationState.currentIndex,
+                children: [
+                  const TrackOrdersPage(),
+                  const OrderPage(),
+                  const OrderHistoryPage(),
+                  const ProfilePage(),
+                ],
+              ),
+              bottomNavigationBar: CustomBottomNavigationBar(
+                currentIndex: navigationState.currentIndex,
+                onTap: context.read<NavigationCubit>().changeTab,
+              ),
+            );
+          },
         );
       },
-    );
-  }
-}
-
-class _PlaceholderView extends StatelessWidget {
-  final String title;
-  const _PlaceholderView({required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-      ),
     );
   }
 }

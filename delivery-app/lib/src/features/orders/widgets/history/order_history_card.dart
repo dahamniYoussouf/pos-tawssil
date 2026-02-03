@@ -9,11 +9,14 @@ import 'package:flutter_svg/svg.dart';
 class OrderHistoryCard extends StatelessWidget {
   final OrderModel order;
   final VoidCallback? onTap;
-
+  final bool orderForHistory;
+  final bool orderPage;
   const OrderHistoryCard({
     super.key,
     required this.order,
     this.onTap,
+    this.orderForHistory = false,
+    this.orderPage = false,
   });
 
   @override
@@ -142,30 +145,58 @@ class OrderHistoryCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                OutlinedButton(
-                  onPressed: onTap,
-                  style: OutlinedButton.styleFrom(
-                    side: const BorderSide(
-                      color: AppColors.primaryColor,
-                      width: 2,
+                if (orderPage)
+                  OutlinedButton(
+                    onPressed: onTap,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.primaryColor,
+                      backgroundColor: AppColors.primaryColor,
+                      side: const BorderSide(
+                        color: AppColors.primaryColor,
+                        width: 2,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                     ),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                    child: Text(
+                      l10n.trackOrder,
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        color: AppColors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
-                  child: Text(
-                    l10n.viewDetails,
-                    style: const TextStyle(
-                      color: AppColors.primaryColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
+                if (orderForHistory)
+                  OutlinedButton(
+                    onPressed: onTap,
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(
+                        color: AppColors.primaryColor,
+                        width: 2,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: Text(
+                      l10n.viewDetails,
+                      style: const TextStyle(
+                        color: AppColors.primaryColor,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
           ],

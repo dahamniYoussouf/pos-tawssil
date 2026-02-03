@@ -1,6 +1,7 @@
 import 'package:delivery_app/src/features/notifications/cubit/notifications_cubit.dart';
 import 'package:delivery_app/src/features/orders/cubit/orders_cubit.dart';
 import 'package:delivery_app/src/features/driver/cubit/driver_cubit.dart';
+import 'package:delivery_app/src/features/home/cubit/navigation_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -54,6 +55,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<DriverCubit>(
           create: (context) => locator<DriverCubit>(),
+        ),
+        BlocProvider<NavigationCubit>(
+          create: (context) => NavigationCubit(),
         ),
         BlocProvider<LocaleCubit>(
           create: (context) => LocaleCubit(),

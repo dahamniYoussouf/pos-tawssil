@@ -123,6 +123,7 @@ class OrderHistoryView extends StatelessWidget {
                       ),
                     );
                   },
+                  orderForHistory: true,
                 )),
           ],
         );
