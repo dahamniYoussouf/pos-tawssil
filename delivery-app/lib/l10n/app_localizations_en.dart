@@ -350,4 +350,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewDetails => 'View Details';
+
+  @override
+  String get newOrderAvailable => 'NEW ORDER AVAILABLE';
+
+  @override
+  String get view => 'View';
+
+  @override
+  String get orderDetailsHeader => 'Order Details';
 }

@@ -760,11 +760,29 @@ abstract class AppLocalizations {
   /// **'to:'**
   String get to;
 
-  /// View details button text
+  /// No description provided for @viewDetails.
   ///
   /// In en, this message translates to:
   /// **'View Details'**
   String get viewDetails;
+
+  /// No description provided for @newOrderAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW ORDER AVAILABLE'**
+  String get newOrderAvailable;
+
+  /// No description provided for @view.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get view;
+
+  /// No description provided for @orderDetailsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Details'**
+  String get orderDetailsHeader;
 }
 
 class _AppLocalizationsDelegate

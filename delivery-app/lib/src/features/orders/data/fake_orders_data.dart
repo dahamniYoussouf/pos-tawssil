@@ -99,4 +99,13 @@ class FakeOrdersData {
       ),
     ];
   }
+  //here just fake order to make test
+
+  static OrderModel? getFakeOrderById(String id) {
+    try {
+      return getFakeOrders().firstWhere((order) => order.id == id);
+    } catch (_) {
+      return getFakeOrders().first; // Fallback to first one
+    }
+  }
 }

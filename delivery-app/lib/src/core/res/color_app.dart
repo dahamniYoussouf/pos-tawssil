@@ -18,6 +18,12 @@ class AppColors {
   static const Color textGrey = Color(0xFF9CA3AF);
   static const Color navBarIconColor = Color(0xFF9CA3AF);
 
+  static const Color textDark = Color(0xFF111827);
+  static const Color textMedium = Color(0xFF4B5563);
+  static const Color iconMedium = Color(0xFF6B7280);
+  static const Color backgroundLight = Color(0xFFF9FAFB);
+  static const Color borderLight = Color(0xFFF3F4F6);
+
   static const Color whiteLight = Color(0xFFFFFFFF);
   static const Color whiteDark = Color(0xFFFFFFFF);
   static const Color white70 = Color(0xB3FFFFFF);

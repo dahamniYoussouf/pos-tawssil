@@ -358,4 +358,13 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get viewDetails => 'Voir les détails';
+
+  @override
+  String get newOrderAvailable => 'NOUVELLE COMMANDE DISPONIBLE';
+
+  @override
+  String get view => 'Voir';
+
+  @override
+  String get orderDetailsHeader => 'Détails De La Commande';
 }

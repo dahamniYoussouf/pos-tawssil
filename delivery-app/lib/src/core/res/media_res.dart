@@ -5,6 +5,7 @@ class MediaRes {
 
   static const String logo = '$_baseImageIcon/logo.png';
   static const String logoIcon = '$_baseImageIcon/logo_icon.png';
+  static const String mapImage = '$_baseImageIcon/mapImage.png';
   static const String appIcon = '$_baseImageIcon/app_icon.svg';
   static const String deliveryIcon = '$_baseImageIcon/delivery_icon.svg';
   static const String placeIcon = '$_baseImageIcon/place_icon.svg';
@@ -49,4 +50,10 @@ class MediaRes {
   // order history icons
   static const String orderIcon = '$_baseImageIcon/svg/order_icon.svg';
   static const String locationIcon = '$_baseImageIcon/svg/location_icon.svg';
+  static const String walletFillIcon = '$_baseImageIcon/svg/wallet_fill.svg';
+  static const String deliveryNotifyIcon =
+      '$_baseImageIcon/svg/deliveyIcon.svg';
+  static const String restaurantIcon = '$_baseImageIcon/svg/Icon.svg';
+  static const String distanceIcon = '$_baseImageIcon/svg/locationTogo.svg';
+  static const String clientIcon = '$_baseImageIcon/svg/clientIcon.svg';
 }

@@ -1,11 +1,12 @@
 import 'package:delivery_app/l10n/app_localizations.dart';
 import 'package:delivery_app/src/core/res/color_app.dart';
 import 'package:delivery_app/src/core/res/media_res.dart';
+import 'package:delivery_app/src/core/res/app_theme.dart';
 import 'package:delivery_app/src/features/orders/cubit/assigned_order_cubit.dart';
 import 'package:delivery_app/src/features/orders/models/order_model.dart';
+import 'package:delivery_app/src/features/orders/pages/order_assigned_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 
 class OrderDetailsPage extends StatefulWidget {
@@ -23,7 +24,8 @@ class OrderDetailsPage extends StatefulWidget {
 }
 
 class _OrderDetailsPageState extends State<OrderDetailsPage> {
-  final GlobalKey<SwipeToConfirmButtonState> _swipeButtonKey = GlobalKey<SwipeToConfirmButtonState>();
+  final GlobalKey<SwipeToConfirmButtonState> _swipeButtonKey =
+      GlobalKey<SwipeToConfirmButtonState>();
 
   String _formatPrice(double price) {
     return '${NumberFormat('#,###').format(price)} DA';
@@ -49,9 +51,15 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           backgroundColor: AppColors.white,
           appBar: AppBar(
             backgroundColor: AppColors.white,
-            title: _buildHeader(localizations),
             elevation: 0,
             centerTitle: true,
+            title: Text(
+              localizations.clientOrderTitle,
+              style: AppTextStyles.gilmerBold.copyWith(
+                fontSize: 24,
+                color: AppColors.black,
+              ),
+            ),
             leading: IconButton(
               icon: const Icon(
                 Icons.arrow_back,
@@ -64,7 +72,8 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
             builder: (context, state) {
               if (state.isLoading) {
                 return const Center(
-                  child: CircularProgressIndicator(),
+                  child:
+                      CircularProgressIndicator(color: AppColors.primaryColor),
                 );
               }
               if (state.errorMessage != null && state.order == null) {
@@ -79,7 +88,9 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () {
-                          context.read<AssignedOrderCubit>().fetchOrderById(widget.orderId);
+                          context
+                              .read<AssignedOrderCubit>()
+                              .fetchOrderById(widget.orderId);
                         },
                         child: Text(localizations.retry),
                       ),
@@ -94,219 +105,127 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
               }
               final order = state.order!;
               return SingleChildScrollView(
-                padding: const EdgeInsets.all(16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Map Image Container
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: Image.asset(
+                        MediaRes.mapImage,
+                        width: double.infinity,
+                        height: 200,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                     const SizedBox(height: 24),
-                    _buildRestaurantCard(context, order, localizations),
-                    const SizedBox(height: 16),
-                    _buildClientSection(order, localizations),
-                    const SizedBox(height: 16),
-                    _buildOrderDetailsCard(context, order, localizations),
+
+                    // Delivery Address
+                    _buildSectionHeader("Adresse De Livraison"),
+                    const SizedBox(height: 8),
+                    Text(
+                      order.restaurantAddress ?? "Baraki, Sidi Moussa",
+                      style: AppTextStyles.gilmerMedium.copyWith(
+                        fontSize: 16,
+                        color: AppColors.textMedium,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Delivery Time
+                    _buildSectionHeader("Temps De Livraison"),
+                    const SizedBox(height: 8),
+                    Text(
+                      "${order.deliveryTimeMinutes ?? '25-35'} min",
+                      style: AppTextStyles.gilmerMedium.copyWith(
+                        fontSize: 16,
+                        color: AppColors.textMedium,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Order Number
+                    _buildSectionHeader("Numero De Commande"),
+                    const SizedBox(height: 8),
+                    Text(
+                      "#${order.orderNumber}",
+                      style: AppTextStyles.gilmerMedium.copyWith(
+                        fontSize: 16,
+                        color: AppColors.textMedium,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Total
+                    _buildSectionHeader(localizations.total),
+                    const SizedBox(height: 8),
+                    Text(
+                      _formatPrice(order.totalPrice),
+                      style: AppTextStyles.gilmerMedium.copyWith(
+                        fontSize: 16,
+                        color: AppColors.textMedium,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Payment Method
+                    _buildSectionHeader("Méthode De Paiement"),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Cash",
+                      style: AppTextStyles.gilmerMedium.copyWith(
+                        fontSize: 16,
+                        color: AppColors.textMedium,
+                      ),
+                    ),
                     const SizedBox(height: 24),
+
+                    // Order Details
+                    _buildSectionHeader("Détails De La Commande"),
+                    const SizedBox(height: 16),
+                    ...order.items.map((item) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                '${item.name} x${item.quantity}',
+                                style: AppTextStyles.gilmerMedium.copyWith(
+                                  fontSize: 16,
+                                  color: AppColors.textMedium,
+                                ),
+                              ),
+                              Text(
+                                _formatPrice(item.totalPrice),
+                                style: AppTextStyles.gilmerBold.copyWith(
+                                  fontSize: 16,
+                                  color: AppColors.textDark,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )),
+                    const SizedBox(height: 32),
                   ],
                 ),
               );
             },
           ),
-          bottomNavigationBar: _buildStartDeliveryButton(context, localizations),
+          bottomNavigationBar:
+              _buildStartDeliveryButton(context, localizations),
         ),
       ),
     );
   }
 
-  Widget _buildHeader(AppLocalizations localizations) {
+  Widget _buildSectionHeader(String title) {
     return Text(
-      localizations.clientOrderTitle,
-      style: const TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
+      title,
+      style: AppTextStyles.gilmerBold.copyWith(
+        fontSize: 18,
         color: AppColors.black,
-      ),
-    );
-  }
-
-  Widget _buildRestaurantCard(
-    BuildContext context,
-    OrderModel order,
-    AppLocalizations localizations,
-  ) {
-    final String restaurantName = order.restaurantName ?? localizations.restaurant;
-    final String restaurantAddress = order.restaurantAddress ?? '';
-    final double totalPrice = order.totalPrice;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.greyVeryLight,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            restaurantName,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.black,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Icon(
-                Icons.location_on,
-                size: 18,
-                color: AppColors.grey,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  restaurantAddress,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.black,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          const SizedBox(height: 12),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Row(
-                children: [
-                  SvgPicture.asset(
-                    MediaRes.cashIcon,
-                    height: 18,
-                    width: 18,
-                    color: AppColors.grey,
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    localizations.total,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.black,
-                    ),
-                  ),
-                ],
-              ),
-              Text(
-                _formatPrice(totalPrice),
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.black,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildClientSection(OrderModel order, AppLocalizations localizations) {
-    final String clientName = order.client?.name ?? localizations.clientLabel;
-    return Text(
-      '${localizations.clientLabel} : $clientName',
-      style: const TextStyle(
-        fontSize: 16,
-        color: AppColors.black,
-      ),
-    );
-  }
-
-  Widget _buildOrderDetailsCard(
-    BuildContext context,
-    OrderModel order,
-    AppLocalizations localizations,
-  ) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.greyVeryLight,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '${localizations.orderNumberLabel}:',
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.primaryColor,
-                ),
-              ),
-              Text(
-                '#${order.orderNumber}',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primaryColor,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          ...order.items.asMap().entries.map((entry) {
-            final index = entry.key;
-            final item = entry.value;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    width: 24,
-                    height: 24,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.primaryColor, width: 1),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Center(
-                      child: Text(
-                        '${index + 1}',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primaryColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      item.name,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.black,
-                      ),
-                    ),
-                  ),
-                  Text(
-                    _formatPrice(item.totalPrice),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.black,
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
-        ],
       ),
     );
   }
@@ -323,17 +242,18 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         }
         final OrderModel order = state.order!;
         return Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
+          padding: const EdgeInsets.fromLTRB(24, 16, 24, 20),
+          decoration: const BoxDecoration(
             color: AppColors.white,
           ),
           child: SafeArea(
             child: isLoading
                 ? const SizedBox(
-                    height: 56,
+                    height: 64,
                     child: Center(
                       child: CircularProgressIndicator(
-                        valueColor: AlwaysStoppedAnimation<Color>(AppColors.limeGreen),
+                        valueColor: AlwaysStoppedAnimation<Color>(
+                            AppColors.primaryColor),
                       ),
                     ),
                   )
@@ -341,9 +261,18 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                     key: _swipeButtonKey,
                     label: localizations.startDelivery,
                     onConfirm: () {
-                      context.read<AssignedOrderCubit>().startDelivery(order.id).whenComplete(() {
+                      context
+                          .read<AssignedOrderCubit>()
+                          .startDelivery(order.id)
+                          .whenComplete(() {
                         if (context.mounted) {
-                          Navigator.of(context).pop();
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => OrderAssignedPage(
+                                orderId: order.id,
+                              ),
+                            ),
+                          );
                         }
                       });
                     },
@@ -381,17 +310,20 @@ class SwipeToConfirmButtonState extends State<SwipeToConfirmButton> {
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         final double maxWidth = constraints.maxWidth;
-        final double buttonHeight = 56.0;
-        final double iconSize = 44.0;
-        final double padding = 4.0;
+        final double buttonHeight = 64.0;
+        final double iconSize = 52.0;
+        final double padding = 6.0;
         final double maxDragDistance = maxWidth - iconSize - (padding * 2);
         final double threshold = maxDragDistance * 0.85;
-        final double clampedPosition = _dragPosition.clamp(0.0, maxDragDistance);
+        final double clampedPosition =
+            _dragPosition.clamp(0.0, maxDragDistance);
+
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onHorizontalDragUpdate: (DragUpdateDetails details) {
             setState(() {
-              _dragPosition = (_dragPosition + details.delta.dx).clamp(0.0, maxDragDistance);
+              _dragPosition = (_dragPosition + details.delta.dx)
+                  .clamp(0.0, maxDragDistance);
             });
           },
           onHorizontalDragEnd: (_) {
@@ -406,62 +338,49 @@ class SwipeToConfirmButtonState extends State<SwipeToConfirmButton> {
             height: buttonHeight,
             decoration: BoxDecoration(
               color: AppColors.white,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(32),
               border: Border.all(
-                color: AppColors.limeGreen.withOpacity(0.3),
+                color: AppColors.primaryColor.withOpacity(0.1),
                 width: 1.5,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: AppColors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
             child: Stack(
-              clipBehavior: Clip.none,
               children: <Widget>[
                 Positioned.fill(
                   child: Center(
                     child: Text(
                       widget.label,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.limeGreen,
+                      style: AppTextStyles.gilmerBold.copyWith(
+                        fontSize: 22,
+                        color: AppColors.primaryColor,
                         letterSpacing: 0.5,
                       ),
                     ),
                   ),
                 ),
                 AnimatedPositioned(
-                  duration: const Duration(milliseconds: 200),
+                  duration: const Duration(milliseconds: 100),
                   curve: Curves.easeOut,
                   left: padding + clampedPosition,
                   top: padding,
-                  child: GestureDetector(
-                    onTap: () {
-                      if (_dragPosition < threshold) {
-                        setState(() => _dragPosition = maxDragDistance);
-                        Future<void>.delayed(const Duration(milliseconds: 300), () {
-                          if (!mounted) return;
-                          widget.onConfirm();
-                        });
-                      }
-                    },
-                    child: Container(
-                      width: iconSize,
-                      height: iconSize,
-                      decoration: BoxDecoration(
-                        color: AppColors.limeGreen,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.black.withOpacity(0.2),
-                            blurRadius: 4,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: const Icon(
-                        Icons.arrow_forward_ios_outlined,
-                        color: AppColors.white,
-                        size: 24,
-                      ),
+                  child: Container(
+                    width: iconSize,
+                    height: iconSize,
+                    decoration: const BoxDecoration(
+                      color: AppColors.primaryColor,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.arrow_forward_ios_outlined,
+                      color: AppColors.white,
+                      size: 24,
                     ),
                   ),
                 ),

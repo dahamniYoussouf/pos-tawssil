@@ -138,8 +138,8 @@
     "description": "To label"
   },
   "viewDetails": "Voir les détails",
-  "@viewDetails": {
-    "description": "View details button text"
-  }
+  "newOrderAvailable": "NOUVELLE COMMANDE DISPONIBLE",
+  "view": "Voir",
+  "orderDetailsHeader": "Détails De La Commande"
 }
 

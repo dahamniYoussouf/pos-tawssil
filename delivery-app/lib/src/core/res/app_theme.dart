@@ -33,3 +33,27 @@ class AppTheme {
     );
   }
 }
+
+class AppTextStyles {
+  const AppTextStyles._();
+
+  static const String fontFamily = 'Gilmer';
+
+  static const TextStyle gilmerBold = TextStyle(
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w900,
+    color: AppColors.textDark,
+  );
+
+  static const TextStyle gilmerMedium = TextStyle(
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.w500,
+    color: AppColors.textMedium,
+  );
+
+  static const TextStyle gilmerRegular = TextStyle(
+    fontFamily: fontFamily,
+    fontWeight: FontWeight.normal,
+    color: AppColors.textMedium,
+  );
+}
