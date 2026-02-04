@@ -17,12 +17,13 @@ class CancellationReasonModal extends StatefulWidget {
 }
 
 class _CancellationReasonModalState extends State<CancellationReasonModal> {
-  String? _selectedReason;
+  final ValueNotifier<String?> _selectedReasonNotifier =
+      ValueNotifier<String?>(null);
   final TextEditingController _otherReasonController = TextEditingController();
-  bool _showOtherField = false;
 
   @override
   void dispose() {
+    _selectedReasonNotifier.dispose();
     _otherReasonController.dispose();
     super.dispose();
   }
@@ -31,8 +32,6 @@ class _CancellationReasonModalState extends State<CancellationReasonModal> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    // Using hardcoded strings matching the mockup as we might not have all in ARB yet
-    // I will use localizations if possible, falling back to French as in mockup
     final Map<String, String> reasons = {
       'driver_late': localizations.cancelReasonDriverLate,
       'client_canceled': localizations.cancelReasonClientCanceled,
@@ -78,119 +77,131 @@ class _CancellationReasonModalState extends State<CancellationReasonModal> {
             ),
             const SizedBox(height: 24),
 
-            // Reason Options
-            ...reasons.entries.map((entry) {
-              final String key = entry.key;
-              final String label = entry.value;
-              final bool isSelected = _selectedReason == key;
+            // Reason Options and Other Reason Field
+            ValueListenableBuilder<String?>(
+              valueListenable: _selectedReasonNotifier,
+              builder: (context, selectedReason, _) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ...reasons.entries.map((entry) {
+                      final String key = entry.key;
+                      final String label = entry.value;
+                      final bool isSelected = selectedReason == key;
 
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 16),
-                child: InkWell(
-                  onTap: () {
-                    setState(() {
-                      _selectedReason = key;
-                      _showOtherField = key == 'other';
-                    });
-                  },
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: isSelected
-                                ? AppColors.primaryColor
-                                : AppColors.greyLight,
-                            width: 2,
-                          ),
-                        ),
-                        child: isSelected
-                            ? Center(
-                                child: Container(
-                                  width: 12,
-                                  height: 12,
-                                  decoration: const BoxDecoration(
-                                    color: AppColors.primaryColor,
-                                    shape: BoxShape.circle,
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: InkWell(
+                          onTap: () {
+                            _selectedReasonNotifier.value = key;
+                          },
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: isSelected
+                                        ? AppColors.primaryColor
+                                        : AppColors.greyLight,
+                                    width: 2,
                                   ),
                                 ),
-                              )
-                            : null,
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          label,
-                          style: AppTextStyles.gilmerMedium.copyWith(
-                            fontSize: 14,
-                            color: AppColors.textDark,
+                                child: isSelected
+                                    ? Center(
+                                        child: Container(
+                                          width: 12,
+                                          height: 12,
+                                          decoration: const BoxDecoration(
+                                            color: AppColors.primaryColor,
+                                            shape: BoxShape.circle,
+                                          ),
+                                        ),
+                                      )
+                                    : null,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  label,
+                                  style: AppTextStyles.gilmerMedium.copyWith(
+                                    fontSize: 14,
+                                    color: AppColors.textDark,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
+                      );
+                    }).toList(),
+                    if (selectedReason == 'other') ...[
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: _otherReasonController,
+                        decoration: InputDecoration(
+                          hintText: localizations.otherReasonHint,
+                          fillColor: AppColors.backgroundLight,
+                          filled: true,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
+                        ),
+                        maxLines: 3,
                       ),
                     ],
-                  ),
-                ),
-              );
-            }),
-
-            // Other Reason Field
-            if (_showOtherField) ...[
-              const SizedBox(height: 8),
-              TextField(
-                controller: _otherReasonController,
-                decoration: InputDecoration(
-                  hintText: localizations.otherReasonHint,
-                  fillColor: AppColors.backgroundLight,
-                  filled: true,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                ),
-                maxLines: 3,
-              ),
-            ],
+                  ],
+                );
+              },
+            ),
 
             const SizedBox(height: 32),
 
             // Confirm Button
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _selectedReason == null
-                    ? null
-                    : () {
-                        widget.onConfirm(
-                          reasons[_selectedReason!]!,
-                          _showOtherField ? _otherReasonController.text : null,
-                        );
-                        Navigator.of(context).pop();
-                      },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor:
-                      const Color(0xFFF14336), // Vibrant red matching mockup
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30),
+            ValueListenableBuilder<String?>(
+              valueListenable: _selectedReasonNotifier,
+              builder: (context, selectedReason, _) {
+                return SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: selectedReason == null
+                        ? null
+                        : () {
+                            widget.onConfirm(
+                              reasons[selectedReason]!,
+                              selectedReason == 'other'
+                                  ? _otherReasonController.text
+                                  : null,
+                            );
+                            Navigator.of(context).pop();
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(
+                          0xFFF14336), // Vibrant red matching mockup
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: Text(
+                      localizations.confirmCancellation,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  localizations.confirmCancellation,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
+                );
+              },
             ),
 
             // Return Button

@@ -165,6 +165,7 @@
   "otherReasonHint": "Saisissez votre raison ici...",
   "confirmCancellation": "Confirmer L'annulation",
   "back": "Retour",
-  "acceptDelivery": "Accepter la livraison"
+  "acceptDelivery": "Accepter la livraison",
+  "currency": "DA"
 }
 

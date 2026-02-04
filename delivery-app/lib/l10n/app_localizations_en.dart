@@ -434,4 +434,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get acceptDelivery => 'Accept delivery';
+
+  @override
+  String get currency => 'DA';
 }

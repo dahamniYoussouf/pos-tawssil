@@ -443,4 +443,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get acceptDelivery => 'Accepter la livraison';
+
+  @override
+  String get currency => 'DA';
 }

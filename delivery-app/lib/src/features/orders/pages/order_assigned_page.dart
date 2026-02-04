@@ -3,7 +3,7 @@ import 'package:delivery_app/src/core/res/color_app.dart';
 import 'package:delivery_app/src/features/orders/cubit/assigned_order_cubit.dart';
 import 'package:delivery_app/src/features/orders/models/order_model.dart';
 import 'package:delivery_app/src/features/orders/widgets/order_assigned_card.dart';
-import 'package:delivery_app/src/features/orders/widgets/top_notification_card.dart';
+import 'package:delivery_app/src/features/orders/widgets/notification_card.dart';
 import 'package:delivery_app/src/features/orders/widgets/order_tracking_map_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -69,11 +69,12 @@ class OrderAssignedPage extends StatelessWidget {
                     left: 0,
                     right: 0,
                     child: SafeArea(
-                      child: TopNotificationCard(
+                      child: NotificationCard(
                         title: localizations.newOrderAvailable,
                         price:
-                            "+${state.order?.deliveryPrice?.toInt() ?? 300} DA",
-                        distance: "${state.order?.deliveryDistance ?? 1.2} KM",
+                            "+${state.order?.deliveryPrice?.toInt() ?? 300} ${localizations.currency}",
+                        distance:
+                            "${state.order?.deliveryDistance ?? 1.2} ${localizations.kilometers}",
                         onActionTap: () {},
                       ),
                     ),

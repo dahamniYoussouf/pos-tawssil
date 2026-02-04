@@ -3,14 +3,15 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:delivery_app/src/core/res/media_res.dart';
 import 'package:delivery_app/src/core/res/color_app.dart';
 import 'package:delivery_app/src/core/res/app_theme.dart';
+import 'package:delivery_app/l10n/app_localizations.dart';
 
-class TopNotificationCard extends StatelessWidget {
+class NotificationCard extends StatelessWidget {
   final String title;
   final String price;
   final String distance;
   final VoidCallback onActionTap;
 
-  const TopNotificationCard({
+  const NotificationCard({
     super.key,
     required this.title,
     required this.price,
@@ -105,8 +106,8 @@ class TopNotificationCard extends StatelessWidget {
               ),
               minimumSize: const Size(64, 36),
             ),
-            child: const Text(
-              "Voir",
+            child: Text(
+              AppLocalizations.of(context)!.view,
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.bold,

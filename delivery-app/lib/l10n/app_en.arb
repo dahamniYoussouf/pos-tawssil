@@ -465,5 +465,6 @@
   "acceptDelivery": "Accept delivery",
   "@acceptDelivery": {
     "description": "Accept delivery button text"
-  }
+  },
+  "currency": "DA"
 }
