@@ -23,15 +23,15 @@ class AuthCubit extends HydratedCubit<AuthState> {
       final type = json['type'] as String;
       switch (type) {
         case 'AuthChecking':
-          return const AuthChecking();
+          return const AuthInitial();
         case 'AuthInitial':
           return const AuthInitial();
         case 'AuthLoading':
-          return const AuthLoading();
+          return const AuthInitial();
         case 'AuthSuccess':
           return AuthSuccess.fromJson(json);
         case 'AuthError':
-          return AuthError.fromJson(json);
+          return const AuthInitial();
         default:
           return const AuthInitial();
       }
