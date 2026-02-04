@@ -1,5 +1,4 @@
 import 'package:delivery_app/src/core/utils/either.dart';
-import 'package:delivery_app/src/features/orders/data/fake_orders_data.dart';
 import 'package:delivery_app/src/features/orders/models/order_model.dart';
 import 'package:delivery_app/src/features/orders/services/order_service.dart';
 
@@ -33,24 +32,10 @@ class OrderRepository {
         }
         return const Left('Invalid response format');
       } else {
-        // Fallback to fake data on API error
-        final fakeOrders = FakeOrdersData.getFakeOrders();
-        if (status != null && status.isNotEmpty) {
-          final filtered =
-              fakeOrders.where((order) => order.status == status).toList();
-          return Right(filtered);
-        }
-        return Right(fakeOrders);
+        return Left(response['message'] ?? 'Failed to fetch orders');
       }
     } catch (e) {
-      // Fallback to fake data on timeout or exception
-      final fakeOrders = FakeOrdersData.getFakeOrders();
-      if (status != null && status.isNotEmpty) {
-        final filtered =
-            fakeOrders.where((order) => order.status == status).toList();
-        return Right(filtered);
-      }
-      return Right(fakeOrders);
+      return Left('Error fetching orders: ${e.toString()}');
     }
   }
 
@@ -70,12 +55,10 @@ class OrderRepository {
         }
         return const Left('Invalid response format');
       } else {
-        // Fallback to fake data on API error
-        return Right(FakeOrdersData.getFakeOrders());
+        return Left(response['message'] ?? 'Failed to fetch nearby orders');
       }
     } catch (e) {
-      // Fallback to fake data on timeout or exception
-      return Right(FakeOrdersData.getFakeOrders());
+      return Left('Error fetching nearby orders: ${e.toString()}');
     }
   }
 
@@ -85,14 +68,9 @@ class OrderRepository {
       if (response['success'] == true) {
         return const Right(null);
       } else {
-        //here just fake order to make test
-        // Simulator Mode Fallback: Success for fake IDs
-        if (orderId.length < 5) return const Right(null);
         return Left(response['message'] ?? 'Failed to assign order to driver');
       }
     } catch (e) {
-      // Simulator Mode Fallback: Success for fake IDs
-      if (orderId.length < 5) return const Right(null);
       return Left('Error assigning order to driver: ${e.toString()}');
     }
   }
@@ -135,15 +113,9 @@ class OrderRepository {
         }
         return const Left('Invalid response format');
       } else {
-        // Simulator Mode Fallback
-        final fakeOrder = FakeOrdersData.getFakeOrderById(orderId);
-        if (fakeOrder != null) return Right(fakeOrder);
         return Left(response['message'] ?? 'Failed to fetch order');
       }
     } catch (e) {
-      // Simulator Mode Fallback
-      final fakeOrder = FakeOrdersData.getFakeOrderById(orderId);
-      if (fakeOrder != null) return Right(fakeOrder);
       return Left('Error fetching order: ${e.toString()}');
     }
   }
@@ -154,19 +126,9 @@ class OrderRepository {
       if (response['success'] == true) {
         return const Right(null);
       } else {
-        // Simulator Mode Fallback: Success for fake IDs
-        if (orderId.length < 5) {
-          FakeOrdersData.updateOrderStatus(orderId, OrderStatus.arrived);
-          return const Right(null);
-        }
         return Left(response['message'] ?? 'Failed to mark order as arrived');
       }
     } catch (e) {
-      // Simulator Mode Fallback: Success for fake IDs
-      if (orderId.length < 5) {
-        FakeOrdersData.updateOrderStatus(orderId, OrderStatus.arrived);
-        return const Right(null);
-      }
       return Left('Error marking order as arrived: ${e.toString()}');
     }
   }
@@ -177,19 +139,9 @@ class OrderRepository {
       if (response['success'] == true) {
         return const Right(null);
       } else {
-        // Simulator Mode Fallback: Success for fake IDs
-        if (orderId.length < 5) {
-          FakeOrdersData.updateOrderStatus(orderId, OrderStatus.delivering);
-          return const Right(null);
-        }
         return Left(response['message'] ?? 'Failed to start delivery');
       }
     } catch (e) {
-      // Simulator Mode Fallback: Success for fake IDs
-      if (orderId.length < 5) {
-        FakeOrdersData.updateOrderStatus(orderId, OrderStatus.delivering);
-        return const Right(null);
-      }
       return Left('Error starting delivery: ${e.toString()}');
     }
   }

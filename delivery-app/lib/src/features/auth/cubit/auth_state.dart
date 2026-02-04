@@ -22,6 +22,15 @@ class AuthInitial extends AuthState {
   }
 }
 
+class AuthChecking extends AuthState {
+  const AuthChecking();
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {'type': 'AuthChecking'};
+  }
+}
+
 class AuthLoading extends AuthState {
   const AuthLoading();
 

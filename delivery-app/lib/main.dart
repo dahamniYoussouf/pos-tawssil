@@ -136,6 +136,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
             },
             child: const HomePage(),
           );
+        } else if (authState is AuthInitial || authState is AuthChecking) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         } else {
           return const LoginPage();
         }

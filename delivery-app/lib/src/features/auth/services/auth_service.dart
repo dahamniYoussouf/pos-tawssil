@@ -4,7 +4,8 @@ import 'package:delivery_app/src/core/services/token_storage_service.dart';
 import 'package:delivery_app/src/core/utils/dependency_injection.dart';
 
 class AuthService extends BaseApiService {
-  final TokenStorageService _tokenStorageService = locator<TokenStorageService>();
+  final TokenStorageService _tokenStorageService =
+      locator<TokenStorageService>();
 
   Future<Map<String, dynamic>> login({
     required String email,
@@ -129,7 +130,11 @@ class AuthService extends BaseApiService {
 
   Future<bool> isAuthenticated() async {
     try {
-      return await _tokenStorageService.hasAccessToken();
+      final hasToken = await _tokenStorageService.hasAccessToken();
+      if (!hasToken) return false;
+
+      final response = await getRequest('/driver/profile/me');
+      return response['success'] == true || response['id'] != null;
     } catch (e) {
       return false;
     }

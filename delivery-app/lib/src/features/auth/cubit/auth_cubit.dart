@@ -13,7 +13,8 @@ class AuthCubit extends HydratedCubit<AuthState> {
     AuthService? authService,
     TokenStorageService? tokenStorageService,
   })  : _authService = authService ?? AuthService(),
-        _tokenStorageService = tokenStorageService ?? locator<TokenStorageService>(),
+        _tokenStorageService =
+            tokenStorageService ?? locator<TokenStorageService>(),
         super(const AuthInitial());
 
   @override
@@ -21,6 +22,8 @@ class AuthCubit extends HydratedCubit<AuthState> {
     try {
       final type = json['type'] as String;
       switch (type) {
+        case 'AuthChecking':
+          return const AuthChecking();
         case 'AuthInitial':
           return const AuthInitial();
         case 'AuthLoading':
@@ -43,6 +46,7 @@ class AuthCubit extends HydratedCubit<AuthState> {
   }
 
   Future<void> checkAuthenticationStatus() async {
+    emit(const AuthChecking());
     final result = await _checkAuthenticationStatusEither();
     result.fold(
       (error) => emit(const AuthInitial()),
@@ -72,7 +76,8 @@ class AuthCubit extends HydratedCubit<AuthState> {
     required String password,
   }) async {
     emit(const AuthLoading());
-    final validationResult = _validateLoginInput(email: email, password: password);
+    final validationResult =
+        _validateLoginInput(email: email, password: password);
     if (validationResult.isLeft) {
       emit(AuthError(message: validationResult.left!));
       return;
@@ -107,7 +112,9 @@ class AuthCubit extends HydratedCubit<AuthState> {
         password: password,
       );
       if (result['success'] == true) {
-        final userId = result['user']?['id']?.toString() ?? result['profile']?['id']?.toString() ?? '';
+        final userId = result['user']?['id']?.toString() ??
+            result['profile']?['id']?.toString() ??
+            '';
         return Right(userId);
       } else {
         return Left(result['message'] ?? 'errorLoginFailed');
@@ -220,7 +227,9 @@ class AuthCubit extends HydratedCubit<AuthState> {
         zone: zone,
       );
       if (result['success'] == true) {
-        final userId = result['user']?['id']?.toString() ?? result['profile']?['id']?.toString() ?? '';
+        final userId = result['user']?['id']?.toString() ??
+            result['profile']?['id']?.toString() ??
+            '';
         return Right(userId);
       } else {
         return Left(result['message'] ?? 'errorRegistrationFailed');
