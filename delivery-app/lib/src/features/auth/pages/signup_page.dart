@@ -110,7 +110,7 @@ class _SignupPageState extends State<SignupPage> {
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground,
+      backgroundColor: Colors.white,
       body: BlocConsumer<AuthCubit, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
@@ -129,112 +129,103 @@ class _SignupPageState extends State<SignupPage> {
           final isLoading = state is AuthLoading;
 
           return SingleChildScrollView(
-            child: SizedBox(
-              height: size.height,
-              child: Column(
-                children: [
-                  // Top Logo Section
-                  Container(
-                    height: size.height * 0.20,
-                    width: double.infinity,
-                    color: AppColors.scaffoldBackground,
-                    child: Stack(
+            child: Column(
+              children: [
+                // Top Logo Section
+                Container(
+                  height: size.height * 0.20,
+                  width: double.infinity,
+                  color: AppColors.scaffoldBackground,
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: 40,
+                        left: 16,
+                        child: IconButton(
+                          icon: const Icon(Icons.arrow_back,
+                              color: Colors.black87),
+                          onPressed: () => Navigator.of(context).pop(),
+                        ),
+                      ),
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 40),
+                          child: Image.asset(
+                            MediaRes.logo,
+                            width: size.width * 0.45,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Bottom Form Section (White Card)
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(32),
+                      topRight: Radius.circular(32),
+                    ),
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Positioned(
-                          top: 40,
-                          left: 16,
-                          child: IconButton(
-                            icon: const Icon(Icons.arrow_back,
-                                color: Colors.black87),
-                            onPressed: () => Navigator.of(context).pop(),
+                        Text(
+                          localizations
+                              .signUpTitle, // "Devenez livreur -partenaire"
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black,
+                            letterSpacing: -0.5,
                           ),
                         ),
-                        Center(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 40),
-                            child: Image.asset(
-                              MediaRes.logo,
-                              width: size.width * 0.45,
-                              fit: BoxFit.contain,
-                            ),
+                        const SizedBox(height: 12),
+                        Text(
+                          localizations.signUpSubtitle,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF4B5563),
+                            height: 1.4,
                           ),
                         ),
+                        const SizedBox(height: 32),
+                        _buildLastNameField(localizations),
+                        const SizedBox(height: 16),
+                        _buildFirstNameField(localizations),
+                        const SizedBox(height: 16),
+                        _buildPhoneField(localizations),
+                        const SizedBox(height: 16),
+                        _buildEmailField(localizations),
+                        const SizedBox(height: 16),
+                        _buildPasswordField(localizations),
+                        const SizedBox(height: 16),
+                        _buildConfirmPasswordField(localizations),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(child: _buildWillayaField(localizations)),
+                            const SizedBox(width: 12),
+                            Expanded(child: _buildZoneField(localizations)),
+                          ],
+                        ),
+                        const SizedBox(height: 32),
+                        _buildSignupButton(localizations, isLoading),
+                        const SizedBox(height: 24),
+                        _buildTermsText(localizations),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
-                  // Bottom Form Section (White Card)
-                  Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 32),
-                      decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(32),
-                          topRight: Radius.circular(32),
-                        ),
-                      ),
-                      child: Form(
-                        key: _formKey,
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Text(
-                                localizations
-                                    .signUpTitle, // "Devenez livreur -partenaire"
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.black,
-                                  letterSpacing: -0.5,
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              Text(
-                                localizations.signUpSubtitle,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: Color(0xFF4B5563),
-                                  height: 1.4,
-                                ),
-                              ),
-                              const SizedBox(height: 32),
-                              _buildLastNameField(localizations),
-                              const SizedBox(height: 16),
-                              _buildFirstNameField(localizations),
-                              const SizedBox(height: 16),
-                              _buildPhoneField(localizations),
-                              const SizedBox(height: 16),
-                              _buildEmailField(localizations),
-                              const SizedBox(height: 16),
-                              _buildPasswordField(localizations),
-                              const SizedBox(height: 16),
-                              _buildConfirmPasswordField(localizations),
-                              const SizedBox(height: 16),
-                              Row(
-                                children: [
-                                  Expanded(
-                                      child: _buildWillayaField(localizations)),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                      child: _buildZoneField(localizations)),
-                                ],
-                              ),
-                              const SizedBox(height: 32),
-                              _buildSignupButton(localizations, isLoading),
-                              const SizedBox(height: 24),
-                              _buildTermsText(localizations),
-                              const SizedBox(height: 20),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
         },
