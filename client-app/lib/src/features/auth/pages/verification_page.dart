@@ -428,53 +428,36 @@ class _OtpInputSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final availableWidth = constraints.maxWidth;
-        // Total width = 6 * (fieldSize + 2 * horizontalPadding)
-        // If horizontalPadding = 0.08 * fieldSize
-        // Total width = 6 * 1.16 * fieldSize = 6.96 * fieldSize
-        double fieldSize = availableWidth / 7.0;
-
-        if (fieldSize > 46) fieldSize = 46;
-        if (fieldSize < 30) fieldSize = 30;
-
-        // Proportional padding (safer ratio)
-        final horizontalPadding = (fieldSize * 0.08).clamp(2.0, 4.0);
-
-        return PinCodeTextField(
-          appContext: context,
-          length: 6,
-          controller: otpController,
-          onChanged: onCodeChanged,
-          onCompleted: (value) => onVerify(),
-          mainAxisAlignment: MainAxisAlignment.center,
-          pinTheme: PinTheme(
-            shape: PinCodeFieldShape.circle,
-            fieldHeight: fieldSize,
-            fieldWidth: fieldSize,
-            activeFillColor: ColorApp.backgroundGrey,
-            inactiveFillColor: ColorApp.backgroundGrey,
-            selectedFillColor: ColorApp.backgroundGrey,
-            inactiveColor: ColorApp.greyBorder,
-            selectedColor: ColorApp.greyBorder,
-            borderWidth: 0.1,
-            fieldOuterPadding:
-                EdgeInsets.symmetric(horizontal: horizontalPadding),
-          ),
-          textStyle: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-          ),
-          keyboardType: TextInputType.number,
-          inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly,
-          ],
-          enableActiveFill: true,
-          animationType: AnimationType.fade,
-          animationDuration: const Duration(milliseconds: 300),
-        );
-      },
+    return PinCodeTextField(
+      appContext: context,
+      length: 6,
+      controller: otpController,
+      onChanged: onCodeChanged,
+      onCompleted: (value) => onVerify(),
+      mainAxisAlignment: MainAxisAlignment.center,
+      pinTheme: PinTheme(
+        shape: PinCodeFieldShape.circle,
+        fieldHeight: 35,
+        fieldWidth: 35,
+        activeFillColor: ColorApp.backgroundGrey,
+        inactiveFillColor: ColorApp.backgroundGrey,
+        selectedFillColor: ColorApp.backgroundGrey,
+        inactiveColor: ColorApp.greyBorder,
+        selectedColor: ColorApp.greyBorder,
+        borderWidth: 0.7,
+        fieldOuterPadding: const EdgeInsets.symmetric(horizontal: 7),
+      ),
+      textStyle: const TextStyle(
+        fontSize: 14,
+        fontWeight: FontWeight.bold,
+      ),
+      keyboardType: TextInputType.number,
+      inputFormatters: [
+        FilteringTextInputFormatter.digitsOnly,
+      ],
+      enableActiveFill: true,
+      animationType: AnimationType.fade,
+      animationDuration: const Duration(milliseconds: 300),
     );
   }
 }
