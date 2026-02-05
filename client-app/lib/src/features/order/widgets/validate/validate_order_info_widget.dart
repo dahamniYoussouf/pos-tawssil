@@ -25,7 +25,9 @@ class ValidateOrderDetailsSection extends StatelessWidget {
       required this.items,
       required this.orderDetailsLabel,
       required this.localization,
-      required this.orderNumber});
+      required this.orderNumber,
+      required this.isDelivery});
+
   final String deliveryAddress;
   final String estimatedTime;
   final double totalPrice;
@@ -34,6 +36,7 @@ class ValidateOrderDetailsSection extends StatelessWidget {
   final String orderDetailsLabel;
   final AppLocalizations localization;
   final String orderNumber;
+  final bool isDelivery;
 
   @override
   Widget build(BuildContext context) {
@@ -58,8 +61,8 @@ class ValidateOrderDetailsSection extends StatelessWidget {
         const SizedBox(height: _sectionSpacing),
 
         BlocBuilder<OrderCubit, OrderState>(builder: (context, state) {
-          final String orderStatus = _getOrderStatusFromState(state: state);
-          return OrderTrackingStepsWidget(orderStatus: orderStatus);
+          return OrderTrackingStepsWidget(
+              orderStatus: OrderStatus.pending, isDelivery: isDelivery);
         }),
         const SizedBox(height: _rowSpacing),
         Divider(indent: 4, endIndent: 4, color: ColorApp.greyBorder),
@@ -86,22 +89,6 @@ class ValidateOrderDetailsSection extends StatelessWidget {
             value: localization.totalValue(totalPrice.toStringAsFixed(2))),
       ])
     ]);
-  }
-
-  String _getOrderStatusFromState({required OrderState state}) {
-    if (state is OrderLoaded) {
-      return state.order.status;
-    }
-    if (state is OrderCreated) {
-      return state.order.status;
-    }
-    if (state is OrderRefused) {
-      return state.order.status;
-    }
-    if (state is OrderDelayed) {
-      return state.order.status;
-    }
-    return OrderStatus.pending;
   }
 }
 

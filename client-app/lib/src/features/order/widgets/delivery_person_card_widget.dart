@@ -133,8 +133,8 @@ class DeliveryPersonCard extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 30,
-            backgroundColor: ColorApp.primary,
-            backgroundImage: AssetImage(MediaRes.deliveryIcon),
+            backgroundColor: ColorApp.white,
+            child: Image.asset(MediaRes.avatarPicture),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -167,14 +167,6 @@ class DeliveryPersonCard extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    // const SizedBox(width: 16),
-                    // Text(
-                    //   'ID ${person!.id.isNotEmpty ? person!.id : '—'}',
-                    //   style: TextStyle(
-                    //     fontSize: 14,
-                    //     color: Colors.grey[600],
-                    //   ),
-                    // ),
                   ],
                 ),
               ],

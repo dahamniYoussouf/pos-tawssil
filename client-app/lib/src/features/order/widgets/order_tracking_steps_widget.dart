@@ -6,9 +6,11 @@ import 'package:client_app/src/features/order/models/order_model.dart';
 
 class OrderTrackingStepsWidget extends StatelessWidget {
   final String orderStatus;
-  const OrderTrackingStepsWidget({super.key, required this.orderStatus});
+  final bool isDelivery;
+  const OrderTrackingStepsWidget(
+      {super.key, required this.orderStatus, required this.isDelivery});
 
-  static const List<_StepData> _steps = <_StepData>[
+  static const List<_StepData> _deliverySteps = <_StepData>[
     _StepData(
       iconAsset: MediaRes.trackingOrderIconStep1,
       status: OrderStatus.pending,
@@ -26,6 +28,20 @@ class OrderTrackingStepsWidget extends StatelessWidget {
       status: OrderStatus.delivering,
     ),
   ];
+  static const List<_StepData> _pickupSteps = <_StepData>[
+    _StepData(
+      iconAsset: MediaRes.trackingOrderIconStep1,
+      status: OrderStatus.pending,
+    ),
+    _StepData(
+      iconAsset: MediaRes.trackingOrderIconStep2,
+      status: OrderStatus.accepted,
+    ),
+    _StepData(
+      iconAsset: MediaRes.trackingOrderIconStep4,
+      status: OrderStatus.preparing,
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -33,38 +49,46 @@ class OrderTrackingStepsWidget extends StatelessWidget {
   }
 
   List<Widget> _buildStepWidgets() {
-    final int activeIndex = _getActiveStepIndex();
+    final List<_StepData> activeSteps = _getActiveSteps();
+    final int activeIndex = _getActiveStepIndex(activeSteps);
     final List<Widget> widgets = <Widget>[];
-    for (int i = 0; i < _steps.length; i++) {
-      final bool isPrimary = _shouldStepBePrimary(i, activeIndex);
+    for (int i = 0; i < activeSteps.length; i++) {
+      final bool isPrimary = _shouldStepBePrimary(
+          stepIndex: i,
+          activeIndex: activeIndex,
+          stepsLength: activeSteps.length);
       final bool isCompleted = i < activeIndex;
       widgets.add(
         _StepIconWidget(
-          iconAsset: _steps[i].iconAsset,
+          iconAsset: activeSteps[i].iconAsset,
           isPrimary: isPrimary,
           isCompleted: isCompleted,
         ),
       );
-      if (i < _steps.length - 1) {
+      if (i < activeSteps.length - 1) {
         widgets.add(_ConnectorWidget(isActive: isCompleted));
       }
     }
     return widgets;
   }
 
-  bool _shouldStepBePrimary(int stepIndex, int activeIndex) {
+  bool _shouldStepBePrimary({
+    required int stepIndex,
+    required int activeIndex,
+    required int stepsLength,
+  }) {
     if (activeIndex == -1) return false;
     // Step should be primary when we've moved past its status
     if (stepIndex < activeIndex) return true;
     // Special case: last step becomes primary when delivered or collected
-    if (stepIndex == _steps.length - 1 && stepIndex == activeIndex) {
+    if (stepIndex == stepsLength - 1 && stepIndex == activeIndex) {
       return orderStatus == OrderStatus.delivered ||
           orderStatus == OrderStatus.collected;
     }
     return false;
   }
 
-  int _getActiveStepIndex() {
+  int _getActiveStepIndex(List<_StepData> activeSteps) {
     final List<String> statusHierarchy = <String>[
       OrderStatus.pending,
       OrderStatus.accepted,
@@ -76,13 +100,19 @@ class OrderTrackingStepsWidget extends StatelessWidget {
     ];
     final int currentStatusIndex = statusHierarchy.indexOf(orderStatus);
     if (currentStatusIndex == -1) return -1;
-    for (int i = _steps.length - 1; i >= 0; i--) {
-      final int stepStatusIndex = statusHierarchy.indexOf(_steps[i].status);
+    for (int i = activeSteps.length - 1; i >= 0; i--) {
+      final int stepStatusIndex =
+          statusHierarchy.indexOf(activeSteps[i].status);
       if (currentStatusIndex >= stepStatusIndex) {
         return i;
       }
     }
     return -1;
+  }
+
+  List<_StepData> _getActiveSteps() {
+    if (isDelivery) return _deliverySteps;
+    return _pickupSteps;
   }
 }
 
