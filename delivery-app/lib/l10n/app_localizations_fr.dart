@@ -446,4 +446,22 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get currency => 'DA';
+
+  @override
+  String get deliveryCompleted => 'Livraison Terminee !';
+
+  @override
+  String get greatJobToday => 'Excellent Travail Aujourd\'hui !';
+
+  @override
+  String get tripEarnings => 'Gains De Cette Course';
+
+  @override
+  String get sessionTotal => 'Total De La Session';
+
+  @override
+  String get routeCompleted => 'Itinéraire terminé';
+
+  @override
+  String get backToRadar => 'Retour au Radar';
 }

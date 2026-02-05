@@ -138,8 +138,12 @@
     "description": "To label"
   },
   "viewDetails": "عرض التفاصيل",
-  "@viewDetails": {
-    "description": "View details button text"
-  }
+  "currency": "د.ج",
+  "deliveryCompleted": "تم التوصيل!",
+  "greatJobToday": "عمل رائع اليوم!",
+  "tripEarnings": "أرباح هذه الرحلة",
+  "sessionTotal": "إجمالي الجلسة",
+  "routeCompleted": "تم إكمال المسار",
+  "backToRadar": "العودة إلى الرادار"
 }
 

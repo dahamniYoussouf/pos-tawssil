@@ -39,7 +39,6 @@ class MediaRes {
   static const String arrowRightIcon =
       '$_baseImageIcon/svg/arrow_right_icon.svg';
 
-  // new profile icons requested by user
   static const String ShieldUserIcon = '$_baseImageIcon/svg/ShieldUser.svg';
   static const String mailIcon = '$_baseImageIcon/svg/mail.svg';
   static const String manageIcon = '$_baseImageIcon/svg/manage_icon.svg';
@@ -57,4 +56,5 @@ class MediaRes {
   static const String distanceIcon = '$_baseImageIcon/svg/locationTogo.svg';
   static const String clientIcon = '$_baseImageIcon/svg/clientIcon.svg';
   static const String chatIcon = '$_baseImageIcon/svg/chat.svg';
+  static const String successIcon = '$_baseImageIcon/svg/successIcon.svg';
 }

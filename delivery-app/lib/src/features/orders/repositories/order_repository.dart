@@ -1,6 +1,7 @@
 import 'package:delivery_app/src/core/utils/either.dart';
 import 'package:delivery_app/src/features/orders/models/order_model.dart';
 import 'package:delivery_app/src/features/orders/services/order_service.dart';
+import 'package:delivery_app/src/features/orders/data/fake_orders_data.dart';
 
 class OrderRepository {
   final OrderService _orderService;
@@ -45,24 +46,32 @@ class OrderRepository {
           .fetchOrdersNearby()
           .timeout(const Duration(seconds: 5));
 
+      List<OrderModel> orders = [];
       if (response['success'] == true) {
         final data = response['data'] ?? response['orders'] ?? [];
         if (data is List) {
-          final orders = data
+          orders = data
               .map((json) => OrderModel.fromJson(json as Map<String, dynamic>))
               .toList();
-          return Right(orders);
         }
-        return const Left('Invalid response format');
-      } else {
-        return Left(response['message'] ?? 'Failed to fetch nearby orders');
       }
+
+      // Add fake orders from the centralized data source
+      orders.addAll(FakeOrdersData.getFakeOrders());
+
+      return Right(orders);
     } catch (e) {
-      return Left('Error fetching nearby orders: ${e.toString()}');
+      // On error, return fake orders for simulation purposes
+      return Right(FakeOrdersData.getFakeOrders());
     }
   }
 
   Future<Either<String, void>> assignOrderToDriver(String orderId) async {
+    // Check if this is a fake order
+    if (FakeOrdersData.getFakeOrderById(orderId) != null) {
+      FakeOrdersData.updateOrderStatus(orderId, OrderStatus.assigned);
+      return const Right(null);
+    }
     try {
       final response = await _orderService.assignOrderToDriver(orderId);
       if (response['success'] == true) {
@@ -103,6 +112,11 @@ class OrderRepository {
   }
 
   Future<Either<String, OrderModel>> fetchOrderById(String orderId) async {
+    // Check if this is a fake order
+    final fakeOrder = FakeOrdersData.getFakeOrderById(orderId);
+    if (fakeOrder != null) {
+      return Right(fakeOrder);
+    }
     try {
       final response = await _orderService.fetchOrderById(orderId);
       if (response['success'] == true) {
@@ -121,6 +135,11 @@ class OrderRepository {
   }
 
   Future<Either<String, void>> markOrderArrived(String orderId) async {
+    // Check if this is a fake order
+    if (FakeOrdersData.getFakeOrderById(orderId) != null) {
+      FakeOrdersData.updateOrderStatus(orderId, OrderStatus.arrived);
+      return const Right(null);
+    }
     try {
       final response = await _orderService.markOrderArrived(orderId);
       if (response['success'] == true) {
@@ -134,6 +153,11 @@ class OrderRepository {
   }
 
   Future<Either<String, void>> startDelivery(String orderId) async {
+    // Check if this is a fake order
+    if (FakeOrdersData.getFakeOrderById(orderId) != null) {
+      FakeOrdersData.updateOrderStatus(orderId, OrderStatus.delivering);
+      return const Right(null);
+    }
     try {
       final response = await _orderService.startDelivery(orderId);
       if (response['success'] == true) {
@@ -147,6 +171,11 @@ class OrderRepository {
   }
 
   Future<Either<String, void>> completeDelivery(String orderId) async {
+    // Check if this is a fake order
+    if (FakeOrdersData.getFakeOrderById(orderId) != null) {
+      FakeOrdersData.updateOrderStatus(orderId, OrderStatus.delivered);
+      return const Right(null);
+    }
     try {
       final response = await _orderService.completeDelivery(orderId);
       if (response['success'] == true) {

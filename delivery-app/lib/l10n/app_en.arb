@@ -463,8 +463,11 @@
     "description": "Back button"
   },
   "acceptDelivery": "Accept delivery",
-  "@acceptDelivery": {
-    "description": "Accept delivery button text"
-  },
-  "currency": "DA"
+  "currency": "DA",
+  "deliveryCompleted": "Delivery Completed!",
+  "greatJobToday": "Great Job Today!",
+  "tripEarnings": "Trip Earnings",
+  "sessionTotal": "Session Total",
+  "routeCompleted": "Route completed",
+  "backToRadar": "Back to Radar"
 }

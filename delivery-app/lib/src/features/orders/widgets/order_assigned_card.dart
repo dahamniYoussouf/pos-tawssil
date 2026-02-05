@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart' as launcher;
 import 'package:delivery_app/l10n/app_localizations.dart';
 import 'package:delivery_app/src/core/res/color_app.dart';
 import 'package:delivery_app/src/core/res/app_theme.dart';
@@ -11,6 +12,7 @@ import 'package:delivery_app/src/features/orders/models/order_model.dart';
 import 'package:delivery_app/src/features/orders/pages/order_details_page.dart';
 import 'package:delivery_app/src/features/orders/widgets/cancellation_reason_modal.dart';
 import 'package:delivery_app/src/features/home/pages/home_page.dart';
+import 'package:delivery_app/src/features/orders/pages/delivery_success_page.dart';
 
 class OrderAssignedCard extends StatelessWidget {
   final OrderModel order;
@@ -101,9 +103,8 @@ class OrderAssignedCard extends StatelessWidget {
               _buildActionButton(
                 context,
                 localizations,
-                currentOrder.id,
+                currentOrder,
                 isLoading,
-                isDelivering,
               ),
               const SizedBox(height: 12),
               if (!isDelivering)
@@ -190,25 +191,40 @@ class OrderAssignedCard extends StatelessWidget {
             ],
           ),
         ),
-        // Message and Call Buttons
+        //  Call Buttons
         Row(
           children: [
-            _buildActionIcon(Icons.phone_outlined),
+            _buildActionIcon(
+              Icons.phone_outlined,
+              onTap: () async {
+                final phone = order.client?.phoneNumber;
+                if (phone != null) {
+                  final uri = Uri.parse('tel:$phone');
+                  if (await launcher.canLaunchUrl(uri)) {
+                    await launcher.launchUrl(uri);
+                  }
+                }
+              },
+            ),
           ],
         ),
       ],
     );
   }
 
-  Widget _buildActionIcon(IconData icon) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: AppColors.backgroundLight,
-        shape: BoxShape.circle,
-        border: Border.all(color: AppColors.borderLight),
+  Widget _buildActionIcon(IconData icon, {VoidCallback? onTap}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(30),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: AppColors.backgroundLight,
+          shape: BoxShape.circle,
+          border: Border.all(color: AppColors.borderLight),
+        ),
+        child: Icon(icon, size: 24, color: AppColors.black),
       ),
-      child: Icon(icon, size: 24, color: AppColors.black),
     );
   }
 
@@ -358,10 +374,10 @@ class OrderAssignedCard extends StatelessWidget {
   Widget _buildActionButton(
     BuildContext context,
     AppLocalizations localizations,
-    String orderId,
+    OrderModel order,
     bool isLoading,
-    bool isDelivering,
   ) {
+    final bool isDelivering = order.status == OrderStatus.delivering;
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -371,25 +387,30 @@ class OrderAssignedCard extends StatelessWidget {
                 if (isDelivering) {
                   context
                       .read<AssignedOrderCubit>()
-                      .completeDelivery(orderId)
+                      .completeDelivery(order.id)
                       .whenComplete(() {
                     // delivered status go home pick new one
                     if (context.mounted) {
-                      Navigator.of(context).push(
+                      Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
-                          builder: (context) => HomePage(),
+                          builder: (context) => DeliverySuccessPage(
+                            tripEarnings: order.deliveryPrice ?? 350.0,
+                            distance: order.deliveryDistance ?? 4.2,
+                            orderCount: 1,
+                            sessionTotal: 2400.0,
+                          ),
                         ),
                       );
                     }
                   });
                 } else {
                   final cubit = context.read<AssignedOrderCubit>();
-                  cubit.markOrderArrived(orderId).whenComplete(() {
+                  cubit.markOrderArrived(order.id).whenComplete(() {
                     if (context.mounted) {
                       Navigator.of(context).push(
                         MaterialPageRoute(
                           builder: (context) => OrderDetailsPage(
-                            orderId: orderId,
+                            orderId: order.id,
                             cubit: cubit,
                           ),
                         ),

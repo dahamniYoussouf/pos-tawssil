@@ -437,4 +437,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get currency => 'DA';
+
+  @override
+  String get deliveryCompleted => 'Delivery Completed!';
+
+  @override
+  String get greatJobToday => 'Great Job Today!';
+
+  @override
+  String get tripEarnings => 'Trip Earnings';
+
+  @override
+  String get sessionTotal => 'Session Total';
+
+  @override
+  String get routeCompleted => 'Route completed';
+
+  @override
+  String get backToRadar => 'Back to Radar';
 }

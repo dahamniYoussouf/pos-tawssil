@@ -435,5 +435,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get acceptDelivery => 'Accept delivery';
 
   @override
-  String get currency => 'DA';
+  String get currency => 'د.ج';
+
+  @override
+  String get deliveryCompleted => 'تم التوصيل!';
+
+  @override
+  String get greatJobToday => 'عمل رائع اليوم!';
+
+  @override
+  String get tripEarnings => 'أرباح هذه الرحلة';
+
+  @override
+  String get sessionTotal => 'إجمالي الجلسة';
+
+  @override
+  String get routeCompleted => 'تم إكمال المسار';
+
+  @override
+  String get backToRadar => 'العودة إلى الرادار';
 }

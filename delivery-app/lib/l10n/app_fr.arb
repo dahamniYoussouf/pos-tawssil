@@ -166,6 +166,12 @@
   "confirmCancellation": "Confirmer L'annulation",
   "back": "Retour",
   "acceptDelivery": "Accepter la livraison",
-  "currency": "DA"
+  "currency": "DA",
+  "deliveryCompleted": "Livraison Terminee !",
+  "greatJobToday": "Excellent Travail Aujourd'hui !",
+  "tripEarnings": "Gains De Cette Course",
+  "sessionTotal": "Total De La Session",
+  "routeCompleted": "Itinéraire terminé",
+  "backToRadar": "Retour au Radar"
 }
 

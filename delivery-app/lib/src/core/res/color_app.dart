@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 class AppColors {
   const AppColors._();
 
-  static const Color primaryColor = Color(0xFF07A26F);
+  // static const Color primaryColor = Color(0xFF07A26F);
+  static const Color primaryColor = Color(0xFF059669);
   static const Color scaffoldBackground = Color(0xFFF3F4F6);
   static const Color inputBackground = Color(0xFFF3F4F6);
   static const Color limeGreen = Color(0xFF79F102);
@@ -36,4 +37,8 @@ class AppColors {
   static const Color blueAccentColor = Color(0xFF87CEEB);
   static const Color primaryColor0 = Color(0xFF79F103);
   static const Color primaryColor1 = Color(0xFF22C55E);
+
+  static const Color darkBackground = Color(0xFF111827);
+  static const Color darkCard = Color(0xFF292E44);
+  static const Color primaryBlue = Color(0xFF3B82F6);
 }

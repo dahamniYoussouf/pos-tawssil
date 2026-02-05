@@ -928,7 +928,7 @@ abstract class AppLocalizations {
   /// **'Back'**
   String get back;
 
-  /// Accept delivery button text
+  /// No description provided for @acceptDelivery.
   ///
   /// In en, this message translates to:
   /// **'Accept delivery'**
@@ -939,6 +939,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'DA'**
   String get currency;
+
+  /// No description provided for @deliveryCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery Completed!'**
+  String get deliveryCompleted;
+
+  /// No description provided for @greatJobToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Great Job Today!'**
+  String get greatJobToday;
+
+  /// No description provided for @tripEarnings.
+  ///
+  /// In en, this message translates to:
+  /// **'Trip Earnings'**
+  String get tripEarnings;
+
+  /// No description provided for @sessionTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'Session Total'**
+  String get sessionTotal;
+
+  /// No description provided for @routeCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Route completed'**
+  String get routeCompleted;
+
+  /// No description provided for @backToRadar.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Radar'**
+  String get backToRadar;
 }
 
 class _AppLocalizationsDelegate
