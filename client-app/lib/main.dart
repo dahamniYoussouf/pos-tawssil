@@ -189,12 +189,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
                 ? UserInfoPage(userId: authState.userId)
                 : const HomePage(),
           );
-        } else if (authState is AuthLoading) {
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
+        // } else if (authState is AuthLoading) {
+        //   return const Scaffold(
+        //     body: Center(
+        //       child: CircularProgressIndicator(),
+        //     ),
+        //   );
         } else {
           return const PhoneNumberPage();
         }
