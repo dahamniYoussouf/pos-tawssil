@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer' as developer;
 import 'package:client_app/src/core/utils/dependency_injection.dart';
 import 'package:client_app/src/core/services/notification_service.dart';
 import 'package:client_app/src/features/cart/cubit/cart_cubit.dart';
@@ -17,7 +18,8 @@ class OrderCubit extends HydratedCubit<OrderState> {
     OrderService? orderService,
     NotificationService? notificationService,
   })  : _orderService = orderService ?? OrderService(),
-        _notificationService = notificationService ?? locator<NotificationService>(),
+        _notificationService =
+            notificationService ?? locator<NotificationService>(),
         super(OrderInitial()) {
     _initializeNotificationListener();
   }
@@ -27,10 +29,21 @@ class OrderCubit extends HydratedCubit<OrderState> {
 
   /// Initialize notification listener
   void _initializeNotificationListener() {
+    developer.log(
+      'OrderCubit: Initializing notification listener',
+      name: 'OrderCubit',
+    );
+
     _notificationSubscription = _notificationService.notificationStream.listen(
       _handleNotification,
-      onError: (error) {
-        // Handle notification stream errors silently
+      onError: (error, stackTrace) {
+        developer.log(
+          'OrderCubit: Notification stream error: $error',
+          name: 'OrderCubit',
+          error: error,
+          stackTrace: stackTrace,
+          level: 1000,
+        );
       },
     );
   }
@@ -38,29 +51,94 @@ class OrderCubit extends HydratedCubit<OrderState> {
   /// Handle incoming notifications
   Future<void> _handleNotification(Map<String, dynamic> notification) async {
     if (isClosed) return;
-
     final String type = notification['type'] ?? '';
-    final Map<String, dynamic> data = notification['data'] as Map<String, dynamic>? ?? {};
-
-    // Only process order-related notifications if we have a current order
-    if (_currentOrderId == null) return;
-
-    // Extract order ID from notification data
-    final String? notificationOrderId = data['orderId'] ?? data['order_id'] ?? data['_id'] ?? data['id'];
-
-    // Only process if notification is for current order
-    if (notificationOrderId != null && notificationOrderId == _currentOrderId) {
-      switch (type) {
-        case 'order_status_changed':
-        case 'order_updated':
-        case 'order_accepted':
-        case 'order_refused':
-        case 'driver_assigned':
-        case 'driver_location_updated':
-          // Refetch order data when status changes
-          await _silentLoadOrder(_currentOrderId!);
-          break;
+    final Map<String, dynamic> data =
+        notification['data'] as Map<String, dynamic>? ?? {};
+    final String resolvedType =
+        _resolveNotificationType(type: type, data: data);
+    developer.log(
+      'OrderCubit: Received notification - type: $resolvedType, data: $data',
+      name: 'OrderCubit',
+    );
+    final String? notificationOrderId =
+        data['orderId'] ?? data['order_id'] ?? data['_id'] ?? data['id'];
+    developer.log(
+      'OrderCubit: Notification order ID: $notificationOrderId',
+      name: 'OrderCubit',
+    );
+    if (_currentOrderId == null) {
+      if (notificationOrderId != null && _shouldRefreshOrder(resolvedType)) {
+        developer.log(
+          'OrderCubit: No current order, fetching by notification ID',
+          name: 'OrderCubit',
+        );
+        await fetchOrder(notificationOrderId);
+      } else {
+        developer.log(
+          'OrderCubit: Ignoring notification - no current order',
+          name: 'OrderCubit',
+        );
       }
+      return;
+    }
+    developer.log(
+      'OrderCubit: Current order ID: $_currentOrderId',
+      name: 'OrderCubit',
+    );
+    if (notificationOrderId != null && notificationOrderId == _currentOrderId) {
+      developer.log(
+        'OrderCubit: Processing notification for current order',
+        name: 'OrderCubit',
+      );
+      if (_shouldRefreshOrder(resolvedType)) {
+        developer.log(
+          'OrderCubit: Refreshing order data',
+          name: 'OrderCubit',
+        );
+        await _silentLoadOrder(_currentOrderId!);
+        return;
+      }
+      developer.log(
+        'OrderCubit: Unknown notification type: $resolvedType',
+        name: 'OrderCubit',
+        level: 900,
+      );
+      return;
+    }
+    developer.log(
+      'OrderCubit: Ignoring notification - order ID mismatch',
+      name: 'OrderCubit',
+    );
+  }
+
+  String _resolveNotificationType({
+    required String type,
+    required Map<String, dynamic> data,
+  }) {
+    if (type != 'notification') {
+      return type;
+    }
+    final Object? nestedType = data['type'];
+    if (nestedType is String && nestedType.isNotEmpty) {
+      return nestedType;
+    }
+    return type;
+  }
+
+  bool _shouldRefreshOrder(String type) {
+    switch (type) {
+      case 'order_created':
+      case 'order_status_changed':
+      case 'order_updated':
+      case 'order_accepted':
+      case 'order_refused':
+      case 'order_cancelled':
+      case 'order_preparing':
+      case 'driver_assigned':
+      case 'driver_location_updated':
+        return true;
+      default:
+        return false;
     }
   }
 
@@ -315,10 +393,10 @@ class OrderCubit extends HydratedCubit<OrderState> {
   OrderState? fromJson(Map<String, dynamic> json) {
     try {
       final String? stateType = json['type'];
-      
+
       // Don't persist temporary states
-      if (stateType == null || 
-          stateType == 'OrderLoading' || 
+      if (stateType == null ||
+          stateType == 'OrderLoading' ||
           stateType == 'OrderCreating' ||
           stateType == 'OrderError') {
         return null;
@@ -328,40 +406,45 @@ class OrderCubit extends HydratedCubit<OrderState> {
       if (json['order'] != null) {
         final orderJson = json['order'] as Map<String, dynamic>;
         final String status = orderJson['status'] ?? '';
-        
+
         // Clear persisted state if order is completed
-        if (status == OrderStatus.delivered || status == OrderStatus.collected) {
+        if (status == OrderStatus.delivered ||
+            status == OrderStatus.collected) {
           return null;
         }
       }
 
       // Restore persisted order state
       if (stateType == 'OrderLoaded' && json['order'] != null) {
-        final order = OrderModel.fromJson(json['order'] as Map<String, dynamic>);
+        final order =
+            OrderModel.fromJson(json['order'] as Map<String, dynamic>);
         _currentOrderId = order.id;
         return OrderLoaded(order: order);
       }
-      
+
       if (stateType == 'OrderCreated' && json['order'] != null) {
-        final order = OrderModel.fromJson(json['order'] as Map<String, dynamic>);
+        final order =
+            OrderModel.fromJson(json['order'] as Map<String, dynamic>);
         _currentOrderId = order.id;
         return OrderCreated(order: order);
       }
-      
+
       if (stateType == 'OrderRefused' && json['order'] != null) {
-        final order = OrderModel.fromJson(json['order'] as Map<String, dynamic>);
+        final order =
+            OrderModel.fromJson(json['order'] as Map<String, dynamic>);
         final reason = json['reason'] as String? ?? 'orderRefused';
         _currentOrderId = order.id;
         return OrderRefused(order: order, reason: reason);
       }
-      
+
       if (stateType == 'OrderDelayed' && json['order'] != null) {
-        final order = OrderModel.fromJson(json['order'] as Map<String, dynamic>);
+        final order =
+            OrderModel.fromJson(json['order'] as Map<String, dynamic>);
         final reason = json['reason'] as String? ?? 'orderDelayed';
         _currentOrderId = order.id;
         return OrderDelayed(order: order, reason: reason);
       }
-      
+
       return null;
     } catch (e) {
       return null;
@@ -372,8 +455,8 @@ class OrderCubit extends HydratedCubit<OrderState> {
   Map<String, dynamic>? toJson(OrderState state) {
     try {
       // Don't persist temporary states
-      if (state is OrderLoading || 
-          state is OrderCreating || 
+      if (state is OrderLoading ||
+          state is OrderCreating ||
           state is OrderError ||
           state is OrderInitial) {
         return null;
@@ -382,7 +465,7 @@ class OrderCubit extends HydratedCubit<OrderState> {
       // Persist active order states
       if (state is OrderLoaded) {
         // Don't persist if order is completed
-        if (state.order.status == OrderStatus.delivered || 
+        if (state.order.status == OrderStatus.delivered ||
             state.order.status == OrderStatus.collected) {
           return null;
         }
@@ -391,14 +474,14 @@ class OrderCubit extends HydratedCubit<OrderState> {
           'order': _orderToJson(state.order),
         };
       }
-      
+
       if (state is OrderCreated) {
         return {
           'type': 'OrderCreated',
           'order': _orderToJson(state.order),
         };
       }
-      
+
       if (state is OrderRefused) {
         return {
           'type': 'OrderRefused',
@@ -406,7 +489,7 @@ class OrderCubit extends HydratedCubit<OrderState> {
           'reason': state.reason,
         };
       }
-      
+
       if (state is OrderDelayed) {
         return {
           'type': 'OrderDelayed',
@@ -414,7 +497,7 @@ class OrderCubit extends HydratedCubit<OrderState> {
           'reason': state.reason,
         };
       }
-      
+
       return null;
     } catch (e) {
       return null;
@@ -443,22 +526,26 @@ class OrderCubit extends HydratedCubit<OrderState> {
       'refusalReason': order.refusalReason,
       'delayReason': order.delayReason,
       'orderType': order.orderType,
-      'items': order.items.map((item) => {
-        'id': item.id,
-        'name': item.name,
-        'quantity': item.quantity,
-        'price': item.price,
-      }).toList(),
-      'deliveryPerson': order.deliveryPerson != null ? {
-        'id': order.deliveryPerson!.id,
-        'firstName': order.deliveryPerson!.firstName,
-        'lastName': order.deliveryPerson!.lastName,
-        'phoneNumber': order.deliveryPerson!.phoneNumber,
-        'vehicleType': order.deliveryPerson!.vehicleType,
-        'rating': order.deliveryPerson!.rating,
-        'latitude': order.deliveryPerson!.latitude,
-        'longitude': order.deliveryPerson!.longitude,
-      } : null,
+      'items': order.items
+          .map((item) => {
+                'id': item.id,
+                'name': item.name,
+                'quantity': item.quantity,
+                'price': item.price,
+              })
+          .toList(),
+      'deliveryPerson': order.deliveryPerson != null
+          ? {
+              'id': order.deliveryPerson!.id,
+              'firstName': order.deliveryPerson!.firstName,
+              'lastName': order.deliveryPerson!.lastName,
+              'phoneNumber': order.deliveryPerson!.phoneNumber,
+              'vehicleType': order.deliveryPerson!.vehicleType,
+              'rating': order.deliveryPerson!.rating,
+              'latitude': order.deliveryPerson!.latitude,
+              'longitude': order.deliveryPerson!.longitude,
+            }
+          : null,
     };
   }
 }

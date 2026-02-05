@@ -111,7 +111,9 @@ class OrderHistoryCard extends StatelessWidget {
 
                   // Progress Bar
                   if (isOngoing || isExpanded)
-                    OrderTrackingStepsWidget(orderStatus: order.status),
+                    OrderTrackingStepsWidget(
+                        orderStatus: order.status,
+                        isDelivery: order.orderType == "delivery"),
 
                   Align(
                     alignment: Alignment.center,

@@ -1,5 +1,8 @@
+import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:client_app/src/core/services/notification_service.dart';
+import 'package:client_app/src/core/utils/dependency_injection.dart';
 import 'order_history_state.dart';
 import '../repositories/order_history_repository.dart';
 import '../models/order_model.dart';
@@ -7,12 +10,19 @@ import '../widgets/history/order_history_filter_bar.dart';
 
 class OrderHistoryCubit extends Cubit<OrderHistoryState> {
   final OrderHistoryRepository _orderHistoryRepository;
+  final NotificationService _notificationService;
+  StreamSubscription<Map<String, dynamic>>? _notificationSubscription;
 
   OrderHistoryCubit({
     OrderHistoryRepository? orderHistoryRepository,
+    NotificationService? notificationService,
   })  : _orderHistoryRepository =
             orderHistoryRepository ?? OrderHistoryRepository(),
-        super(OrderHistoryInitial());
+        _notificationService =
+            notificationService ?? locator<NotificationService>(),
+        super(OrderHistoryInitial()) {
+    _initializeNotificationListener();
+  }
 
   Future<void> fetchOrderHistory({
     OrderHistoryFilter filter = OrderHistoryFilter.all,
@@ -59,6 +69,62 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
         );
       },
     );
+  }
+
+  void _initializeNotificationListener() {
+    _notificationSubscription?.cancel();
+    _notificationSubscription = _notificationService.notificationStream.listen(
+      _handleNotification,
+    );
+  }
+
+  Future<void> _handleNotification(Map<String, dynamic> notification) async {
+    if (isClosed) return;
+    final String type = notification['type'] ?? '';
+    final Map<String, dynamic> data =
+        notification['data'] as Map<String, dynamic>? ?? {};
+    final String resolvedType =
+        _resolveNotificationType(type: type, data: data);
+    final String? notificationOrderId =
+        data['orderId'] ?? data['order_id'] ?? data['_id'] ?? data['id'];
+    if (notificationOrderId == null) {
+      return;
+    }
+    if (!_shouldRefreshOrderHistory(resolvedType)) {
+      return;
+    }
+    await refreshOrderHistory();
+  }
+
+  String _resolveNotificationType({
+    required String type,
+    required Map<String, dynamic> data,
+  }) {
+    if (type != 'notification') {
+      return type;
+    }
+    final Object? nestedType = data['type'];
+    if (nestedType is String && nestedType.isNotEmpty) {
+      return nestedType;
+    }
+    return type;
+  }
+
+  bool _shouldRefreshOrderHistory(String type) {
+    switch (type) {
+      case 'order_created':
+      case 'order_status_changed':
+      case 'order_updated':
+      case 'order_accepted':
+      case 'order_refused':
+      case 'order_cancelled':
+      case 'order_preparing':
+      case 'driver_assigned':
+      case 'driver_location_updated':
+        return true;
+      default:
+        return false;
+    }
   }
 
   Future<void> filterBy(OrderHistoryFilter filter) async {
@@ -130,5 +196,11 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
 
   Future<void> refreshOrderHistory() async {
     await fetchOrderHistory(filter: state.activeFilter);
+  }
+
+  @override
+  Future<void> close() {
+    _notificationSubscription?.cancel();
+    return super.close();
   }
 }

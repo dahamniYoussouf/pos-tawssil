@@ -12,6 +12,7 @@ import 'package:client_app/src/features/order/widgets/order_tracking_steps_widge
 import 'package:client_app/src/features/order/widgets/validate_order_button_widget.dart';
 import 'package:client_app/src/features/order/widgets/declined_order_widget.dart';
 import 'package:client_app/src/features/review/index.dart';
+import 'package:easy_refresh/easy_refresh.dart';
 import '../cubit/order_cubit.dart';
 import '../cubit/order_state.dart';
 import '../models/order_model.dart';
@@ -46,11 +47,21 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
     }
   }
 
+  Future<void> _executeRefresh() async {
+    final orderCubit = locator<OrderCubit>();
+    if (orderCubit.isClosed) {
+      return;
+    }
+    _isInitialLoad = false;
+    await orderCubit.refreshOrder();
+  }
+
   @override
   Widget build(BuildContext context) {
     final AppLocalizations localization = AppLocalizations.of(context)!;
     final orderCubit = locator<OrderCubit>();
     return Scaffold(
+      backgroundColor: ColorApp.white,
       body: BlocProvider<OrderCubit>.value(
         value: orderCubit,
         child: BlocConsumer<OrderCubit, OrderState>(
@@ -237,17 +248,34 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
           child: SafeArea(
             top: true,
             bottom: false,
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                child: Column(
-                  children: [
-                    _buildBackButton(context),
-                    _buildSheetContent(order, localization,
-                        includeHandle: false),
-                  ],
+            child: EasyRefresh.builder(
+              onRefresh: _executeRefresh,
+              header: const ClassicHeader(
+                backgroundColor: ColorApp.white,
+                textStyle: TextStyle(
+                  color: ColorApp.textBlack,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
+              childBuilder: (BuildContext context, ScrollPhysics physics) {
+                final ScrollPhysics refreshPhysics =
+                    const AlwaysScrollableScrollPhysics().applyTo(physics);
+                return SingleChildScrollView(
+                  physics: refreshPhysics,
+                  child: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                    child: Column(
+                      children: [
+                        _buildBackButton(context),
+                        _buildSheetContent(order, localization,
+                            includeHandle: false, isDelivery: isDelivery),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ),
@@ -264,13 +292,29 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
               color: Colors.white,
               borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
             ),
-            child: SingleChildScrollView(
-              controller: scrollController,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8),
-                child: _buildSheetContent(order, localization,
-                    includeHandle: true),
+            child: EasyRefresh.builder(
+              onRefresh: _executeRefresh,
+              header: const ClassicHeader(
+                backgroundColor: ColorApp.white,
+                textStyle: TextStyle(
+                  color: ColorApp.textBlack,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+              childBuilder: (BuildContext context, ScrollPhysics physics) {
+                final ScrollPhysics refreshPhysics =
+                    const AlwaysScrollableScrollPhysics().applyTo(physics);
+                return SingleChildScrollView(
+                  controller: scrollController,
+                  physics: refreshPhysics,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: _buildSheetContent(order, localization,
+                        includeHandle: true, isDelivery: isDelivery),
+                  ),
+                );
+              },
             ),
           );
         },
@@ -279,7 +323,7 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
   }
 
   Widget _buildSheetContent(OrderModel order, AppLocalizations localization,
-      {required bool includeHandle}) {
+      {required bool includeHandle, required bool isDelivery}) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -299,7 +343,8 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
         const SizedBox(height: 16),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: OrderTrackingStepsWidget(orderStatus: order.status),
+          child: OrderTrackingStepsWidget(
+              orderStatus: order.status, isDelivery: isDelivery),
         ),
         const SizedBox(height: 8),
         Divider(indent: 4, endIndent: 4, color: ColorApp.greyBorder),
@@ -307,8 +352,10 @@ class _OrderTrackingPageState extends State<OrderTrackingPage> {
         OrderDetailsCard(order: order),
         if (order.isDelivered) const ValidateOrderButtonWidget(),
         const SizedBox(height: 16),
-        DeliveryPersonCard(
-            person: order.deliveryPerson, localization: localization),
+        // check if order is delivery mode
+        if (isDelivery)
+          DeliveryPersonCard(
+              person: order.deliveryPerson, localization: localization),
       ],
     );
   }

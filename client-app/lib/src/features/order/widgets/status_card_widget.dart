@@ -201,42 +201,37 @@ _OrderStatusInfo _getStatusInfo(BuildContext context, String status) {
         description: localizations.statusCardAcceptedDescription,
       );
     case OrderStatus.preparing:
+    case OrderStatus.assigned:
       return _OrderStatusInfo(
         icon: '🍳',
         title: localizations.statusCardPreparingTitle,
         description: localizations.statusCardPreparingDescription,
       );
-    // todo : delete this message
-    case OrderStatus.assigned:
-      return _OrderStatusInfo(
-        icon: '🛵',
-        title: localizations.statusCardAssignedTitle,
-        description: localizations.statusCardAssignedDescription,
-      );
+
     case OrderStatus.delivering:
       return _OrderStatusInfo(
         icon: '🛵',
         title: localizations.statusCardDeliveringTitle,
         description: localizations.statusCardDeliveringDescription,
       );
-    case OrderStatus.delivered:
-      return _OrderStatusInfo(
-        icon: '✅',
-        title: localizations.statusCardDeliveredTitle,
-        description: localizations.statusCardDeliveredDescription,
-      );
-    case OrderStatus.readyToCollect:
-      return _OrderStatusInfo(
-        icon: '✅',
-        title: localizations.statusCardReadyToCollectTitle,
-        description: localizations.statusCardReadyToCollectDescription,
-      );
-    case OrderStatus.collected:
-      return _OrderStatusInfo(
-        icon: '✅',
-        title: localizations.statusCardCollectedTitle,
-        description: localizations.statusCardCollectedDescription,
-      );
+    // case OrderStatus.delivered:
+    //   return _OrderStatusInfo(
+    //     icon: '✅',
+    //     title: localizations.statusCardDeliveredTitle,
+    //     description: localizations.statusCardDeliveredDescription,
+    //   );
+    // case OrderStatus.readyToCollect:
+    //   return _OrderStatusInfo(
+    //     icon: '✅',
+    //     title: localizations.statusCardReadyToCollectTitle,
+    //     description: localizations.statusCardReadyToCollectDescription,
+    //   );
+    // case OrderStatus.collected:
+    //   return _OrderStatusInfo(
+    //     icon: '✅',
+    //     title: localizations.statusCardCollectedTitle,
+    //     description: localizations.statusCardCollectedDescription,
+    //   );
     default:
       return _OrderStatusInfo(
         icon: '⏳',

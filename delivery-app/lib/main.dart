@@ -103,11 +103,15 @@ class AuthWrapper extends StatefulWidget {
 
 class _AuthWrapperState extends State<AuthWrapper> {
   bool _hasCheckedAuth = false;
+  bool _hasRequestedNotificationsConnection = false;
 
   @override
   void initState() {
     super.initState();
     _checkAuthAndNavigate();
+    _connectNotificationsIfNeeded(
+      authState: context.read<AuthCubit>().state,
+    );
   }
 
   Future<void> _checkAuthAndNavigate() async {
@@ -119,6 +123,15 @@ class _AuthWrapperState extends State<AuthWrapper> {
     }
   }
 
+  void _connectNotificationsIfNeeded({required AuthState authState}) {
+    if (_hasRequestedNotificationsConnection) return;
+    if (authState is! AuthSuccess) return;
+    _hasRequestedNotificationsConnection = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<NotificationsCubit>().connect();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthCubit, AuthState>(
@@ -128,11 +141,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
             listenWhen: (previous, current) =>
                 current is AuthSuccess && previous is! AuthSuccess,
             listener: (context, state) {
-              if (state is AuthSuccess) {
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  context.read<NotificationsCubit>().connect();
-                });
-              }
+              _connectNotificationsIfNeeded(authState: state);
             },
             child: const HomePage(),
           );

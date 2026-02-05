@@ -27,7 +27,7 @@ import 'src/features/restaurant/cubit/search_history_cubit.dart';
 import 'src/features/restaurant/cubit/homepage_cubit.dart';
 import 'src/features/order/cubit/order_cubit.dart';
 import 'src/core/localization/locale_cubit.dart';
-import 'src/core/services/notification_service.dart';
+import 'src/core/notifications/cubit/notifications_cubit.dart';
 
 // Screen Imports
 import 'src/features/auth/pages/phone_number_page.dart';
@@ -44,11 +44,7 @@ void main() async {
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: HydratedStorageDirectory(storageDirectory.path),
   );
-  
-  // Connect notification service for real-time order updates
-  final notificationService = locator<NotificationService>();
-  await notificationService.connect();
-  
+
   runApp(MyApp());
 }
 
@@ -59,6 +55,8 @@ Future<void> _init() async {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -69,8 +67,8 @@ class MyApp extends StatelessWidget {
         BlocProvider<AuthCubit>(
           create: (context) => AuthCubit(authService: AuthService()),
         ),
-        BlocProvider<UserCubit>(
-          create: (context) => UserCubit(authService: AuthService()),
+        BlocProvider<NotificationsCubit>(
+          create: (context) => locator<NotificationsCubit>(),
         ),
         BlocProvider<LocationCubit>(
           create: (context) => LocationCubit(),
@@ -138,19 +136,65 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AuthWrapper extends StatelessWidget {
+class AuthWrapper extends StatefulWidget {
   const AuthWrapper({Key? key}) : super(key: key);
+
+  @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  bool _hasCheckedAuth = false;
+  bool _hasRequestedNotificationsConnection = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkAuthAndNavigate();
+    _connectNotificationsIfNeeded(
+      authState: context.read<AuthCubit>().state,
+    );
+  }
+
+  Future<void> _checkAuthAndNavigate() async {
+    if (!_hasCheckedAuth) {
+      _hasCheckedAuth = true;
+      if (mounted) {
+        await context.read<AuthCubit>().checkAuthenticationStatus();
+      }
+    }
+  }
+
+  void _connectNotificationsIfNeeded({required AuthState authState}) {
+    if (_hasRequestedNotificationsConnection) return;
+    if (authState is! AuthSuccess) return;
+    _hasRequestedNotificationsConnection = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<NotificationsCubit>().connect();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthCubit, AuthState>(
-      builder: (context, state) {
-        if (state is AuthSuccess) {
-          if (state.isNewUser) {
-            return UserInfoPage(userId: state.userId);
-          } else {
-            return const HomePage();
-          }
+      builder: (context, authState) {
+        if (authState is AuthSuccess) {
+          return BlocListener<AuthCubit, AuthState>(
+            listenWhen: (previous, current) =>
+                current is AuthSuccess && previous is! AuthSuccess,
+            listener: (context, state) {
+              _connectNotificationsIfNeeded(authState: state);
+            },
+            child: authState.isNewUser
+                ? UserInfoPage(userId: authState.userId)
+                : const HomePage(),
+          );
+        } else if (authState is AuthLoading) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
+            ),
+          );
         } else {
           return const PhoneNumberPage();
         }

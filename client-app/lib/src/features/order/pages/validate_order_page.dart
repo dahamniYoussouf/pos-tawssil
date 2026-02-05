@@ -242,7 +242,8 @@ class _ValidateOrderPageState extends State<ValidateOrderPage> {
                                 orderDetailsLabel:
                                     localization.orderDetailsLabel,
                                 localization: localization,
-                                orderNumber: widget.orderNumber),
+                                orderNumber: widget.orderNumber,
+                                isDelivery: widget.orderType == "delivery"),
                           ])))
             ])),
             if (_isLoading)
