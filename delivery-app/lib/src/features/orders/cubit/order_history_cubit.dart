@@ -14,52 +14,6 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
             orderHistoryRepository ?? OrderHistoryRepository(),
         super(const OrderHistoryInitial());
 
-  // Future<void> fetchOrderHistory({
-  //   OrderHistoryFilter filter = OrderHistoryFilter.all,
-  //   List<String>? status,
-  //   String? orderType,
-  //   String? dateFrom,
-  //   String? dateTo,
-  //   double? minPrice,
-  //   double? maxPrice,
-  //   String? search,
-  //   int page = 1,
-  //   int limit = 50,
-  // }) async {
-  //   final previousState =
-  //       state is OrderHistoryLoaded ? state as OrderHistoryLoaded : null;
-
-  //   emit(OrderHistoryLoading(activeFilter: filter));
-
-  //   final result = await _orderHistoryRepository.fetchOrderHistory(
-  //     status: status ?? _mapFilterToStatuses(filter),
-  //     orderType: orderType,
-  //     dateFrom: dateFrom,
-  //     dateTo: dateTo,
-  //     minPrice: minPrice,
-  //     maxPrice: maxPrice,
-  //     search: search,
-  //     page: page,
-  //     limit: limit,
-  //   );
-
-  //   result.fold(
-  //     (error) => emit(OrderHistoryError(message: error, activeFilter: filter)),
-  //     (orders) {
-  //       final grouped = _groupOrdersByDate(orders);
-  //       emit(
-  //         OrderHistoryLoaded(
-  //           orders: orders,
-  //           groupedOrders: grouped,
-  //           activeFilter: filter,
-  //           expandedOrderIds: previousState?.expandedOrderIds ?? {},
-  //           totalCount: orders.length,
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-
   Future<void> fetchDriverOrderHistory({
     String? dateFrom,
     String? dateTo,
@@ -157,26 +111,6 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
       groupedOrders[dateLabel]!.add(order);
     }
     return groupedOrders;
-  }
-
-  List<String>? _mapFilterToStatuses(OrderHistoryFilter filter) {
-    switch (filter) {
-      case OrderHistoryFilter.ongoing:
-        return [
-          OrderStatus.pending,
-          OrderStatus.accepted,
-          OrderStatus.preparing,
-          OrderStatus.delivering,
-          OrderStatus.assigned,
-        ];
-      case OrderHistoryFilter.delivered:
-        return [OrderStatus.delivered];
-      case OrderHistoryFilter.cancelled:
-        return [OrderStatus.declined];
-      case OrderHistoryFilter.all:
-      default:
-        return null;
-    }
   }
 
   Future<void> refreshOrderHistory() async {

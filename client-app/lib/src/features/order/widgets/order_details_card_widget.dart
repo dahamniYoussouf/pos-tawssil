@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:client_app/l10n/app_localizations.dart';
 import 'package:client_app/src/core/res/color_app.dart';
-import 'package:client_app/src/core/res/media_res.dart';
 import 'package:client_app/src/features/order/index.dart';
 
 class OrderDetailsCard extends StatefulWidget {
