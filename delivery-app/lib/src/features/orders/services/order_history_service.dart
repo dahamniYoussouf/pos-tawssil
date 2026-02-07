@@ -1,5 +1,6 @@
 import '../../../core/services/base_api_service.dart';
 
+// todo : delete this after we complete the testing
 class OrderHistoryService extends BaseApiService {
   Future<Map<String, dynamic>> fetchOrderHistory({
     List<String>? status,
@@ -48,6 +49,41 @@ class OrderHistoryService extends BaseApiService {
     return await getRequest(
       '/order/',
       queryParameters: queryParameters,
+    );
+  }
+}
+
+class DriverOrderHistoryService extends BaseApiService {
+  Future<Map<String, dynamic>> fetchDriverOrderHistory({
+    String? dateFrom,
+    String? dateTo,
+    int page = 1,
+    int limit = 50,
+  }) async {
+    final queryParameters = <String, dynamic>{};
+
+    if (dateFrom != null && dateFrom.isNotEmpty) {
+      queryParameters['date_from'] = dateFrom;
+    }
+
+    if (dateTo != null && dateTo.isNotEmpty) {
+      queryParameters['date_to'] = dateTo;
+    }
+
+    queryParameters['page'] = page;
+    queryParameters['limit'] = limit;
+
+    return await getRequest(
+      '/driver/orders/history',
+      queryParameters: queryParameters,
+    );
+  }
+}
+
+class DriverActiveOrderService extends BaseApiService {
+  Future<Map<String, dynamic>> fetchActiveOrders() async {
+    return await getRequest(
+      '/driver/active-orders',
     );
   }
 }

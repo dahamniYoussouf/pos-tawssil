@@ -14,44 +14,78 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
             orderHistoryRepository ?? OrderHistoryRepository(),
         super(const OrderHistoryInitial());
 
-  Future<void> fetchOrderHistory({
-    OrderHistoryFilter filter = OrderHistoryFilter.all,
-    List<String>? status,
-    String? orderType,
+  // Future<void> fetchOrderHistory({
+  //   OrderHistoryFilter filter = OrderHistoryFilter.all,
+  //   List<String>? status,
+  //   String? orderType,
+  //   String? dateFrom,
+  //   String? dateTo,
+  //   double? minPrice,
+  //   double? maxPrice,
+  //   String? search,
+  //   int page = 1,
+  //   int limit = 50,
+  // }) async {
+  //   final previousState =
+  //       state is OrderHistoryLoaded ? state as OrderHistoryLoaded : null;
+
+  //   emit(OrderHistoryLoading(activeFilter: filter));
+
+  //   final result = await _orderHistoryRepository.fetchOrderHistory(
+  //     status: status ?? _mapFilterToStatuses(filter),
+  //     orderType: orderType,
+  //     dateFrom: dateFrom,
+  //     dateTo: dateTo,
+  //     minPrice: minPrice,
+  //     maxPrice: maxPrice,
+  //     search: search,
+  //     page: page,
+  //     limit: limit,
+  //   );
+
+  //   result.fold(
+  //     (error) => emit(OrderHistoryError(message: error, activeFilter: filter)),
+  //     (orders) {
+  //       final grouped = _groupOrdersByDate(orders);
+  //       emit(
+  //         OrderHistoryLoaded(
+  //           orders: orders,
+  //           groupedOrders: grouped,
+  //           activeFilter: filter,
+  //           expandedOrderIds: previousState?.expandedOrderIds ?? {},
+  //           totalCount: orders.length,
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+
+  Future<void> fetchDriverOrderHistory({
     String? dateFrom,
     String? dateTo,
-    double? minPrice,
-    double? maxPrice,
-    String? search,
     int page = 1,
     int limit = 50,
   }) async {
     final previousState =
         state is OrderHistoryLoaded ? state as OrderHistoryLoaded : null;
 
-    emit(OrderHistoryLoading(activeFilter: filter));
-
-    final result = await _orderHistoryRepository.fetchOrderHistory(
-      status: status ?? _mapFilterToStatuses(filter),
-      orderType: orderType,
+    final result = await _orderHistoryRepository.fetchDriverOrderHistory(
       dateFrom: dateFrom,
       dateTo: dateTo,
-      minPrice: minPrice,
-      maxPrice: maxPrice,
-      search: search,
       page: page,
       limit: limit,
     );
 
     result.fold(
-      (error) => emit(OrderHistoryError(message: error, activeFilter: filter)),
+      (error) => emit(OrderHistoryError(
+          message: error, activeFilter: OrderHistoryFilter.all)),
       (orders) {
         final grouped = _groupOrdersByDate(orders);
         emit(
           OrderHistoryLoaded(
             orders: orders,
             groupedOrders: grouped,
-            activeFilter: filter,
+            activeFilter: OrderHistoryFilter.all,
             expandedOrderIds: previousState?.expandedOrderIds ?? {},
             totalCount: orders.length,
           ),
@@ -60,8 +94,26 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
     );
   }
 
+  Future<void> fetchActiveOrders() async {
+    final previousState =
+        state is OrderHistoryLoaded ? state as OrderHistoryLoaded : null;
+    final result = await _orderHistoryRepository.fetchActiveOrders();
+    result.fold(
+      (error) => emit(OrderHistoryError(
+          message: error, activeFilter: OrderHistoryFilter.all)),
+      (orders) {
+        emit(OrderHistoryLoaded(
+            orders: orders,
+            groupedOrders: {},
+            activeFilter: OrderHistoryFilter.all,
+            expandedOrderIds: previousState?.expandedOrderIds ?? {},
+            totalCount: orders.length));
+      },
+    );
+  }
+
   Future<void> filterBy(OrderHistoryFilter filter) async {
-    await fetchOrderHistory(filter: filter);
+    await fetchDriverOrderHistory();
   }
 
   void toggleOrderExpansion(String orderId) {
@@ -128,6 +180,6 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
   }
 
   Future<void> refreshOrderHistory() async {
-    await fetchOrderHistory(filter: state.activeFilter);
+    await fetchDriverOrderHistory();
   }
 }

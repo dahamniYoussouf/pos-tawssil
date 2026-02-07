@@ -15,7 +15,7 @@ class OrderHistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => OrderHistoryCubit()..fetchOrderHistory(),
+      create: (context) => OrderHistoryCubit()..fetchDriverOrderHistory(),
       child: const OrderHistoryView(),
     );
   }
@@ -29,7 +29,7 @@ class OrderHistoryView extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<OrderHistoryCubit, OrderHistoryState>(
       builder: (context, state) {
-        final activeFilter = state.activeFilter;
+        // final activeFilter = state.activeFilter;
         return Scaffold(
           backgroundColor: AppColors.white,
           appBar: AppBar(
@@ -46,12 +46,13 @@ class OrderHistoryView extends StatelessWidget {
           ),
           body: Column(
             children: [
-              OrderHistoryFilterBar(
-                activeFilter: activeFilter,
-                onFilterChanged: (filter) {
-                  context.read<OrderHistoryCubit>().filterBy(filter);
-                },
-              ),
+              // todo : delete later if we dont use it any more
+              // OrderHistoryFilterBar(
+              //   activeFilter: activeFilter,
+              //   onFilterChanged: (filter) {
+              //     context.read<OrderHistoryCubit>().filterBy(filter);
+              //   },
+              // ),
               Expanded(
                 child: _buildBody(context, state, l10n),
               ),
@@ -133,12 +134,19 @@ class OrderHistoryView extends StatelessWidget {
 
   Widget _buildEmptyState(BuildContext context, AppLocalizations l10n) {
     return Center(
+        child: Padding(
+      padding: EdgeInsets.all(16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(Icons.shopping_bag_outlined, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
-          Text(l10n.noOrdersYet, style: Theme.of(context).textTheme.titleLarge),
+          Text(l10n.noOrdersYet,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.bold, fontSize: 18)),
           const SizedBox(height: 8),
           Text(
             l10n.startOrderingNow,
@@ -149,7 +157,7 @@ class OrderHistoryView extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 
   Widget _buildErrorState(

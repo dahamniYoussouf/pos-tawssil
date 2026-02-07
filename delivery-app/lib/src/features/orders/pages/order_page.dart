@@ -1,11 +1,10 @@
 import 'package:delivery_app/l10n/app_localizations.dart';
 import 'package:delivery_app/src/core/res/color_app.dart';
+import 'package:delivery_app/src/features/orders/cubit/order_active_cubit.dart';
+import 'package:delivery_app/src/features/orders/cubit/order_active_state.dart';
 import 'package:delivery_app/src/features/orders/widgets/history/order_history_card.dart';
-import 'package:delivery_app/src/features/orders/widgets/history/order_history_filter_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../cubit/order_history_cubit.dart';
-import '../cubit/order_history_state.dart';
 import '../pages/order_details_page.dart';
 import '../models/order_model.dart';
 
@@ -15,8 +14,7 @@ class OrderPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => OrderHistoryCubit()
-        ..fetchOrderHistory(filter: OrderHistoryFilter.ongoing),
+      create: (context) => OrderActiveCubit()..fetchActiveOrders(),
       child: const OrderView(),
     );
   }
@@ -28,7 +26,7 @@ class OrderView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return BlocBuilder<OrderHistoryCubit, OrderHistoryState>(
+    return BlocBuilder<OrderActiveCubit, OrderActiveState>(
       builder: (context, state) {
         return Scaffold(
           backgroundColor: AppColors.white,
@@ -51,20 +49,20 @@ class OrderView extends StatelessWidget {
   }
 
   Widget _buildBody(
-      BuildContext context, OrderHistoryState state, AppLocalizations l10n) {
-    if (state is OrderHistoryInitial || state is OrderHistoryLoading) {
+      BuildContext context, OrderActiveState state, AppLocalizations l10n) {
+    if (state is OrderActiveInitial || state is OrderActiveLoading) {
       return const Center(child: CircularProgressIndicator());
-    } else if (state is OrderHistoryLoaded) {
+    } else if (state is OrderActiveLoaded) {
       if (state.orders.isEmpty) {
         return _buildEmptyState(context, l10n);
       }
       return RefreshIndicator(
         onRefresh: () async {
-          await context.read<OrderHistoryCubit>().refreshOrderHistory();
+          await context.read<OrderActiveCubit>().refreshOrderActive();
         },
         child: _buildGroupedOrderList(context, state.groupedOrders, l10n),
       );
-    } else if (state is OrderHistoryError) {
+    } else if (state is OrderActiveError) {
       return _buildErrorState(context, l10n, state.message);
     }
     return const SizedBox();
@@ -129,12 +127,19 @@ class OrderView extends StatelessWidget {
 
   Widget _buildEmptyState(BuildContext context, AppLocalizations l10n) {
     return Center(
+        child: Padding(
+      padding: EdgeInsets.all(16),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(Icons.shopping_bag_outlined, size: 80, color: Colors.grey[400]),
           const SizedBox(height: 16),
-          Text(l10n.noOrdersYet, style: Theme.of(context).textTheme.titleLarge),
+          Text(l10n.noOrdersYet,
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.bold, fontSize: 18)),
           const SizedBox(height: 8),
           Text(
             l10n.startOrderingNow,
@@ -145,7 +150,7 @@ class OrderView extends StatelessWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 
   Widget _buildErrorState(
@@ -172,9 +177,7 @@ class OrderView extends StatelessWidget {
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () {
-              context
-                  .read<OrderHistoryCubit>()
-                  .filterBy(OrderHistoryFilter.ongoing);
+              context.read<OrderActiveCubit>().fetchActiveOrders();
             },
             icon: const Icon(Icons.refresh),
             label: Text(l10n.retry),

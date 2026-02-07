@@ -1,6 +1,7 @@
 class ApiConfig {
-  static const String baseUrl = 'https://tawssilbackyou.onrender.com';
-  static const String socketUrl = 'https://tawssilbackyou.onrender.com';
+  static const String baseUrl = "https://wpricoh14061.icosnetcloud.com/api";
+  static const String socketUrl = "https://wpricoh14061.icosnetcloud.com";
+  //  'https://tawssilbackyou.onrender.com';
   static const String loginEndpoint = '/auth/login';
   static const String registerEndpoint = '/auth/register';
   static String get loginUrl => '$baseUrl$loginEndpoint';
