@@ -31,15 +31,13 @@ class NearbyOrderCard extends StatelessWidget {
     final String restaurantName =
         order.restaurantName ?? localizations.restaurant;
     final String? restaurantPhoneNumber =
-        "+213 123456789"; 
-    final String restaurantAddress =
-        order.restaurantAddress ?? 'Local 10, Cite 40 Logts Btb4, Bab Ezzo...';
-    final String deliveryAddress =
-        order.deliveryAddress ?? 'Local 10, Cite 40 Logts Btb4, Bab Ezzo...';
-    final double restaurantDistance = 2.5;
-    final int restaurantTime = 12;
-    final double totalDistance = 3.5;
-    final int totalTime = 22;
+        null; // Should come from API if available
+    final String restaurantAddress = order.restaurantAddress ?? '--';
+    final String deliveryAddress = order.deliveryAddress ?? '--';
+    final double? restaurantDistance = null; // Calculated or from API
+    final int? restaurantTime = order.deliveryTimeMinutes;
+    final double? totalDistance = order.deliveryDistance;
+    final int? totalTime = order.deliveryTimeMinutes;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -68,10 +66,10 @@ class NearbyOrderCard extends StatelessWidget {
               restaurantName,
               restaurantAddress,
               deliveryAddress,
-              restaurantDistance,
-              restaurantTime,
-              totalDistance,
-              totalTime,
+              restaurantDistance ?? 0.0,
+              restaurantTime ?? 0,
+              totalDistance ?? 0.0,
+              totalTime ?? 0,
               restaurantPhoneNumber,
             ),
             const SizedBox(height: 16),

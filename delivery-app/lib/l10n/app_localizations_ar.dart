@@ -92,6 +92,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get willaya => 'الولاية';
 
   @override
+  String get cancelReasonTechnicalIssue => 'مشكلة تقنية مع الطلب';
+
+  @override
+  String get confirmDelivery => 'تأكيد التوصيل';
+
+  @override
+  String get confirmDeliveryMessage =>
+      'هل أنت متأكد من أنك تريد تأكيد التوصيل وإنهاء هذا الطلب؟';
+
+  @override
+  String get yes => 'نعم';
+
+  @override
+  String get no => 'لا';
+
+  @override
   String get zone => 'المنطقة';
 
   @override
@@ -256,9 +272,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get cancelReasonClientCanceled => 'ألغى العميل طلبه';
-
-  @override
-  String get cancelReasonTechnicalIssue => 'مشكلة تقنية مع الطلب';
 
   @override
   String get cancelReasonOther => 'سبب آخر';

@@ -18,21 +18,21 @@ class ProfileMenuListWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
-          ProfileMenuItemWidget(
-            icon: MediaRes.promotionIcon,
-            title: l10n.myPromotions,
-            onTap: () {},
-          ),
+          // ProfileMenuItemWidget(
+          //   icon: MediaRes.promotionIcon,
+          //   title: l10n.myPromotions,
+          //   onTap: () {},
+          // ),
           ProfileMenuItemWidget(
             icon: MediaRes.walletIcon,
             title: l10n.paymentMethods,
             onTap: () {},
           ),
-          ProfileMenuItemWidget(
-            icon: MediaRes.messageIcon,
-            title: l10n.messages,
-            onTap: () {},
-          ),
+          // ProfileMenuItemWidget(
+          //   icon: MediaRes.messageIcon,
+          //   title: l10n.messages,
+          //   onTap: () {},
+          // ),
           ProfileMenuItemWidget(
             icon: MediaRes.usersIcon,
             title: l10n.inviteFriends,

@@ -149,7 +149,7 @@ class FakeOrdersData {
     try {
       return getFakeOrders().firstWhere((order) => order.id == id);
     } catch (_) {
-      return getFakeOrders().first; // Fallback to first one
+      return null;
     }
   }
 }

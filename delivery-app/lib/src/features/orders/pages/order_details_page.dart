@@ -122,11 +122,23 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                     ),
                     const SizedBox(height: 15),
 
+                    // Pickup Address (Restaurant)
+                    _buildSectionHeader(localizations.restaurant),
+                    const SizedBox(height: 5),
+                    Text(
+                      order.restaurantAddress ?? "--",
+                      style: AppTextStyles.gilmerMedium.copyWith(
+                        fontSize: 16,
+                        color: AppColors.textMedium,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+
                     // Delivery Address
                     _buildSectionHeader(localizations.deliveryAddressHeader),
                     const SizedBox(height: 5),
                     Text(
-                      order.restaurantAddress ?? "Baraki, Sidi Moussa",
+                      order.deliveryAddress ?? "--",
                       style: AppTextStyles.gilmerMedium.copyWith(
                         fontSize: 16,
                         color: AppColors.textMedium,
@@ -138,7 +150,7 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                     _buildSectionHeader(localizations.deliveryTimeHeader),
                     const SizedBox(height: 5),
                     Text(
-                      "${order.deliveryTimeMinutes ?? '25-35'} min",
+                      "${order.deliveryTimeMinutes ?? '--'} min",
                       style: AppTextStyles.gilmerMedium.copyWith(
                         fontSize: 16,
                         color: AppColors.textMedium,
@@ -174,7 +186,8 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                     _buildSectionHeader(localizations.paymentMethodHeader),
                     const SizedBox(height: 5),
                     Text(
-                      localizations.cashPayment,
+                      order.paymentMethod?.replaceAll('_', ' ').toUpperCase() ??
+                          localizations.cashPayment,
                       style: AppTextStyles.gilmerMedium.copyWith(
                         fontSize: 16,
                         color: AppColors.textMedium,

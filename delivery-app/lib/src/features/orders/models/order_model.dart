@@ -342,8 +342,11 @@ class OrderModel {
   });
 
   factory OrderModel.fromJson(Map<String, dynamic> json) {
-    final itemsList =
-        json['items'] ?? json['orderItems'] ?? json['order_items'] ?? [];
+    final itemsList = json['order_items'] ??
+        json['orderItems'] ??
+        json['items'] ??
+        json['order_items_details'] ??
+        [];
     final List<OrderItem> items = (itemsList as List)
         .map((item) => OrderItem.fromJson(item as Map<String, dynamic>))
         .toList();
@@ -393,12 +396,17 @@ class OrderModel {
           restaurantLng = coords[0];
           restaurantLat = coords[1];
         } else {
-          restaurantLat = restaurantJson['latitude'] != null
-              ? (restaurantJson['latitude'] as num).toDouble()
-              : null;
-          restaurantLng = restaurantJson['longitude'] != null
-              ? (restaurantJson['longitude'] as num).toDouble()
-              : null;
+          restaurantLat =
+              (restaurantJson['latitude'] ?? restaurantJson['lat']) != null
+                  ? (restaurantJson['latitude'] ?? restaurantJson['lat'] as num)
+                      .toDouble()
+                  : null;
+          restaurantLng =
+              (restaurantJson['longitude'] ?? restaurantJson['lng']) != null
+                  ? (restaurantJson['longitude'] ??
+                          restaurantJson['lng'] as num)
+                      .toDouble()
+                  : null;
         }
       }
     }
@@ -422,11 +430,11 @@ class OrderModel {
         deliveryLng = coords[0];
         deliveryLat = coords[1];
       } else {
-        deliveryLat = location?['latitude'] != null
-            ? (location!['latitude'] as num).toDouble()
+        deliveryLat = (location?['latitude'] ?? location?['lat']) != null
+            ? (location!['latitude'] ?? location['lat'] as num).toDouble()
             : null;
-        deliveryLng = location?['longitude'] != null
-            ? (location!['longitude'] as num).toDouble()
+        deliveryLng = (location?['longitude'] ?? location?['lng']) != null
+            ? (location!['longitude'] ?? location['lng'] as num).toDouble()
             : null;
       }
     }
@@ -438,13 +446,20 @@ class OrderModel {
         : null;
 
     String? restaurantName;
-    restaurantName = json['restaurantName'] ?? json['restaurant_name'];
+    restaurantName = json['restaurantName'] ??
+        json['restaurant_name'] ??
+        json['restaurant_nom'] ??
+        json['nom_restaurant'];
+
     String? restaurantAddress;
     String? restaurantImageUrl;
     if (restaurantJson != null) {
-      restaurantName ??= restaurantJson['name'] ?? restaurantJson['nom'];
-      restaurantAddress =
-          restaurantJson['address'] ?? restaurantJson['adresse'];
+      restaurantName ??= restaurantJson['name'] ??
+          restaurantJson['nom'] ??
+          restaurantJson['restaurant_name'];
+      restaurantAddress = restaurantJson['address'] ??
+          restaurantJson['adresse'] ??
+          restaurantJson['restaurant_address'];
       final dynamic cover = restaurantJson['coverImage'] ??
           restaurantJson['cover_image'] ??
           restaurantJson['image'] ??
@@ -461,8 +476,9 @@ class OrderModel {
         }
       }
     }
-    restaurantAddress ??=
-        json['restaurantAddress'] ?? json['restaurant_address'];
+    restaurantAddress ??= json['restaurantAddress'] ??
+        json['restaurant_address'] ??
+        json['address_restaurant'];
     restaurantImageUrl ??=
         json['restaurantImageUrl'] ?? json['restaurant_image_url'];
 
@@ -510,15 +526,16 @@ class OrderModel {
     return OrderModel(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
       orderNumber:
-          json['orderNumber'] ?? json['order_number'] ?? json['number'] ?? '',
+          json['order_number'] ?? json['orderNumber'] ?? json['number'] ?? '',
       status: json['status'] ?? OrderStatus.pending,
       items: items,
-      totalPrice: parseDouble(json['totalPrice'] ??
+      totalPrice: parseDouble(json['total_amount'] ??
+          json['totalPrice'] ??
           json['total_price'] ??
-          json['total_amount'] ??
           json['total']),
-      deliveryAddress: json['deliveryAddress'] ??
-          json['delivery_address'] ??
+      deliveryAddress: json['delivery_address'] ??
+          json['deliveryAddress'] ??
+          json['address_livraison'] ??
           json['address'],
       restaurantLatitude: restaurantLat,
       restaurantLongitude: restaurantLng,
@@ -528,23 +545,27 @@ class OrderModel {
       restaurantAddress: restaurantAddress,
       restaurantImageUrl: restaurantImageUrl,
       deliveryPerson: deliveryPerson,
-      estimatedDeliveryTime: parseDate(json['estimated_delivery_time'] ??
-          json['estimated_delivery_time'] ??
-          json['delivery_time']),
-      createdAt: parseDate(json['createdAt'] ?? json['created_at']),
-      updatedAt: parseDate(json['updatedAt'] ?? json['updated_at']),
-      paymentMethod: json['paymentMethod'] ?? json['payment_method'],
-      refusalReason: json['refusalReason'] ??
-          json['refusal_reason'] ??
+      estimatedDeliveryTime:
+          parseDate(json['estimated_delivery_time'] ?? json['delivery_time']),
+      createdAt: parseDate(json['created_at'] ?? json['createdAt']),
+      updatedAt: parseDate(json['updated_at'] ?? json['updatedAt']),
+      paymentMethod: json['payment_method'] ?? json['paymentMethod'],
+      refusalReason: json['refusal_reason'] ??
+          json['refusalReason'] ??
           json['decline_reason'],
-      delayReason: json['delayReason'] ?? json['delay_reason'],
+      delayReason: json['delay_reason'] ?? json['delayReason'],
       orderType: json['order_type'] ?? "delivery",
-      deliveryDistance: parseNullableDouble(
-          json['distance_km'] ?? json['distance'] ?? json['distance_m']),
-      deliveryTimeMinutes: parseInt(
-          json['deliveryTimeMinutes'] ?? json['delivery_time_minutes']),
-      deliveryPrice: parseNullableDouble(
-          json['delivery_fee'] ?? json['delivery_fee'] ?? json['delivery_fee']),
+      deliveryDistance: parseNullableDouble(json['delivery_distance'] ??
+          json['distance_km'] ??
+          json['distance'] ??
+          json['distance_m']),
+      deliveryTimeMinutes: parseInt(json['preparation_time'] ??
+          json['deliveryTimeMinutes'] ??
+          json['delivery_time_minutes'] ??
+          json['temps_livraison']),
+      deliveryPrice: parseNullableDouble(json['delivery_fee'] ??
+          json['delivery_price'] ??
+          json['prix_livraison']),
       client: client,
     );
   }

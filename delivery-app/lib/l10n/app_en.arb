@@ -96,6 +96,11 @@
   "@willaya": {
     "description": "Willaya label"
   },
+  "cancelReasonTechnicalIssue": "Technical issue with the order",
+  "confirmDelivery": "Confirm Delivery",
+  "confirmDeliveryMessage": "Are you sure you want to confirm the delivery and finish this order?",
+  "yes": "Yes",
+  "no": "No",
   "zone": "Zone",
   "@zone": {
     "description": "Zone label"

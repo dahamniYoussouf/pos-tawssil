@@ -262,6 +262,36 @@ abstract class AppLocalizations {
   /// **'Willaya'**
   String get willaya;
 
+  /// Cancel reason: technical issue
+  ///
+  /// In en, this message translates to:
+  /// **'Technical problem with the order'**
+  String get cancelReasonTechnicalIssue;
+
+  /// No description provided for @confirmDelivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Delivery'**
+  String get confirmDelivery;
+
+  /// No description provided for @confirmDeliveryMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to confirm the delivery and finish this order?'**
+  String get confirmDeliveryMessage;
+
+  /// No description provided for @yes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get yes;
+
+  /// No description provided for @no.
+  ///
+  /// In en, this message translates to:
+  /// **'No'**
+  String get no;
+
   /// Zone label
   ///
   /// In en, this message translates to:
@@ -579,12 +609,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The client canceled their order'**
   String get cancelReasonClientCanceled;
-
-  /// Cancel reason: technical issue
-  ///
-  /// In en, this message translates to:
-  /// **'Technical problem with the order'**
-  String get cancelReasonTechnicalIssue;
 
   /// Cancel reason: other
   ///

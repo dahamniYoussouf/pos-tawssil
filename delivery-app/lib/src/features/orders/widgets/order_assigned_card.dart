@@ -72,9 +72,8 @@ class OrderAssignedCard extends StatelessWidget {
               _buildInfoItem(
                   Icons.location_on_outlined,
                   isDelivering
-                      ? (currentOrder.deliveryAddress ?? 'Baraki, Sidi Moussa')
-                      : (currentOrder.restaurantAddress ??
-                          'No Address Provided')),
+                      ? (currentOrder.deliveryAddress ?? '--')
+                      : (currentOrder.restaurantAddress ?? '--')),
 
               Row(
                 children: [
@@ -85,7 +84,7 @@ class OrderAssignedCard extends StatelessWidget {
                   Container(width: 20, height: 1, color: AppColors.greyLight),
                   const SizedBox(width: 16),
                   _buildInfoItem(Icons.access_time_outlined,
-                      '${currentOrder.deliveryTimeMinutes ?? 12} min',
+                      '${currentOrder.deliveryTimeMinutes ?? "--"} min',
                       expanded: false),
                 ],
               ),
@@ -176,13 +175,13 @@ class OrderAssignedCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                order.client?.name ?? 'moncef azzouz',
+                order.client?.name ?? 'Client',
                 style: AppTextStyles.gilmerBold.copyWith(
                   fontSize: 24,
                 ),
               ),
               Text(
-                '#userid-${order.client?.email?.split('@').first ?? "12471241"}',
+                '#userid-${(order.client?.email?.split('@').first) ?? (order.client?.email != null ? order.client!.email! : (order.client?.id?.substring(0, 8) ?? "unknown"))}',
                 style: AppTextStyles.gilmerMedium.copyWith(
                   fontSize: 12,
                   color: AppColors.textMedium,
@@ -378,19 +377,128 @@ class OrderAssignedCard extends StatelessWidget {
     bool isLoading,
   ) {
     final bool isDelivering = order.status == OrderStatus.delivering;
+    final bool isArrived = order.status == OrderStatus.arrived;
+
+    String buttonLabel = localizations.arrive;
+    if (isArrived) {
+      buttonLabel = localizations.startDelivery;
+    } else if (isDelivering) {
+      buttonLabel = localizations.delivered;
+    }
+
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
         onPressed: isLoading
             ? null
-            : () {
+            : () async {
+                final cubit = context.read<AssignedOrderCubit>();
                 if (isDelivering) {
-                  context
-                      .read<AssignedOrderCubit>()
-                      .completeDelivery(order.id)
-                      .whenComplete(() {
-                    // delivered status go home pick new one
-                    if (context.mounted) {
+                  final bool? confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (dialogContext) => Dialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(28),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryColor.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                              ),
+                              child: SvgPicture.asset(
+                                MediaRes.successIcon,
+                                width: 32,
+                                height: 32,
+                                colorFilter: const ColorFilter.mode(
+                                  AppColors.primaryColor,
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            Text(
+                              localizations.confirmDelivery,
+                              style: AppTextStyles.gilmerBold.copyWith(
+                                fontSize: 22,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              localizations.confirmDeliveryMessage,
+                              style: AppTextStyles.gilmerMedium.copyWith(
+                                fontSize: 16,
+                                color: AppColors.textMedium,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 32),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton(
+                                    onPressed: () =>
+                                        Navigator.of(dialogContext).pop(false),
+                                    style: OutlinedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 14),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      side: const BorderSide(
+                                        color: AppColors.borderLight,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      localizations.no,
+                                      style: AppTextStyles.gilmerBold.copyWith(
+                                        color: AppColors.textMedium,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () =>
+                                        Navigator.of(dialogContext).pop(true),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.primaryColor,
+                                      padding: const EdgeInsets.symmetric(
+                                          vertical: 14),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      elevation: 0,
+                                    ),
+                                    child: Text(
+                                      localizations.yes,
+                                      style: AppTextStyles.gilmerBold.copyWith(
+                                        color: AppColors.white,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+
+                  if (confirmed == true) {
+                    await cubit.completeDelivery(order.id);
+                    // Checking state after async call
+                    if (context.mounted &&
+                        cubit.state.errorMessage == null &&
+                        cubit.state.order?.status == OrderStatus.delivered) {
                       Navigator.of(context).pushReplacement(
                         MaterialPageRoute(
                           builder: (context) => DeliverySuccessPage(
@@ -402,21 +510,30 @@ class OrderAssignedCard extends StatelessWidget {
                         ),
                       );
                     }
-                  });
+                  }
+                } else if (isArrived) {
+                  // If arrived at restaurant but haven't started delivery yet
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => OrderDetailsPage(
+                        orderId: order.id,
+                        cubit: cubit,
+                      ),
+                    ),
+                  );
                 } else {
-                  final cubit = context.read<AssignedOrderCubit>();
-                  cubit.markOrderArrived(order.id).whenComplete(() {
-                    if (context.mounted) {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => OrderDetailsPage(
-                            orderId: order.id,
-                            cubit: cubit,
-                          ),
+                  // Pending/Accepted -> Mark as Arrived
+                  await cubit.markOrderArrived(order.id);
+                  if (context.mounted && cubit.state.errorMessage == null) {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => OrderDetailsPage(
+                          orderId: order.id,
+                          cubit: cubit,
                         ),
-                      );
-                    }
-                  });
+                      ),
+                    );
+                  }
                 }
               },
         style: ElevatedButton.styleFrom(
@@ -428,12 +545,16 @@ class OrderAssignedCard extends StatelessWidget {
           elevation: 0,
         ),
         child: isLoading
-            ? const CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.black),
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                ),
               )
             : Text(
-                localizations.arrive,
+                buttonLabel,
                 style: AppTextStyles.gilmerBold.copyWith(
                   fontSize: 18,
                   color: AppColors.white,

@@ -93,6 +93,23 @@ class AppLocalizationsFr extends AppLocalizations {
   String get willaya => 'Willaya';
 
   @override
+  String get cancelReasonTechnicalIssue =>
+      'Probleme technique avec la commande';
+
+  @override
+  String get confirmDelivery => 'Confirmer la livraison';
+
+  @override
+  String get confirmDeliveryMessage =>
+      'Êtes-vous sûr de vouloir confirmer la livraison et terminer cette commande ?';
+
+  @override
+  String get yes => 'Oui';
+
+  @override
+  String get no => 'Non';
+
+  @override
   String get zone => 'Zone';
 
   @override
@@ -263,10 +280,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get cancelReasonClientCanceled => 'Le client a annule sa commande';
-
-  @override
-  String get cancelReasonTechnicalIssue =>
-      'Probleme technique avec la commande';
 
   @override
   String get cancelReasonOther => 'Autre raison';
