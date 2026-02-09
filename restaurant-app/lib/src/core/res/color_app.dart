@@ -18,5 +18,7 @@ class AppColors {
   static const Color textMedium = Color(0xFF4B5563);
   static const Color limeGreen = Color(0xFF79F102);
   static const Color limeGreenLight = Color(0xFFB8E994);
-  static const Color redColor = Color(0xFFD32F2F);
+  static const Color iconMedium = Color(0xFF6B7280);
+  static const Color backgroundLight = Color(0xFFF9FAFB);
+  static const Color borderLight = Color(0xFFF3F4F6);
 }

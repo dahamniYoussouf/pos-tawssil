@@ -7,7 +7,7 @@ import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_cubit.da
 import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_state.dart';
 import 'package:restaurant_app/src/features/profile/widgets/profile_card_widget.dart';
 import 'package:restaurant_app/src/features/profile/widgets/profile_menu_item_widget.dart';
-import 'package:restaurant_app/src/features/profile/widgets/profile_language_selector.dart';
+import 'package:restaurant_app/src/features/profile/widgets/language_selector_widget.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -74,7 +74,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 context.read<AuthCubit>().logout();
               },
             ),
-            const ProfileLanguageSelector(),
+            const LanguageSelectorWidget(),
             const SizedBox(height: 24),
           ],
         ),
