@@ -1287,6 +1287,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Language'**
   String get language;
+
+  /// No description provided for @menu.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get menu;
+
+  /// No description provided for @createCategoryFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Please create a category first'**
+  String get createCategoryFirst;
+
+  /// No description provided for @uploadImageFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Please upload the image first'**
+  String get uploadImageFirst;
+
+  /// No description provided for @errorPickingImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Error picking image'**
+  String get errorPickingImage;
 }
 
 class _AppLocalizationsDelegate

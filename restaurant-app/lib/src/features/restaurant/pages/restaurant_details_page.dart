@@ -125,8 +125,8 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
                 final categories = restaurantState.restaurant.categories ?? [];
                 if (categories.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Please create a category first'),
+                    SnackBar(
+                      content: Text(localizations.createCategoryFirst),
                       backgroundColor: Colors.orange,
                     ),
                   );

@@ -619,4 +619,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get language => 'Language';
+
+  @override
+  String get menu => 'Menu';
+
+  @override
+  String get createCategoryFirst => 'Please create a category first';
+
+  @override
+  String get uploadImageFirst => 'Please upload the image first';
+
+  @override
+  String get errorPickingImage => 'Error picking image';
 }

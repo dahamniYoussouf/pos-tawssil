@@ -576,43 +576,55 @@ class AppLocalizationsAr extends AppLocalizations {
   String get contact => 'اتصال';
 
   @override
-  String get settings => 'Paramètre';
+  String get settings => 'الإعدادات';
 
   @override
-  String get manageProfile => 'Gérez Votre Profile';
+  String get manageProfile => 'إدارة ملفك الشخصي';
 
   @override
-  String get notifications => 'Notifications';
+  String get notifications => 'الإشعارات';
 
   @override
-  String get printerSettings => 'Configuration Imprimante';
+  String get printerSettings => 'إعدادات الطابعة';
 
   @override
-  String get aboutUs => 'A Propos De Nous';
+  String get aboutUs => 'من نحن';
 
   @override
-  String get openStatus => 'Ouvert';
+  String get openStatus => 'مفتوح';
 
   @override
-  String get closedStatus => 'Fermé';
+  String get closedStatus => 'مغلق';
 
   @override
   String restaurantIdLabel(String id) {
-    return 'Restaurant ID : $id';
+    return 'معرف المطعم : $id';
   }
 
   @override
-  String get selectLanguage => 'Choisir la langue';
+  String get selectLanguage => 'اختر اللغة';
 
   @override
-  String get arabic => 'Arabe';
+  String get arabic => 'العربية';
 
   @override
-  String get french => 'Français';
+  String get french => 'الفرنسية';
 
   @override
-  String get english => 'Anglais';
+  String get english => 'الإنجليزية';
 
   @override
   String get language => 'اللغة';
+
+  @override
+  String get menu => 'القائمة';
+
+  @override
+  String get createCategoryFirst => 'يرجى إنشاء فئة أولاً';
+
+  @override
+  String get uploadImageFirst => 'يرجى رفع الصورة أولاً';
+
+  @override
+  String get errorPickingImage => 'خطأ أثناء اختيار الصورة';
 }

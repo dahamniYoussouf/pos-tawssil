@@ -120,8 +120,8 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
     final selectedImage = _selectedImageNotifier.value;
     if (selectedImage != null && uploadedImageUrl == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please upload the image first'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.uploadImageFirst),
           backgroundColor: Colors.orange,
         ),
       );

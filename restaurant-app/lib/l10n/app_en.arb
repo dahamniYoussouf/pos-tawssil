@@ -226,6 +226,10 @@
   "arabic": "Arabic",
   "french": "French",
   "english": "English",
-  "language": "Language"
+  "language": "Language",
+  "menu": "Menu",
+  "createCategoryFirst": "Please create a category first",
+  "uploadImageFirst": "Please upload the image first",
+  "errorPickingImage": "Error picking image"
 }
 

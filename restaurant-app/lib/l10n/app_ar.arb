@@ -207,14 +207,14 @@
   "unknownClient": "عميل غير معروف",
   "details": "التفاصيل",
   "contact": "اتصال",
-  "settings": "Paramètre",
-  "manageProfile": "Gérez Votre Profile",
-  "notifications": "Notifications",
-  "printerSettings": "Configuration Imprimante",
-  "aboutUs": "A Propos De Nous",
-  "openStatus": "Ouvert",
-  "closedStatus": "Fermé",
-  "restaurantIdLabel": "Restaurant ID : {id}",
+  "settings": "الإعدادات",
+  "manageProfile": "إدارة ملفك الشخصي",
+  "notifications": "الإشعارات",
+  "printerSettings": "إعدادات الطابعة",
+  "aboutUs": "من نحن",
+  "openStatus": "مفتوح",
+  "closedStatus": "مغلق",
+  "restaurantIdLabel": "معرف المطعم : {id}",
   "@restaurantIdLabel": {
     "placeholders": {
       "id": {
@@ -222,10 +222,14 @@
       }
     }
   },
-  "selectLanguage": "Choisir la langue",
-  "arabic": "Arabe",
-  "french": "Français",
-  "english": "Anglais",
-  "language": "اللغة"
+  "selectLanguage": "اختر اللغة",
+  "arabic": "العربية",
+  "french": "الفرنسية",
+  "english": "الإنجليزية",
+  "language": "اللغة",
+  "menu": "القائمة",
+  "createCategoryFirst": "يرجى إنشاء فئة أولاً",
+  "uploadImageFirst": "يرجى رفع الصورة أولاً",
+  "errorPickingImage": "خطأ أثناء اختيار الصورة"
 }
 
