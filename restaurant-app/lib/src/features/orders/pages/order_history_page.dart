@@ -43,19 +43,6 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: OrderHistoryTheme.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Builder(
-          builder: (context) {
-            final localizations = AppLocalizations.of(context)!;
-            return Text(
-              localizations.orderHistory,
-              style: OrderHistoryHeaderTheme.titleStyle,
-            );
-          },
-        ),
-      ),
       body: BlocBuilder<OrderHistoryCubit, OrderHistoryState>(
         builder: (context, state) {
           return Column(

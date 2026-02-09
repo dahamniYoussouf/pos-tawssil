@@ -570,8 +570,49 @@ class AppLocalizationsAr extends AppLocalizations {
   String get unknownClient => 'عميل غير معروف';
 
   @override
-  String get details => 'تفاصيل';
+  String get details => 'التفاصيل';
 
   @override
-  String get contact => 'اتصل';
+  String get contact => 'اتصال';
+
+  @override
+  String get settings => 'Paramètre';
+
+  @override
+  String get manageProfile => 'Gérez Votre Profile';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get printerSettings => 'Configuration Imprimante';
+
+  @override
+  String get aboutUs => 'A Propos De Nous';
+
+  @override
+  String get openStatus => 'Ouvert';
+
+  @override
+  String get closedStatus => 'Fermé';
+
+  @override
+  String restaurantIdLabel(String id) {
+    return 'Restaurant ID : $id';
+  }
+
+  @override
+  String get selectLanguage => 'Choisir la langue';
+
+  @override
+  String get arabic => 'Arabe';
+
+  @override
+  String get french => 'Français';
+
+  @override
+  String get english => 'Anglais';
+
+  @override
+  String get language => 'اللغة';
 }

@@ -206,6 +206,26 @@
   "pickupOrderType": "À emporter",
   "unknownClient": "Client inconnu",
   "details": "Détails",
-  "contact": "Contacter"
+  "contact": "Contacter",
+  "settings": "Paramètre",
+  "manageProfile": "Gérez Votre Profile",
+  "notifications": "Notifications",
+  "printerSettings": "Configuration Imprimante",
+  "aboutUs": "A Propos De Nous",
+  "openStatus": "Ouvert",
+  "closedStatus": "Fermé",
+  "restaurantIdLabel": "Restaurant ID : {id}",
+  "@restaurantIdLabel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "selectLanguage": "Choisir la langue",
+  "arabic": "Arabe",
+  "french": "Français",
+  "english": "Anglais",
+  "language": "Langue"
 }
 

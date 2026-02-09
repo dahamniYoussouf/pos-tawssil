@@ -2,15 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_app/l10n/app_localizations.dart';
 import 'package:restaurant_app/src/core/res/color_app.dart';
-import 'package:restaurant_app/src/core/utils/dependency_injection.dart';
-import 'package:restaurant_app/src/features/auth/cubit/auth_cubit.dart';
-import 'package:restaurant_app/src/features/categories/cubit/category_cubit.dart';
-import 'package:restaurant_app/src/features/restaurant/pages/restaurant_details_page.dart';
-import 'package:restaurant_app/src/features/orders/pages/orders_page.dart';
-import 'package:restaurant_app/src/features/orders/pages/order_history_page.dart';
-import 'package:restaurant_app/src/features/statistics/pages/statistics_page.dart';
+import 'package:restaurant_app/src/features/home/cubit/navigation_cubit.dart';
+import 'package:restaurant_app/src/features/home/cubit/navigation_state.dart';
+import 'package:restaurant_app/src/features/home/widgets/custom_bottom_navigation_bar.dart';
+import 'package:restaurant_app/src/features/menu/pages/menu_page.dart';
+import 'package:restaurant_app/src/features/orders/pages/history_page.dart';
+import 'package:restaurant_app/src/features/profile/pages/profile_page.dart';
 import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_state.dart';
+import 'package:restaurant_app/src/features/orders/pages/orders_page.dart';
+import 'package:restaurant_app/src/features/statistics/pages/statistics_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -30,153 +31,103 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
 
-    return BlocBuilder<RestaurantCubit, RestaurantState>(
-      builder: (context, restaurantState) {
-        if (restaurantState is RestaurantLoading) {
-          return const Scaffold(
-            body: Center(
-              child: CircularProgressIndicator(),
-            ),
-          );
-        }
-        if (restaurantState is RestaurantError) {
-          return Scaffold(
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    restaurantState.message,
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      context.read<RestaurantCubit>().fetchRestaurantDetails();
-                    },
-                    child: Text(localizations.retry),
-                  ),
-                ],
+    return BlocBuilder<NavigationCubit, NavigationState>(
+      builder: (context, navigationState) {
+        return BlocBuilder<RestaurantCubit, RestaurantState>(
+          builder: (context, restaurantState) {
+            String title;
+            if (restaurantState is RestaurantError) {
+              title = localizations.error;
+            } else {
+              switch (navigationState.currentIndex) {
+                case 0:
+                  title = localizations.orders;
+                  break;
+                case 1:
+                  title = localizations.orderHistory;
+                  break;
+                case 2:
+                  title = localizations.statistics;
+                  break;
+                case 3:
+                  title = "Menu";
+                  break;
+                case 4:
+                  title = localizations.settings;
+                  break;
+                default:
+                  title = localizations.appTitle;
+              }
+            }
+
+            return Scaffold(
+              backgroundColor: AppColors.white,
+              body: SafeArea(
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20.0, bottom: 10),
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                          color: AppColors.primaryColor,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: _buildBody(
+                          restaurantState, navigationState, localizations),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        }
-        return _buildHomePage(context, localizations);
+              bottomNavigationBar: CustomBottomNavigationBar(
+                currentIndex: navigationState.currentIndex,
+                onTap: context.read<NavigationCubit>().changeTab,
+              ),
+            );
+          },
+        );
       },
     );
   }
 
-  Widget _buildHomePage(BuildContext context, AppLocalizations localizations) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
+  Widget _buildBody(RestaurantState restaurantState,
+      NavigationState navigationState, AppLocalizations localizations) {
+    if (restaurantState is RestaurantLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (restaurantState is RestaurantError) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            DrawerHeader(
-              decoration: BoxDecoration(
-                color: AppColors.primaryColor,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text(
-                    localizations.appTitle,
-                    style: TextStyle(
-                      color: AppColors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
+            Text(
+              restaurantState.message,
+              style: const TextStyle(color: Colors.red),
             ),
-            ListTile(
-              leading: const Icon(Icons.shopping_cart,
-                  color: AppColors.primaryColor),
-              title: Text(localizations.orders),
-              onTap: () {
-                Navigator.pop(context);
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () {
+                context.read<RestaurantCubit>().fetchRestaurantDetails();
               },
-            ),
-            ListTile(
-              leading: const Icon(Icons.history, color: AppColors.primaryColor),
-              title: Text(localizations.orderHistory),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const OrderHistoryPage(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading:
-                  const Icon(Icons.bar_chart, color: AppColors.primaryColor),
-              title: Text(localizations.statistics),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const StatisticsPage(),
-                  ),
-                );
-              },
-            ),
-            ListTile(
-              leading:
-                  const Icon(Icons.restaurant, color: AppColors.primaryColor),
-              title: Text(localizations.restaurantDetails),
-              onTap: () {
-                Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => BlocProvider(
-                      create: (context) => locator<CategoryCubit>(),
-                      child: const RestaurantDetailsPage(),
-                    ),
-                  ),
-                );
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.logout, color: Colors.red),
-              title: Text(localizations.logout),
-              onTap: () {
-                Navigator.pop(context);
-                context.read<AuthCubit>().logout();
-              },
+              child: Text(localizations.retry),
             ),
           ],
         ),
-      ),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          localizations.orders,
-          style: TextStyle(color: AppColors.primaryColor),
-        ),
-        centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.logout,
-              color: AppColors.primaryColor,
-            ),
-            onPressed: () {
-              context.read<AuthCubit>().logout();
-            },
-          ),
-        ],
-      ),
-      body: const OrdersPage(),
+      );
+    }
+    return IndexedStack(
+      index: navigationState.currentIndex,
+      children: const [
+        OrdersPage(),
+        HistoryPage(),
+        StatisticsPage(),
+        MenuPage(),
+        ProfilePage(),
+      ],
     );
   }
 }

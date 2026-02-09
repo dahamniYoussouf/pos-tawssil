@@ -12,6 +12,7 @@ class RestaurantCubit extends Cubit<RestaurantState> {
         super(RestaurantInitial());
 
   Future<void> fetchRestaurantDetails() async {
+    if (state is RestaurantLoading) return;
     emit(RestaurantLoading());
     final result = await _restaurantRepository.getRestaurantDetails();
     result.fold(

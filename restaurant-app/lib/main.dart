@@ -18,7 +18,10 @@ import 'package:restaurant_app/src/features/orders/cubit/orders_cubit.dart';
 import 'package:restaurant_app/src/features/notifications/cubit/notifications_cubit.dart';
 import 'package:restaurant_app/src/features/statistics/cubit/statistics_cubit.dart';
 import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_cubit.dart';
+import 'package:restaurant_app/src/features/home/cubit/navigation_cubit.dart';
 import 'package:restaurant_app/l10n/app_localizations.dart';
+
+import 'package:restaurant_app/src/core/localization/locale_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +54,9 @@ class MyApp extends StatelessWidget {
         BlocProvider<NotificationsCubit>(
           create: (context) => NotificationsCubit(),
         ),
+        BlocProvider<LocaleCubit>(
+          create: (context) => LocaleCubit(),
+        ),
         BlocProvider<OrdersCubit>(
           create: (context) {
             final notificationsCubit = context.read<NotificationsCubit>();
@@ -69,28 +75,35 @@ class MyApp extends StatelessWidget {
         BlocProvider<OrderHistoryCubit>(
           create: (context) => OrderHistoryCubit(),
         ),
+        BlocProvider<NavigationCubit>(
+          create: (context) => NavigationCubit(),
+        ),
       ],
-      child: MaterialApp(
-        title: 'Tawsil Restaurant',
-        debugShowCheckedModeBanner: false,
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('en', 'US'),
-          Locale('fr', 'FR'),
-          Locale('ar', 'DZ'),
-        ],
-        locale: const Locale('fr', 'FR'),
-        theme: AppTheme.lightTheme,
-        initialRoute: '/home',
-        routes: {
-          '/login': (context) => const LoginPage(),
-          '/signup': (context) => const SignupPage(),
-          '/home': (context) => const AuthWrapper(),
+      child: BlocBuilder<LocaleCubit, LocaleState>(
+        builder: (context, state) {
+          return MaterialApp(
+            title: 'Tawsil Restaurant',
+            debugShowCheckedModeBanner: false,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [
+              Locale('en', 'US'),
+              Locale('fr', 'FR'),
+              Locale('ar', 'DZ'),
+            ],
+            locale: state.locale,
+            theme: AppTheme.lightTheme,
+            initialRoute: '/home',
+            routes: {
+              '/login': (context) => const LoginPage(),
+              '/signup': (context) => const SignupPage(),
+              '/home': (context) => const AuthWrapper(),
+            },
+          );
         },
       ),
     );

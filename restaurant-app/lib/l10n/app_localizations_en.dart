@@ -578,4 +578,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contact => 'Contact';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get manageProfile => 'Manage Your Profile';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get printerSettings => 'Printer Configuration';
+
+  @override
+  String get aboutUs => 'About Us';
+
+  @override
+  String get openStatus => 'Open';
+
+  @override
+  String get closedStatus => 'Closed';
+
+  @override
+  String restaurantIdLabel(String id) {
+    return 'Restaurant ID : $id';
+  }
+
+  @override
+  String get selectLanguage => 'Select Language';
+
+  @override
+  String get arabic => 'Arabic';
+
+  @override
+  String get french => 'French';
+
+  @override
+  String get english => 'English';
+
+  @override
+  String get language => 'Language';
 }
