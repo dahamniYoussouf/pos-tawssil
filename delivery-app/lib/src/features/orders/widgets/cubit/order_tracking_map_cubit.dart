@@ -35,9 +35,11 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
   OrderTrackingMapCubit() : super(OrderTrackingMapState.initial());
   void initDriver(DriverModel? driver) {
     if (driver != null) {
-      _emitState(const <Marker>[], const <Polyline>[], LatLng(driver.latitude!, driver.longitude!), null);
+      _emitState(const <Marker>[], const <Polyline>[],
+          LatLng(driver.latitude!, driver.longitude!), null);
     } else {
-      _emitState(const <Marker>[], const <Polyline>[], const LatLng(36.7538, 3.0588), null);
+      _emitState(const <Marker>[], const <Polyline>[],
+          const LatLng(36.7538, 3.0588), null);
     }
   }
 
@@ -49,9 +51,12 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
       _emitState(const <Marker>[], const <Polyline>[], driverLatLng, null);
       return;
     }
-    final List<LatLng> boundPoints = _collectBoundPoints(restaurantLatLng, deliveryLatLng, driverLatLng);
-    final List<Marker> markers = _buildMarkers(order, restaurantLatLng, deliveryLatLng, driverLatLng);
-    final List<Polyline> polylines = _buildPolylines(restaurantLatLng, deliveryLatLng);
+    final List<LatLng> boundPoints =
+        _collectBoundPoints(restaurantLatLng, deliveryLatLng, driverLatLng);
+    final List<Marker> markers =
+        _buildMarkers(order, restaurantLatLng, deliveryLatLng, driverLatLng);
+    final List<Polyline> polylines =
+        _buildPolylines(restaurantLatLng, deliveryLatLng);
     final LatLng center = restaurantLatLng ?? deliveryLatLng ?? driverLatLng;
     _emitState(markers, polylines, center, boundPoints);
   }
@@ -77,8 +82,10 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
       if (deliveryLatLng != null) {
         boundPoints.add(deliveryLatLng);
       }
-      markers.addAll(_buildMarkers(order, restaurantLatLng, deliveryLatLng, driverLatLng));
-      final List<Polyline> orderPolylines = _buildPolylines(restaurantLatLng, deliveryLatLng);
+      markers.addAll(
+          _buildMarkers(order, restaurantLatLng, deliveryLatLng, driverLatLng));
+      final List<Polyline> orderPolylines =
+          _buildPolylines(restaurantLatLng, deliveryLatLng);
       polylines.addAll(orderPolylines);
     }
     boundPoints.add(driverLatLng);
@@ -99,7 +106,8 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
   }
 
   LatLng? _getRestaurantLatLng(OrderModel order) {
-    if (!_isValidCoordinate(order.restaurantLatitude, order.restaurantLongitude)) {
+    if (!_isValidCoordinate(
+        order.restaurantLatitude, order.restaurantLongitude)) {
       return null;
     }
     return LatLng(order.restaurantLatitude!, order.restaurantLongitude!);
@@ -114,13 +122,15 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
 
   LatLng _getDriverLatLng() {
     final DriverModel? driver = locator<DriverCubit>().driver;
-    if (driver != null && _isValidCoordinate(driver.latitude, driver.longitude)) {
+    if (driver != null &&
+        _isValidCoordinate(driver.latitude, driver.longitude)) {
       return LatLng(driver.latitude!, driver.longitude!);
     }
     return const LatLng(36.7538, 3.0588);
   }
 
-  List<LatLng> _collectBoundPoints(LatLng? restaurantLatLng, LatLng? deliveryLatLng, LatLng driverLatLng) {
+  List<LatLng> _collectBoundPoints(
+      LatLng? restaurantLatLng, LatLng? deliveryLatLng, LatLng driverLatLng) {
     final List<LatLng> boundPoints = <LatLng>[];
     if (restaurantLatLng != null) {
       boundPoints.add(restaurantLatLng);
@@ -140,16 +150,19 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
   ) {
     final List<Marker> markers = <Marker>[];
     if (restaurantLatLng != null) {
-      markers.add(_buildRestaurantMarker(restaurantLatLng, order.restaurantName ?? 'Restaurant'));
+      markers.add(_buildRestaurantMarker(
+          restaurantLatLng, order.restaurantName ?? 'Restaurant'));
     }
     if (deliveryLatLng != null) {
-      markers.add(_buildDeliveryDestinationMarker(deliveryLatLng, order.deliveryAddress ?? 'Destination'));
+      markers.add(_buildDeliveryDestinationMarker(
+          deliveryLatLng, order.deliveryAddress ?? 'Destination'));
     }
     markers.add(_buildDriverMarker(driverLatLng));
     if (order.isDelivering && order.deliveryPerson != null) {
       final LatLng? courierLatLng = _getCourierLatLng(order.deliveryPerson!);
       if (courierLatLng != null) {
-        markers.add(_buildCourierMarker(courierLatLng, order.deliveryPerson!.name));
+        markers.add(
+            _buildCourierMarker(courierLatLng, order.deliveryPerson!.name));
       }
     }
     return markers;
@@ -169,7 +182,8 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
       height: 44,
       child: Tooltip(
         message: name,
-        child: const Icon(Icons.location_on, color: AppColors.redColor, size: 32),
+        child:
+            const Icon(Icons.location_on, color: AppColors.redColor, size: 32),
       ),
     );
   }
@@ -181,7 +195,8 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
       height: 44,
       child: Tooltip(
         message: address,
-        child: const Icon(Icons.location_on, color: AppColors.primaryColor, size: 32),
+        child: const Icon(Icons.location_on,
+            color: AppColors.primaryColor, size: 32),
       ),
     );
   }
@@ -205,12 +220,14 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
       height: 44,
       child: Tooltip(
         message: name,
-        child: const Icon(Icons.delivery_dining, color: AppColors.blueAccentColor, size: 32),
+        child: const Icon(Icons.delivery_dining,
+            color: AppColors.blueAccentColor, size: 32),
       ),
     );
   }
 
-  List<Polyline> _buildPolylines(LatLng? restaurantLatLng, LatLng? deliveryLatLng) {
+  List<Polyline> _buildPolylines(
+      LatLng? restaurantLatLng, LatLng? deliveryLatLng) {
     final List<Polyline> polylines = <Polyline>[];
     if (restaurantLatLng != null && deliveryLatLng != null) {
       polylines.add(
@@ -234,7 +251,10 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
     if (!_isValidCoordinate(center.latitude, center.longitude)) {
       center = _getDriverLatLng();
     }
-    final LatLngBounds? bounds = boundPointsList != null && boundPointsList.isNotEmpty ? LatLngBounds.fromPoints(boundPointsList) : null;
+    final LatLngBounds? bounds =
+        boundPointsList != null && boundPointsList.isNotEmpty
+            ? LatLngBounds.fromPoints(boundPointsList)
+            : null;
     emit(OrderTrackingMapState(
       markers: List<Marker>.unmodifiable(markers),
       polylines: List<Polyline>.unmodifiable(polylines),

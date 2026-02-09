@@ -20,7 +20,8 @@ class OrderTrackingMap extends StatefulWidget {
     this.orders,
     this.initialZoom = 14,
     this.boundsPadding = 80,
-  }) : assert(order != null || orders != null, 'Either order or orders must be provided');
+  }) : assert(order != null || orders != null,
+            'Either order or orders must be provided');
 
   @override
   State<OrderTrackingMap> createState() => _OrderTrackingMapState();
@@ -75,16 +76,23 @@ class _OrderTrackingMapState extends State<OrderTrackingMap> {
           }
         },
         child: BlocListener<OrderTrackingMapCubit, OrderTrackingMapState>(
-          listenWhen: (OrderTrackingMapState previous, OrderTrackingMapState current) => previous.bounds != current.bounds,
+          listenWhen:
+              (OrderTrackingMapState previous, OrderTrackingMapState current) =>
+                  previous.bounds != current.bounds,
           listener: (BuildContext context, OrderTrackingMapState state) {
             if (_isMapReady && state.bounds != null) {
-              WidgetsBinding.instance.addPostFrameCallback((_) => _fitBounds(state.bounds!));
+              WidgetsBinding.instance
+                  .addPostFrameCallback((_) => _fitBounds(state.bounds!));
             }
           },
           child: BlocBuilder<OrderTrackingMapCubit, OrderTrackingMapState>(
             builder: (BuildContext context, OrderTrackingMapState state) {
               final LatLng validCenter =
-                  locator<DriverCubit>().driver?.latitude != null && locator<DriverCubit>().driver?.longitude != null ? LatLng(locator<DriverCubit>().driver!.latitude!, locator<DriverCubit>().driver!.longitude!) : const LatLng(36.7538, 3.0588);
+                  locator<DriverCubit>().driver?.latitude != null &&
+                          locator<DriverCubit>().driver?.longitude != null
+                      ? LatLng(locator<DriverCubit>().driver!.latitude!,
+                          locator<DriverCubit>().driver!.longitude!)
+                      : const LatLng(36.7538, 3.0588);
 
               final double validZoom = widget.initialZoom.clamp(1.0, 18.0);
 
@@ -97,12 +105,16 @@ class _OrderTrackingMapState extends State<OrderTrackingMap> {
                   maxZoom: 18.0,
                   onMapReady: _handleMapReady,
                   interactionOptions: const InteractionOptions(
-                    flags: InteractiveFlag.drag | InteractiveFlag.flingAnimation | InteractiveFlag.pinchZoom | InteractiveFlag.doubleTapZoom,
+                    flags: InteractiveFlag.drag |
+                        InteractiveFlag.flingAnimation |
+                        InteractiveFlag.pinchZoom |
+                        InteractiveFlag.doubleTapZoom,
                   ),
                 ),
                 children: [
                   TileLayer(
-                    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                     userAgentPackageName: 'com.tawsil.delivery',
                     maxZoom: 18,
                     minZoom: 1,

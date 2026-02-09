@@ -254,6 +254,10 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
           return const SizedBox.shrink();
         }
         final OrderModel order = state.order!;
+        // Only show start delivery button if the order is physically at the restaurant and ready for pickup
+        if (order.status != OrderStatus.arrived) {
+          return const SizedBox.shrink();
+        }
         return Container(
           padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
           decoration: const BoxDecoration(

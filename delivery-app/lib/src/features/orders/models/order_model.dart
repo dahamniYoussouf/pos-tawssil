@@ -574,4 +574,61 @@ class OrderModel {
   bool get isDelivered => status == OrderStatus.delivered;
   bool get isRefused => status == OrderStatus.declined;
   bool get isDelayed => status == OrderStatus.delayed;
+
+  OrderModel copyWith({
+    String? id,
+    String? orderNumber,
+    String? status,
+    List<OrderItem>? items,
+    double? totalPrice,
+    String? deliveryAddress,
+    double? restaurantLatitude,
+    double? restaurantLongitude,
+    double? deliveryLatitude,
+    double? deliveryLongitude,
+    String? restaurantName,
+    String? restaurantAddress,
+    String? restaurantImageUrl,
+    DeliveryPerson? deliveryPerson,
+    DateTime? estimatedDeliveryTime,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? paymentMethod,
+    String? refusalReason,
+    String? delayReason,
+    String? orderType,
+    double? deliveryDistance,
+    int? deliveryTimeMinutes,
+    double? deliveryPrice,
+    ClientModel? client,
+  }) {
+    return OrderModel(
+      id: id ?? this.id,
+      orderNumber: orderNumber ?? this.orderNumber,
+      status: status ?? this.status,
+      items: items ?? this.items,
+      totalPrice: totalPrice ?? this.totalPrice,
+      deliveryAddress: deliveryAddress ?? this.deliveryAddress,
+      restaurantLatitude: restaurantLatitude ?? this.restaurantLatitude,
+      restaurantLongitude: restaurantLongitude ?? this.restaurantLongitude,
+      deliveryLatitude: deliveryLatitude ?? this.deliveryLatitude,
+      deliveryLongitude: deliveryLongitude ?? this.deliveryLongitude,
+      restaurantName: restaurantName ?? this.restaurantName,
+      restaurantAddress: restaurantAddress ?? this.restaurantAddress,
+      restaurantImageUrl: restaurantImageUrl ?? this.restaurantImageUrl,
+      deliveryPerson: deliveryPerson ?? this.deliveryPerson,
+      estimatedDeliveryTime:
+          estimatedDeliveryTime ?? this.estimatedDeliveryTime,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      refusalReason: refusalReason ?? this.refusalReason,
+      delayReason: delayReason ?? this.delayReason,
+      orderType: orderType ?? this.orderType,
+      deliveryDistance: deliveryDistance ?? this.deliveryDistance,
+      deliveryTimeMinutes: deliveryTimeMinutes ?? this.deliveryTimeMinutes,
+      deliveryPrice: deliveryPrice ?? this.deliveryPrice,
+      client: client ?? this.client,
+    );
+  }
 }

@@ -12,7 +12,6 @@ import 'package:delivery_app/src/features/orders/models/order_model.dart';
 import 'package:delivery_app/src/features/orders/pages/order_details_page.dart';
 import 'package:delivery_app/src/features/orders/widgets/cancellation_reason_modal.dart';
 import 'package:delivery_app/src/features/home/pages/home_page.dart';
-import 'package:delivery_app/src/features/orders/pages/delivery_success_page.dart';
 
 class OrderAssignedCard extends StatelessWidget {
   final OrderModel order;
@@ -228,23 +227,26 @@ class OrderAssignedCard extends StatelessWidget {
   }
 
   Widget _buildInfoItem(IconData icon, String text, {bool expanded = true}) {
-    final content = Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 20, color: AppColors.iconMedium),
-        const SizedBox(width: 12),
-        Text(
-          text,
-          style: AppTextStyles.gilmerMedium.copyWith(
-            fontSize: 15,
-          ),
-        ),
-      ],
+    final textWidget = Text(
+      text,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: AppTextStyles.gilmerMedium.copyWith(
+        fontSize: 15,
+      ),
     );
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: expanded ? Row(children: [Expanded(child: content)]) : content,
+      child: Row(
+        mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 20, color: AppColors.iconMedium),
+          const SizedBox(width: 12),
+          if (expanded) Expanded(child: textWidget) else textWidget,
+        ],
+      ),
     );
   }
 
@@ -344,29 +346,32 @@ class OrderAssignedCard extends StatelessWidget {
 
   Widget _buildInfoItemSvg(String assetPath, String text,
       {bool expanded = true}) {
-    final content = Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SvgPicture.asset(
-          assetPath,
-          width: 20,
-          height: 20,
-          colorFilter:
-              const ColorFilter.mode(AppColors.iconMedium, BlendMode.srcIn),
-        ),
-        const SizedBox(width: 12),
-        Text(
-          text,
-          style: AppTextStyles.gilmerMedium.copyWith(
-            fontSize: 15,
-          ),
-        ),
-      ],
+    final textWidget = Text(
+      text,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+      style: AppTextStyles.gilmerMedium.copyWith(
+        fontSize: 15,
+      ),
     );
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: expanded ? Row(children: [Expanded(child: content)]) : content,
+      child: Row(
+        mainAxisSize: expanded ? MainAxisSize.max : MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SvgPicture.asset(
+            assetPath,
+            width: 20,
+            height: 20,
+            colorFilter:
+                const ColorFilter.mode(AppColors.iconMedium, BlendMode.srcIn),
+          ),
+          const SizedBox(width: 12),
+          if (expanded) Expanded(child: textWidget) else textWidget,
+        ],
+      ),
     );
   }
 
@@ -495,21 +500,6 @@ class OrderAssignedCard extends StatelessWidget {
 
                   if (confirmed == true) {
                     await cubit.completeDelivery(order.id);
-                    // Checking state after async call
-                    if (context.mounted &&
-                        cubit.state.errorMessage == null &&
-                        cubit.state.order?.status == OrderStatus.delivered) {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => DeliverySuccessPage(
-                            tripEarnings: order.deliveryPrice ?? 350.0,
-                            distance: order.deliveryDistance ?? 4.2,
-                            orderCount: 1,
-                            sessionTotal: 2400.0,
-                          ),
-                        ),
-                      );
-                    }
                   }
                 } else if (isArrived) {
                   // If arrived at restaurant but haven't started delivery yet
@@ -623,3 +613,4 @@ class OrderAssignedCard extends StatelessWidget {
     );
   }
 }
+

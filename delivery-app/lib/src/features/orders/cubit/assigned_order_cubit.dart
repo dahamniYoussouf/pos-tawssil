@@ -119,6 +119,14 @@ class AssignedOrderCubit extends Cubit<AssignedOrderState> {
       },
       (_) {
         if (isClosed) return;
+        // Optimistically update status to delivered to ensure UI navigation
+        if (state.order != null) {
+          emit(state.copyWith(
+            order: state.order!.copyWith(status: OrderStatus.delivered),
+            isActionLoading: false,
+            errorMessage: null,
+          ));
+        }
         fetchOrderById(orderId);
       },
     );
@@ -127,7 +135,8 @@ class AssignedOrderCubit extends Cubit<AssignedOrderState> {
   Future<void> driverCancelOrder(String orderId, {String? reason}) async {
     if (isClosed) return;
     emit(state.copyWith(isActionLoading: true, errorMessage: null));
-    final result = await _orderRepository.driverCancelOrder(orderId, reason: reason);
+    final result =
+        await _orderRepository.driverCancelOrder(orderId, reason: reason);
     if (isClosed) return;
     result.fold(
       (error) {
