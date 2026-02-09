@@ -44,6 +44,30 @@ class AppLocalizationsAr extends AppLocalizations {
       'بتسجيل الدخول، أنت تقبل شروط الاستخدام الخاصة بنا';
 
   @override
+  String get termsPrefix => 'بتسجيل الدخول، أنت تقبل\n';
+
+  @override
+  String get termsLabel => 'شروط الاستخدام';
+
+  @override
+  String get termsAnd => ' و ';
+
+  @override
+  String get privacyPolicyLabel => 'سياسة الخصوصية';
+
+  @override
+  String get rememberMe => 'تذكرني';
+
+  @override
+  String get forgotPassword => 'نسيت كلمة المرور؟';
+
+  @override
+  String get dontHaveAccount => 'ليس لديك حساب؟ ';
+
+  @override
+  String get signUpAction => 'سجل الآن';
+
+  @override
   String get becomePartner => 'كن شريكًا →';
 
   @override

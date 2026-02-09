@@ -44,6 +44,30 @@ class AppLocalizationsFr extends AppLocalizations {
       'En vous connectant, vous acceptez nos Condition d\'utulisation';
 
   @override
+  String get termsPrefix => 'En vous connectant, vous acceptez nos\n';
+
+  @override
+  String get termsLabel => 'Conditions D’utilisation';
+
+  @override
+  String get termsAnd => ' et ';
+
+  @override
+  String get privacyPolicyLabel => 'Politique De Confidentialité';
+
+  @override
+  String get rememberMe => 'Rester connecté(e)';
+
+  @override
+  String get forgotPassword => 'Mot de passe oublié?';
+
+  @override
+  String get dontHaveAccount => 'Vous n’avez pas encore de compte? ';
+
+  @override
+  String get signUpAction => 'Inscrivez-vous';
+
+  @override
   String get becomePartner => 'Devenez partenaire →';
 
   @override

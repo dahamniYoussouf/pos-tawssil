@@ -166,6 +166,54 @@ abstract class AppLocalizations {
   /// **'By logging in, you accept our Terms of Use'**
   String get termsAndConditions;
 
+  /// No description provided for @termsPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'By logging in, you accept our\n'**
+  String get termsPrefix;
+
+  /// No description provided for @termsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms Of Use'**
+  String get termsLabel;
+
+  /// No description provided for @termsAnd.
+  ///
+  /// In en, this message translates to:
+  /// **' and '**
+  String get termsAnd;
+
+  /// No description provided for @privacyPolicyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicyLabel;
+
+  /// No description provided for @rememberMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember me'**
+  String get rememberMe;
+
+  /// No description provided for @forgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get forgotPassword;
+
+  /// No description provided for @dontHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account? '**
+  String get dontHaveAccount;
+
+  /// No description provided for @signUpAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up'**
+  String get signUpAction;
+
   /// No description provided for @becomePartner.
   ///
   /// In en, this message translates to:

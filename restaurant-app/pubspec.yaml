@@ -40,6 +40,21 @@ flutter:
   assets:
     - assets/images/
     - assets/data/
+  fonts:
+    - family: Gilmer
+      fonts:
+        - asset: assets/fonts/Gilmer-Regular.ttf
+          weight: 300
+        - asset: assets/fonts/Gilmer-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Gilmer-Bold.ttf
+          weight: 700
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter_24pt-Black.ttf
+          weight: 900
+        - asset: assets/fonts/Inter_28pt-Bold.ttf
+          weight: 700
 
 flutter_launcher_icons:
   android: true

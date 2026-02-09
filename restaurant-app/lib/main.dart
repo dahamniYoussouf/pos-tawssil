@@ -4,9 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:restaurant_app/src/core/res/app_theme.dart';
 import 'package:restaurant_app/src/core/utils/dependency_injection.dart';
-import 'package:restaurant_app/src/core/res/color_app.dart';
 import 'package:restaurant_app/src/features/auth/cubit/auth_cubit.dart';
 import 'package:restaurant_app/src/features/auth/cubit/auth_state.dart';
 import 'package:restaurant_app/src/features/auth/services/auth_service.dart';
@@ -86,17 +85,7 @@ class MyApp extends StatelessWidget {
           Locale('ar', 'DZ'),
         ],
         locale: const Locale('fr', 'FR'),
-        theme: ThemeData(
-          primaryColor: AppColors.primaryColor,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: AppColors.primaryColor,
-            primary: AppColors.primaryColor,
-          ),
-          textTheme: GoogleFonts.poppinsTextTheme(
-            ThemeData.light().textTheme,
-          ),
-          useMaterial3: true,
-        ),
+        theme: AppTheme.lightTheme,
         initialRoute: '/home',
         routes: {
           '/login': (context) => const LoginPage(),

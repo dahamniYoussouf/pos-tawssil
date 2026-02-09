@@ -43,6 +43,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get termsAndConditions => 'By logging in, you accept our Terms of Use';
 
   @override
+  String get termsPrefix => 'By logging in, you accept our\n';
+
+  @override
+  String get termsLabel => 'Terms Of Use';
+
+  @override
+  String get termsAnd => ' and ';
+
+  @override
+  String get privacyPolicyLabel => 'Privacy Policy';
+
+  @override
+  String get rememberMe => 'Remember me';
+
+  @override
+  String get forgotPassword => 'Forgot password?';
+
+  @override
+  String get dontHaveAccount => 'Don\'t have an account? ';
+
+  @override
+  String get signUpAction => 'Sign up';
+
+  @override
   String get becomePartner => 'Become a partner →';
 
   @override

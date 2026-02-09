@@ -40,7 +40,8 @@ class _LocationSearchFieldBody extends StatefulWidget {
   });
 
   @override
-  State<_LocationSearchFieldBody> createState() => _LocationSearchFieldBodyState();
+  State<_LocationSearchFieldBody> createState() =>
+      _LocationSearchFieldBodyState();
 }
 
 class _LocationSearchFieldBodyState extends State<_LocationSearchFieldBody> {
@@ -87,7 +88,8 @@ class _LocationSearchFieldBodyState extends State<_LocationSearchFieldBody> {
       },
       builder: (context, state) {
         final bool isLoading = state is LocationSearchLoading;
-        final LocationSelection? selection = state is LocationSearchSuccess ? state.selection : null;
+        final LocationSelection? selection =
+            state is LocationSearchSuccess ? state.selection : null;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -95,8 +97,8 @@ class _LocationSearchFieldBodyState extends State<_LocationSearchFieldBody> {
               localizations.locationSearchLabel,
               style: const TextStyle(
                 fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.black87,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
               ),
             ),
             const SizedBox(height: 8),
@@ -106,39 +108,36 @@ class _LocationSearchFieldBodyState extends State<_LocationSearchFieldBody> {
               textInputAction: TextInputAction.search,
               decoration: InputDecoration(
                   hintText: localizations.locationSearchHint,
+                  hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+                  filled: true,
+                  fillColor: AppColors.inputBackground,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(30),
+                    borderSide: BorderSide.none,
                   ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(
-                      color: AppColors.primaryColor,
-                      width: 1,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(
-                      color: AppColors.primaryColor,
-                      width: 2,
-                    ),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                   prefixIcon: IconButton(
-                    icon: const Icon(Icons.search, color: AppColors.primaryColor),
+                    icon:
+                        const Icon(Icons.search, color: AppColors.primaryColor),
                     onPressed: _handleSearch,
                   ),
                   suffixIcon: selection != null
                       ? const Icon(Icons.check, color: AppColors.primaryColor)
                       : isLoading
                           ? const Padding(
-                              padding: EdgeInsets.all(8),
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: AppColors.primaryColor,
+                              padding: EdgeInsets.all(12),
+                              child: SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.primaryColor,
+                                ),
                               ),
                             )
-                          : const Icon(Icons.location_on, color: AppColors.primaryColor)),
+                          : const Icon(Icons.location_on,
+                              color: AppColors.primaryColor)),
             ),
           ],
         );

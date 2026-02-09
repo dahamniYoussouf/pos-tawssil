@@ -60,7 +60,8 @@ class _SignupPageState extends State<SignupPage> {
 
   Future<void> _loadWillayas() async {
     try {
-      final String response = await rootBundle.loadString('assets/data/wilayas.json');
+      final String response =
+          await rootBundle.loadString('assets/data/wilayas.json');
       final List<dynamic> data = json.decode(response) as List<dynamic>;
       setState(() {
         _willayas = data.map((item) => item['name'] as String).toList();
@@ -87,7 +88,8 @@ class _SignupPageState extends State<SignupPage> {
   void _handleSignup() {
     if (_formKey.currentState?.validate() ?? false) {
       if (_selectedRestaurantCategories.isEmpty) {
-        _showErrorSnackBar(AppLocalizations.of(context)!.errorRestaurantTypeRequired);
+        _showErrorSnackBar(
+            AppLocalizations.of(context)!.errorRestaurantTypeRequired);
         return;
       }
 
@@ -102,7 +104,8 @@ class _SignupPageState extends State<SignupPage> {
       }
 
       if (_descriptionController.text.trim().isEmpty) {
-        _showErrorSnackBar(AppLocalizations.of(context)!.errorDescriptionRequired);
+        _showErrorSnackBar(
+            AppLocalizations.of(context)!.errorDescriptionRequired);
         return;
       }
 
@@ -112,7 +115,8 @@ class _SignupPageState extends State<SignupPage> {
       }
 
       final double? latitude = double.tryParse(_latitudeController.text.trim());
-      final double? longitude = double.tryParse(_longitudeController.text.trim());
+      final double? longitude =
+          double.tryParse(_longitudeController.text.trim());
 
       if (latitude == null || longitude == null) {
         _showErrorSnackBar(AppLocalizations.of(context)!.errorLocationRequired);
@@ -148,104 +152,127 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
+    final size = MediaQuery.of(context).size;
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.scaffoldBackground,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black87),
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: BlocConsumer<AuthCubit, AuthState>(
-            listener: (context, state) {
-              if (state is AuthError) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.message),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-                context.read<AuthCubit>().clearError();
-              } else if (state is AuthSuccess) {
-                Navigator.of(context).pushReplacementNamed('/home');
-              }
-            },
-            builder: (context, state) {
-              final isLoading = state is AuthLoading;
+      body: BlocConsumer<AuthCubit, AuthState>(
+        listener: (context, state) {
+          if (state is AuthError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
+              ),
+            );
+            context.read<AuthCubit>().clearError();
+          } else if (state is AuthSuccess) {
+            Navigator.of(context).pushReplacementNamed('/home');
+          }
+        },
+        builder: (context, state) {
+          final isLoading = state is AuthLoading;
 
-              return Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    _buildLogo(),
-                    const SizedBox(height: 24),
-                    Text(
-                      localizations.signUpTitle,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                // Top Logo Section
+                Container(
+                  height: size.height * 0.2,
+                  width: double.infinity,
+                  color: AppColors.scaffoldBackground,
+                  child: Center(
+                    child: Image.asset(
+                      MediaRes.logo,
+                      width: size.width * 0.5,
+                      fit: BoxFit.contain,
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      localizations.signUpSubtitle,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black87,
-                      ),
+                  ),
+                ),
+                // Bottom Form Section (White Card)
+                Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(32),
+                      topRight: Radius.circular(32),
                     ),
-                    const SizedBox(height: 16),
-                    _buildRestaurantNameField(localizations),
-                    const SizedBox(height: 16),
-                    _buildEmailField(localizations),
-                    const SizedBox(height: 16),
-                    _buildPhoneField(localizations),
-                    const SizedBox(height: 16),
-                    _buildPasswordField(localizations),
-                    const SizedBox(height: 16),
-                    _buildConfirmPasswordField(localizations),
-                    const SizedBox(height: 16),
-                    _buildRestaurantTypeField(localizations),
-                    const SizedBox(height: 16),
-                    Row(
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Expanded(child: _buildWillayaField(localizations)),
-                        const SizedBox(width: 16),
-                        Expanded(child: _buildZoneField(localizations)),
+                        Text(
+                          localizations.signUpTitle,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black,
+                            letterSpacing: -0.5,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          localizations.signUpSubtitle,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Color(0xFF4B5563),
+                            height: 1.4,
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        _buildRestaurantNameField(localizations),
+                        const SizedBox(height: 16),
+                        _buildEmailField(localizations),
+                        const SizedBox(height: 16),
+                        _buildPhoneField(localizations),
+                        const SizedBox(height: 16),
+                        _buildPasswordField(localizations),
+                        const SizedBox(height: 16),
+                        _buildConfirmPasswordField(localizations),
+                        const SizedBox(height: 16),
+                        _buildRestaurantTypeField(localizations),
+                        /*
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(child: _buildWillayaField(localizations)),
+                            const SizedBox(width: 16),
+                            Expanded(child: _buildZoneField(localizations)),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        _buildDescriptionField(localizations),
+                        */
+                        const SizedBox(height: 16),
+                        _buildLocationSection(localizations),
+                        const SizedBox(height: 32),
+                        _buildSignupButton(localizations, isLoading),
+                        const SizedBox(height: 16),
+                        _buildTermsText(localizations),
+                        const SizedBox(height: 40),
                       ],
                     ),
-                    const SizedBox(height: 24),
-                    _buildDescriptionField(localizations),
-                    const SizedBox(height: 16),
-                    _buildLocationSection(localizations),
-                    const SizedBox(height: 24),
-                    _buildSignupButton(localizations, isLoading),
-                    const SizedBox(height: 16),
-                    _buildTermsText(localizations),
-                  ],
+                  ),
                 ),
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLogo() {
-    return Center(
-      child: Image.asset(
-        MediaRes.logo,
-        height: 100,
-        fit: BoxFit.contain,
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -258,8 +285,8 @@ class _SignupPageState extends State<SignupPage> {
           localizations.restaurantName,
           style: const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
           ),
         ),
         const SizedBox(height: 8),
@@ -267,20 +294,15 @@ class _SignupPageState extends State<SignupPage> {
           controller: _restaurantNameController,
           decoration: InputDecoration(
             hintText: localizations.restaurantNameHint,
-            hintStyle: const TextStyle(color: Colors.grey),
+            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+            filled: true,
+            fillColor: AppColors.inputBackground,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide.none,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -301,8 +323,8 @@ class _SignupPageState extends State<SignupPage> {
           localizations.email,
           style: const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
           ),
         ),
         const SizedBox(height: 8),
@@ -311,20 +333,15 @@ class _SignupPageState extends State<SignupPage> {
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
             hintText: localizations.emailHint,
-            hintStyle: const TextStyle(color: Colors.grey),
+            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+            filled: true,
+            fillColor: AppColors.inputBackground,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide.none,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
@@ -348,60 +365,58 @@ class _SignupPageState extends State<SignupPage> {
           localizations.phoneNumber,
           style: const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
           ),
         ),
         const SizedBox(height: 8),
-        Row(
-          children: [
-            Container(
-              width: 80,
-              height: 52,
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.primaryColor, width: 1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text('🇩🇿', style: TextStyle(fontSize: 20)),
-                  const SizedBox(width: 4),
-                  const Text('+213', style: TextStyle(fontSize: 14, color: Colors.black87)),
-                ],
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: TextFormField(
-                controller: _phoneController,
-                keyboardType: TextInputType.phone,
-                decoration: InputDecoration(
-                  hintText: localizations.phoneNumberHint,
-                  hintStyle: const TextStyle(color: Colors.grey),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
-                  ),
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        Container(
+          decoration: BoxDecoration(
+            color: AppColors.inputBackground,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Row(
+            children: [
+              const SizedBox(width: 8),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Row(
+                  children: [
+                    Image.asset(MediaRes.algeriaFlag, width: 40, height: 40),
+                    const SizedBox(width: 8),
+                    const Text('ALG +213',
+                        style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black)),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.unfold_more,
+                        size: 16, color: Colors.black54),
+                  ],
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return localizations.errorPhoneNumberRequired;
-                  }
-                  return null;
-                },
               ),
-            ),
-          ],
+              Expanded(
+                child: TextFormField(
+                  controller: _phoneController,
+                  keyboardType: TextInputType.phone,
+                  decoration: InputDecoration(
+                    hintText: "000 00 00 00",
+                    hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+                    border: InputBorder.none,
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 16),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return localizations.errorPhoneNumberRequired;
+                    }
+                    return null;
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );
@@ -415,8 +430,8 @@ class _SignupPageState extends State<SignupPage> {
           localizations.password,
           style: const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
           ),
         ),
         const SizedBox(height: 8),
@@ -425,24 +440,22 @@ class _SignupPageState extends State<SignupPage> {
           obscureText: _obscurePassword,
           decoration: InputDecoration(
             hintText: localizations.passwordHint,
-            hintStyle: const TextStyle(color: Colors.grey),
+            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+            filled: true,
+            fillColor: AppColors.inputBackground,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide.none,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             suffixIcon: IconButton(
               icon: Icon(
-                _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                color: Colors.grey,
+                _obscurePassword
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
+                color: Colors.grey[400],
+                size: 20,
               ),
               onPressed: () {
                 setState(() {
@@ -470,8 +483,8 @@ class _SignupPageState extends State<SignupPage> {
           localizations.confirmPassword,
           style: const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
           ),
         ),
         const SizedBox(height: 8),
@@ -480,24 +493,22 @@ class _SignupPageState extends State<SignupPage> {
           obscureText: _obscureConfirmPassword,
           decoration: InputDecoration(
             hintText: localizations.confirmPasswordHint,
-            hintStyle: const TextStyle(color: Colors.grey),
+            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+            filled: true,
+            fillColor: AppColors.inputBackground,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide.none,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
             suffixIcon: IconButton(
               icon: Icon(
-                _obscureConfirmPassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                color: Colors.grey,
+                _obscureConfirmPassword
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
+                color: Colors.grey[400],
+                size: 20,
               ),
               onPressed: () {
                 setState(() {
@@ -528,8 +539,8 @@ class _SignupPageState extends State<SignupPage> {
           localizations.restaurantType,
           style: const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
           ),
         ),
         const SizedBox(height: 8),
@@ -537,25 +548,26 @@ class _SignupPageState extends State<SignupPage> {
           spacing: 8,
           runSpacing: 8,
           children: _restaurantCategories.map((type) {
-            final bool isSelected = _selectedRestaurantCategories.contains(type);
+            final bool isSelected =
+                _selectedRestaurantCategories.contains(type);
             return FilterChip(
               label: Text(
                 type,
                 style: TextStyle(
-                  color: isSelected ? AppColors.primaryColor : Colors.black87,
+                  color: isSelected ? Colors.white : Colors.black87,
                   fontWeight: FontWeight.w500,
+                  fontSize: 12,
                 ),
               ),
               selected: isSelected,
               onSelected: (_) => _handleRestaurantTypeTap(type),
-              backgroundColor: Colors.white,
-              selectedColor: AppColors.primaryColor.withOpacity(0.15),
-              checkmarkColor: AppColors.primaryColor,
+              backgroundColor: AppColors.inputBackground,
+              selectedColor: AppColors.primaryColor,
+              checkmarkColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
-                side: BorderSide(
-                  color: isSelected ? AppColors.primaryColor : Colors.grey.shade400,
-                ),
+                side: BorderSide.none,
               ),
             );
           }).toList(),
@@ -572,8 +584,8 @@ class _SignupPageState extends State<SignupPage> {
           localizations.description,
           style: const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
           ),
         ),
         const SizedBox(height: 8),
@@ -582,20 +594,15 @@ class _SignupPageState extends State<SignupPage> {
           maxLines: 4,
           decoration: InputDecoration(
             hintText: localizations.descriptionHint,
-            hintStyle: const TextStyle(color: Colors.grey),
+            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+            filled: true,
+            fillColor: AppColors.inputBackground,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide.none,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           ),
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
@@ -612,9 +619,11 @@ class _SignupPageState extends State<SignupPage> {
     return LocationSearchField(
       controller: _addressController,
       onLocationSelected: (selection) {
-        _addressController.text = selection.address;
-        _latitudeController.text = selection.latitude.toStringAsFixed(6);
-        _longitudeController.text = selection.longitude.toStringAsFixed(6);
+        setState(() {
+          _addressController.text = selection.address;
+          _latitudeController.text = selection.latitude.toStringAsFixed(6);
+          _longitudeController.text = selection.longitude.toStringAsFixed(6);
+        });
       },
     );
   }
@@ -637,49 +646,36 @@ class _SignupPageState extends State<SignupPage> {
           localizations.willaya,
           style: const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
           ),
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          initialValue: _selectedWillaya,
+          value: _selectedWillaya,
           isExpanded: true,
           decoration: InputDecoration(
             hintText: localizations.willayaHint,
-            hintStyle: const TextStyle(color: Colors.grey),
+            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+            filled: true,
+            fillColor: AppColors.inputBackground,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide.none,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            suffixIcon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           ),
           items: _willayas.map((willaya) {
             return DropdownMenuItem<String>(
               value: willaya,
               child: Text(
                 willaya,
+                style: const TextStyle(fontSize: 14),
                 overflow: TextOverflow.ellipsis,
               ),
             );
           }).toList(),
-          selectedItemBuilder: (BuildContext context) {
-            return _willayas.map((willaya) {
-              return Text(
-                willaya,
-                overflow: TextOverflow.ellipsis,
-              );
-            }).toList();
-          },
           onChanged: (value) {
             setState(() {
               _selectedWillaya = value;
@@ -698,49 +694,36 @@ class _SignupPageState extends State<SignupPage> {
           localizations.zone,
           style: const TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
           ),
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          initialValue: _selectedZone,
+          value: _selectedZone,
           isExpanded: true,
           decoration: InputDecoration(
             hintText: localizations.zoneHint,
-            hintStyle: const TextStyle(color: Colors.grey),
+            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
+            filled: true,
+            fillColor: AppColors.inputBackground,
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
+              borderRadius: BorderRadius.circular(30),
+              borderSide: BorderSide.none,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-            suffixIcon: const Icon(Icons.arrow_drop_down, color: Colors.grey),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           ),
           items: _zones.map((zone) {
             return DropdownMenuItem<String>(
               value: zone,
               child: Text(
                 zone,
+                style: const TextStyle(fontSize: 14),
                 overflow: TextOverflow.ellipsis,
               ),
             );
           }).toList(),
-          selectedItemBuilder: (BuildContext context) {
-            return _zones.map((zone) {
-              return Text(
-                zone,
-                overflow: TextOverflow.ellipsis,
-              );
-            }).toList();
-          },
           onChanged: (value) {
             setState(() {
               _selectedZone = value;
@@ -752,33 +735,36 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   Widget _buildSignupButton(AppLocalizations localizations, bool isLoading) {
-    return ElevatedButton(
-      onPressed: isLoading ? null : _handleSignup,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primaryColor,
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        onPressed: isLoading ? null : _handleSignup,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primaryColor,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          elevation: 0,
         ),
-        elevation: 0,
+        child: isLoading
+            ? const SizedBox(
+                height: 20,
+                width: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+            : Text(
+                localizations.signUp,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
       ),
-      child: isLoading
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-              ),
-            )
-          : Text(
-              localizations.signUp,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
     );
   }
 
@@ -786,9 +772,9 @@ class _SignupPageState extends State<SignupPage> {
     return Center(
       child: Text(
         localizations.signUpTerms,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 12,
-          color: Colors.black87,
+          color: Colors.grey[500],
         ),
         textAlign: TextAlign.center,
       ),
