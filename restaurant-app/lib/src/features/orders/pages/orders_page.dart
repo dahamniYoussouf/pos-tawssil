@@ -30,7 +30,8 @@ class _OrdersPageState extends State<OrdersPage> {
     final initialStatus = OrderStatus.pending;
     // Only fetch if not already loaded with the same status
     final currentState = context.read<OrdersCubit>().state;
-    if (currentState is! OrdersLoaded || currentState.selectedStatus != initialStatus) {
+    if (currentState is! OrdersLoaded ||
+        currentState.selectedStatus != initialStatus) {
       context.read<OrdersCubit>().fetchOrders(status: initialStatus);
     }
   }
@@ -52,9 +53,13 @@ class _OrdersPageState extends State<OrdersPage> {
     if (currentState is! OrdersLoaded) return;
     if (!currentState.hasMore) return;
 
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.8) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent * 0.8) {
       _isLoadingMore = true;
-      context.read<OrdersCubit>().loadMoreOrders(status: currentState.selectedStatus).then((_) {
+      context
+          .read<OrdersCubit>()
+          .loadMoreOrders(status: currentState.selectedStatus)
+          .then((_) {
         if (mounted) {
           _isLoadingMore = false;
         }
@@ -68,21 +73,38 @@ class _OrdersPageState extends State<OrdersPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return BlocBuilder<OrdersCubit, OrdersState>(
       builder: (context, state) {
-        return Column(
-          children: [
-            StatusSelector(
-              selectedStatus: state.selectedStatus,
-              onStatusChanged: _onStatusChanged,
-            ),
-            Expanded(
-              child: BlocConsumer<OrdersCubit, OrdersState>(
-                listener: _handleStateChanges,
-                builder: _buildContent,
+        return Scaffold(
+          backgroundColor: AppColors.white,
+          appBar: AppBar(
+            backgroundColor: AppColors.white,
+            elevation: 0,
+            title: Text(
+              l10n.orders,
+              style: const TextStyle(
+                color: AppColors.primaryColor,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ],
+            centerTitle: true,
+          ),
+          body: Column(
+            children: [
+              StatusSelector(
+                selectedStatus: state.selectedStatus,
+                onStatusChanged: _onStatusChanged,
+              ),
+              Expanded(
+                child: BlocConsumer<OrdersCubit, OrdersState>(
+                  listener: _handleStateChanges,
+                  builder: _buildContent,
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
@@ -98,9 +120,11 @@ class _OrdersPageState extends State<OrdersPage> {
       _isLoadingMore = false;
     }
     if (state is OrderActionError) {
-      _showErrorSnackBar(context, _translateErrorMessage(state.message, localizations));
+      _showErrorSnackBar(
+          context, _translateErrorMessage(state.message, localizations));
     } else if (state is OrderActionSuccess) {
-      _showSuccessSnackBar(context, _translateSuccessMessage(state.message, localizations));
+      _showSuccessSnackBar(
+          context, _translateSuccessMessage(state.message, localizations));
     }
   }
 
@@ -189,7 +213,9 @@ class _OrdersPageState extends State<OrdersPage> {
 
   Future<void> _refreshOrders() async {
     final currentState = context.read<OrdersCubit>().state;
-    context.read<OrdersCubit>().refreshOrders(status: currentState.selectedStatus);
+    context
+        .read<OrdersCubit>()
+        .refreshOrders(status: currentState.selectedStatus);
   }
 
   void _showErrorSnackBar(BuildContext context, String message) {
@@ -295,7 +321,9 @@ class _OrdersPageState extends State<OrdersPage> {
           ElevatedButton(
             onPressed: () {
               final currentState = context.read<OrdersCubit>().state;
-              context.read<OrdersCubit>().refreshOrders(status: currentState.selectedStatus);
+              context
+                  .read<OrdersCubit>()
+                  .refreshOrders(status: currentState.selectedStatus);
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primaryColor,
@@ -310,7 +338,8 @@ class _OrdersPageState extends State<OrdersPage> {
     );
   }
 
-  String _translateSuccessMessage(String message, AppLocalizations localizations) {
+  String _translateSuccessMessage(
+      String message, AppLocalizations localizations) {
     if (message.contains('Order accepted successfully')) {
       return localizations.orderAcceptedSuccess;
     } else if (message.contains('Order canceled successfully')) {
@@ -321,7 +350,8 @@ class _OrdersPageState extends State<OrdersPage> {
     return message;
   }
 
-  String _translateErrorMessage(String message, AppLocalizations localizations) {
+  String _translateErrorMessage(
+      String message, AppLocalizations localizations) {
     if (message.contains('Invalid response format')) {
       return localizations.errorInvalidResponseFormat;
     } else if (message.contains('Failed to fetch orders')) {
@@ -329,7 +359,8 @@ class _OrdersPageState extends State<OrdersPage> {
     } else if (message.contains('Failed to accept order')) {
       return localizations.errorFailedToAcceptOrder;
     } else if (message.contains('Error accepting order:')) {
-      final errorMatch = RegExp(r'Error accepting order: (.+)').firstMatch(message);
+      final errorMatch =
+          RegExp(r'Error accepting order: (.+)').firstMatch(message);
       if (errorMatch != null) {
         return localizations.errorAcceptingOrder(errorMatch.group(1) ?? '');
       }
@@ -337,7 +368,8 @@ class _OrdersPageState extends State<OrdersPage> {
     } else if (message.contains('Failed to decline order')) {
       return localizations.errorFailedToRefuseOrder;
     } else if (message.contains('Error declining order:')) {
-      final errorMatch = RegExp(r'Error declining order: (.+)').firstMatch(message);
+      final errorMatch =
+          RegExp(r'Error declining order: (.+)').firstMatch(message);
       if (errorMatch != null) {
         return localizations.errorRefusingOrder(errorMatch.group(1) ?? '');
       }
@@ -345,7 +377,8 @@ class _OrdersPageState extends State<OrdersPage> {
     } else if (message.contains('Failed to refuse order')) {
       return localizations.errorFailedToRefuseOrder;
     } else if (message.contains('Error refusing order:')) {
-      final errorMatch = RegExp(r'Error refusing order: (.+)').firstMatch(message);
+      final errorMatch =
+          RegExp(r'Error refusing order: (.+)').firstMatch(message);
       if (errorMatch != null) {
         return localizations.errorRefusingOrder(errorMatch.group(1) ?? '');
       }

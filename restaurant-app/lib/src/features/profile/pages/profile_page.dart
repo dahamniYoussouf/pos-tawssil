@@ -9,6 +9,8 @@ import 'package:restaurant_app/src/features/profile/widgets/profile_card_widget.
 import 'package:restaurant_app/src/features/profile/widgets/profile_menu_item_widget.dart';
 import 'package:restaurant_app/src/features/profile/widgets/language_selector_widget.dart';
 
+import 'package:restaurant_app/src/core/utils/dependency_injection.dart';
+
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -20,7 +22,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    // Fetching is handled by HomePage to avoid infinite loop
+    locator<RestaurantCubit>().fetchRestaurantDetails();
   }
 
   @override
@@ -29,12 +31,26 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        title: Text(
+          localizations.settings,
+          style: const TextStyle(
+            color: Color(0xFF059669),
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
             const SizedBox(height: 20),
             BlocBuilder<RestaurantCubit, RestaurantState>(
+              bloc: locator<RestaurantCubit>(),
               builder: (context, state) {
                 if (state is RestaurantLoaded) {
                   return ProfileCardWidget(restaurant: state.restaurant);
