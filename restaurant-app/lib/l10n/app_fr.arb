@@ -230,6 +230,11 @@
   "menu": "Menu",
   "createCategoryFirst": "Veuillez d'abord créer une catégorie",
   "uploadImageFirst": "Veuillez d'abord télécharger l'image",
-  "errorPickingImage": "Erreur lors de la sélection de l'image"
+  "errorPickingImage": "Erreur lors de la sélection de l'image",
+  "all": "Tout",
+  "deliveryApp": "Delivery App",
+  "pos": "POS",
+  "success": "Succès",
+  "cancelled": "Annulé"
 }
 

@@ -230,6 +230,11 @@
   "menu": "Menu",
   "createCategoryFirst": "Please create a category first",
   "uploadImageFirst": "Please upload the image first",
-  "errorPickingImage": "Error picking image"
+  "errorPickingImage": "Error picking image",
+  "all": "All",
+  "deliveryApp": "Delivery App",
+  "pos": "POS",
+  "success": "Success",
+  "cancelled": "Cancelled"
 }
 

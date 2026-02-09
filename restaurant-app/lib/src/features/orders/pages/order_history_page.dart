@@ -6,8 +6,6 @@ import 'package:restaurant_app/src/features/orders/cubit/order_history_cubit.dar
 import 'package:restaurant_app/src/features/orders/cubit/order_history_state.dart';
 import 'package:restaurant_app/src/features/orders/models/order_history_filters.dart';
 import 'package:restaurant_app/src/features/orders/widgets/order_history_card.dart';
-import 'package:restaurant_app/src/features/orders/widgets/order_history_filters_widget.dart';
-import 'package:restaurant_app/src/features/orders/widgets/order_history_theme.dart';
 
 class OrderHistoryPage extends StatefulWidget {
   const OrderHistoryPage({super.key});
@@ -17,8 +15,6 @@ class OrderHistoryPage extends StatefulWidget {
 }
 
 class _OrderHistoryPageState extends State<OrderHistoryPage> {
-  final TextEditingController _searchController = TextEditingController();
-
   @override
   void initState() {
     super.initState();
@@ -30,102 +26,56 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
   }
 
   @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  void _onSearchChanged(String value) {
-    context.read<OrderHistoryCubit>().setSearch(value.isEmpty ? null : value);
-  }
-
-  @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    return Scaffold(
-      backgroundColor: OrderHistoryTheme.backgroundColor,
-      appBar: AppBar(
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        title: Text(
-          localizations.orderHistory,
-          style: const TextStyle(
-            color: AppColors.primaryColor,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          title: Text(
+            localizations.orderHistory,
+            style: const TextStyle(
+              color: AppColors.black,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        centerTitle: true,
-      ),
-      body: BlocBuilder<OrderHistoryCubit, OrderHistoryState>(
-        builder: (context, state) {
-          return Column(
-            children: [
-              OrderHistorySearchBarWidget(
-                searchController: _searchController,
-                onSearchChanged: _onSearchChanged,
-              ),
-              Expanded(
-                child: OrderHistoryContentWidget(),
+          centerTitle: true,
+          bottom: TabBar(
+            onTap: (index) {
+              final orderType =
+                  index == 1 ? 'delivery' : (index == 2 ? 'pos' : null);
+              context.read<OrderHistoryCubit>().setOrderType(orderType);
+            },
+            indicatorColor: AppColors.primaryColor,
+            indicatorWeight: 3,
+            labelColor: AppColors.primaryColor,
+            unselectedLabelColor: AppColors.grey,
+            labelStyle:
+                const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            unselectedLabelStyle:
+                const TextStyle(fontWeight: FontWeight.normal, fontSize: 16),
+            tabs: [
+              Tab(text: localizations.all),
+              Tab(text: localizations.deliveryApp),
+              Tab(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.diamond_outlined,
+                        size: 18, color: Colors.orange),
+                    const SizedBox(width: 4),
+                    Text(localizations.pos),
+                  ],
+                ),
               ),
             ],
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showModalBottomSheet(
-            context: context,
-            isScrollControlled: true,
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            ),
-            builder: (context) => const OrderHistoryFiltersWidget(),
-          );
-        },
-        backgroundColor: AppColors.primaryColor,
-        child: const Icon(Icons.filter_list, color: AppColors.white),
-      ),
-    );
-  }
-}
-
-class OrderHistorySearchBarWidget extends StatelessWidget {
-  final TextEditingController searchController;
-  final ValueChanged<String> onSearchChanged;
-
-  const OrderHistorySearchBarWidget({
-    super.key,
-    required this.searchController,
-    required this.onSearchChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-    return Container(
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(
-          OrderHistorySearchTheme.borderRadius,
-        ),
-        border: Border.all(
-          color: OrderHistorySearchTheme.borderColor,
-          width: OrderHistorySearchTheme.borderWidth,
-        ),
-      ),
-      child: TextField(
-        controller: searchController,
-        onChanged: onSearchChanged,
-        decoration: InputDecoration(
-          hintText: localizations.searchHint,
-          prefixIcon: const Icon(
-            Icons.search,
-            color: OrderHistorySearchTheme.iconColor,
           ),
-          border: InputBorder.none,
-          contentPadding: OrderHistorySearchTheme.padding,
         ),
+        body: const OrderHistoryContentWidget(),
       ),
     );
   }

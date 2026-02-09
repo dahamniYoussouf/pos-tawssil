@@ -631,4 +631,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorPickingImage => 'Error picking image';
+
+  @override
+  String get deliveryApp => 'Delivery App';
+
+  @override
+  String get pos => 'POS';
+
+  @override
+  String get success => 'Success';
+
+  @override
+  String get cancelled => 'Cancelled';
 }

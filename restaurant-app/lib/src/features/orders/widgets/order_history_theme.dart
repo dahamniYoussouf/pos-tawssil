@@ -49,25 +49,26 @@ class OrderHistoryStatusTheme extends OrderHistoryTheme {
     switch (status.toLowerCase()) {
       case 'accepted':
       case 'accepté':
-        return const Color(0xFF4CAF50); // Green
+        return AppColors.statusAccepted;
       case 'declined':
       case 'annulé':
-        return const Color(0xFFE57373); // Light red/pink
+      case 'cancelled':
+        return AppColors.statusDeclined;
       case 'delivered':
       case 'livrer':
-        return const Color(0xFFFFB74D); // Light yellow/orange
+        return AppColors.statusDelivered;
       case 'preparing':
       case 'en préparation':
-        return const Color(0xFF42A5F5); // Blue
+        return AppColors.statusPreparing;
       case 'assigned':
       case 'assigné':
-        return const Color(0xFF9C27B0); // Purple
+        return AppColors.statusAssigned;
       case 'pending':
       case 'en attente':
-        return const Color(0xFFFFA726); // Orange
+        return AppColors.statusPending;
       case 'delivering':
       case 'en livraison':
-        return const Color(0xFF26A69A); // Teal
+        return AppColors.statusDelivering;
       default:
         return AppColors.grey;
     }

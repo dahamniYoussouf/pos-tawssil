@@ -27,4 +27,7 @@ class MediaRes {
   static const String shieldUserIcon = '$_baseImageSvg/ShieldUser.svg';
   static const String logoutIcon = '$_baseImageSvg/logOut_icon.svg';
   static const String arrowRightIcon = '$_baseImageSvg/arrow_right_icon.svg';
+  static const String posIcon = '$_baseImageSvg/pos.svg';
+
+  static const String profilePic = '$_baseImageIcon/profilePic.png';
 }

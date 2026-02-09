@@ -230,6 +230,11 @@
   "menu": "القائمة",
   "createCategoryFirst": "يرجى إنشاء فئة أولاً",
   "uploadImageFirst": "يرجى رفع الصورة أولاً",
-  "errorPickingImage": "خطأ أثناء اختيار الصورة"
+  "errorPickingImage": "خطأ أثناء اختيار الصورة",
+  "all": "الكل",
+  "deliveryApp": "تطبيق التوصيل",
+  "pos": "نقاط البيع",
+  "success": "ناجح",
+  "cancelled": "ملغي"
 }
 

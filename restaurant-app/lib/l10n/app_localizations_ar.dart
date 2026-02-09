@@ -627,4 +627,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errorPickingImage => 'خطأ أثناء اختيار الصورة';
+
+  @override
+  String get deliveryApp => 'تطبيق التوصيل';
+
+  @override
+  String get pos => 'نقاط البيع';
+
+  @override
+  String get success => 'ناجح';
+
+  @override
+  String get cancelled => 'ملغي';
 }

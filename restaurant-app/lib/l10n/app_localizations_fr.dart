@@ -316,7 +316,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get statusLabel => 'Statut:';
 
   @override
-  String get all => 'Tous';
+  String get all => 'Tout';
 
   @override
   String get accepted => 'Accepté';
@@ -638,4 +638,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get errorPickingImage => 'Erreur lors de la sélection de l\'image';
+
+  @override
+  String get deliveryApp => 'Delivery App';
+
+  @override
+  String get pos => 'POS';
+
+  @override
+  String get success => 'Succès';
+
+  @override
+  String get cancelled => 'Annulé';
 }

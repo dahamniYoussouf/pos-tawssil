@@ -1311,6 +1311,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error picking image'**
   String get errorPickingImage;
+
+  /// No description provided for @deliveryApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery App'**
+  String get deliveryApp;
+
+  /// No description provided for @pos.
+  ///
+  /// In en, this message translates to:
+  /// **'POS'**
+  String get pos;
+
+  /// No description provided for @success.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get success;
+
+  /// No description provided for @cancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get cancelled;
 }
 
 class _AppLocalizationsDelegate

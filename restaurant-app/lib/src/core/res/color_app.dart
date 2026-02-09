@@ -21,4 +21,13 @@ class AppColors {
   static const Color iconMedium = Color(0xFF6B7280);
   static const Color backgroundLight = Color(0xFFF9FAFB);
   static const Color borderLight = Color(0xFFF3F4F6);
+
+  // Status Colors
+  static const Color statusAccepted = Color(0xFF4CAF50);
+  static const Color statusDeclined = Color(0xFFE57373);
+  static const Color statusDelivered = Color(0xFFFFB74D);
+  static const Color statusPreparing = Color(0xFF42A5F5);
+  static const Color statusAssigned = Color(0xFF9C27B0);
+  static const Color statusPending = Color(0xFFFFA726);
+  static const Color statusDelivering = Color(0xFF26A69A);
 }
