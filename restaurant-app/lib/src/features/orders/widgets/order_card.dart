@@ -33,7 +33,8 @@ class OrderCard extends StatelessWidget {
           width: 50,
           height: 50,
           fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) => _buildDefaultIcon(itemName),
+          errorBuilder: (context, error, stackTrace) =>
+              _buildDefaultIcon(itemName),
         ),
       );
     }
@@ -178,7 +179,8 @@ class OrderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildDeliveryDetails(BuildContext context, AppLocalizations localizations) {
+  Widget _buildDeliveryDetails(
+      BuildContext context, AppLocalizations localizations) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -191,7 +193,9 @@ class OrderCard extends StatelessWidget {
             localizations.deliveryTime,
             order.estimatedDeliveryTime != null
                 ? () {
-                    final minutes = order.estimatedDeliveryTime!.difference(DateTime.now()).inMinutes;
+                    final minutes = order.estimatedDeliveryTime!
+                        .difference(DateTime.now())
+                        .inMinutes;
                     return '${minutes < 0 ? 0 : minutes} ${localizations.minutes}';
                   }()
                 : '10 ${localizations.minutes}',
@@ -199,12 +203,16 @@ class OrderCard extends StatelessWidget {
           const SizedBox(height: 8),
           _buildDeliveryDetailRow(
             localizations.distance,
-            order.deliveryDistance != null ? '${order.deliveryDistance!.toStringAsFixed(1)} ${localizations.kilometers}' : '0 ${localizations.kilometers}',
+            order.deliveryDistance != null
+                ? '${order.deliveryDistance!.toStringAsFixed(1)} ${localizations.kilometers}'
+                : '0 ${localizations.kilometers}',
           ),
           const SizedBox(height: 8),
           _buildDeliveryDetailRow(
             localizations.deliveryPrice,
-            order.deliveryPrice != null ? _formatPrice(order.deliveryPrice!) : '000 DA',
+            order.deliveryPrice != null
+                ? _formatPrice(order.deliveryPrice!)
+                : '000 DA',
           ),
         ],
       ),
@@ -234,7 +242,8 @@ class OrderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildTotalPrice(BuildContext context, AppLocalizations localizations) {
+  Widget _buildTotalPrice(
+      BuildContext context, AppLocalizations localizations) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -257,20 +266,26 @@ class OrderCard extends StatelessWidget {
     );
   }
 
-  Widget _buildActionButtons(BuildContext context, AppLocalizations localizations) {
+  Widget _buildActionButtons(
+      BuildContext context, AppLocalizations localizations) {
     // show buttons only if the order is pending
     return Visibility(
         visible: order.status == OrderStatus.pending,
         child: BlocBuilder<OrdersCubit, OrdersState>(builder: (context, state) {
-          final actionLoading = state is OrderActionLoading && state.orderId == order.id;
-          final isCancelLoading = actionLoading && state.actionType == OrderActionType.cancel;
-          final isAcceptLoading = actionLoading && state.actionType == OrderActionType.accept;
-          
+          final actionLoading =
+              state is OrderActionLoading && state.orderId == order.id;
+          final isCancelLoading =
+              actionLoading && state.actionType == OrderActionType.cancel;
+          final isAcceptLoading =
+              actionLoading && state.actionType == OrderActionType.accept;
+
           return Row(
             children: [
               Expanded(
                 child: OutlinedButton(
-                  onPressed: (isCancelLoading || isAcceptLoading) ? null : () => context.read<OrdersCubit>().cancelOrder(order.id),
+                  onPressed: (isCancelLoading || isAcceptLoading)
+                      ? null
+                      : () => context.read<OrdersCubit>().cancelOrder(order.id),
                   style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     side: const BorderSide(color: AppColors.primaryColor),
@@ -284,7 +299,8 @@ class OrderCard extends StatelessWidget {
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.primaryColor),
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                AppColors.primaryColor),
                           ),
                         )
                       : Text(
@@ -300,7 +316,9 @@ class OrderCard extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: ElevatedButton(
-                  onPressed: (isCancelLoading || isAcceptLoading) ? null : () => context.read<OrdersCubit>().acceptOrder(order.id),
+                  onPressed: (isCancelLoading || isAcceptLoading)
+                      ? null
+                      : () => context.read<OrdersCubit>().acceptOrder(order.id),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primaryColor,
                     padding: const EdgeInsets.symmetric(vertical: 12),
@@ -314,7 +332,8 @@ class OrderCard extends StatelessWidget {
                           height: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(AppColors.white),
                           ),
                         )
                       : Text(

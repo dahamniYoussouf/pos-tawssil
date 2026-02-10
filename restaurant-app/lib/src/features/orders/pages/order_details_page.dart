@@ -225,6 +225,24 @@ class OrderDetailsPage extends StatelessWidget {
 
   Widget _buildOrderHistorySection(
       BuildContext context, OrderModel order, AppLocalizations l10n) {
+    final status = order.status.toLowerCase();
+
+    // Logic for Timeline Status
+    // Step 1: Received Order
+    // Checked if status is not pending or declined
+    final isReceivedChecked =
+        status != OrderStatus.pending && status != OrderStatus.declined;
+
+    // Step 2: Accepted by Delivery
+    // Checked if status has moved to assigned, delivering or delivered
+    final isAcceptedChecked = [
+      OrderStatus.assigned,
+      OrderStatus.arrived,
+      OrderStatus.delivering,
+      OrderStatus.delivered,
+      OrderStatus.collected
+    ].contains(status);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -248,14 +266,14 @@ class OrderDetailsPage extends StatelessWidget {
                 ? DateFormat('HH:mm').format(order.createdAt!)
                 : '',
             status: l10n.receivedOrder,
-            isCurrent: false,
+            isCurrent: isReceivedChecked,
           ),
           _buildTimelineItem(
             time: order.updatedAt != null
                 ? DateFormat('HH:mm').format(order.updatedAt!)
                 : '',
             status: l10n.acceptedByDelivery,
-            isCurrent: true,
+            isCurrent: isAcceptedChecked,
             isLast: true,
           ),
         ],
