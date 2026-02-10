@@ -316,7 +316,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get statusLabel => 'Statut:';
 
   @override
-  String get all => 'Tout';
+  String get all => 'Tous';
 
   @override
   String get accepted => 'Accepté';
@@ -650,4 +650,22 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get cancelled => 'Annulé';
+
+  @override
+  String get listOfCategories => 'Liste des catégories';
+
+  @override
+  String get listOfProducts => 'Liste des produits';
+
+  @override
+  String get searchForStoreOrProducts =>
+      'Rechercher un magasin ou des produits';
+
+  @override
+  String articlesCount(int count) {
+    return '$count articles';
+  }
+
+  @override
+  String get products => 'Produits';
 }

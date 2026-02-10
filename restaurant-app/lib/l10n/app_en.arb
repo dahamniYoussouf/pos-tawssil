@@ -231,10 +231,20 @@
   "createCategoryFirst": "Please create a category first",
   "uploadImageFirst": "Please upload the image first",
   "errorPickingImage": "Error picking image",
-  "all": "All",
   "deliveryApp": "Delivery App",
   "pos": "POS",
   "success": "Success",
-  "cancelled": "Cancelled"
+  "cancelled": "Cancelled",
+  "listOfCategories": "List of Categories",
+  "listOfProducts": "List of products",
+  "searchForStoreOrProducts": "Search for store or products",
+  "articlesCount": "{count} articles",
+  "@articlesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "products": "Products"
 }
-

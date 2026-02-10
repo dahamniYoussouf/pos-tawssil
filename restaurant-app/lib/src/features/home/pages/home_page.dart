@@ -5,10 +5,10 @@ import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_cubit.da
 import 'package:restaurant_app/src/features/home/cubit/navigation_cubit.dart';
 import 'package:restaurant_app/src/features/home/cubit/navigation_state.dart';
 import 'package:restaurant_app/src/features/home/widgets/custom_bottom_navigation_bar.dart';
-import 'package:restaurant_app/src/features/menu/pages/menu_page.dart';
 import 'package:restaurant_app/src/features/orders/pages/history_page.dart';
 import 'package:restaurant_app/src/features/profile/pages/profile_page.dart';
 import 'package:restaurant_app/src/features/orders/pages/orders_page.dart';
+import 'package:restaurant_app/src/features/menu_items/pages/menu_page.dart';
 import 'package:restaurant_app/src/features/statistics/pages/statistics_page.dart';
 
 class HomePage extends StatefulWidget {

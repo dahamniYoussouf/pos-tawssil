@@ -30,4 +30,8 @@ class MediaRes {
   static const String posIcon = '$_baseImageSvg/pos.svg';
 
   static const String profilePic = '$_baseImageIcon/profilePic.png';
+
+  static const String arrowForwardIcon =
+      '$_baseImageSvg/arrow_forrawrd_icon.svg';
+  static const String menuItemIcon = '$_baseImageSvg/menu_item_icon.svg';
 }

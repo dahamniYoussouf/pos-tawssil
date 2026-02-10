@@ -639,4 +639,21 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get cancelled => 'ملغي';
+
+  @override
+  String get listOfCategories => 'قائمة الفئات';
+
+  @override
+  String get listOfProducts => 'قائمة المنتجات';
+
+  @override
+  String get searchForStoreOrProducts => 'البحث عن متجر أو منتجات';
+
+  @override
+  String articlesCount(int count) {
+    return '$count عناصر';
+  }
+
+  @override
+  String get products => 'المنتجات';
 }

@@ -13,6 +13,7 @@ import 'package:restaurant_app/src/features/auth/pages/login_page.dart';
 import 'package:restaurant_app/src/features/auth/pages/signup_page.dart';
 import 'package:restaurant_app/src/features/categories/cubit/category_cubit.dart';
 import 'package:restaurant_app/src/features/home/pages/home_page.dart';
+import 'package:restaurant_app/src/features/menu_items/cubit/menu_item_cubit.dart';
 import 'package:restaurant_app/src/features/orders/cubit/order_history_cubit.dart';
 import 'package:restaurant_app/src/features/orders/cubit/orders_cubit.dart';
 import 'package:restaurant_app/src/features/notifications/cubit/notifications_cubit.dart';
@@ -77,6 +78,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider<NavigationCubit>(
           create: (context) => NavigationCubit(),
+        ),
+        BlocProvider<MenuItemCubit>(
+          create: (context) => locator<MenuItemCubit>(),
         ),
       ],
       child: BlocBuilder<LocaleCubit, LocaleState>(

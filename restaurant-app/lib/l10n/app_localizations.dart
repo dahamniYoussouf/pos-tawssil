@@ -1335,6 +1335,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancelled'**
   String get cancelled;
+
+  /// No description provided for @listOfCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'List of Categories'**
+  String get listOfCategories;
+
+  /// No description provided for @listOfProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'List of products'**
+  String get listOfProducts;
+
+  /// No description provided for @searchForStoreOrProducts.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for store or products'**
+  String get searchForStoreOrProducts;
+
+  /// No description provided for @articlesCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} articles'**
+  String articlesCount(int count);
+
+  /// No description provided for @products.
+  ///
+  /// In en, this message translates to:
+  /// **'Products'**
+  String get products;
 }
 
 class _AppLocalizationsDelegate

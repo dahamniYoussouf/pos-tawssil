@@ -643,4 +643,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cancelled => 'Cancelled';
+
+  @override
+  String get listOfCategories => 'List of Categories';
+
+  @override
+  String get listOfProducts => 'List of products';
+
+  @override
+  String get searchForStoreOrProducts => 'Search for store or products';
+
+  @override
+  String articlesCount(int count) {
+    return '$count articles';
+  }
+
+  @override
+  String get products => 'Products';
 }

@@ -21,6 +21,7 @@ class AppColors {
   static const Color iconMedium = Color(0xFF6B7280);
   static const Color backgroundLight = Color(0xFFF9FAFB);
   static const Color borderLight = Color(0xFFF3F4F6);
+  static const Color red = Color(0xFFD32F2F);
 
   // Status Colors
   static const Color statusAccepted = Color(0xFF4CAF50);

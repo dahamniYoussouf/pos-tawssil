@@ -231,10 +231,20 @@
   "createCategoryFirst": "يرجى إنشاء فئة أولاً",
   "uploadImageFirst": "يرجى رفع الصورة أولاً",
   "errorPickingImage": "خطأ أثناء اختيار الصورة",
-  "all": "الكل",
   "deliveryApp": "تطبيق التوصيل",
   "pos": "نقاط البيع",
   "success": "ناجح",
-  "cancelled": "ملغي"
+  "cancelled": "ملغي",
+  "listOfCategories": "قائمة الفئات",
+  "listOfProducts": "قائمة المنتجات",
+  "searchForStoreOrProducts": "البحث عن متجر أو منتجات",
+  "articlesCount": "{count} عناصر",
+  "@articlesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "products": "المنتجات"
 }
-
