@@ -246,5 +246,14 @@
       }
     }
   },
-  "products": "Products"
+  "products": "Products",
+  "payment": "Payment",
+  "orderDetails": "Order Details",
+  "orderContent": "Order Content",
+  "paymentType": "Payment Type",
+  "initialPrice": "Initial Price",
+  "deliveryManMustPay": "Delivery Man Must Pay",
+  "receivedOrder": "Order Received",
+  "acceptedByDelivery": "Accepted by Delivery Driver",
+  "printReceipt": "Print Ticket"
 }

@@ -22,11 +22,19 @@ class AppColors {
   static const Color backgroundLight = Color(0xFFF9FAFB);
   static const Color borderLight = Color(0xFFF3F4F6);
   static const Color red = Color(0xFFD32F2F);
+  static const Color backgroundPage = Color(0xFFF8FBFB);
+  static const Color accentGreen = Color(0xFF5AD5A4);
+  static const Color textLightGrey = Color(0xFF96A1B2);
+  static const Color textSteel = Color(0xFF5E6D82);
+  static const Color timelineGrey = Color(0xFFCDD4DE);
+  static const Color timelineLine = Color(0xFFF1F3F6);
+  static const Color buttonGrey = Color(0xFFE8EEF4);
+  static const Color buttonText = Color(0xFF324A6D);
 
   // Status Colors
   static const Color statusAccepted = Color(0xFF4CAF50);
   static const Color statusDeclined = Color(0xFFE57373);
-  static const Color statusDelivered = Color(0xFFFFB74D);
+  static const Color statusDelivered = Color(0xFF4CAF50);
   static const Color statusPreparing = Color(0xFF42A5F5);
   static const Color statusAssigned = Color(0xFF9C27B0);
   static const Color statusPending = Color(0xFFFFA726);

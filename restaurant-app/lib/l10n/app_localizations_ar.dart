@@ -656,4 +656,31 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get products => 'المنتجات';
+
+  @override
+  String get payment => 'الدفع';
+
+  @override
+  String get orderDetails => 'تفاصيل الطلب';
+
+  @override
+  String get orderContent => 'محتوى الطلب';
+
+  @override
+  String get paymentType => 'نوع الدفع';
+
+  @override
+  String get initialPrice => 'السعر الأولي';
+
+  @override
+  String get deliveryManMustPay => 'يجب على السائق دفعه';
+
+  @override
+  String get receivedOrder => 'تم استلام الطلب';
+
+  @override
+  String get acceptedByDelivery => 'تم القبول من طرف السائق';
+
+  @override
+  String get printReceipt => 'طبع التذكرة';
 }

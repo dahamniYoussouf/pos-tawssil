@@ -20,6 +20,7 @@ import 'package:restaurant_app/src/features/notifications/cubit/notifications_cu
 import 'package:restaurant_app/src/features/statistics/cubit/statistics_cubit.dart';
 import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'package:restaurant_app/src/features/home/cubit/navigation_cubit.dart';
+import 'package:restaurant_app/src/features/orders/pages/order_details_page.dart';
 import 'package:restaurant_app/l10n/app_localizations.dart';
 
 import 'package:restaurant_app/src/core/localization/locale_cubit.dart';
@@ -106,6 +107,7 @@ class MyApp extends StatelessWidget {
               '/login': (context) => const LoginPage(),
               '/signup': (context) => const SignupPage(),
               '/home': (context) => const AuthWrapper(),
+              '/order-details': (context) => const OrderDetailsPage(),
             },
           );
         },

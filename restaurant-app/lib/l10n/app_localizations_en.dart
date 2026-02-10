@@ -660,4 +660,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get products => 'Products';
+
+  @override
+  String get payment => 'Payment';
+
+  @override
+  String get orderDetails => 'Order Details';
+
+  @override
+  String get orderContent => 'Order Content';
+
+  @override
+  String get paymentType => 'Payment Type';
+
+  @override
+  String get initialPrice => 'Initial Price';
+
+  @override
+  String get deliveryManMustPay => 'Delivery Man Must Pay';
+
+  @override
+  String get receivedOrder => 'Order Received';
+
+  @override
+  String get acceptedByDelivery => 'Accepted by Delivery Driver';
+
+  @override
+  String get printReceipt => 'Print Ticket';
 }

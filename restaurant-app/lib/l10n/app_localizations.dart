@@ -1365,6 +1365,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Products'**
   String get products;
+
+  /// No description provided for @payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get payment;
+
+  /// No description provided for @orderDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Details'**
+  String get orderDetails;
+
+  /// No description provided for @orderContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Content'**
+  String get orderContent;
+
+  /// No description provided for @paymentType.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Type'**
+  String get paymentType;
+
+  /// No description provided for @initialPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Initial Price'**
+  String get initialPrice;
+
+  /// No description provided for @deliveryManMustPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery Man Must Pay'**
+  String get deliveryManMustPay;
+
+  /// No description provided for @receivedOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Received'**
+  String get receivedOrder;
+
+  /// No description provided for @acceptedByDelivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted by Delivery Driver'**
+  String get acceptedByDelivery;
+
+  /// No description provided for @printReceipt.
+  ///
+  /// In en, this message translates to:
+  /// **'Print Ticket'**
+  String get printReceipt;
 }
 
 class _AppLocalizationsDelegate

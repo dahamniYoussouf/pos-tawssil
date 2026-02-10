@@ -246,5 +246,14 @@
       }
     }
   },
-  "products": "Produits"
+  "products": "Produits",
+  "payment": "Paiement",
+  "orderDetails": "Détails de la commande",
+  "orderContent": "Contenu de la commande",
+  "paymentType": "Type de paiement",
+  "initialPrice": "Prix initial",
+  "deliveryManMustPay": "Livreur doit payer",
+  "receivedOrder": "Commande reçue",
+  "acceptedByDelivery": "Acceptée par le livreur",
+  "printReceipt": "Imprimer ticket"
 }

@@ -17,6 +17,7 @@ class OrderStatus {
 class MenuItem {
   final String id;
   final String? categoryId;
+  final String? categoryName;
   final String name;
   final String? description;
   final double price;
@@ -30,6 +31,7 @@ class MenuItem {
   MenuItem({
     required this.id,
     this.categoryId,
+    this.categoryName,
     required this.name,
     this.description,
     required this.price,
@@ -81,6 +83,11 @@ class MenuItem {
     return MenuItem(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
       categoryId: json['category_id']?.toString(),
+      categoryName: json['category_name']?.toString() ??
+          (json['category'] is Map
+              ? json['category']['nom']?.toString() ??
+                  json['category']['name']?.toString()
+              : json['category']?.toString()),
       name: json['nom'] ?? json['name'] ?? '',
       description: json['description'],
       price: parseDouble(json['prix'] ?? json['price']),
@@ -111,6 +118,7 @@ class OrderItem {
   final String? specialInstructions;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final String? categoryName;
   final MenuItem? menuItem;
 
   OrderItem({
@@ -125,6 +133,7 @@ class OrderItem {
     this.specialInstructions,
     this.createdAt,
     this.updatedAt,
+    this.categoryName,
     this.menuItem,
   }) : _totalPriceValue = totalPrice;
 
@@ -167,10 +176,12 @@ class OrderItem {
     final String name;
     final double price;
     String? imageUrl;
+    String? categoryName;
     if (menuItem != null) {
       name = menuItem.name;
       price = menuItem.price;
       imageUrl = menuItem.photoUrl;
+      categoryName = menuItem.categoryName;
     } else {
       final menuItemData = json['menu_item'] as Map<String, dynamic>?;
       if (menuItemData != null) {
@@ -190,6 +201,11 @@ class OrderItem {
             parseDouble(json['price'] ?? json['prix'] ?? json['prix_unitaire']);
         imageUrl = json['image'] ?? json['image_url'] ?? json['imageUrl'];
       }
+      categoryName = json['category_name']?.toString() ??
+          (json['category'] is Map
+              ? json['category']['nom']?.toString() ??
+                  json['category']['name']?.toString()
+              : json['category']?.toString());
     }
 
     return OrderItem(
@@ -207,6 +223,7 @@ class OrderItem {
           json['specialInstructions'],
       createdAt: parseDate(json['created_at'] ?? json['createdAt']),
       updatedAt: parseDate(json['updated_at'] ?? json['updatedAt']),
+      categoryName: categoryName,
       menuItem: menuItem,
     );
   }

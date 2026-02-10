@@ -184,7 +184,16 @@ class _OrderHistoryOrdersListWidgetState
                 if (index >= state.orders.length) {
                   return const OrderHistoryLoadingIndicatorWidget();
                 }
-                return OrderHistoryCard(order: state.orders[index]);
+                return OrderHistoryCard(
+                  order: state.orders[index],
+                  onTap: () {
+                    Navigator.pushNamed(
+                      context,
+                      '/order-details',
+                      arguments: state.orders[index],
+                    );
+                  },
+                );
               },
             );
           }

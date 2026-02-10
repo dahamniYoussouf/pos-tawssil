@@ -246,5 +246,14 @@
       }
     }
   },
-  "products": "المنتجات"
+  "products": "المنتجات",
+  "payment": "الدفع",
+  "orderDetails": "تفاصيل الطلب",
+  "orderContent": "محتوى الطلب",
+  "paymentType": "نوع الدفع",
+  "initialPrice": "السعر الأولي",
+  "deliveryManMustPay": "يجب على السائق دفعه",
+  "receivedOrder": "تم استلام الطلب",
+  "acceptedByDelivery": "تم القبول من طرف السائق",
+  "printReceipt": "طبع التذكرة"
 }
