@@ -301,5 +301,18 @@
   "optionGroupDeleteGroup": "Supprimer le groupe",
   "optionGroupDeleteConfirmation": "Voulez-vous vraiment supprimer ce groupe d'options ?",
   "optionGroupDeleteOptionTooltip": "Supprimer l'option",
-  "errorOptionGroupAddOne": "Ajoutez au moins une option"
+  "errorOptionGroupAddOne": "Ajoutez au moins une option",
+  "option": "option",
+  "options": "options",
+  "singleChoice": "Simple",
+  "addPhoto": "Ajouter Une Photo",
+  "fromGalleryOrCamera": "Depuis la galerie ou l'appareil photo",
+  "select": "Sélectionner",
+  "itemActive": "Item Actif",
+  "add": "Ajouter",
+  "addMenuItem": "Ajouter Item",
+  "itemNameLabel": "Nom de l'Item",
+  "priceLabel": "Prix",
+  "optionGroups": "Groupes D'options",
+  "addOptionGroup": "+ Ajouter option group"
 }

@@ -822,4 +822,40 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errorOptionGroupAddOne => 'أضف خيارًا واحدًا على الأقل';
+
+  @override
+  String get option => 'خيار';
+
+  @override
+  String get options => 'خيارات';
+
+  @override
+  String get singleChoice => 'واحد';
+
+  @override
+  String get addPhoto => 'إضافة صورة';
+
+  @override
+  String get fromGalleryOrCamera => 'من المعرض أو الكاميرا';
+
+  @override
+  String get select => 'اختر';
+
+  @override
+  String get itemActive => 'عنصر نشط';
+
+  @override
+  String get add => 'إضافة';
+
+  @override
+  String get addMenuItem => 'إضافة عنصر';
+
+  @override
+  String get itemNameLabel => 'اسم العنصر';
+
+  @override
+  String get optionGroups => 'مجموعات الخيارات';
+
+  @override
+  String get addOptionGroup => '+ إضافة مجموعة خيار';
 }

@@ -25,7 +25,7 @@ class CategoryProductsPage extends StatefulWidget {
 
 class _CategoryProductsPageState extends State<CategoryProductsPage> {
   final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
+  final ValueNotifier<String> _searchQuery = ValueNotifier('');
 
   @override
   void initState() {
@@ -37,13 +37,12 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
   void dispose() {
     _searchController.removeListener(_onSearchChanged);
     _searchController.dispose();
+    _searchQuery.dispose();
     super.dispose();
   }
 
   void _onSearchChanged() {
-    setState(() {
-      _searchQuery = _searchController.text.trim().toLowerCase();
-    });
+    _searchQuery.value = _searchController.text.trim().toLowerCase();
   }
 
   CategoryModel _getCategory(RestaurantState restaurantState) {
@@ -56,16 +55,17 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
     return widget.category;
   }
 
-  List<MenuItemModel> _getFilteredItems(CategoryModel category) {
+  List<MenuItemModel> _getFilteredItems(
+      CategoryModel category, String searchQuery) {
     final items = category.items;
-    if (_searchQuery.isEmpty) return items;
+    if (searchQuery.isEmpty) return items;
     return items
         .where(
           (item) =>
-              item.name.toLowerCase().contains(_searchQuery) ||
-              (item.description?.toLowerCase().contains(_searchQuery) ??
+              item.name.toLowerCase().contains(searchQuery) ||
+              (item.description?.toLowerCase().contains(searchQuery) ??
                   false) ||
-              (item.ingredients?.toLowerCase().contains(_searchQuery) ?? false),
+              (item.ingredients?.toLowerCase().contains(searchQuery) ?? false),
         )
         .toList();
   }
@@ -82,73 +82,77 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
           curr is RestaurantLoaded || curr is RestaurantInitial,
       builder: (context, restaurantState) {
         final category = _getCategory(restaurantState);
-        final filteredItems = _getFilteredItems(category);
-
-        return Scaffold(
-          backgroundColor: AppColors.white,
-          appBar: AppBar(
-            backgroundColor: AppColors.white,
-            elevation: 0,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new,
-                  color: AppColors.textDark),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            centerTitle: true,
-            title: Text(
-              localizations.products,
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textDark,
-              ),
-            ),
-          ),
-          body: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildSearchBar(localizations),
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      localizations.listOfProducts,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.textDark,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => _navigateToCreateMenuItem(context),
-                      child: Container(
-                        width: 38,
-                        height: 38,
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                              color: AppColors.primaryColor, width: 2),
-                        ),
-                        child: const Icon(
-                          Icons.add,
-                          color: AppColors.primaryColor,
-                          size: 24,
-                        ),
-                      ),
-                    ),
-                  ],
+        return ValueListenableBuilder<String>(
+          valueListenable: _searchQuery,
+          builder: (context, searchQuery, _) {
+            final filteredItems = _getFilteredItems(category, searchQuery);
+            return Scaffold(
+              backgroundColor: AppColors.white,
+              appBar: AppBar(
+                backgroundColor: AppColors.white,
+                elevation: 0,
+                leading: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new,
+                      color: AppColors.textDark),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                centerTitle: true,
+                title: Text(
+                  localizations.products,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.textDark,
+                  ),
                 ),
               ),
-              Expanded(
-                child:
-                    _buildProductList(localizations, filteredItems, category),
+              body: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _buildSearchBar(localizations),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          localizations.listOfProducts,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textDark,
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => _navigateToCreateMenuItem(context),
+                          child: Container(
+                            width: 38,
+                            height: 38,
+                            decoration: BoxDecoration(
+                              color: AppColors.white,
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                  color: AppColors.primaryColor, width: 2),
+                            ),
+                            child: const Icon(
+                              Icons.add,
+                              color: AppColors.primaryColor,
+                              size: 24,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: _buildProductList(
+                        localizations, filteredItems, category, searchQuery),
+                  ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
@@ -187,6 +191,7 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
     AppLocalizations localizations,
     List<MenuItemModel> items,
     CategoryModel category,
+    String searchQuery,
   ) {
     if (items.isEmpty) {
       return Center(
@@ -194,13 +199,13 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              _searchQuery.isEmpty ? Icons.restaurant_menu : Icons.search_off,
+              searchQuery.isEmpty ? Icons.restaurant_menu : Icons.search_off,
               size: 64,
               color: AppColors.greyLight,
             ),
             const SizedBox(height: 16),
             Text(
-              _searchQuery.isEmpty
+              searchQuery.isEmpty
                   ? localizations.noMenuItems
                   : localizations.noOrdersFound,
               style: const TextStyle(

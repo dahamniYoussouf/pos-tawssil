@@ -9,6 +9,14 @@ import 'package:restaurant_app/src/features/menu_items/cubit/menu_item_cubit.dar
 import 'package:restaurant_app/src/features/menu_items/cubit/menu_item_state.dart';
 import 'package:restaurant_app/src/features/menu_items/models/menu_item_model.dart';
 import 'package:restaurant_app/src/features/menu_items/pages/option_group_bottom_sheet.dart';
+import 'package:restaurant_app/src/features/menu_items/widgets/create_menu_item/cancel_button.dart';
+import 'package:restaurant_app/src/features/menu_items/widgets/create_menu_item/delete_button.dart';
+import 'package:restaurant_app/src/features/menu_items/widgets/create_menu_item/item_actif_switch.dart';
+import 'package:restaurant_app/src/features/menu_items/widgets/create_menu_item/menu_item_image_picker.dart';
+import 'package:restaurant_app/src/features/menu_items/widgets/create_menu_item/modern_category_dropdown.dart';
+import 'package:restaurant_app/src/features/menu_items/widgets/create_menu_item/modern_text_field.dart';
+import 'package:restaurant_app/src/features/menu_items/widgets/create_menu_item/option_group_card.dart';
+import 'package:restaurant_app/src/features/menu_items/widgets/create_menu_item/submit_button.dart';
 
 class CreateMenuItemPage extends StatefulWidget {
   final MenuItemModel? menuItem;
@@ -115,12 +123,14 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
       context,
       group: group,
       onSave: (updated) {
-        final list = List<MenuItemOptionGroup>.from(_optionGroupsNotifier.value);
+        final list =
+            List<MenuItemOptionGroup>.from(_optionGroupsNotifier.value);
         list[index] = updated.copyWith(id: group.id);
         _optionGroupsNotifier.value = list;
       },
       onDelete: (_) {
-        final list = List<MenuItemOptionGroup>.from(_optionGroupsNotifier.value);
+        final list =
+            List<MenuItemOptionGroup>.from(_optionGroupsNotifier.value);
         list.removeAt(index);
         _optionGroupsNotifier.value = list;
       },
@@ -166,7 +176,7 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
 
     final price = double.tryParse(_priceController.text.trim()) ?? 0.0;
     final preparationTime =
-        int.tryParse(_preparationTimeController.text.trim()) ?? 0;
+        int.tryParse(_preparationTimeController.text.trim()) ?? 30;
     final optionGroups = _optionGroupsNotifier.value;
 
     if (widget.menuItem != null) {
@@ -270,6 +280,11 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final isEdit = widget.menuItem != null;
+    final mediaQuery = MediaQuery.of(context);
+
+    for (var element in widget.categories) {
+      print(element.toJson());
+    }
 
     return BlocListener<MenuItemCubit, MenuItemState>(
       listener: (context, state) {
@@ -298,73 +313,84 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
           );
         }
       },
-      child: Scaffold(
-        backgroundColor: AppColors.greyVeryLight,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          title: Text(
-            isEdit ? localizations.editMenuItem : localizations.createMenuItem,
-            style: const TextStyle(color: AppColors.primaryColor),
+      child: Container(
+        height: mediaQuery.size.height * 0.95,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(24),
+            topRight: Radius.circular(24),
           ),
-          centerTitle: true,
         ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16.0),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ValueListenableBuilder<File?>(
-                  valueListenable: _selectedImageNotifier,
-                  builder: (context, selectedImage, _) {
-                    return BlocSelector<MenuItemCubit, MenuItemState, bool>(
-                      selector: (state) => state is MenuItemImageUploading,
-                      builder: (context, isUploading) {
-                        return BlocSelector<MenuItemCubit, MenuItemState,
-                            String?>(
-                          selector: (state) {
-                            if (state is MenuItemImageUploadSuccess) {
-                              return state.imageUrl;
-                            }
-                            return _initialUploadedImageUrl;
-                          },
-                          builder: (context, uploadedImageUrl) {
-                            return _MenuItemImagePicker(
-                              selectedImage: selectedImage,
-                              imageUrl: uploadedImageUrl,
-                              isUploading: isUploading,
-                              onPickImage: _pickImage,
-                              onUploadImage: _uploadImage,
-                            );
-                          },
-                        );
-                      },
-                    );
-                  },
+        child: Column(
+          children: [
+            // Drag Handle
+            Container(
+              margin: const EdgeInsets.only(top: 12),
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.greyLight,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            // Title
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Text(
+                isEdit ? localizations.editMenuItem : localizations.addMenuItem,
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
-                const SizedBox(height: 24),
-                _buildCard(
+              ),
+            ),
+            const Divider(height: 1),
+            // Content
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20.0),
+                child: Form(
+                  key: _formKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      ValueListenableBuilder<String?>(
-                        valueListenable: _selectedCategoryIdNotifier,
-                        builder: (context, selectedCategoryId, _) {
-                          return _CategoryDropdown(
-                            categories: widget.categories,
-                            selectedCategoryId: selectedCategoryId,
-                            onCategorySelected: (categoryId) {
-                              _selectedCategoryIdNotifier.value = categoryId;
+                      ValueListenableBuilder<File?>(
+                        valueListenable: _selectedImageNotifier,
+                        builder: (context, selectedImage, _) {
+                          return BlocSelector<MenuItemCubit, MenuItemState,
+                              bool>(
+                            selector: (state) =>
+                                state is MenuItemImageUploading,
+                            builder: (context, isUploading) {
+                              return BlocSelector<MenuItemCubit, MenuItemState,
+                                  String?>(
+                                selector: (state) {
+                                  if (state is MenuItemImageUploadSuccess) {
+                                    return state.imageUrl;
+                                  }
+                                  return _initialUploadedImageUrl;
+                                },
+                                builder: (context, uploadedImageUrl) {
+                                  return MenuItemImagePicker(
+                                    selectedImage: selectedImage,
+                                    imageUrl: uploadedImageUrl,
+                                    isUploading: isUploading,
+                                    onPickImage: _pickImage,
+                                    onUploadImage: _uploadImage,
+                                  );
+                                },
+                              );
                             },
                           );
                         },
                       ),
-                      const SizedBox(height: 16),
-                      _MenuItemTextField(
+                      const SizedBox(height: 20),
+                      // Nom de l'Item
+                      ModernTextField(
                         controller: _nameController,
-                        label: localizations.itemName,
+                        label: localizations.itemNameLabel,
                         hint: localizations.itemNameHint,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
@@ -374,7 +400,8 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      _MenuItemTextField(
+                      // Description
+                      ModernTextField(
                         controller: _descriptionController,
                         label: localizations.description,
                         hint: localizations.descriptionHint,
@@ -387,10 +414,11 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      _MenuItemTextField(
+                      // Prix
+                      ModernTextField(
                         controller: _priceController,
-                        label: localizations.price,
-                        hint: localizations.priceHint,
+                        label: localizations.priceLabel,
+                        hint: 'DA',
                         keyboardType: TextInputType.number,
                         suffixText: 'DA',
                         validator: (value) {
@@ -405,10 +433,27 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
                         },
                       ),
                       const SizedBox(height: 16),
+                      // Categorie
+                      ValueListenableBuilder<String?>(
+                        valueListenable: _selectedCategoryIdNotifier,
+                        builder: (context, selectedCategoryId, _) {
+                          return ModernCategoryDropdown(
+                            categories: widget.categories,
+                            selectedCategoryId: selectedCategoryId,
+                            onCategorySelected: (categoryId) {
+                              _selectedCategoryIdNotifier.value = categoryId;
+                              print(
+                                  '_selectedCategoryIdNotifier: ${_selectedCategoryIdNotifier.value}');
+                            },
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 20),
+                      // Item Actif
                       ValueListenableBuilder<bool>(
                         valueListenable: _isAvailableNotifier,
                         builder: (context, isAvailable, _) {
-                          return _ItemActifSwitch(
+                          return ItemActifSwitch(
                             isActive: isAvailable,
                             onChanged: (value) {
                               _isAvailableNotifier.value = value;
@@ -416,555 +461,95 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
                           );
                         },
                       ),
+                      const SizedBox(height: 24),
+                      // Groupes D'options
+                      _buildOptionGroupsSection(localizations),
+                      const SizedBox(height: 24),
+                      // Action Buttons
+                      Row(
+                        children: [
+                          Expanded(
+                            child: SubmitButton(
+                              isEdit: isEdit,
+                              isLoading: context.watch<MenuItemCubit>().state
+                                  is MenuItemActionLoading,
+                              onPressed: () => _handleSubmit(context),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: CancelButton(
+                              onPressed: () => Navigator.of(context).pop(),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (isEdit) ...[
+                        const SizedBox(height: 16),
+                        DeleteButton(
+                          isLoading: context.watch<MenuItemCubit>().state
+                              is MenuItemActionLoading,
+                          onPressed: _handleDelete,
+                        ),
+                      ],
+                      // Bottom padding for keyboard
+                      SizedBox(height: mediaQuery.viewInsets.bottom),
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
-                _buildOptionGroupsSection(localizations),
-                const SizedBox(height: 32),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _SubmitButton(
-                        isEdit: isEdit,
-                        isLoading: context.watch<MenuItemCubit>().state
-                            is MenuItemActionLoading,
-                        onPressed: () => _handleSubmit(context),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _CancelButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                      ),
-                    ),
-                  ],
-                ),
-                if (isEdit) ...[
-                  const SizedBox(height: 16),
-                  _DeleteButton(
-                    isLoading: context.watch<MenuItemCubit>().state
-                        is MenuItemActionLoading,
-                    onPressed: _handleDelete,
-                  ),
-                ],
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
-    );
-  }
-
-  Widget _buildCard({required Widget child}) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: child,
     );
   }
 
   Widget _buildOptionGroupsSection(AppLocalizations localizations) {
-    return _buildCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Text(
-            'Groupes D\'options',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 12),
-          ValueListenableBuilder<List<MenuItemOptionGroup>>(
-            valueListenable: _optionGroupsNotifier,
-            builder: (context, groups, _) {
-              return Column(
-                children: [
-                  ...List.generate(groups.length, (index) {
-                    final group = groups[index];
-                    return _OptionGroupCard(
-                      group: group,
-                      onTap: () => _openEditOptionGroup(group, index),
-                    );
-                  }),
-                  const SizedBox(height: 12),
-                  TextButton.icon(
-                    onPressed: _openAddOptionGroup,
-                    icon: const Icon(Icons.add, size: 20),
-                    label: const Text('+ Ajouter option group'),
-                    style: TextButton.styleFrom(
-                      foregroundColor: AppColors.primaryColor,
-                      alignment: Alignment.centerLeft,
-                    ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _OptionGroupCard extends StatelessWidget {
-  final MenuItemOptionGroup group;
-  final VoidCallback onTap;
-
-  const _OptionGroupCard({
-    required this.group,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final optionCount = group.optionsCount;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Material(
-        color: AppColors.greyVeryLight,
-        borderRadius: BorderRadius.circular(10),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(10),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        group.nom,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '$optionCount option${optionCount != 1 ? 's' : ''}',
-                        style: const TextStyle(
-                          color: AppColors.grey,
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _Pill(
-                      label: 'Obligatoire',
-                      isSelected: group.isRequired,
-                    ),
-                    const SizedBox(width: 8),
-                    _Pill(
-                      label: 'Simple',
-                      isSelected: !group.multipleChoice,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _Pill extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-
-  const _Pill({required this.label, required this.isSelected});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: isSelected ? AppColors.primaryColor : AppColors.greyLight,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 12,
-          color: isSelected ? AppColors.white : AppColors.grey,
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-    );
-  }
-}
-
-class _MenuItemImagePicker extends StatelessWidget {
-  final File? selectedImage;
-  final String? imageUrl;
-  final bool isUploading;
-  final VoidCallback onPickImage;
-  final VoidCallback onUploadImage;
-
-  const _MenuItemImagePicker({
-    required this.selectedImage,
-    this.imageUrl,
-    required this.isUploading,
-    required this.onPickImage,
-    required this.onUploadImage,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        GestureDetector(
-          onTap: onPickImage,
-          child: Container(
-            height: 200,
-            decoration: BoxDecoration(
-              color: AppColors.greyVeryLight,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.greyLight,
-                width: 2,
-                strokeAlign: BorderSide.strokeAlignInside,
-              ),
-            ),
-            child: selectedImage != null
-                ? Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.file(
-                          selectedImage!,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      if (isUploading)
-                        Container(
-                          color: Colors.black54,
-                          child: const Center(
-                            child: CircularProgressIndicator(
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                  AppColors.white),
-                            ),
-                          ),
-                        ),
-                    ],
-                  )
-                : imageUrl != null && imageUrl!.isNotEmpty
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          imageUrl!,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return _buildPlaceholder(localizations);
-                          },
-                        ),
-                      )
-                    : _buildPlaceholder(localizations),
-          ),
-        ),
-        if (selectedImage != null && imageUrl == null) ...[
-          const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton.icon(
-              onPressed: isUploading ? null : onUploadImage,
-              icon: isUploading
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(AppColors.white),
-                      ),
-                    )
-                  : const Icon(Icons.cloud_upload, color: AppColors.white),
-              label: Text(
-                isUploading
-                    ? localizations.imageUploading
-                    : localizations.uploadImage,
-                style: const TextStyle(color: AppColors.white),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryColor,
-                padding: const EdgeInsets.symmetric(vertical: 12),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildPlaceholder(AppLocalizations localizations) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        const Icon(Icons.add_a_photo, size: 48, color: AppColors.primaryColor),
-        const SizedBox(height: 8),
         Text(
-          'Ajouter Une Photo',
+          localizations.optionGroups,
           style: const TextStyle(
-            color: AppColors.grey,
-            fontWeight: FontWeight.w500,
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
           ),
         ),
-        const SizedBox(height: 4),
-        Text(
-          'Depuis la galerie du l\'appareil photo',
-          style: const TextStyle(color: AppColors.grey, fontSize: 12),
+        const SizedBox(height: 12),
+        ValueListenableBuilder<List<MenuItemOptionGroup>>(
+          valueListenable: _optionGroupsNotifier,
+          builder: (context, groups, _) {
+            return Column(
+              children: [
+                ...List.generate(groups.length, (index) {
+                  final group = groups[index];
+                  return OptionGroupCard(
+                    group: group,
+                    onTap: () => _openEditOptionGroup(group, index),
+                  );
+                }),
+                const SizedBox(height: 8),
+                InkWell(
+                  onTap: _openAddOptionGroup,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Text(
+                      localizations.addOptionGroup,
+                      style: const TextStyle(
+                        color: AppColors.primaryColor,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ],
-    );
-  }
-}
-
-class _CategoryDropdown extends StatelessWidget {
-  final List<CategoryModel> categories;
-  final String? selectedCategoryId;
-  final Function(String?) onCategorySelected;
-
-  const _CategoryDropdown({
-    required this.categories,
-    required this.selectedCategoryId,
-    required this.onCategorySelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-
-    return DropdownButtonFormField<String>(
-      value: selectedCategoryId,
-      decoration: InputDecoration(
-        labelText: localizations.category,
-        hintText: localizations.categoryHint,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.primaryColor),
-        ),
-      ),
-      items: categories.map((category) {
-        return DropdownMenuItem<String>(
-          value: category.id,
-          child: Text(category.nom),
-        );
-      }).toList(),
-      onChanged: onCategorySelected,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return localizations.categoryRequired;
-        }
-        return null;
-      },
-    );
-  }
-}
-
-class _MenuItemTextField extends StatelessWidget {
-  final TextEditingController controller;
-  final String label;
-  final String hint;
-  final TextInputType? keyboardType;
-  final int maxLines;
-  final String? suffixText;
-  final String? Function(String?)? validator;
-
-  const _MenuItemTextField({
-    required this.controller,
-    required this.label,
-    required this.hint,
-    this.keyboardType,
-    this.maxLines = 1,
-    this.suffixText,
-    this.validator,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      maxLines: maxLines,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        suffixText: suffixText,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(8),
-          borderSide: const BorderSide(color: AppColors.primaryColor),
-        ),
-      ),
-      validator: validator,
-    );
-  }
-}
-
-class _ItemActifSwitch extends StatelessWidget {
-  final bool isActive;
-  final ValueChanged<bool> onChanged;
-
-  const _ItemActifSwitch({
-    required this.isActive,
-    required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        const Expanded(
-          child: Text('Item Actif', style: TextStyle(fontSize: 16)),
-        ),
-        Switch(
-          value: isActive,
-          onChanged: onChanged,
-          activeColor: AppColors.primaryColor,
-        ),
-      ],
-    );
-  }
-}
-
-class _SubmitButton extends StatelessWidget {
-  final bool isEdit;
-  final bool isLoading;
-  final VoidCallback onPressed;
-
-  const _SubmitButton({
-    required this.isEdit,
-    required this.isLoading,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-
-    return ElevatedButton(
-      onPressed: isLoading ? null : onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primaryColor,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-      child: isLoading
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
-              ),
-            )
-          : Text(
-              isEdit ? localizations.update : 'Ajouter',
-              style: const TextStyle(
-                color: AppColors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-    );
-  }
-}
-
-class _CancelButton extends StatelessWidget {
-  final VoidCallback onPressed;
-
-  const _CancelButton({required this.onPressed});
-
-  @override
-  Widget build(BuildContext context) {
-    return OutlinedButton(
-      onPressed: onPressed,
-      style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.primaryColor,
-        side: const BorderSide(color: AppColors.primaryColor),
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-      child: const Text('Annuler'),
-    );
-  }
-}
-
-class _DeleteButton extends StatelessWidget {
-  final bool isLoading;
-  final VoidCallback onPressed;
-
-  const _DeleteButton({
-    required this.isLoading,
-    required this.onPressed,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
-
-    return ElevatedButton(
-      onPressed: isLoading ? null : onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.red,
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-      child: isLoading
-          ? const SizedBox(
-              height: 20,
-              width: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(AppColors.white),
-              ),
-            )
-          : Text(
-              localizations.delete,
-              style: const TextStyle(
-                color: AppColors.white,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
     );
   }
 }

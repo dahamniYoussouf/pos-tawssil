@@ -826,4 +826,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorOptionGroupAddOne => 'Add at least one option';
+
+  @override
+  String get option => 'option';
+
+  @override
+  String get options => 'options';
+
+  @override
+  String get singleChoice => 'Single';
+
+  @override
+  String get addPhoto => 'Add Photo';
+
+  @override
+  String get fromGalleryOrCamera => 'From gallery or camera';
+
+  @override
+  String get select => 'Select';
+
+  @override
+  String get itemActive => 'Item Active';
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String get addMenuItem => 'Add Item';
+
+  @override
+  String get itemNameLabel => 'Item Name';
+
+  @override
+  String get optionGroups => 'Option Groups';
+
+  @override
+  String get addOptionGroup => '+ Add option group';
 }

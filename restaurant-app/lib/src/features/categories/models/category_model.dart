@@ -38,6 +38,7 @@ class CategoryModel {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'nom': nom,
       'description': description,
       'icone_url': iconeUrl,

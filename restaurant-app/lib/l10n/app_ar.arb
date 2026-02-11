@@ -301,5 +301,18 @@
   "optionGroupDeleteGroup": "حذف المجموعة",
   "optionGroupDeleteConfirmation": "هل أنت متأكد أنك تريد حذف مجموعة الخيارات هذه؟",
   "optionGroupDeleteOptionTooltip": "إزالة الخيار",
-  "errorOptionGroupAddOne": "أضف خيارًا واحدًا على الأقل"
+  "errorOptionGroupAddOne": "أضف خيارًا واحدًا على الأقل",
+  "option": "خيار",
+  "options": "خيارات",
+  "singleChoice": "واحد",
+  "addPhoto": "إضافة صورة",
+  "fromGalleryOrCamera": "من المعرض أو الكاميرا",
+  "select": "اختر",
+  "itemActive": "عنصر نشط",
+  "add": "إضافة",
+  "addMenuItem": "إضافة عنصر",
+  "itemNameLabel": "اسم العنصر",
+  "priceLabel": "السعر",
+  "optionGroups": "مجموعات الخيارات",
+  "addOptionGroup": "+ إضافة مجموعة خيار"
 }

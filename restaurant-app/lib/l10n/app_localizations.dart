@@ -1695,6 +1695,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add at least one option'**
   String get errorOptionGroupAddOne;
+
+  /// No description provided for @option.
+  ///
+  /// In en, this message translates to:
+  /// **'option'**
+  String get option;
+
+  /// No description provided for @options.
+  ///
+  /// In en, this message translates to:
+  /// **'options'**
+  String get options;
+
+  /// No description provided for @singleChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Single'**
+  String get singleChoice;
+
+  /// No description provided for @addPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Photo'**
+  String get addPhoto;
+
+  /// No description provided for @fromGalleryOrCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'From gallery or camera'**
+  String get fromGalleryOrCamera;
+
+  /// No description provided for @select.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get select;
+
+  /// No description provided for @itemActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Active'**
+  String get itemActive;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @addMenuItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Item'**
+  String get addMenuItem;
+
+  /// No description provided for @itemNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Name'**
+  String get itemNameLabel;
+
+  /// No description provided for @optionGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Option Groups'**
+  String get optionGroups;
+
+  /// No description provided for @addOptionGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add option group'**
+  String get addOptionGroup;
 }
 
 class _AppLocalizationsDelegate
