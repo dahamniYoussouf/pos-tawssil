@@ -285,5 +285,21 @@
   "thursday": "Jeudi",
   "friday": "Vendredi",
   "saturday": "Samedi",
-  "sunday": "Dimanche"
+  "sunday": "Dimanche",
+  "optionGroupTitleEdit": "Modifier le groupe",
+  "optionGroupTitleAdd": "Ajouter Groupe",
+  "optionGroupNameLabel": "Nom du groupe *",
+  "optionGroupNameHint": "Entrez le nom du groupe",
+  "optionGroupNameRequired": "Nom du groupe requis",
+  "optionGroupRequired": "Obligatoire",
+  "optionGroupMultipleChoice": "Choix Multiple",
+  "optionGroupOptions": "Options",
+  "optionOptionNameLabel": "Nom de l'option",
+  "optionAdd": "+ Ajouter option",
+  "optionGroupButtonSave": "Enregistrer",
+  "optionGroupButtonAdd": "Ajouter",
+  "optionGroupDeleteGroup": "Supprimer le groupe",
+  "optionGroupDeleteConfirmation": "Voulez-vous vraiment supprimer ce groupe d'options ?",
+  "optionGroupDeleteOptionTooltip": "Supprimer l'option",
+  "errorOptionGroupAddOne": "Ajoutez au moins une option"
 }

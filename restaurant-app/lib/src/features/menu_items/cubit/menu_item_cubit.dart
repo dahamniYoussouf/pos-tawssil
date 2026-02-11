@@ -32,6 +32,7 @@ class MenuItemCubit extends Cubit<MenuItemState> {
     String? allergens,
     String? photoUrl,
     required bool isAvailable,
+    List<MenuItemOptionGroup> optionGroups = const [],
   }) async {
     emit(MenuItemActionLoading());
     final result = await _menuItemRepository.createMenuItem(
@@ -44,6 +45,7 @@ class MenuItemCubit extends Cubit<MenuItemState> {
       allergens: allergens,
       photoUrl: photoUrl,
       isAvailable: isAvailable,
+      optionGroups: optionGroups,
     );
     result.fold(
       (error) => emit(MenuItemActionError(message: error)),
@@ -65,6 +67,7 @@ class MenuItemCubit extends Cubit<MenuItemState> {
     String? allergens,
     String? photoUrl,
     required bool isAvailable,
+    List<MenuItemOptionGroup> optionGroups = const [],
   }) async {
     emit(MenuItemActionLoading());
     final result = await _menuItemRepository.updateMenuItem(
@@ -78,6 +81,7 @@ class MenuItemCubit extends Cubit<MenuItemState> {
       allergens: allergens,
       photoUrl: photoUrl,
       isAvailable: isAvailable,
+      optionGroups: optionGroups,
     );
     result.fold(
       (error) => emit(MenuItemActionError(message: error)),
@@ -94,16 +98,7 @@ class MenuItemCubit extends Cubit<MenuItemState> {
     result.fold(
       (error) => emit(MenuItemActionError(message: error)),
       (_) => emit(MenuItemActionSuccess(
-        menuItem: MenuModel(
-            id: id,
-            nom: '',
-            prix: 0.0,
-            restaurantId: '',
-            categoryId: '',
-            disponible: false,
-            createdAt: DateTime.now(),
-            updatedAt: DateTime.now(),
-            categoryName: ''),
+        menuItem: MenuItemModel(id: id, name: '', price: 0.0),
         message: 'Menu item deleted successfully',
       )),
     );

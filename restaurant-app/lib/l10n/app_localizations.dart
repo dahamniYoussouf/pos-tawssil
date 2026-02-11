@@ -1599,6 +1599,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sunday'**
   String get sunday;
+
+  /// No description provided for @optionGroupTitleEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit group'**
+  String get optionGroupTitleEdit;
+
+  /// No description provided for @optionGroupTitleAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Group'**
+  String get optionGroupTitleAdd;
+
+  /// No description provided for @optionGroupNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Group name *'**
+  String get optionGroupNameLabel;
+
+  /// No description provided for @optionGroupNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter group name'**
+  String get optionGroupNameHint;
+
+  /// No description provided for @optionGroupNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Group name is required'**
+  String get optionGroupNameRequired;
+
+  /// No description provided for @optionGroupRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get optionGroupRequired;
+
+  /// No description provided for @optionGroupMultipleChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple choice'**
+  String get optionGroupMultipleChoice;
+
+  /// No description provided for @optionGroupOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Options'**
+  String get optionGroupOptions;
+
+  /// No description provided for @optionOptionNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Option name'**
+  String get optionOptionNameLabel;
+
+  /// No description provided for @optionAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add option'**
+  String get optionAdd;
+
+  /// No description provided for @optionGroupButtonSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get optionGroupButtonSave;
+
+  /// No description provided for @optionGroupButtonAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get optionGroupButtonAdd;
+
+  /// No description provided for @optionGroupDeleteGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete group'**
+  String get optionGroupDeleteGroup;
+
+  /// No description provided for @optionGroupDeleteConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this option group?'**
+  String get optionGroupDeleteConfirmation;
+
+  /// No description provided for @optionGroupDeleteOptionTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove option'**
+  String get optionGroupDeleteOptionTooltip;
+
+  /// No description provided for @errorOptionGroupAddOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one option'**
+  String get errorOptionGroupAddOne;
 }
 
 class _AppLocalizationsDelegate

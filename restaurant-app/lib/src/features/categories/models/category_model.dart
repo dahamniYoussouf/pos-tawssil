@@ -6,7 +6,7 @@ class CategoryModel {
   final String description;
   final String? iconeUrl;
   final int ordreAffichage;
-  final List<MenuModel> items;
+  final List<MenuItemModel> items;
   final int itemsCount;
 
   CategoryModel({
@@ -22,7 +22,7 @@ class CategoryModel {
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
     final itemsJson = json['items'] as List<dynamic>? ?? [];
     final items = itemsJson
-        .map((item) => MenuModel.fromJson(item as Map<String, dynamic>, ''))
+        .map((item) => MenuItemModel.fromJson(item as Map<String, dynamic>))
         .toList();
 
     return CategoryModel(
@@ -46,14 +46,14 @@ class CategoryModel {
           .map((item) => {
                 'id': item.id,
                 'category_id': item.categoryId,
-                'nom': item.nom,
+                'nom': item.name,
                 'description': item.description,
-                'prix': item.prix,
+                'prix': item.price,
                 'photo_url': item.photoUrl,
-                'is_available': item.disponible,
-                'temps_preparation': item.tempsPreparation,
-                'created_at': item.createdAt.toIso8601String(),
-                'updated_at': item.updatedAt.toIso8601String(),
+                'is_available': item.isAvailable,
+                'temps_preparation': item.preparationTime,
+                'created_at': item.createdAt?.toIso8601String(),
+                'updated_at': item.updatedAt?.toIso8601String(),
                 'restaurant_id': item.restaurantId,
               })
           .toList(),
@@ -67,7 +67,7 @@ class CategoryModel {
     String? description,
     String? iconeUrl,
     int? ordreAffichage,
-    List<MenuModel>? items,
+    List<MenuItemModel>? items,
     int? itemsCount,
   }) {
     return CategoryModel(

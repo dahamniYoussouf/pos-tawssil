@@ -137,7 +137,7 @@ class _RestaurantDetailsPageState extends State<RestaurantDetailsPage> {
                   MaterialPageRoute(
                     builder: (context) => BlocProvider(
                       create: (context) => locator<MenuItemCubit>(),
-                      child: CreateMenuItemSheet(categories: categories),
+                      child: CreateMenuItemPage(categories: categories),
                     ),
                   ),
                 ).then((_) {

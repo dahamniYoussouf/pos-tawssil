@@ -56,13 +56,13 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
     return widget.category;
   }
 
-  List<MenuModel> _getFilteredItems(CategoryModel category) {
+  List<MenuItemModel> _getFilteredItems(CategoryModel category) {
     final items = category.items;
     if (_searchQuery.isEmpty) return items;
     return items
         .where(
           (item) =>
-              item.nom.toLowerCase().contains(_searchQuery) ||
+              item.name.toLowerCase().contains(_searchQuery) ||
               (item.description?.toLowerCase().contains(_searchQuery) ??
                   false) ||
               (item.ingredients?.toLowerCase().contains(_searchQuery) ?? false),
@@ -185,7 +185,7 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
 
   Widget _buildProductList(
     AppLocalizations localizations,
-    List<MenuModel> items,
+    List<MenuItemModel> items,
     CategoryModel category,
   ) {
     if (items.isEmpty) {
@@ -235,7 +235,7 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
       builder: (_) {
         return BlocProvider(
           create: (context) => locator<MenuItemCubit>(),
-          child: CreateMenuItemSheet(
+          child: CreateMenuItemPage(
             categories: [widget.category],
           ),
         );

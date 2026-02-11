@@ -35,7 +35,7 @@ class MenuItemImageUploadError extends MenuItemState {
 class MenuItemActionLoading extends MenuItemState {}
 
 class MenuItemActionSuccess extends MenuItemState {
-  final MenuModel menuItem;
+  final MenuItemModel menuItem;
   final String message;
 
   const MenuItemActionSuccess({

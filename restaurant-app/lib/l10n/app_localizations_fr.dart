@@ -785,4 +785,53 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get sunday => 'Dimanche';
+
+  @override
+  String get optionGroupTitleEdit => 'Modifier le groupe';
+
+  @override
+  String get optionGroupTitleAdd => 'Ajouter Groupe';
+
+  @override
+  String get optionGroupNameLabel => 'Nom du groupe *';
+
+  @override
+  String get optionGroupNameHint => 'Entrez le nom du groupe';
+
+  @override
+  String get optionGroupNameRequired => 'Nom du groupe requis';
+
+  @override
+  String get optionGroupRequired => 'Obligatoire';
+
+  @override
+  String get optionGroupMultipleChoice => 'Choix Multiple';
+
+  @override
+  String get optionGroupOptions => 'Options';
+
+  @override
+  String get optionOptionNameLabel => 'Nom de l\'option';
+
+  @override
+  String get optionAdd => '+ Ajouter option';
+
+  @override
+  String get optionGroupButtonSave => 'Enregistrer';
+
+  @override
+  String get optionGroupButtonAdd => 'Ajouter';
+
+  @override
+  String get optionGroupDeleteGroup => 'Supprimer le groupe';
+
+  @override
+  String get optionGroupDeleteConfirmation =>
+      'Voulez-vous vraiment supprimer ce groupe d\'options ?';
+
+  @override
+  String get optionGroupDeleteOptionTooltip => 'Supprimer l\'option';
+
+  @override
+  String get errorOptionGroupAddOne => 'Ajoutez au moins une option';
 }

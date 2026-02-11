@@ -10,7 +10,7 @@ import 'package:restaurant_app/src/features/menu_items/pages/create_menu_item_pa
 import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 
 class MenuItemCardWidget extends StatelessWidget {
-  final MenuModel menuItem;
+  final MenuItemModel menuItem;
   final CategoryModel category;
 
   const MenuItemCardWidget({
@@ -47,7 +47,7 @@ class MenuItemCardWidget extends StatelessWidget {
             MaterialPageRoute(
               builder: (context) => BlocProvider(
                 create: (context) => locator<MenuItemCubit>(),
-                child: CreateMenuItemSheet(
+                child: CreateMenuItemPage(
                     categories: [category], menuItem: menuItem),
               ),
             ),
@@ -108,7 +108,7 @@ class MenuItemCardWidget extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            menuItem.nom,
+                            menuItem.name,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
@@ -148,7 +148,7 @@ class MenuItemCardWidget extends StatelessWidget {
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
-                            '${NumberFormat('#,###').format(menuItem.prix)} DA',
+                            '${NumberFormat('#,###').format(menuItem.price)} DA',
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,

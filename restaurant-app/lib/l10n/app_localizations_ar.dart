@@ -773,4 +773,53 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get sunday => 'الأحد';
+
+  @override
+  String get optionGroupTitleEdit => 'تعديل المجموعة';
+
+  @override
+  String get optionGroupTitleAdd => 'إضافة مجموعة';
+
+  @override
+  String get optionGroupNameLabel => 'اسم المجموعة *';
+
+  @override
+  String get optionGroupNameHint => 'أدخل اسم المجموعة';
+
+  @override
+  String get optionGroupNameRequired => 'اسم المجموعة مطلوب';
+
+  @override
+  String get optionGroupRequired => 'إلزامي';
+
+  @override
+  String get optionGroupMultipleChoice => 'اختيار متعدد';
+
+  @override
+  String get optionGroupOptions => 'الخيارات';
+
+  @override
+  String get optionOptionNameLabel => 'اسم الخيار';
+
+  @override
+  String get optionAdd => '+ إضافة خيار';
+
+  @override
+  String get optionGroupButtonSave => 'حفظ';
+
+  @override
+  String get optionGroupButtonAdd => 'إضافة';
+
+  @override
+  String get optionGroupDeleteGroup => 'حذف المجموعة';
+
+  @override
+  String get optionGroupDeleteConfirmation =>
+      'هل أنت متأكد أنك تريد حذف مجموعة الخيارات هذه؟';
+
+  @override
+  String get optionGroupDeleteOptionTooltip => 'إزالة الخيار';
+
+  @override
+  String get errorOptionGroupAddOne => 'أضف خيارًا واحدًا على الأقل';
 }

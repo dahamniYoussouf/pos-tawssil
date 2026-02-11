@@ -285,5 +285,21 @@
   "thursday": "الخميس",
   "friday": "الجمعة",
   "saturday": "السبت",
-  "sunday": "الأحد"
+  "sunday": "الأحد",
+  "optionGroupTitleEdit": "تعديل المجموعة",
+  "optionGroupTitleAdd": "إضافة مجموعة",
+  "optionGroupNameLabel": "اسم المجموعة *",
+  "optionGroupNameHint": "أدخل اسم المجموعة",
+  "optionGroupNameRequired": "اسم المجموعة مطلوب",
+  "optionGroupRequired": "إلزامي",
+  "optionGroupMultipleChoice": "اختيار متعدد",
+  "optionGroupOptions": "الخيارات",
+  "optionOptionNameLabel": "اسم الخيار",
+  "optionAdd": "+ إضافة خيار",
+  "optionGroupButtonSave": "حفظ",
+  "optionGroupButtonAdd": "إضافة",
+  "optionGroupDeleteGroup": "حذف المجموعة",
+  "optionGroupDeleteConfirmation": "هل أنت متأكد أنك تريد حذف مجموعة الخيارات هذه؟",
+  "optionGroupDeleteOptionTooltip": "إزالة الخيار",
+  "errorOptionGroupAddOne": "أضف خيارًا واحدًا على الأقل"
 }

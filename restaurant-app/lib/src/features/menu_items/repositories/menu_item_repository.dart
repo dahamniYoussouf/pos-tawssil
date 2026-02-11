@@ -28,7 +28,7 @@ class MenuItemRepository {
     }
   }
 
-  Future<Either<String, MenuModel>> createMenuItem({
+  Future<Either<String, MenuItemModel>> createMenuItem({
     required String categoryId,
     required String name,
     required String description,
@@ -38,6 +38,7 @@ class MenuItemRepository {
     String? allergens,
     String? photoUrl,
     required bool isAvailable,
+    List<MenuItemOptionGroup> optionGroups = const [],
   }) async {
     try {
       final response = await _menuItemService.createMenuItem(
@@ -50,10 +51,11 @@ class MenuItemRepository {
         allergens: allergens,
         photoUrl: photoUrl,
         isAvailable: isAvailable,
+        optionGroups: optionGroups,
       );
       if (response['success'] == true) {
         final data = response['data'] ?? response;
-        final menuItem = MenuModel.fromJson(data as Map<String, dynamic>, '');
+        final menuItem = MenuItemModel.fromJson(data as Map<String, dynamic>);
         return Right(menuItem);
       } else {
         return Left(response['message'] ?? 'Failed to create menu item');
@@ -63,7 +65,7 @@ class MenuItemRepository {
     }
   }
 
-  Future<Either<String, MenuModel>> updateMenuItem({
+  Future<Either<String, MenuItemModel>> updateMenuItem({
     required String id,
     required String categoryId,
     required String name,
@@ -74,6 +76,7 @@ class MenuItemRepository {
     String? allergens,
     String? photoUrl,
     required bool isAvailable,
+    List<MenuItemOptionGroup> optionGroups = const [],
   }) async {
     try {
       final response = await _menuItemService.updateMenuItem(
@@ -87,10 +90,11 @@ class MenuItemRepository {
         allergens: allergens,
         photoUrl: photoUrl,
         isAvailable: isAvailable,
+        optionGroups: optionGroups,
       );
       if (response['success'] == true) {
         final data = response['data'] ?? response;
-        final menuItem = MenuModel.fromJson(data as Map<String, dynamic>, '');
+        final menuItem = MenuItemModel.fromJson(data as Map<String, dynamic>);
         return Right(menuItem);
       } else {
         return Left(response['message'] ?? 'Failed to update menu item');
