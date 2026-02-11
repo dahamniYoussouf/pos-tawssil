@@ -85,6 +85,8 @@
   "accept": "قبول",
   "noOrders": "لا توجد طلبات",
   "noPendingOrders": "ليس لديك أي طلبات قيد الانتظار",
+  "pendingStatus": "قيد الانتظار",
+  "ongoingStatus": "جارية",
   "error": "خطأ",
   "retry": "إعادة المحاولة",
   "orderAcceptedSuccess": "تم قبول الطلب بنجاح",

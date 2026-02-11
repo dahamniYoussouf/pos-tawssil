@@ -23,7 +23,8 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   void _listenToNotifications() {
     if (_notificationsCubit != null) {
-      _notificationSubscription = _notificationsCubit!.stream.listen((notificationState) {
+      _notificationSubscription =
+          _notificationsCubit!.stream.listen((notificationState) {
         if (notificationState is NotificationReceived) {
           _handleNotification(notificationState);
         }
@@ -33,7 +34,10 @@ class OrdersCubit extends Cubit<OrdersState> {
 
   void _handleNotification(NotificationReceived notification) {
     final eventType = notification.eventType;
-    if (eventType == 'new_order' || eventType == 'order_updated' || eventType == 'order_status_changed' || eventType == 'order_cancelled') {
+    if (eventType == 'new_order' ||
+        eventType == 'order_updated' ||
+        eventType == 'order_status_changed' ||
+        eventType == 'order_cancelled') {
       refreshOrders();
     }
   }
@@ -48,19 +52,25 @@ class OrdersCubit extends Cubit<OrdersState> {
     if (!loadMore) {
       emit(OrdersLoading(selectedStatus: selectedStatus));
     }
+    // Map 'ongoing' to 'accepted' for the API call
+    final apiStatus = selectedStatus == 'ongoing' ? 'accepted' : selectedStatus;
     final result = await _orderRepository.fetchOrders(
       page: page,
       limit: limit,
-      status: selectedStatus,
+      status: apiStatus,
     );
     result.fold(
-      (error) => emit(OrdersError(message: error, selectedStatus: selectedStatus)),
+      (error) =>
+          emit(OrdersError(message: error, selectedStatus: selectedStatus)),
       (orders) {
         if (loadMore && state is OrdersLoaded) {
           final currentState = state as OrdersLoaded;
           // Filter out duplicate orders by ID
-          final existingOrderIds = currentState.orders.map((order) => order.id).toSet();
-          final newOrders = orders.where((order) => !existingOrderIds.contains(order.id)).toList();
+          final existingOrderIds =
+              currentState.orders.map((order) => order.id).toSet();
+          final newOrders = orders
+              .where((order) => !existingOrderIds.contains(order.id))
+              .toList();
           final updatedOrders = [...currentState.orders, ...newOrders];
           emit(OrdersLoaded(
             orders: updatedOrders,

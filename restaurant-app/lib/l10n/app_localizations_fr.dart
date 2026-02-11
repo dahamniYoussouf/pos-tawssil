@@ -253,6 +253,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noPendingOrders => 'Vous n\'avez aucune commande en attente';
 
   @override
+  String get pendingStatus => 'En attente';
+
+  @override
+  String get ongoingStatus => 'En cours';
+
+  @override
   String get error => 'Erreur';
 
   @override

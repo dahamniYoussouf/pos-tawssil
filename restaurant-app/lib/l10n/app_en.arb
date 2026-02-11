@@ -85,6 +85,8 @@
   "accept": "Accept",
   "noOrders": "No orders",
   "noPendingOrders": "You have no pending orders",
+  "pendingStatus": "Pending",
+  "ongoingStatus": "Ongoing",
   "error": "Error",
   "retry": "Retry",
   "orderAcceptedSuccess": "Order accepted successfully",

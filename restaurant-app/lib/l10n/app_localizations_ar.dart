@@ -249,6 +249,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get noPendingOrders => 'ليس لديك أي طلبات قيد الانتظار';
 
   @override
+  String get pendingStatus => 'قيد الانتظار';
+
+  @override
+  String get ongoingStatus => 'جارية';
+
+  @override
   String get error => 'خطأ';
 
   @override

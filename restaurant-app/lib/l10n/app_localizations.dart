@@ -568,6 +568,18 @@ abstract class AppLocalizations {
   /// **'You have no pending orders'**
   String get noPendingOrders;
 
+  /// No description provided for @pendingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pendingStatus;
+
+  /// No description provided for @ongoingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Ongoing'**
+  String get ongoingStatus;
+
   /// No description provided for @error.
   ///
   /// In en, this message translates to:

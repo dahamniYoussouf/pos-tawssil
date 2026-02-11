@@ -250,6 +250,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noPendingOrders => 'You have no pending orders';
 
   @override
+  String get pendingStatus => 'Pending';
+
+  @override
+  String get ongoingStatus => 'Ongoing';
+
+  @override
   String get error => 'Error';
 
   @override

@@ -1,152 +1,106 @@
 import 'package:flutter/material.dart';
 import 'package:restaurant_app/src/core/res/color_app.dart';
 
-class OrderCardShimmer extends StatelessWidget {
+class OrderCardShimmer extends StatefulWidget {
   const OrderCardShimmer({super.key});
 
   @override
+  State<OrderCardShimmer> createState() => _OrderCardShimmerState();
+}
+
+class _OrderCardShimmerState extends State<OrderCardShimmer>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..repeat(reverse: true);
+    _animation = Tween<double>(begin: 0.3, end: 0.7).animate(_controller);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Card(
-      color: AppColors.white,
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildHeaderShimmer(),
-            const SizedBox(height: 16),
-            _buildItemsListShimmer(),
-            const SizedBox(height: 16),
-            _buildDeliveryDetailsShimmer(),
-            const SizedBox(height: 16),
-            _buildTotalPriceShimmer(),
-            const SizedBox(height: 16),
-            _buildActionButtonsShimmer(),
-          ],
-        ),
-      ),
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        return Card(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          elevation: 0,
+          color: AppColors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+            side: const BorderSide(color: AppColors.borderLight, width: 1.5),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _box(180, 22),
+                const SizedBox(height: 8),
+                _box(130, 14),
+                const SizedBox(height: 20),
+                _box(80, 16),
+                const SizedBox(height: 12),
+                _itemRow(),
+                const SizedBox(height: 8),
+                _itemRow(),
+                const SizedBox(height: 16),
+                const Divider(height: 1, color: AppColors.borderLight),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _box(70, 12),
+                        const SizedBox(height: 4),
+                        _box(90, 16),
+                      ],
+                    ),
+                    const Spacer(),
+                    _box(80, 36, radius: 20),
+                    const SizedBox(width: 8),
+                    _box(80, 36, radius: 20),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildShimmerBox({
-    required double width,
-    required double height,
-    double? borderRadius,
-  }) {
+  Widget _itemRow() {
+    return Row(
+      children: [
+        Expanded(child: _box(140, 15)),
+        const SizedBox(width: 12),
+        _box(50, 15),
+      ],
+    );
+  }
+
+  Widget _box(double width, double height, {double radius = 6}) {
     return Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: AppColors.greyLight,
-        borderRadius: BorderRadius.circular(borderRadius ?? 4),
+        color: AppColors.greyLight.withValues(alpha: _animation.value),
+        borderRadius: BorderRadius.circular(radius),
       ),
-    );
-  }
-
-  Widget _buildHeaderShimmer() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildShimmerBox(width: 150, height: 24),
-              const SizedBox(height: 8),
-              _buildShimmerBox(width: 120, height: 16),
-            ],
-          ),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            _buildShimmerBox(width: 100, height: 16),
-            const SizedBox(height: 8),
-            _buildShimmerBox(width: 80, height: 16),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _buildItemsListShimmer() {
-    return Column(
-      children: List.generate(3, (index) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Row(
-            children: [
-              _buildShimmerBox(width: 50, height: 50, borderRadius: 8),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildShimmerBox(width: double.infinity, height: 18),
-                    const SizedBox(height: 8),
-                    _buildShimmerBox(width: 40, height: 14),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 12),
-              _buildShimmerBox(width: 60, height: 18),
-            ],
-          ),
-        );
-      }),
-    );
-  }
-
-  Widget _buildDeliveryDetailsShimmer() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.limeGreen.withOpacity(0.3),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        children: List.generate(3, (index) {
-          return Padding(
-            padding: EdgeInsets.only(bottom: index < 2 ? 8 : 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildShimmerBox(width: 100, height: 14),
-                _buildShimmerBox(width: 60, height: 14),
-              ],
-            ),
-          );
-        }),
-      ),
-    );
-  }
-
-  Widget _buildTotalPriceShimmer() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        _buildShimmerBox(width: 100, height: 18),
-        _buildShimmerBox(width: 80, height: 24),
-      ],
-    );
-  }
-
-  Widget _buildActionButtonsShimmer() {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildShimmerBox(width: double.infinity, height: 48, borderRadius: 8),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: _buildShimmerBox(width: double.infinity, height: 48, borderRadius: 8),
-        ),
-      ],
     );
   }
 }

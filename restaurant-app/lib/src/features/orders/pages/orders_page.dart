@@ -6,6 +6,7 @@ import 'package:restaurant_app/src/features/orders/cubit/orders_cubit.dart';
 import 'package:restaurant_app/src/features/orders/cubit/orders_state.dart';
 import 'package:restaurant_app/src/features/orders/models/order_model.dart';
 import 'package:restaurant_app/src/features/orders/widgets/order_card.dart';
+import 'package:restaurant_app/src/features/orders/widgets/ongoing_order_card.dart';
 import 'package:restaurant_app/src/features/orders/widgets/order_card_shimmer.dart';
 import 'package:restaurant_app/src/features/orders/widgets/status_selector.dart';
 
@@ -96,6 +97,14 @@ class _OrdersPageState extends State<OrdersPage> {
               StatusSelector(
                 selectedStatus: state.selectedStatus,
                 onStatusChanged: _onStatusChanged,
+                pendingCount:
+                    state is OrdersLoaded && state.selectedStatus == 'pending'
+                        ? state.orders.length
+                        : 0,
+                ongoingCount:
+                    state is OrdersLoaded && state.selectedStatus == 'ongoing'
+                        ? state.orders.length
+                        : 0,
               ),
               Expanded(
                 child: BlocConsumer<OrdersCubit, OrdersState>(
@@ -199,6 +208,19 @@ class _OrdersPageState extends State<OrdersPage> {
   }
 
   Widget _buildOrderCard(OrderModel order) {
+    final currentState = context.read<OrdersCubit>().state;
+    if (currentState.selectedStatus == 'ongoing') {
+      return OngoingOrderCard(
+        order: order,
+        onTap: () {
+          Navigator.pushNamed(
+            context,
+            '/order-details',
+            arguments: order,
+          );
+        },
+      );
+    }
     return OrderCard(order: order);
   }
 

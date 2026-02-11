@@ -17,337 +17,305 @@ class OrderCard extends StatelessWidget {
 
   String _formatDate(DateTime? date) {
     if (date == null) return '';
-    return DateFormat('d MMM yyyy, hh:mm a', 'fr').format(date);
+    return DateFormat('d MMM yyyy ,hh:mm a', 'fr').format(date);
   }
 
   String _formatPrice(double price) {
-    return '${NumberFormat('#,###').format(price)} DA';
-  }
-
-  Widget _buildItemIcon(String? imageUrl, String itemName) {
-    if (imageUrl != null && imageUrl.isNotEmpty) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(8),
-        child: Image.network(
-          imageUrl,
-          width: 50,
-          height: 50,
-          fit: BoxFit.cover,
-          errorBuilder: (context, error, stackTrace) =>
-              _buildDefaultIcon(itemName),
-        ),
-      );
-    }
-    return _buildDefaultIcon(itemName);
-  }
-
-  Widget _buildDefaultIcon(String itemName) {
-    return Container(
-      width: 50,
-      height: 50,
-      decoration: BoxDecoration(
-        color: AppColors.greyVeryLight,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: AppColors.primaryColor, width: 1),
-      ),
-      child: Icon(
-        Icons.fastfood,
-        color: AppColors.primaryColor,
-        size: 24,
-      ),
-    );
+    return '${NumberFormat('#,###').format(price)}DA';
   }
 
   @override
   Widget build(BuildContext context) {
-    final localizations = AppLocalizations.of(context)!;
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      elevation: 2,
+      elevation: 0,
       color: AppColors.white,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(24),
+        side: const BorderSide(color: AppColors.borderLight, width: 1.5),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(context, localizations),
-            const SizedBox(height: 32),
-            _buildItemsList(),
-            const SizedBox(height: 16),
-            _buildDeliveryDetails(context, localizations),
-            const SizedBox(height: 16),
-            _buildTotalPrice(context, localizations),
-            const SizedBox(height: 16),
-            _buildActionButtons(context, localizations),
+            _buildHeader(l10n),
+            const SizedBox(height: 20),
+            _buildItemsByCategory(),
+            //Prix Totale +  
+            _buildFooter(context, l10n),
           ],
         ),
       ),
     );
   }
-
-  Widget _buildHeader(BuildContext context, AppLocalizations localizations) {
-    return Row(
+  Widget _buildHeader(AppLocalizations l10n) {
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                _formatDate(order.createdAt),
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.black,
-                ),
-              ),
-            ],
+        Text(
+          l10n.orderTitle(order.orderNumber),
+          style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: AppColors.black,
           ),
         ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              localizations.orderNumberLabel,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: AppColors.black,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '#${order.orderNumber}',
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.black,
-              ),
-            ),
-          ],
+        const SizedBox(height: 4),
+        Text(
+          _formatDate(order.createdAt),
+          style: const TextStyle(
+            fontSize: 14,
+            color: AppColors.textLightGrey,
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildItemsList() {
-    return Column(
-      children: order.items.map((item) {
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: Row(
-            children: [
-              _buildItemIcon(item.imageUrl, item.name),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.name,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      '×${item.quantity}',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Text(
-                _formatPrice(item.totalPrice),
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.black,
-                ),
-              ),
-            ],
+  Widget _buildItemsByCategory() {
+    // Group items by categoryName
+    final Map<String, List<OrderItem>> grouped = {};
+    for (final item in order.items) {
+      final cat = item.categoryName ?? 'PIZZA';
+      grouped.putIfAbsent(cat, () => []);
+      grouped[cat]!.add(item);
+    }
+
+    final entries = grouped.entries.toList();
+    final widgets = <Widget>[];
+
+    for (int i = 0; i < entries.length; i++) {
+      final entry = entries[i];
+
+      // Category title (green)
+      widgets.add(
+        Padding(
+          padding: const EdgeInsets.only(top: 4, bottom: 12),
+          child: Text(
+            entry.key,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: AppColors.primaryColor,
+            ),
           ),
-        );
-      }).toList(),
+        ),
+      );
+
+      // Items in this category
+      for (final item in entry.value) {
+        widgets.add(_buildMainItem(item));
+        if (item.specialInstructions != null &&
+            item.specialInstructions!.isNotEmpty) {
+          for (final line in item.specialInstructions!.split('\n')) {
+            if (line.trim().isNotEmpty) {
+              widgets.add(_buildModifierRow(line.trim()));
+            }
+          }
+        }
+      }
+      if (i < entries.length - 1) {
+        widgets.add(const Divider(height: 24, color: AppColors.borderLight));
+      }
+    }
+    widgets.add(const Divider(height: 24, color: AppColors.borderLight));
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: widgets,
     );
   }
 
-  Widget _buildDeliveryDetails(
-      BuildContext context, AppLocalizations localizations) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.limeGreenLight.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
+  Widget _buildMainItem(OrderItem item) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
         children: [
-          _buildDeliveryDetailRow(
-            localizations.deliveryTime,
-            order.estimatedDeliveryTime != null
-                ? () {
-                    final minutes = order.estimatedDeliveryTime!
-                        .difference(DateTime.now())
-                        .inMinutes;
-                    return '${minutes < 0 ? 0 : minutes} ${localizations.minutes}';
-                  }()
-                : '10 ${localizations.minutes}',
+          Expanded(
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: '${item.name} ',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.black,
+                    ),
+                  ),
+                  TextSpan(
+                    text: 'X ${item.quantity}',
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primaryColor,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-          const SizedBox(height: 8),
-          _buildDeliveryDetailRow(
-            localizations.distance,
-            order.deliveryDistance != null
-                ? '${order.deliveryDistance!.toStringAsFixed(1)} ${localizations.kilometers}'
-                : '0 ${localizations.kilometers}',
+          Text(
+            _formatPrice(item.totalPrice),
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.bold,
+              color: AppColors.black,
+            ),
           ),
-          const SizedBox(height: 8),
-          _buildDeliveryDetailRow(
-            localizations.deliveryPrice,
-            order.deliveryPrice != null
-                ? _formatPrice(order.deliveryPrice!)
-                : '000 DA',
+        ],
+      ),
+    );
+  }
+  Widget _buildModifierRow(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8, bottom: 4),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppColors.textLightGrey,
+              ),
+            ),
+          ),
+          const Text(
+            '0DA',  
+            style: TextStyle(
+              fontSize: 12,
+              color: AppColors.textLightGrey,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildDeliveryDetailRow(String label, String value) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildFooter(BuildContext context, AppLocalizations l10n) {
+    return Column(
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 14,
-            color: AppColors.black,
-          ),
-        ),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-            color: AppColors.black,
-          ),
+        Row(
+          children: [
+            // Prix Totale on left side
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.totalPrice,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.textLightGrey,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    '${NumberFormat('#,###').format(order.totalPrice)} DA',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.black,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            if (order.status == OrderStatus.pending)
+              _buildActionButtons(context, l10n),
+          ],
         ),
       ],
     );
   }
 
-  Widget _buildTotalPrice(
-      BuildContext context, AppLocalizations localizations) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          localizations.totalPrice,
-          style: const TextStyle(
-            fontSize: 16,
-            color: AppColors.black,
-          ),
-        ),
-        Text(
-          _formatPrice(order.totalPrice),
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppColors.black,
-          ),
-        ),
-      ],
-    );
-  }
+  Widget _buildActionButtons(BuildContext context, AppLocalizations l10n) {
+    return BlocBuilder<OrdersCubit, OrdersState>(builder: (context, state) {
+      final actionLoading =
+          state is OrderActionLoading && state.orderId == order.id;
+      final isCancelLoading =
+          actionLoading && state.actionType == OrderActionType.cancel;
+      final isAcceptLoading =
+          actionLoading && state.actionType == OrderActionType.accept;
 
-  Widget _buildActionButtons(
-      BuildContext context, AppLocalizations localizations) {
-    // show buttons only if the order is pending
-    return Visibility(
-        visible: order.status == OrderStatus.pending,
-        child: BlocBuilder<OrdersCubit, OrdersState>(builder: (context, state) {
-          final actionLoading =
-              state is OrderActionLoading && state.orderId == order.id;
-          final isCancelLoading =
-              actionLoading && state.actionType == OrderActionType.cancel;
-          final isAcceptLoading =
-              actionLoading && state.actionType == OrderActionType.accept;
-
-          return Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: (isCancelLoading || isAcceptLoading)
-                      ? null
-                      : () => context.read<OrdersCubit>().cancelOrder(order.id),
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    side: const BorderSide(color: AppColors.primaryColor),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: isCancelLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                AppColors.primaryColor),
-                          ),
-                        )
-                      : Text(
-                          localizations.refuse,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.black,
-                          ),
-                        ),
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          SizedBox(
+            height: 40,
+            child: OutlinedButton(
+              onPressed: (isCancelLoading || isAcceptLoading)
+                  ? null
+                  : () => context.read<OrdersCubit>().cancelOrder(order.id),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                side: const BorderSide(color: AppColors.greyLight),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
                 ),
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton(
-                  onPressed: (isCancelLoading || isAcceptLoading)
-                      ? null
-                      : () => context.read<OrdersCubit>().acceptOrder(order.id),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryColor,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+              child: isCancelLoading
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(AppColors.black),
+                      ),
+                    )
+                  : Text(
+                      l10n.refuse,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.black,
+                      ),
                     ),
-                  ),
-                  child: isAcceptLoading
-                      ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(AppColors.white),
-                          ),
-                        )
-                      : Text(
-                          localizations.accept,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
-                            color: AppColors.white,
-                          ),
-                        ),
+            ),
+          ),
+          const SizedBox(width: 8),
+
+          // Accepter button
+          SizedBox(
+            height: 40,
+            child: ElevatedButton(
+              onPressed: (isCancelLoading || isAcceptLoading)
+                  ? null
+                  : () => context.read<OrdersCubit>().acceptOrder(order.id),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
                 ),
               ),
-            ],
-          );
-        }));
+              child: isAcceptLoading
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(AppColors.white),
+                      ),
+                    )
+                  : Text(
+                      l10n.accept,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                        color: AppColors.white,
+                      ),
+                    ),
+            ),
+          ),
+        ],
+      );
+    });
   }
 }

@@ -85,6 +85,8 @@
   "accept": "Accepter",
   "noOrders": "Aucune commande",
   "noPendingOrders": "Vous n'avez aucune commande en attente",
+  "pendingStatus": "En attente",
+  "ongoingStatus": "En cours",
   "error": "Erreur",
   "retry": "Réessayer",
   "orderAcceptedSuccess": "Commande acceptée avec succès",
