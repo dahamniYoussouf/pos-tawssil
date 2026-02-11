@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:restaurant_app/l10n/app_localizations.dart';
 import 'package:restaurant_app/src/core/res/color_app.dart';
+import 'package:restaurant_app/src/core/res/media_res.dart';
 import 'package:restaurant_app/src/features/orders/cubit/order_history_cubit.dart';
 import 'package:restaurant_app/src/features/orders/cubit/order_history_state.dart';
 import 'package:restaurant_app/src/features/orders/models/order_history_filters.dart';
@@ -65,8 +67,11 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.diamond_outlined,
-                        size: 18, color: Colors.orange),
+                    SvgPicture.asset(
+                      MediaRes.posIcon,
+                      width: 18,
+                      height: 18,
+                    ),
                     const SizedBox(width: 4),
                     Text(localizations.pos),
                   ],

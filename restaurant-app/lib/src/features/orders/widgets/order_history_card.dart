@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:restaurant_app/l10n/app_localizations.dart';
 import 'package:restaurant_app/src/core/res/color_app.dart';
@@ -136,8 +137,11 @@ class OrderHistoryCard extends StatelessWidget {
                         ),
                       ),
                       if (order.orderType?.toLowerCase() == 'pos')
-                        const Icon(Icons.diamond_outlined,
-                            size: 20, color: Colors.orange),
+                        SvgPicture.asset(
+                          MediaRes.posIcon,
+                          width: 20,
+                          height: 20,
+                        ),
                     ],
                   ),
                   const SizedBox(height: 12),

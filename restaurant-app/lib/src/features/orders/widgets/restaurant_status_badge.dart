@@ -4,6 +4,7 @@ import 'package:restaurant_app/l10n/app_localizations.dart';
 import 'package:restaurant_app/src/core/res/color_app.dart';
 import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_state.dart';
+import 'package:restaurant_app/src/features/restaurant/models/restaurant_model.dart';
 
 class RestaurantStatusBadge extends StatelessWidget {
   const RestaurantStatusBadge({super.key});
@@ -15,21 +16,22 @@ class RestaurantStatusBadge extends StatelessWidget {
     return BlocBuilder<RestaurantCubit, RestaurantState>(
       builder: (context, state) {
         if (state is RestaurantLoaded) {
-          final status = state.status.toLowerCase();
+          final status =
+              state.restaurant.status?.toLowerCase() ?? RestaurantStatus.open;
 
           Color color;
           String label;
 
           switch (status) {
-            case 'open':
+            case RestaurantStatus.open:
               color = const Color(0xFF22C55E); // Green
               label = localizations.statusOpen;
               break;
-            case 'busy':
+            case RestaurantStatus.busy:
               color = AppColors.primary; // Orange/Primary
               label = localizations.statusBusy;
               break;
-            case 'closed':
+            case RestaurantStatus.closed:
               color = AppColors.red;
               label = localizations.statusClosed;
               break;
@@ -122,14 +124,14 @@ class RestaurantStatusBadge extends StatelessWidget {
               const SizedBox(height: 24),
 
               // Options
-              if (currentStatus != 'open')
+              if (currentStatus != RestaurantStatus.open)
                 _buildStatusOption(
                   context: context,
                   icon: Icons.check_circle,
                   color: const Color(0xFF22C55E),
                   title: localizations.statusOpen,
                   subtitle: localizations.statusOpenSubtitle,
-                  statusValue: 'open',
+                  statusValue: RestaurantStatus.open,
                 ),
 
               const SizedBox(height: 16),
@@ -140,7 +142,7 @@ class RestaurantStatusBadge extends StatelessWidget {
                 color: AppColors.primary,
                 title: localizations.statusBusy,
                 subtitle: localizations.statusBusySubtitle,
-                statusValue: 'busy',
+                statusValue: RestaurantStatus.busy,
               ),
 
               const SizedBox(height: 16),
@@ -151,7 +153,7 @@ class RestaurantStatusBadge extends StatelessWidget {
                 color: AppColors.red,
                 title: localizations.statusClosed,
                 subtitle: localizations.statusClosedSubtitle,
-                statusValue: 'closed',
+                statusValue: RestaurantStatus.closed,
               ),
 
               const SizedBox(height: 24),

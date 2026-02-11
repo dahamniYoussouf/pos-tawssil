@@ -722,4 +722,67 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get closeRestaurantTitle => 'Fermer votre boutique pendant';
+
+  @override
+  String get restaurantProfileTitle => 'Profil du Restaurant';
+
+  @override
+  String get establishmentInformation => 'Informations de l\'établissement';
+
+  @override
+  String get openingHours => 'Horaires d\'ouverture';
+
+  @override
+  String get categoriesYouOffer => 'Catégories que vous proposez';
+
+  @override
+  String get vitrinePhoto => 'Photo de la vitrine';
+
+  @override
+  String get updatePhoto => 'Mettre à jour la photo';
+
+  @override
+  String get saveChanges => 'Enregistrer les modifications';
+
+  @override
+  String get approvedStatus => 'Approuvé';
+
+  @override
+  String get addressMini => 'ADRESSE';
+
+  @override
+  String get phoneMini => 'TÉLÉPHONE';
+
+  @override
+  String get emailMini => 'EMAIL';
+
+  @override
+  String get change => 'Changer';
+
+  @override
+  String get modifier => 'Modifier';
+
+  @override
+  String get gerer => 'Gérer';
+
+  @override
+  String get monday => 'Lundi';
+
+  @override
+  String get tuesday => 'Mardi';
+
+  @override
+  String get wednesday => 'Mercredi';
+
+  @override
+  String get thursday => 'Jeudi';
+
+  @override
+  String get friday => 'Vendredi';
+
+  @override
+  String get saturday => 'Samedi';
+
+  @override
+  String get sunday => 'Dimanche';
 }

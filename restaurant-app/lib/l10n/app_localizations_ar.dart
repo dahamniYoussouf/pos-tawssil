@@ -710,4 +710,67 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get closeRestaurantTitle => 'إغلاق متجرك لمدة';
+
+  @override
+  String get restaurantProfileTitle => 'الملف الشخصي للمطعم';
+
+  @override
+  String get establishmentInformation => 'معلومات المنشأة';
+
+  @override
+  String get openingHours => 'ساعات العمل';
+
+  @override
+  String get categoriesYouOffer => 'الفئات التي تقدمها';
+
+  @override
+  String get vitrinePhoto => 'صورة الواجهة';
+
+  @override
+  String get updatePhoto => 'تحديث الصورة';
+
+  @override
+  String get saveChanges => 'حفظ التغييرات';
+
+  @override
+  String get approvedStatus => 'معتمد';
+
+  @override
+  String get addressMini => 'العنوان';
+
+  @override
+  String get phoneMini => 'الهاتف';
+
+  @override
+  String get emailMini => 'البريد الإلكتروني';
+
+  @override
+  String get change => 'تغيير';
+
+  @override
+  String get modifier => 'تعديل';
+
+  @override
+  String get gerer => 'إدارة';
+
+  @override
+  String get monday => 'الاثنين';
+
+  @override
+  String get tuesday => 'الثلاثاء';
+
+  @override
+  String get wednesday => 'الأربعاء';
+
+  @override
+  String get thursday => 'الخميس';
+
+  @override
+  String get friday => 'الجمعة';
+
+  @override
+  String get saturday => 'السبت';
+
+  @override
+  String get sunday => 'الأحد';
 }

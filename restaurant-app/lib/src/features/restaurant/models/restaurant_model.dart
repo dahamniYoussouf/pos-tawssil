@@ -1,5 +1,11 @@
 import 'package:restaurant_app/src/features/categories/models/category_model.dart';
 
+class RestaurantStatus {
+  static const String open = 'open';
+  static const String busy = 'busy';
+  static const String closed = 'closed';
+}
+
 class RestaurantModel {
   final String id;
   final String name;
@@ -14,7 +20,11 @@ class RestaurantModel {
   final List<CategoryModel>? categories;
   final String? imageUrl;
   final bool? isActive;
+  final bool? isApproved;
+  final bool? isPremium;
+  final double? rating;
   final Map<String, dynamic>? openingHours;
+  final String? status;
 
   RestaurantModel({
     required this.id,
@@ -30,17 +40,24 @@ class RestaurantModel {
     this.categories,
     this.imageUrl,
     this.isActive,
+    this.isApproved,
+    this.isPremium,
+    this.rating,
     this.openingHours,
+    this.status,
   });
 
   factory RestaurantModel.fromJson(Map<String, dynamic> json) {
     return RestaurantModel(
       id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
-      name: json['name']?.toString() ?? '',
+      name: json['name']?.toString() ?? json['nom']?.toString() ?? '',
       email: json['email']?.toString() ?? '',
-      phone: json['phone']?.toString() ?? '',
+      phone: json['phone']?.toString() ??
+          json['telephone']?.toString() ??
+          json['phone_number']?.toString() ??
+          '',
       description: json['description']?.toString(),
-      address: json['address']?.toString(),
+      address: json['address']?.toString() ?? json['adresse']?.toString(),
       latitude: json['lat'] != null
           ? (json['lat'] is num
               ? json['lat'].toDouble()
@@ -75,19 +92,32 @@ class RestaurantModel {
                     }))
               .toList()
           : null,
-      imageUrl: json['image_url']?.toString() ?? json['imageUrl']?.toString(),
+      imageUrl: json['image_url']?.toString() ??
+          json['imageUrl']?.toString() ??
+          json['photo_url']?.toString() ??
+          json['image']?.toString(),
       isActive: json['is_active'] ?? json['isActive'],
+      isApproved: json['is_approved'] ??
+          json['isApproved'] ??
+          json['approved'] ??
+          (json['status'] == 'approved'),
+      isPremium: json['is_premium'] ?? json['isPremium'],
+      rating: json['rating'] != null
+          ? (json['rating'] is num
+              ? json['rating'].toDouble()
+              : double.tryParse(json['rating'].toString()))
+          : null,
       openingHours: json['opening_hours'] != null
           ? Map<String, dynamic>.from(json['opening_hours'])
           : json['openingHours'] != null
               ? Map<String, dynamic>.from(json['openingHours'])
               : null,
+      status: json['status']?.toString(),
     );
   }
 
   Map<String, dynamic> toJson() {
-    return {
-      'id': id,
+    final Map<String, dynamic> data = {
       'name': name,
       'email': email,
       'phone': phone,
@@ -97,11 +127,21 @@ class RestaurantModel {
       'lng': longitude,
       'willaya': willaya,
       'zone': zone,
-      'categories': categories,
+      // Send only category names/IDs as strings as expected by PUT /profile
+      'categories': categories?.map((e) => e.nom).toList(),
       'image_url': imageUrl,
       'is_active': isActive,
+      'is_approved': isApproved,
+      'is_premium': isPremium,
+      'rating': rating,
       'opening_hours': openingHours,
+      'status': status,
     };
+
+    // Remove null values to avoid triggering strict backend validators
+    data.removeWhere((key, value) => value == null);
+
+    return data;
   }
 
   RestaurantModel copyWith({
@@ -118,7 +158,11 @@ class RestaurantModel {
     List<CategoryModel>? categories,
     String? imageUrl,
     bool? isActive,
+    bool? isApproved,
+    bool? isPremium,
+    double? rating,
     Map<String, dynamic>? openingHours,
+    String? status,
   }) {
     return RestaurantModel(
       id: id ?? this.id,
@@ -134,7 +178,57 @@ class RestaurantModel {
       categories: categories ?? this.categories,
       imageUrl: imageUrl ?? this.imageUrl,
       isActive: isActive ?? this.isActive,
+      isApproved: isApproved ?? this.isApproved,
+      isPremium: isPremium ?? this.isPremium,
+      rating: rating ?? this.rating,
       openingHours: openingHours ?? this.openingHours,
+      status: status ?? this.status,
     );
+  }
+
+  List<Map<String, dynamic>> get formattedOpeningHours {
+    if (openingHours == null || openingHours!.isEmpty) return [];
+
+    final dayKeys = [
+      'monday',
+      'tuesday',
+      'wednesday',
+      'thursday',
+      'friday',
+      'saturday',
+      'sunday'
+    ];
+
+    final List<Map<String, dynamic>> result = [];
+    for (var key in dayKeys) {
+      final value = openingHours![key] ??
+          openingHours![key.substring(0, 3)]; // Support 'monday' or 'mon'
+      if (value == null) continue;
+
+      String hours = '';
+      bool isClosed = false;
+
+      if (value is String) {
+        hours = value;
+        isClosed = value.toLowerCase().contains('fermé') ||
+            value.toLowerCase().contains('closed');
+      } else if (value is Map) {
+        if (value['is_closed'] == true || value['closed'] == true) {
+          isClosed = true;
+          // Note: Label 'Fermé' should be handled by UI via localization
+        } else {
+          final open = value['open'] ?? value['start'] ?? '';
+          final close = value['close'] ?? value['end'] ?? '';
+          hours = '$open - $close';
+        }
+      }
+
+      result.add({
+        'dayKey': key,
+        'hours': hours,
+        'isClosed': isClosed,
+      });
+    }
+    return result;
   }
 }

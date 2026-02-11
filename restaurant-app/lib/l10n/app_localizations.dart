@@ -1473,6 +1473,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close your store for'**
   String get closeRestaurantTitle;
+
+  /// No description provided for @restaurantProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant Profile'**
+  String get restaurantProfileTitle;
+
+  /// No description provided for @establishmentInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Establishment Information'**
+  String get establishmentInformation;
+
+  /// No description provided for @openingHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Opening Hours'**
+  String get openingHours;
+
+  /// No description provided for @categoriesYouOffer.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories You Offer'**
+  String get categoriesYouOffer;
+
+  /// No description provided for @vitrinePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Storefront Photo'**
+  String get vitrinePhoto;
+
+  /// No description provided for @updatePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Photo'**
+  String get updatePhoto;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
+  /// No description provided for @approvedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get approvedStatus;
+
+  /// No description provided for @addressMini.
+  ///
+  /// In en, this message translates to:
+  /// **'ADDRESS'**
+  String get addressMini;
+
+  /// No description provided for @phoneMini.
+  ///
+  /// In en, this message translates to:
+  /// **'PHONE'**
+  String get phoneMini;
+
+  /// No description provided for @emailMini.
+  ///
+  /// In en, this message translates to:
+  /// **'EMAIL'**
+  String get emailMini;
+
+  /// No description provided for @change.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get change;
+
+  /// No description provided for @modifier.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get modifier;
+
+  /// No description provided for @gerer.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage'**
+  String get gerer;
+
+  /// No description provided for @monday.
+  ///
+  /// In en, this message translates to:
+  /// **'Monday'**
+  String get monday;
+
+  /// No description provided for @tuesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuesday'**
+  String get tuesday;
+
+  /// No description provided for @wednesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Wednesday'**
+  String get wednesday;
+
+  /// No description provided for @thursday.
+  ///
+  /// In en, this message translates to:
+  /// **'Thursday'**
+  String get thursday;
+
+  /// No description provided for @friday.
+  ///
+  /// In en, this message translates to:
+  /// **'Friday'**
+  String get friday;
+
+  /// No description provided for @saturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday'**
+  String get saturday;
+
+  /// No description provided for @sunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday'**
+  String get sunday;
 }
 
 class _AppLocalizationsDelegate

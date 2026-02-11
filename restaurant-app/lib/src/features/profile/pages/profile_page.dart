@@ -9,6 +9,7 @@ import 'package:restaurant_app/src/features/profile/widgets/profile_card_widget.
 import 'package:restaurant_app/src/features/profile/widgets/profile_menu_item_widget.dart';
 import 'package:restaurant_app/src/features/profile/widgets/language_selector_widget.dart';
 
+import 'package:restaurant_app/src/features/restaurant/pages/manage_profile_page.dart';
 import 'package:restaurant_app/src/core/utils/dependency_injection.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -65,7 +66,13 @@ class _ProfilePageState extends State<ProfilePage> {
             ProfileMenuItemWidget(
               icon: MediaRes.editIcon,
               title: localizations.manageProfile,
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ManageProfilePage()),
+                );
+              },
             ),
             ProfileMenuItemWidget(
               icon: MediaRes.messageIcon,

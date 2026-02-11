@@ -32,12 +32,26 @@ class ProfileCardWidget extends StatelessWidget {
         children: [
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              'assets/images/rest.png',
-              width: 80,
-              height: 80,
-              fit: BoxFit.cover,
-            ),
+            child: restaurant.imageUrl != null &&
+                    restaurant.imageUrl!.isNotEmpty
+                ? Image.network(
+                    restaurant.imageUrl!,
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Image.asset(
+                      'assets/images/rest.png',
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : Image.asset(
+                    'assets/images/rest.png',
+                    width: 80,
+                    height: 80,
+                    fit: BoxFit.cover,
+                  ),
           ),
           const SizedBox(width: 16),
           Expanded(

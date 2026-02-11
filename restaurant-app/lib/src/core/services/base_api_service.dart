@@ -159,6 +159,33 @@ class BaseApiService {
     }
   }
 
+  Future<Map<String, dynamic>> patchRequest(
+    String endpoint, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    bool includeAuth = true,
+    String? baseUrl,
+  }) async {
+    try {
+      dio.options.headers = await _getHeaders(includeAuth: includeAuth);
+      final url = baseUrl ?? '${ApiConfig.baseUrl}$endpoint';
+      final response = await dio.patch(
+        url,
+        data: data,
+        queryParameters: queryParameters,
+      );
+      return _processResponse(response);
+    } on DioException catch (e) {
+      return _handleError(e);
+    } catch (e) {
+      return {
+        'status': -2,
+        'success': false,
+        'message': 'An unexpected error occurred',
+      };
+    }
+  }
+
   Future<Map<String, dynamic>> deleteRequest(
     String endpoint, {
     dynamic data,
