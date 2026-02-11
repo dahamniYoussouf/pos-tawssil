@@ -10,7 +10,7 @@ class RestaurantRepository {
 
   Future<Either<String, RestaurantModel>> getRestaurantDetails() async {
     try {
-      final response = await _restaurantService.getRestaurantProfile();
+      final response = await _restaurantService.getRestaurantDetails();
       if (response['success'] == true) {
         final data = response['data'] ?? response['restaurant'] ?? response;
         final restaurant =

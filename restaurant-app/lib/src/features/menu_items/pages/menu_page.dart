@@ -50,126 +50,138 @@ class _MenuPageState extends State<MenuPage> {
           ),
         ),
       ),
-      body: BlocBuilder<RestaurantCubit, RestaurantState>(
-        builder: (context, state) {
-          if (state is RestaurantLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      body: BlocListener<RestaurantCubit, RestaurantState>(
+        listener: (context, state) {
           if (state is RestaurantError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    state.message,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppColors.textMedium),
-                  ),
-                  const SizedBox(height: 16),
-                  TextButton(
-                    onPressed: _loadCategories,
-                    child: Text(localizations.retry),
-                  ),
-                ],
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red,
               ),
             );
           }
-          if (state is RestaurantLoaded) {
-            final categories = state.restaurant.categories ?? [];
-            return RefreshIndicator(
-              onRefresh: () async {
-                context.read<RestaurantCubit>().fetchRestaurantDetails();
-              },
-              child: CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            localizations.listOfCategories,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: AppColors.textDark,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () =>
-                                _navigateToCreateCategory(context, null),
-                            child: Container(
-                              width: 38,
-                              height: 38,
-                              decoration: BoxDecoration(
-                                color: AppColors.white,
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                    color: AppColors.primaryColor, width: 2),
-                              ),
-                              child: const Icon(
-                                Icons.add,
-                                color: AppColors.primaryColor,
-                                size: 24,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+        },
+        child: BlocBuilder<RestaurantCubit, RestaurantState>(
+          builder: (context, state) {
+            if (state is RestaurantLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (state is RestaurantError) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      state.message,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: AppColors.textMedium),
                     ),
-                  ),
-                  if (categories.isEmpty)
-                    SliverFillRemaining(
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                    const SizedBox(height: 16),
+                    TextButton(
+                      onPressed: _loadCategories,
+                      child: Text(localizations.retry),
+                    ),
+                  ],
+                ),
+              );
+            }
+            if (state is RestaurantLoaded) {
+              final categories = state.restaurant.categories ?? [];
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<RestaurantCubit>().fetchRestaurantDetails();
+                },
+                child: CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.category_outlined,
-                              size: 64,
-                              color: AppColors.greyLight,
-                            ),
-                            const SizedBox(height: 16),
                             Text(
-                              localizations.noCategories,
+                              localizations.listOfCategories,
                               style: const TextStyle(
                                 fontSize: 16,
-                                color: AppColors.textMedium,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.textDark,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () =>
+                                  _navigateToCreateCategory(context, null),
+                              child: Container(
+                                width: 38,
+                                height: 38,
+                                decoration: BoxDecoration(
+                                  color: AppColors.white,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                      color: AppColors.primaryColor, width: 2),
+                                ),
+                                child: const Icon(
+                                  Icons.add,
+                                  color: AppColors.primaryColor,
+                                  size: 24,
+                                ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    )
-                  else
-                    SliverPadding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      sliver: SliverList(
-                        delegate: SliverChildBuilderDelegate(
-                          (context, index) {
-                            final category = categories[index];
-                            return _CategoryListCard(
-                              category: category,
-                              editCategory: () =>
-                                  _navigateToCreateCategory(context, category),
-                              onTap: () => _navigateToCategoryProducts(
-                                context,
-                                category,
+                    ),
+                    if (categories.isEmpty)
+                      SliverFillRemaining(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.category_outlined,
+                                size: 64,
+                                color: AppColors.greyLight,
                               ),
-                            );
-                          },
-                          childCount: categories.length,
+                              const SizedBox(height: 16),
+                              Text(
+                                localizations.noCategories,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  color: AppColors.textMedium,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    else
+                      SliverPadding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                            (context, index) {
+                              final category = categories[index];
+                              return _CategoryListCard(
+                                category: category,
+                                editCategory: () => _navigateToCreateCategory(
+                                    context, category),
+                                onTap: () => _navigateToCategoryProducts(
+                                  context,
+                                  category,
+                                ),
+                              );
+                            },
+                            childCount: categories.length,
+                          ),
                         ),
                       ),
-                    ),
-                ],
-              ),
-            );
-          }
-          return const SizedBox.shrink();
-        },
+                  ],
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }
