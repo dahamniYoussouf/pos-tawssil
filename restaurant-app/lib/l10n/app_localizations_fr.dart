@@ -701,4 +701,25 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get printReceipt => 'Imprimer ticket';
+
+  @override
+  String get statusOpen => 'Ouvert';
+
+  @override
+  String get statusBusy => 'Occupé';
+
+  @override
+  String get statusClosed => 'Fermé';
+
+  @override
+  String get statusOpenSubtitle => 'Accepter les commandes';
+
+  @override
+  String get statusBusySubtitle => 'Fermé pendant 1 heure';
+
+  @override
+  String get statusClosedSubtitle => 'Fermé toute la journée';
+
+  @override
+  String get closeRestaurantTitle => 'Fermer votre boutique pendant';
 }

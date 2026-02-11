@@ -693,4 +693,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get printReceipt => 'Print Ticket';
+
+  @override
+  String get statusOpen => 'Open';
+
+  @override
+  String get statusBusy => 'Busy';
+
+  @override
+  String get statusClosed => 'Closed';
+
+  @override
+  String get statusOpenSubtitle => 'Accepting orders';
+
+  @override
+  String get statusBusySubtitle => 'Closed for 1 hour';
+
+  @override
+  String get statusClosedSubtitle => 'Closed all day';
+
+  @override
+  String get closeRestaurantTitle => 'Close your store for';
 }

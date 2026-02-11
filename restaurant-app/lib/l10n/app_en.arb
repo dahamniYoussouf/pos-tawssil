@@ -257,5 +257,12 @@
   "deliveryManMustPay": "Delivery Man Must Pay",
   "receivedOrder": "Order Received",
   "acceptedByDelivery": "Accepted by Delivery Driver",
-  "printReceipt": "Print Ticket"
+  "printReceipt": "Print Ticket",
+  "statusOpen": "Open",
+  "statusBusy": "Busy",
+  "statusClosed": "Closed",
+  "statusOpenSubtitle": "Accepting orders",
+  "statusBusySubtitle": "Closed for 1 hour",
+  "statusClosedSubtitle": "Closed all day",
+  "closeRestaurantTitle": "Close your store for"
 }

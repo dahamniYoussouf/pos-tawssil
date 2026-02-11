@@ -4,11 +4,13 @@ import 'package:restaurant_app/l10n/app_localizations.dart';
 import 'package:restaurant_app/src/core/res/color_app.dart';
 import 'package:restaurant_app/src/features/orders/cubit/orders_cubit.dart';
 import 'package:restaurant_app/src/features/orders/cubit/orders_state.dart';
+import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'package:restaurant_app/src/features/orders/models/order_model.dart';
 import 'package:restaurant_app/src/features/orders/widgets/order_card.dart';
 import 'package:restaurant_app/src/features/orders/widgets/ongoing_order_card.dart';
 import 'package:restaurant_app/src/features/orders/widgets/order_card_shimmer.dart';
 import 'package:restaurant_app/src/features/orders/widgets/status_selector.dart';
+import 'package:restaurant_app/src/features/orders/widgets/restaurant_status_badge.dart';
 
 class OrdersPage extends StatefulWidget {
   const OrdersPage({
@@ -35,6 +37,8 @@ class _OrdersPageState extends State<OrdersPage> {
         currentState.selectedStatus != initialStatus) {
       context.read<OrdersCubit>().fetchOrders(status: initialStatus);
     }
+    // Fetch restaurant details for status
+    context.read<RestaurantCubit>().fetchRestaurantDetails();
   }
 
   @override
@@ -91,6 +95,10 @@ class _OrdersPageState extends State<OrdersPage> {
               ),
             ),
             centerTitle: true,
+            actions: [
+              const RestaurantStatusBadge(),
+              const SizedBox(width: 16),
+            ],
           ),
           body: Column(
             children: [

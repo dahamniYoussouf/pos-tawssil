@@ -14,11 +14,15 @@ class RestaurantLoading extends RestaurantState {}
 
 class RestaurantLoaded extends RestaurantState {
   final RestaurantModel restaurant;
+  final String status;
 
-  const RestaurantLoaded({required this.restaurant});
+  const RestaurantLoaded({
+    required this.restaurant,
+    this.status = 'open',
+  });
 
   @override
-  List<Object?> get props => [restaurant];
+  List<Object?> get props => [restaurant, status];
 }
 
 class RestaurantError extends RestaurantState {
@@ -29,4 +33,3 @@ class RestaurantError extends RestaurantState {
   @override
   List<Object?> get props => [message];
 }
-

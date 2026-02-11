@@ -257,5 +257,12 @@
   "deliveryManMustPay": "يجب على السائق دفعه",
   "receivedOrder": "تم استلام الطلب",
   "acceptedByDelivery": "تم القبول من طرف السائق",
-  "printReceipt": "طبع التذكرة"
+  "printReceipt": "طبع التذكرة",
+  "statusOpen": "مفتوح",
+  "statusBusy": "مشغول",
+  "statusClosed": "مغلق",
+  "statusOpenSubtitle": "قبول الطلبات",
+  "statusBusySubtitle": "مغلق لمدة ساعة",
+  "statusClosedSubtitle": "مغلق طوال اليوم",
+  "closeRestaurantTitle": "إغلاق متجرك لمدة"
 }

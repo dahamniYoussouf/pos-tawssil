@@ -257,5 +257,12 @@
   "deliveryManMustPay": "Livreur doit payer",
   "receivedOrder": "Commande reçue",
   "acceptedByDelivery": "Acceptée par le livreur",
+  "statusOpen": "Ouvert",
+  "statusBusy": "Occupé",
+  "statusClosed": "Fermé",
+  "statusOpenSubtitle": "Accepter les commandes",
+  "statusBusySubtitle": "Fermé pendant 1 heure",
+  "statusClosedSubtitle": "Fermé toute la journée",
+  "closeRestaurantTitle": "Fermer votre boutique pendant",
   "printReceipt": "Imprimer ticket"
 }

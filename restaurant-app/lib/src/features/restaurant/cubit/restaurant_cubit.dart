@@ -17,7 +17,24 @@ class RestaurantCubit extends Cubit<RestaurantState> {
     final result = await _restaurantRepository.getRestaurantDetails();
     result.fold(
       (error) => emit(RestaurantError(message: error)),
-      (restaurant) => emit(RestaurantLoaded(restaurant: restaurant)),
+      (restaurant) {
+        final initialStatus = restaurant.isActive == true ? 'open' : 'closed';
+        emit(RestaurantLoaded(
+          restaurant: restaurant,
+          status: initialStatus,
+        ));
+      },
     );
+  }
+
+  void updateStatus(String status) {
+    if (state is! RestaurantLoaded) return;
+    final currentState = state as RestaurantLoaded;
+
+    // Static update only - no backend call
+    emit(RestaurantLoaded(
+      restaurant: currentState.restaurant,
+      status: status,
+    ));
   }
 }

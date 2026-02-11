@@ -689,4 +689,25 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get printReceipt => 'طبع التذكرة';
+
+  @override
+  String get statusOpen => 'مفتوح';
+
+  @override
+  String get statusBusy => 'مشغول';
+
+  @override
+  String get statusClosed => 'مغلق';
+
+  @override
+  String get statusOpenSubtitle => 'قبول الطلبات';
+
+  @override
+  String get statusBusySubtitle => 'مغلق لمدة ساعة';
+
+  @override
+  String get statusClosedSubtitle => 'مغلق طوال اليوم';
+
+  @override
+  String get closeRestaurantTitle => 'إغلاق متجرك لمدة';
 }

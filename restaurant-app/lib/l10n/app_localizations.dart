@@ -1431,6 +1431,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Print Ticket'**
   String get printReceipt;
+
+  /// No description provided for @statusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get statusOpen;
+
+  /// No description provided for @statusBusy.
+  ///
+  /// In en, this message translates to:
+  /// **'Busy'**
+  String get statusBusy;
+
+  /// No description provided for @statusClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get statusClosed;
+
+  /// No description provided for @statusOpenSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepting orders'**
+  String get statusOpenSubtitle;
+
+  /// No description provided for @statusBusySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed for 1 hour'**
+  String get statusBusySubtitle;
+
+  /// No description provided for @statusClosedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed all day'**
+  String get statusClosedSubtitle;
+
+  /// No description provided for @closeRestaurantTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Close your store for'**
+  String get closeRestaurantTitle;
 }
 
 class _AppLocalizationsDelegate

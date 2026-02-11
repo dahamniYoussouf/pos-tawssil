@@ -39,4 +39,7 @@ class AppColors {
   static const Color statusAssigned = Color(0xFF9C27B0);
   static const Color statusPending = Color(0xFFFFA726);
   static const Color statusDelivering = Color(0xFF26A69A);
+
+  static const Color primary = Color(0xFF059669);
+  static const Color statusBusy = Colors.orange;
 }
