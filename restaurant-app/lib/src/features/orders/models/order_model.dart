@@ -1,3 +1,4 @@
+import 'package:restaurant_app/src/core/utils/parsers.dart' as parsers;
 import 'client_model.dart';
 
 class OrderStatus {
@@ -48,38 +49,6 @@ class MenuItem {
       return MenuItem(id: '', name: '', price: 0.0);
     }
 
-    double parseDouble(dynamic value) {
-      if (value == null) return 0.0;
-      if (value is num) return value.toDouble();
-      if (value is String) {
-        return double.tryParse(value) ?? 0.0;
-      }
-      return 0.0;
-    }
-
-    DateTime? parseDate(dynamic value) {
-      if (value == null) return null;
-      if (value is DateTime) return value;
-      if (value is String) {
-        try {
-          return DateTime.parse(value);
-        } catch (e) {
-          return null;
-        }
-      }
-      return null;
-    }
-
-    int? parseInt(dynamic value) {
-      if (value == null) return null;
-      if (value is int) return value;
-      if (value is num) return value.toInt();
-      if (value is String) {
-        return int.tryParse(value);
-      }
-      return null;
-    }
-
     return MenuItem(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
       categoryId: json['category_id']?.toString(),
@@ -90,17 +59,18 @@ class MenuItem {
               : json['category']?.toString()),
       name: json['nom'] ?? json['name'] ?? '',
       description: json['description'],
-      price: parseDouble(json['prix'] ?? json['price']),
+      price: parsers.parseDouble(json['prix'] ?? json['price']),
       photoUrl: json['photo_url'] ??
           json['photoUrl'] ??
           json['image'] ??
           json['image_url'],
       isAvailable: json['is_available'] ?? json['isAvailable'] ?? true,
-      preparationTimeMinutes: parseInt(json['temps_preparation'] ??
-          json['preparation_time'] ??
-          json['preparationTimeMinutes']),
-      createdAt: parseDate(json['created_at'] ?? json['createdAt']),
-      updatedAt: parseDate(json['updated_at'] ?? json['updatedAt']),
+      preparationTimeMinutes: parsers.parseNullableInt(
+          json['temps_preparation'] ??
+              json['preparation_time'] ??
+              json['preparationTimeMinutes']),
+      createdAt: parsers.parseDate(json['created_at'] ?? json['createdAt']),
+      updatedAt: parsers.parseDate(json['updated_at'] ?? json['updatedAt']),
       restaurantId: json['restaurant_id']?.toString(),
     );
   }
@@ -138,37 +108,6 @@ class OrderItem {
   }) : _totalPriceValue = totalPrice;
 
   factory OrderItem.fromJson(Map<String, dynamic> json) {
-    double parseDouble(dynamic value) {
-      if (value == null) return 0.0;
-      if (value is num) return value.toDouble();
-      if (value is String) {
-        return double.tryParse(value) ?? 0.0;
-      }
-      return 0.0;
-    }
-
-    double? parseNullableDouble(dynamic value) {
-      if (value == null) return null;
-      if (value is num) return value.toDouble();
-      if (value is String) {
-        return double.tryParse(value);
-      }
-      return null;
-    }
-
-    DateTime? parseDate(dynamic value) {
-      if (value == null) return null;
-      if (value is DateTime) return value;
-      if (value is String) {
-        try {
-          return DateTime.parse(value);
-        } catch (e) {
-          return null;
-        }
-      }
-      return null;
-    }
-
     final menuItemJson = json['menu_item'] as Map<String, dynamic>?;
     final MenuItem? menuItem =
         menuItemJson != null ? MenuItem.fromJson(menuItemJson) : null;
@@ -186,7 +125,7 @@ class OrderItem {
       final menuItemData = json['menu_item'] as Map<String, dynamic>?;
       if (menuItemData != null) {
         name = menuItemData['nom'] ?? menuItemData['name'] ?? '';
-        price = parseDouble(menuItemData['prix'] ??
+        price = parsers.parseDouble(menuItemData['prix'] ??
             menuItemData['price'] ??
             json['prix_unitaire'] ??
             json['price']);
@@ -197,8 +136,8 @@ class OrderItem {
             menuItemData['photoUrl'];
       } else {
         name = json['name'] ?? json['nom'] ?? '';
-        price =
-            parseDouble(json['price'] ?? json['prix'] ?? json['prix_unitaire']);
+        price = parsers.parseDouble(
+            json['price'] ?? json['prix'] ?? json['prix_unitaire']);
         imageUrl = json['image'] ?? json['image_url'] ?? json['imageUrl'];
       }
       categoryName = json['category_name']?.toString() ??
@@ -215,14 +154,14 @@ class OrderItem {
       name: name,
       quantity: json['quantity'] ?? json['quantite'] ?? 1,
       price: price,
-      totalPrice: parseNullableDouble(
+      totalPrice: parsers.parseNullableDouble(
           json['prix_total'] ?? json['total_price'] ?? json['totalPrice']),
       imageUrl: imageUrl,
       specialInstructions: json['instructions_speciales'] ??
           json['special_instructions'] ??
           json['specialInstructions'],
-      createdAt: parseDate(json['created_at'] ?? json['createdAt']),
-      updatedAt: parseDate(json['updated_at'] ?? json['updatedAt']),
+      createdAt: parsers.parseDate(json['created_at'] ?? json['createdAt']),
+      updatedAt: parsers.parseDate(json['updated_at'] ?? json['updatedAt']),
       categoryName: categoryName,
       menuItem: menuItem,
     );
@@ -478,28 +417,6 @@ class OrderModel {
     restaurantImageUrl ??=
         json['restaurantImageUrl'] ?? json['restaurant_image_url'];
 
-    DateTime? parseDate(dynamic value) {
-      if (value == null) return null;
-      if (value is DateTime) return value;
-      if (value is String) {
-        try {
-          return DateTime.parse(value);
-        } catch (e) {
-          return null;
-        }
-      }
-      return null;
-    }
-
-    double parseDouble(dynamic value) {
-      if (value == null) return 0.0;
-      if (value is num) return value.toDouble();
-      if (value is String) {
-        return double.tryParse(value) ?? 0.0;
-      }
-      return 0.0;
-    }
-
     ClientModel? client;
     if (json['client'] != null) {
       client = ClientModel.fromJson(
@@ -517,7 +434,7 @@ class OrderModel {
           json['orderNumber'] ?? json['order_number'] ?? json['number'] ?? '',
       status: json['status'] ?? OrderStatus.pending,
       items: items,
-      totalPrice: parseDouble(json['totalPrice'] ??
+      totalPrice: parsers.parseDouble(json['totalPrice'] ??
           json['total_price'] ??
           json['total_amount'] ??
           json['total']),
@@ -532,10 +449,10 @@ class OrderModel {
       restaurantAddress: restaurantAddress,
       restaurantImageUrl: restaurantImageUrl,
       deliveryPerson: deliveryPerson,
-      estimatedDeliveryTime: parseDate(
+      estimatedDeliveryTime: parsers.parseDate(
           json['estimated_delivery_time'] ?? json['estimated_delivery_time']),
-      createdAt: parseDate(json['createdAt'] ?? json['created_at']),
-      updatedAt: parseDate(json['updatedAt'] ?? json['updated_at']),
+      createdAt: parsers.parseDate(json['createdAt'] ?? json['created_at']),
+      updatedAt: parsers.parseDate(json['updatedAt'] ?? json['updated_at']),
       paymentMethod: json['paymentMethod'] ?? json['payment_method'],
       refusalReason: json['refusalReason'] ??
           json['refusal_reason'] ??
@@ -543,18 +460,14 @@ class OrderModel {
       delayReason: json['delayReason'] ?? json['delay_reason'],
       orderType: json['order_type'] ?? "delivery",
       deliveryDistance: json['delivery_distance'] != null
-          ? parseDouble(json['delivery_distance'])
-          : json['delivery_distance'] != null
-              ? parseDouble(json['delivery_distance'])
-              : null,
+          ? parsers.parseDouble(json['delivery_distance'])
+          : null,
       deliveryTimeMinutes: json['deliveryTimeMinutes'] ??
           json['delivery_time_minutes'] ??
           json['delivery_time'],
       deliveryPrice: json['delivery_fee'] != null
-          ? parseDouble(json['delivery_fee'])
-          : json['delivery_fee'] != null
-              ? parseDouble(json['delivery_fee'])
-              : null,
+          ? parsers.parseDouble(json['delivery_fee'])
+          : null,
       client: client,
     );
   }

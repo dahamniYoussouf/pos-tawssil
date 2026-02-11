@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:restaurant_app/l10n/app_localizations.dart';
 import 'package:restaurant_app/src/core/res/color_app.dart';
+import 'package:restaurant_app/src/core/utils/formatters.dart';
 import 'package:restaurant_app/src/features/orders/models/order_model.dart';
 
 class OngoingOrderCard extends StatelessWidget {
@@ -13,15 +13,6 @@ class OngoingOrderCard extends StatelessWidget {
     required this.order,
     this.onTap,
   });
-
-  String _formatDate(DateTime? date) {
-    if (date == null) return '';
-    return DateFormat('d MMM yyyy, HH:mm', 'fr').format(date);
-  }
-
-  String _formatPrice(double price) {
-    return '${NumberFormat('#,###').format(price)} DA';
-  }
 
   Color _getBadgeColor() {
     final type = order.orderType?.toLowerCase() ?? 'delivery';
@@ -94,7 +85,7 @@ class OngoingOrderCard extends StatelessWidget {
 
               // Row 2: Date
               Text(
-                _formatDate(order.createdAt),
+                formatDisplayDate(order.createdAt),
                 style: const TextStyle(
                   fontSize: 13,
                   color: AppColors.textLightGrey,
@@ -116,7 +107,7 @@ class OngoingOrderCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    _formatPrice(order.totalPrice),
+                    formatPriceSpaced(order.totalPrice),
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,

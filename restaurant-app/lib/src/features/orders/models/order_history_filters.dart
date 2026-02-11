@@ -1,3 +1,5 @@
+import 'package:restaurant_app/src/core/utils/formatters.dart';
+
 class OrderHistoryFilters {
   final List<String>? status;
   final String? orderType;
@@ -41,16 +43,12 @@ class OrderHistoryFilters {
     return {
       if (status != null && status!.isNotEmpty) 'status': status,
       if (orderType != null && orderType!.isNotEmpty) 'order_type': orderType,
-      if (dateFrom != null) 'date_from': _formatDate(dateFrom!),
-      if (dateTo != null) 'date_to': _formatDate(dateTo!),
+      if (dateFrom != null) 'date_from': formatIsoDate(dateFrom!),
+      if (dateTo != null) 'date_to': formatIsoDate(dateTo!),
       if (minPrice != null) 'min_price': minPrice,
       if (maxPrice != null) 'max_price': maxPrice,
       if (search != null && search!.isNotEmpty) 'search': search,
     };
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
   bool get hasFilters {
@@ -67,4 +65,3 @@ class OrderHistoryFilters {
     return OrderHistoryFilters();
   }
 }
-

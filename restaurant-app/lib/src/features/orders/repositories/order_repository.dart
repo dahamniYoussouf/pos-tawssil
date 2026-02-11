@@ -5,7 +5,8 @@ import 'package:restaurant_app/src/features/orders/services/order_service.dart';
 class OrderRepository {
   final OrderService _orderService;
 
-  OrderRepository({OrderService? orderService}) : _orderService = orderService ?? OrderService();
+  OrderRepository({OrderService? orderService})
+      : _orderService = orderService ?? OrderService();
 
   Future<Either<String, List<OrderModel>>> fetchOrders({
     int page = 1,
@@ -21,7 +22,9 @@ class OrderRepository {
       if (response['success'] == true) {
         final data = response['data'] ?? response['orders'] ?? [];
         if (data is List && data.isNotEmpty) {
-          final orders = data.map((json) => OrderModel.fromJson(json as Map<String, dynamic>)).toList();
+          final orders = data
+              .map((json) => OrderModel.fromJson(json as Map<String, dynamic>))
+              .toList();
           return Right(orders);
         }
         if (data is List && data.isEmpty) {

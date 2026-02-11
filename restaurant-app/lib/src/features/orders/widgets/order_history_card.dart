@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:intl/intl.dart';
 import 'package:restaurant_app/l10n/app_localizations.dart';
 import 'package:restaurant_app/src/core/res/color_app.dart';
+import 'package:restaurant_app/src/core/utils/formatters.dart';
 import 'package:restaurant_app/src/features/orders/models/order_model.dart';
 import 'package:restaurant_app/src/core/res/media_res.dart';
 import 'package:restaurant_app/src/features/orders/widgets/order_history_theme.dart';
@@ -17,26 +17,6 @@ class OrderHistoryCard extends StatelessWidget {
     this.onTap,
   });
 
-  String _formatDate(DateTime? date, BuildContext context) {
-    if (date == null) return '';
-    final locale = Localizations.localeOf(context);
-    return DateFormat('d MMM yyyy, HH:mm', locale.languageCode).format(date);
-  }
-
-  String _formatHeaderDate(DateTime? date, BuildContext context) {
-    if (date == null) return '';
-    final locale = Localizations.localeOf(context);
-    final now = DateTime.now();
-    final isToday =
-        date.year == now.year && date.month == now.month && date.day == now.day;
-    final prefix = isToday ? 'Aujourd’hui - ' : '';
-    return '$prefix${DateFormat('d MMMM yyyy', locale.languageCode).format(date)}';
-  }
-
-  String _formatPrice(double price) {
-    return '${NumberFormat('#,###').format(price)} DA';
-  }
-
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
@@ -47,7 +27,7 @@ class OrderHistoryCard extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           child: Text(
-            _formatHeaderDate(order.createdAt, context),
+            formatHeaderDate(order.createdAt, context),
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -131,7 +111,7 @@ class OrderHistoryCard extends StatelessWidget {
                     children: [
                       Expanded(
                         child: Text(
-                          '${localizations.orders} #${order.orderNumber}     ${_formatDate(order.createdAt, context)}',
+                          '${localizations.orders} #${order.orderNumber}     ${formatDisplayDateLocalized(order.createdAt, context)}',
                           style: const TextStyle(
                               fontSize: 13, color: AppColors.grey),
                         ),
@@ -160,7 +140,7 @@ class OrderHistoryCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            _formatPrice(order.totalPrice),
+                            formatPriceSpaced(order.totalPrice),
                             style: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.bold,

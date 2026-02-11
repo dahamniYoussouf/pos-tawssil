@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:restaurant_app/src/core/utils/formatters.dart';
 import 'package:restaurant_app/src/features/orders/cubit/order_history_state.dart';
 import 'package:restaurant_app/src/features/orders/models/order_history_filters.dart';
 import 'package:restaurant_app/src/features/orders/repositories/order_history_repository.dart';
@@ -33,10 +34,10 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
       status: currentFilters.status,
       orderType: currentFilters.orderType,
       dateFrom: currentFilters.dateFrom != null
-          ? _formatDate(currentFilters.dateFrom!)
+          ? formatIsoDate(currentFilters.dateFrom!)
           : null,
       dateTo: currentFilters.dateTo != null
-          ? _formatDate(currentFilters.dateTo!)
+          ? formatIsoDate(currentFilters.dateTo!)
           : null,
       minPrice: currentFilters.minPrice,
       maxPrice: currentFilters.maxPrice,
@@ -203,10 +204,6 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
 
   Future<void> refresh() async {
     await fetchOrderHistory();
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
   @override

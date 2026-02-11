@@ -1,3 +1,5 @@
+import 'package:restaurant_app/src/core/utils/parsers.dart' as parsers;
+
 class MenuItemModel {
   final String id;
   final String? categoryId;
@@ -34,45 +36,13 @@ class MenuItemModel {
       return MenuItemModel(id: '', name: '', price: 0.0);
     }
 
-    double parseDouble(dynamic value) {
-      if (value == null) return 0.0;
-      if (value is num) return value.toDouble();
-      if (value is String) {
-        return double.tryParse(value) ?? 0.0;
-      }
-      return 0.0;
-    }
-
-    DateTime? parseDate(dynamic value) {
-      if (value == null) return null;
-      if (value is DateTime) return value;
-      if (value is String) {
-        try {
-          return DateTime.parse(value);
-        } catch (e) {
-          return null;
-        }
-      }
-      return null;
-    }
-
-    int? parseInt(dynamic value) {
-      if (value == null) return null;
-      if (value is int) return value;
-      if (value is num) return value.toInt();
-      if (value is String) {
-        return int.tryParse(value);
-      }
-      return null;
-    }
-
     return MenuItemModel(
       id: (json['id'] ?? json['_id'] ?? '').toString(),
       categoryId: json['category_id']?.toString(),
       name: json['nom'] ?? json['name'] ?? '',
       description: json['description'],
-      price: parseDouble(json['prix'] ?? json['price']),
-      preparationTime: parseInt(json['temps_preparation'] ??
+      price: parsers.parseDouble(json['prix'] ?? json['price']),
+      preparationTime: parsers.parseNullableInt(json['temps_preparation'] ??
           json['preparation_time'] ??
           json['preparationTimeMinutes']),
       ingredients: json['ingredients']?.toString(),
@@ -86,8 +56,8 @@ class MenuItemModel {
           json['isAvailable'] ??
           json['disponible'] ??
           true,
-      createdAt: parseDate(json['created_at'] ?? json['createdAt']),
-      updatedAt: parseDate(json['updated_at'] ?? json['updatedAt']),
+      createdAt: parsers.parseDate(json['created_at'] ?? json['createdAt']),
+      updatedAt: parsers.parseDate(json['updated_at'] ?? json['updatedAt']),
       restaurantId: json['restaurant_id']?.toString(),
     );
   }

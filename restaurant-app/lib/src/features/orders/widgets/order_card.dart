@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:restaurant_app/l10n/app_localizations.dart';
 import 'package:restaurant_app/src/core/res/color_app.dart';
+import 'package:restaurant_app/src/core/utils/formatters.dart';
 import 'package:restaurant_app/src/features/orders/cubit/orders_cubit.dart';
 import 'package:restaurant_app/src/features/orders/cubit/orders_state.dart';
 import 'package:restaurant_app/src/features/orders/models/order_model.dart';
@@ -15,25 +15,20 @@ class OrderCard extends StatelessWidget {
     required this.order,
   });
 
-  String _formatDate(DateTime? date) {
-    if (date == null) return '';
-    return DateFormat('d MMM yyyy ,hh:mm a', 'fr').format(date);
-  }
-
-  String _formatPrice(double price) {
-    return '${NumberFormat('#,###').format(price)}DA';
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isPending = order.status == OrderStatus.pending;
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 0,
-      color: AppColors.white,
+      color: isPending ? AppColors.pendingBackground : AppColors.white,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),
-        side: const BorderSide(color: AppColors.borderLight, width: 1.5),
+        side: BorderSide(
+          color: isPending ? Colors.transparent : AppColors.borderLight,
+          width: 1.5,
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.all(24),
@@ -43,13 +38,14 @@ class OrderCard extends StatelessWidget {
             _buildHeader(l10n),
             const SizedBox(height: 20),
             _buildItemsByCategory(),
-            //Prix Totale +  
+            //Prix Totale +
             _buildFooter(context, l10n),
           ],
         ),
       ),
     );
   }
+
   Widget _buildHeader(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,7 +60,7 @@ class OrderCard extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          _formatDate(order.createdAt),
+          formatDisplayDateAmPm(order.createdAt),
           style: const TextStyle(
             fontSize: 14,
             color: AppColors.textLightGrey,
@@ -158,7 +154,7 @@ class OrderCard extends StatelessWidget {
             ),
           ),
           Text(
-            _formatPrice(item.totalPrice),
+            formatPrice(item.totalPrice),
             style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.bold,
@@ -169,6 +165,7 @@ class OrderCard extends StatelessWidget {
       ),
     );
   }
+
   Widget _buildModifierRow(String text) {
     return Padding(
       padding: const EdgeInsets.only(left: 8, bottom: 4),
@@ -184,7 +181,7 @@ class OrderCard extends StatelessWidget {
             ),
           ),
           const Text(
-            '0DA',  
+            '0DA',
             style: TextStyle(
               fontSize: 12,
               color: AppColors.textLightGrey,
@@ -214,7 +211,7 @@ class OrderCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '${NumberFormat('#,###').format(order.totalPrice)} DA',
+                    formatPriceSpaced(order.totalPrice),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
