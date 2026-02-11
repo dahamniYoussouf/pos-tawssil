@@ -28,7 +28,7 @@ class MenuItemRepository {
     }
   }
 
-  Future<Either<String, MenuItemModel>> createMenuItem({
+  Future<Either<String, MenuModel>> createMenuItem({
     required String categoryId,
     required String name,
     required String description,
@@ -53,7 +53,7 @@ class MenuItemRepository {
       );
       if (response['success'] == true) {
         final data = response['data'] ?? response;
-        final menuItem = MenuItemModel.fromJson(data as Map<String, dynamic>);
+        final menuItem = MenuModel.fromJson(data as Map<String, dynamic>, '');
         return Right(menuItem);
       } else {
         return Left(response['message'] ?? 'Failed to create menu item');
@@ -63,7 +63,7 @@ class MenuItemRepository {
     }
   }
 
-  Future<Either<String, MenuItemModel>> updateMenuItem({
+  Future<Either<String, MenuModel>> updateMenuItem({
     required String id,
     required String categoryId,
     required String name,
@@ -90,7 +90,7 @@ class MenuItemRepository {
       );
       if (response['success'] == true) {
         final data = response['data'] ?? response;
-        final menuItem = MenuItemModel.fromJson(data as Map<String, dynamic>);
+        final menuItem = MenuModel.fromJson(data as Map<String, dynamic>, '');
         return Right(menuItem);
       } else {
         return Left(response['message'] ?? 'Failed to update menu item');

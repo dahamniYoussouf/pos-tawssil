@@ -94,7 +94,16 @@ class MenuItemCubit extends Cubit<MenuItemState> {
     result.fold(
       (error) => emit(MenuItemActionError(message: error)),
       (_) => emit(MenuItemActionSuccess(
-        menuItem: MenuItemModel(id: id, name: '', price: 0.0),
+        menuItem: MenuModel(
+            id: id,
+            nom: '',
+            prix: 0.0,
+            restaurantId: '',
+            categoryId: '',
+            disponible: false,
+            createdAt: DateTime.now(),
+            updatedAt: DateTime.now(),
+            categoryName: ''),
         message: 'Menu item deleted successfully',
       )),
     );

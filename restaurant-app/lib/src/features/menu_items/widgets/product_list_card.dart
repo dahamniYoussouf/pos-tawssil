@@ -13,7 +13,7 @@ import 'package:restaurant_app/src/features/menu_items/pages/create_menu_item_pa
 import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 
 class ProductListCard extends StatelessWidget {
-  final MenuItemModel menuItem;
+  final MenuModel menuItem;
   final CategoryModel category;
   final VoidCallback? onUpdated;
 
@@ -59,7 +59,7 @@ class ProductListCard extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      menuItem.name,
+                      menuItem.nom,
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.bold,
@@ -82,7 +82,7 @@ class ProductListCard extends StatelessWidget {
                     ],
                     const SizedBox(height: 2),
                     Text(
-                      '${NumberFormat('#,###').format(menuItem.price)} DA',
+                      '${NumberFormat('#,###').format(menuItem.prix)} DA',
                       style: const TextStyle(
                         fontSize: 13,
                         fontWeight: FontWeight.w600,
@@ -154,7 +154,7 @@ class ProductListCard extends StatelessWidget {
       MaterialPageRoute<void>(
         builder: (context) => BlocProvider(
           create: (context) => locator<MenuItemCubit>(),
-          child: CreateMenuItemPage(
+          child: CreateMenuItemSheet(
             categories: [category],
             menuItem: menuItem,
           ),
@@ -203,7 +203,7 @@ class ProductListCard extends StatelessWidget {
 }
 
 class _AvailabilitySwitch extends StatelessWidget {
-  final MenuItemModel menuItem;
+  final MenuModel menuItem;
   final CategoryModel category;
   final VoidCallback? onToggled;
 
@@ -234,7 +234,7 @@ class _AvailabilitySwitch extends StatelessWidget {
       builder: (context, state) {
         final isLoading = state is MenuItemActionLoading;
         return Switch(
-          value: menuItem.isAvailable,
+          value: menuItem.disponible,
           splashRadius: 12,
           onChanged: isLoading
               ? null
@@ -242,12 +242,12 @@ class _AvailabilitySwitch extends StatelessWidget {
                   context.read<MenuItemCubit>().updateMenuItem(
                         id: menuItem.id,
                         categoryId: menuItem.categoryId ?? category.id,
-                        name: menuItem.name,
+                        name: menuItem.nom,
                         description: menuItem.description ?? '',
-                        price: menuItem.price,
-                        preparationTime: menuItem.preparationTime ?? 0,
+                        price: menuItem.prix,
+                        preparationTime: menuItem.tempsPreparation ?? 0,
                         ingredients: menuItem.ingredients,
-                        allergens: menuItem.allergens,
+                        allergens: menuItem.allergenes,
                         photoUrl: menuItem.photoUrl,
                         isAvailable: value,
                       );
@@ -261,7 +261,7 @@ class _AvailabilitySwitch extends StatelessWidget {
 }
 
 class _MoreOptionsButton extends StatelessWidget {
-  final MenuItemModel menuItem;
+  final MenuModel menuItem;
   final CategoryModel category;
   final VoidCallback onEdit;
   final void Function(BuildContext context) onDelete;

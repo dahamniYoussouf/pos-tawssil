@@ -98,7 +98,8 @@ class _MenuPageState extends State<MenuPage> {
                             ),
                           ),
                           GestureDetector(
-                            onTap: () => _navigateToCreateCategory(context),
+                            onTap: () =>
+                                _navigateToCreateCategory(context, null),
                             child: Container(
                               width: 38,
                               height: 38,
@@ -151,6 +152,8 @@ class _MenuPageState extends State<MenuPage> {
                             final category = categories[index];
                             return _CategoryListCard(
                               category: category,
+                              editCategory: () =>
+                                  _navigateToCreateCategory(context, category),
                               onTap: () => _navigateToCategoryProducts(
                                 context,
                                 category,
@@ -171,11 +174,21 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
-  void _navigateToCreateCategory(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute<void>(
-        builder: (context) => const CreateCategoryPage(),
+  void _navigateToCreateCategory(
+      BuildContext context, CategoryModel? category) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(
+            minHeight: 260,
+            maxWidth: 420,
+          ),
+          child: CreateCategoryPage(category: category),
+        ),
       ),
     ).then((_) => _loadCategories());
   }
@@ -194,10 +207,12 @@ class _MenuPageState extends State<MenuPage> {
 class _CategoryListCard extends StatelessWidget {
   final CategoryModel category;
   final VoidCallback onTap;
+  final VoidCallback editCategory;
 
   const _CategoryListCard({
     required this.category,
     required this.onTap,
+    required this.editCategory,
   });
 
   @override
@@ -226,15 +241,17 @@ class _CategoryListCard extends StatelessWidget {
           ),
           child: Row(
             children: [
-              SvgPicture.asset(
-                MediaRes.menuItemIcon,
-                width: 22,
-                height: 22,
-                colorFilter: ColorFilter.mode(
-                  AppColors.iconMedium,
-                  BlendMode.srcIn,
-                ),
-              ),
+              GestureDetector(
+                  onTap: editCategory,
+                  child: SvgPicture.asset(
+                    MediaRes.menuItemIcon,
+                    width: 22,
+                    height: 22,
+                    colorFilter: ColorFilter.mode(
+                      AppColors.iconMedium,
+                      BlendMode.srcIn,
+                    ),
+                  )),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(

@@ -15,13 +15,13 @@ class MenuItemsSectionWidget extends StatelessWidget {
     this.searchQuery = '',
   });
 
-  List<MenuItemModel> _getFilteredItems() {
+  List<MenuModel> _getFilteredItems() {
     if (searchQuery.isEmpty) {
       return category.items;
     }
     final query = searchQuery.toLowerCase().trim();
     return category.items
-        .where((item) => item.name.toLowerCase().contains(query))
+        .where((item) => item.nom.toLowerCase().contains(query))
         .toList();
   }
 

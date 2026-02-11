@@ -56,13 +56,13 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
     return widget.category;
   }
 
-  List<MenuItemModel> _getFilteredItems(CategoryModel category) {
+  List<MenuModel> _getFilteredItems(CategoryModel category) {
     final items = category.items;
     if (_searchQuery.isEmpty) return items;
     return items
         .where(
           (item) =>
-              item.name.toLowerCase().contains(_searchQuery) ||
+              item.nom.toLowerCase().contains(_searchQuery) ||
               (item.description?.toLowerCase().contains(_searchQuery) ??
                   false) ||
               (item.ingredients?.toLowerCase().contains(_searchQuery) ?? false),
@@ -185,7 +185,7 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
 
   Widget _buildProductList(
     AppLocalizations localizations,
-    List<MenuItemModel> items,
+    List<MenuModel> items,
     CategoryModel category,
   ) {
     if (items.isEmpty) {
@@ -228,14 +228,18 @@ class _CategoryProductsPageState extends State<CategoryProductsPage> {
   }
 
   void _navigateToCreateMenuItem(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute<void>(
-        builder: (context) => BlocProvider(
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) {
+        return BlocProvider(
           create: (context) => locator<MenuItemCubit>(),
-          child: CreateMenuItemPage(categories: [widget.category]),
-        ),
-      ),
+          child: CreateMenuItemSheet(
+            categories: [widget.category],
+          ),
+        );
+      },
     ).then((_) => _refreshCategory());
   }
 }
