@@ -1783,7 +1783,7 @@ abstract class AppLocalizations {
   /// Additional option price label
   ///
   /// In en, this message translates to:
-  /// **'+ {price} DA'**
+  /// **'{price} DA'**
   String optionAdditionalPrice(String price);
 
   /// Our dishes section title

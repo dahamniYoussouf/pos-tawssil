@@ -932,7 +932,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String optionAdditionalPrice(String price) {
-    return '+ $price DA';
+    return '$price DA';
   }
 
   @override

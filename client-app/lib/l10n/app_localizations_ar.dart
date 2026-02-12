@@ -907,7 +907,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String optionAdditionalPrice(String price) {
-    return '+ $price دج';
+    return '$price دج';
   }
 
   @override
