@@ -116,7 +116,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get description => 'Description';
 
   @override
-  String get descriptionHint => 'Enter description';
+  String get descriptionHint => 'Tell customers about your restaurant';
 
   @override
   String get address => 'Address';
@@ -797,7 +797,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get optionGroupRequired => 'Required';
 
   @override
+  String get optionGroupOptional => 'Optional';
+
+  @override
   String get optionGroupMultipleChoice => 'Multiple choice';
+
+  @override
+  String get multipleChoice => 'Multiple';
 
   @override
   String get optionGroupOptions => 'Options';

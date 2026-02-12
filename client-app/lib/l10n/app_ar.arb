@@ -535,7 +535,7 @@
   "@optionOptionalBadge": {
     "description": "تسمية شارة اختياري"
   },
-  "optionAdditionalPrice": "+ {price} دج",
+  "optionAdditionalPrice": "{price} دج",
   "@optionAdditionalPrice": {
     "description": "تسمية السعر الإضافي",
     "placeholders": {

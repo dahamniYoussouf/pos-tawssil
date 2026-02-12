@@ -148,7 +148,6 @@
   "categoryName": "اسم الفئة",
   "categoryNameHint": "أدخل اسم الفئة",
   "categoryNameRequired": "اسم الفئة مطلوب",
-  "descriptionHint": "أدخل الوصف",
   "descriptionRequired": "الوصف مطلوب",
   "iconUrl": "رابط الأيقونة",
   "iconUrlHint": "أدخل رابط الأيقونة",
@@ -292,7 +291,9 @@
   "optionGroupNameHint": "أدخل اسم المجموعة",
   "optionGroupNameRequired": "اسم المجموعة مطلوب",
   "optionGroupRequired": "إلزامي",
+  "optionGroupOptional": "اختياري",
   "optionGroupMultipleChoice": "اختيار متعدد",
+  "multipleChoice": "متعدد",
   "optionGroupOptions": "الخيارات",
   "optionOptionNameLabel": "اسم الخيار",
   "optionAdd": "+ إضافة خيار",
@@ -312,7 +313,6 @@
   "add": "إضافة",
   "addMenuItem": "إضافة عنصر",
   "itemNameLabel": "اسم العنصر",
-  "priceLabel": "السعر",
   "optionGroups": "مجموعات الخيارات",
   "addOptionGroup": "+ إضافة مجموعة خيار"
 }

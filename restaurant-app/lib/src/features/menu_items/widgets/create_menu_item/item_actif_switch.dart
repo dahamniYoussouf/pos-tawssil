@@ -15,7 +15,7 @@ class ItemActifSwitch extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -35,6 +35,16 @@ class ItemActifSwitch extends StatelessWidget {
             onChanged: onChanged,
             activeThumbColor: AppColors.primaryColor,
             activeTrackColor: AppColors.primaryColor.withValues(alpha: 0.5),
+            inactiveThumbColor: AppColors.greyLight,
+            inactiveTrackColor: AppColors.greyLight.withValues(alpha: 0.5),
+            trackOutlineColor: WidgetStateProperty.resolveWith(
+              (states) {
+                if (states.contains(WidgetState.selected)) {
+                  return Colors.transparent;
+                }
+                return AppColors.greyLight;
+              },
+            ),
           ),
         ],
       ),

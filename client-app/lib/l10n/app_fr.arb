@@ -535,7 +535,7 @@
   "@optionOptionalBadge": {
     "description": "Libellé du badge optionnel"
   },
-  "optionAdditionalPrice": "+ {price} DA",
+  "optionAdditionalPrice": "{price} DA",
   "@optionAdditionalPrice": {
     "description": "Libellé du prix supplémentaire",
     "placeholders": {

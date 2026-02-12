@@ -117,7 +117,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get description => 'Description';
 
   @override
-  String get descriptionHint => 'Entrez la description';
+  String get descriptionHint => 'Décrivez votre restaurant';
 
   @override
   String get address => 'Adresse';
@@ -805,7 +805,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get optionGroupRequired => 'Obligatoire';
 
   @override
+  String get optionGroupOptional => 'Facultatif';
+
+  @override
   String get optionGroupMultipleChoice => 'Choix Multiple';
+
+  @override
+  String get multipleChoice => 'Multiple';
 
   @override
   String get optionGroupOptions => 'Options';

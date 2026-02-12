@@ -25,6 +25,7 @@ dependencies:
   socket_io_client: ^2.0.3+1
   image_picker: ^1.0.7
   flutter_svg: ^2.0.17
+  dotted_border: ^2.1.0
 
 dev_dependencies:
   flutter_test:

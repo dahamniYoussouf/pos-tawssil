@@ -148,7 +148,6 @@
   "categoryName": "Category Name",
   "categoryNameHint": "Enter category name",
   "categoryNameRequired": "Category name is required",
-  "descriptionHint": "Enter description",
   "descriptionRequired": "Description is required",
   "iconUrl": "Icon URL",
   "iconUrlHint": "Enter icon URL",
@@ -292,7 +291,9 @@
   "optionGroupNameHint": "Enter group name",
   "optionGroupNameRequired": "Group name is required",
   "optionGroupRequired": "Required",
+  "optionGroupOptional": "Optional",
   "optionGroupMultipleChoice": "Multiple choice",
+  "multipleChoice": "Multiple",
   "optionGroupOptions": "Options",
   "optionOptionNameLabel": "Option name",
   "optionAdd": "+ Add option",
@@ -312,7 +313,6 @@
   "add": "Add",
   "addMenuItem": "Add Item",
   "itemNameLabel": "Item Name",
-  "priceLabel": "Price",
   "optionGroups": "Option Groups",
   "addOptionGroup": "+ Add option group"
 }

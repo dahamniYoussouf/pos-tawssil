@@ -8,7 +8,7 @@ import 'package:restaurant_app/src/features/categories/models/category_model.dar
 import 'package:restaurant_app/src/features/menu_items/cubit/menu_item_cubit.dart';
 import 'package:restaurant_app/src/features/menu_items/cubit/menu_item_state.dart';
 import 'package:restaurant_app/src/features/menu_items/models/menu_item_model.dart';
-import 'package:restaurant_app/src/features/menu_items/pages/option_group_bottom_sheet.dart';
+import 'package:restaurant_app/src/features/menu_items/widgets/create_menu_item/add_option_show_dialog.dart';
 import 'package:restaurant_app/src/features/menu_items/widgets/create_menu_item/cancel_button.dart';
 import 'package:restaurant_app/src/features/menu_items/widgets/create_menu_item/delete_button.dart';
 import 'package:restaurant_app/src/features/menu_items/widgets/create_menu_item/item_actif_switch.dart';
@@ -92,7 +92,7 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error picking image: ${e.toString()}'),
+            content: Text(AppLocalizations.of(context)!.errorPickingImage),
             backgroundColor: Colors.red,
           ),
         );
@@ -107,33 +107,32 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
   }
 
   void _openAddOptionGroup() async {
-    await OptionGroupBottomSheet.show(
-      context,
-      onSave: (group) {
-        _optionGroupsNotifier.value = [
-          ..._optionGroupsNotifier.value,
-          group.copyWith(id: 'local_${DateTime.now().millisecondsSinceEpoch}'),
-        ];
-      },
+    await showDialog(
+      context: context,
+      builder: (context) => AddOptionGroupDialog(
+        onSave: (group) {
+          _optionGroupsNotifier.value = [
+            ..._optionGroupsNotifier.value,
+            group.copyWith(
+                id: 'local_${DateTime.now().millisecondsSinceEpoch}'),
+          ];
+        },
+      ),
     );
   }
 
   void _openEditOptionGroup(MenuItemOptionGroup group, int index) async {
-    await OptionGroupBottomSheet.show(
-      context,
-      group: group,
-      onSave: (updated) {
-        final list =
-            List<MenuItemOptionGroup>.from(_optionGroupsNotifier.value);
-        list[index] = updated.copyWith(id: group.id);
-        _optionGroupsNotifier.value = list;
-      },
-      onDelete: (_) {
-        final list =
-            List<MenuItemOptionGroup>.from(_optionGroupsNotifier.value);
-        list.removeAt(index);
-        _optionGroupsNotifier.value = list;
-      },
+    await showDialog(
+      context: context,
+      builder: (context) => AddOptionGroupDialog(
+        group: group,
+        onSave: (updated) {
+          final list =
+              List<MenuItemOptionGroup>.from(_optionGroupsNotifier.value);
+          list[index] = updated.copyWith(id: group.id);
+          _optionGroupsNotifier.value = list;
+        },
+      ),
     );
   }
 
@@ -162,8 +161,8 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
     final selectedImage = _selectedImageNotifier.value;
     if (selectedImage != null && uploadedImageUrl == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please upload the image first'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.uploadImageFirst),
           backgroundColor: Colors.orange,
         ),
       );
@@ -282,10 +281,6 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
     final isEdit = widget.menuItem != null;
     final mediaQuery = MediaQuery.of(context);
 
-    for (var element in widget.categories) {
-      print(element.toJson());
-    }
-
     return BlocListener<MenuItemCubit, MenuItemState>(
       listener: (context, state) {
         if (state is MenuItemImageUploadSuccess) {
@@ -327,11 +322,11 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
             // Drag Handle
             Container(
               margin: const EdgeInsets.only(top: 12),
-              width: 40,
-              height: 4,
+              width: 75,
+              height: 7,
               decoration: BoxDecoration(
                 color: AppColors.greyLight,
-                borderRadius: BorderRadius.circular(2),
+                borderRadius: BorderRadius.circular(85),
               ),
             ),
             // Title
@@ -346,7 +341,6 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
                 ),
               ),
             ),
-            const Divider(height: 1),
             // Content
             Expanded(
               child: SingleChildScrollView(
@@ -442,8 +436,6 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
                             selectedCategoryId: selectedCategoryId,
                             onCategorySelected: (categoryId) {
                               _selectedCategoryIdNotifier.value = categoryId;
-                              print(
-                                  '_selectedCategoryIdNotifier: ${_selectedCategoryIdNotifier.value}');
                             },
                           );
                         },
@@ -533,14 +525,22 @@ class _CreateMenuItemPageState extends State<CreateMenuItemPage> {
                 const SizedBox(height: 8),
                 InkWell(
                   onTap: _openAddOptionGroup,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Text(
-                      localizations.addOptionGroup,
-                      style: const TextStyle(
-                        color: AppColors.primaryColor,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w500,
+                  child: Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: AppColors.greyLight),
+                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    child: Center(
+                      child: Text(
+                        localizations.addOptionGroup,
+                        style: const TextStyle(
+                          color: AppColors.primaryColor,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ),

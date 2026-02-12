@@ -313,7 +313,7 @@ abstract class AppLocalizations {
   /// No description provided for @descriptionHint.
   ///
   /// In en, this message translates to:
-  /// **'Enter description'**
+  /// **'Tell customers about your restaurant'**
   String get descriptionHint;
 
   /// No description provided for @address.
@@ -1636,11 +1636,23 @@ abstract class AppLocalizations {
   /// **'Required'**
   String get optionGroupRequired;
 
+  /// No description provided for @optionGroupOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get optionGroupOptional;
+
   /// No description provided for @optionGroupMultipleChoice.
   ///
   /// In en, this message translates to:
   /// **'Multiple choice'**
   String get optionGroupMultipleChoice;
+
+  /// No description provided for @multipleChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Multiple'**
+  String get multipleChoice;
 
   /// No description provided for @optionGroupOptions.
   ///

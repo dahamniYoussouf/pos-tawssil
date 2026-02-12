@@ -38,16 +38,16 @@ class ModernCategoryDropdown extends StatelessWidget {
             hintText: localizations.select,
             hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
             filled: true,
-            fillColor: const Color(0xFFF5F5F5),
+            fillColor: const Color(0xFFF2F4F7),
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
+              borderSide: BorderSide(color: AppColors.greyLight),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide.none,
+              borderSide: BorderSide(color: AppColors.greyLight),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(10),

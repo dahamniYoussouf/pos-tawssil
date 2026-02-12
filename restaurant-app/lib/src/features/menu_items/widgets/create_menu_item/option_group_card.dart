@@ -20,61 +20,66 @@ class OptionGroupCard extends StatelessWidget {
     final optionCount = group.optionsCount;
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
-      child: Material(
-        color: Colors.white,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(12),
-        elevation: 0,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              border:
-                  Border.all(color: AppColors.greyLight.withValues(alpha: 0.5)),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        group.nom,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '$optionCount ${optionCount != 1 ? localizations.options : localizations.option}',
-                        style: TextStyle(
-                          color: Colors.grey[600],
-                          fontSize: 13,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
+        child: Container(
+          padding: const EdgeInsets.all(14),
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.greyLight.withValues(alpha: 0.5),
+                blurRadius: 10,
+                offset: const Offset(0, 10),
+              ),
+            ],
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    PillWidget(
-                      label: localizations.optionGroupRequired,
-                      isSelected: group.isRequired,
+                    Text(
+                      group.nom,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 15,
+                        color: Colors.black87,
+                      ),
                     ),
-                    const SizedBox(width: 6),
-                    PillWidget(
-                      label: localizations.singleChoice,
-                      isSelected: !group.multipleChoice,
+                    const SizedBox(height: 4),
+                    Text(
+                      '$optionCount ${optionCount != 1 ? localizations.options : localizations.option}',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 13,
+                      ),
                     ),
                   ],
                 ),
-              ],
-            ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  PillWidget(
+                    label: group.isRequired
+                        ? localizations.optionGroupRequired
+                        : localizations.optionGroupOptional,
+                    isSelected: group.isRequired,
+                  ),
+                  const SizedBox(width: 6),
+                  PillWidget(
+                    label: group.multipleChoice
+                        ? localizations.multipleChoice
+                        : localizations.singleChoice,
+                    isSelected: group.multipleChoice,
+                  ),
+                ],
+              ),
+            ],
           ),
         ),
       ),

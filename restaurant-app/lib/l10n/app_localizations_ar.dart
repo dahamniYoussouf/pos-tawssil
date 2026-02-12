@@ -117,7 +117,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get description => 'الوصف';
 
   @override
-  String get descriptionHint => 'أدخل الوصف';
+  String get descriptionHint => 'صف مطعمك';
 
   @override
   String get address => 'العنوان';
@@ -793,7 +793,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get optionGroupRequired => 'إلزامي';
 
   @override
+  String get optionGroupOptional => 'اختياري';
+
+  @override
   String get optionGroupMultipleChoice => 'اختيار متعدد';
+
+  @override
+  String get multipleChoice => 'متعدد';
 
   @override
   String get optionGroupOptions => 'الخيارات';

@@ -34,4 +34,5 @@ class MediaRes {
   static const String arrowForwardIcon =
       '$_baseImageSvg/arrow_forrawrd_icon.svg';
   static const String menuItemIcon = '$_baseImageSvg/menu_item_icon.svg';
+  static const String cameraIcon = '$_baseImageSvg/camera_icon.svg';
 }

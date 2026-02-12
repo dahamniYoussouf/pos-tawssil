@@ -148,7 +148,6 @@
   "categoryName": "Nom de la Catégorie",
   "categoryNameHint": "Entrez le nom de la catégorie",
   "categoryNameRequired": "Le nom de la catégorie est requis",
-  "descriptionHint": "Entrez la description",
   "descriptionRequired": "La description est requise",
   "iconUrl": "URL de l'Icône",
   "iconUrlHint": "Entrez l'URL de l'icône",
@@ -292,7 +291,9 @@
   "optionGroupNameHint": "Entrez le nom du groupe",
   "optionGroupNameRequired": "Nom du groupe requis",
   "optionGroupRequired": "Obligatoire",
+  "optionGroupOptional": "Facultatif",
   "optionGroupMultipleChoice": "Choix Multiple",
+  "multipleChoice": "Multiple",
   "optionGroupOptions": "Options",
   "optionOptionNameLabel": "Nom de l'option",
   "optionAdd": "+ Ajouter option",
@@ -312,7 +313,6 @@
   "add": "Ajouter",
   "addMenuItem": "Ajouter Item",
   "itemNameLabel": "Nom de l'Item",
-  "priceLabel": "Prix",
   "optionGroups": "Groupes D'options",
   "addOptionGroup": "+ Ajouter option group"
 }

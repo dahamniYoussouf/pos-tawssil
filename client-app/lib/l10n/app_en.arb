@@ -1215,7 +1215,7 @@
   "@optionOptionalBadge": {
     "description": "Optional badge label"
   },
-  "optionAdditionalPrice": "+ {price} DA",
+  "optionAdditionalPrice": "{price} DA",
   "@optionAdditionalPrice": {
     "description": "Additional option price label",
     "placeholders": {
