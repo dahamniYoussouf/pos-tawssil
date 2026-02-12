@@ -1,12 +1,12 @@
+import 'dart:async';
 import 'package:delivery_app/src/core/utils/dependency_injection.dart';
 import 'package:delivery_app/src/features/orders/models/order_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:delivery_app/src/features/orders/widgets/cubit/order_tracking_map_cubit.dart';
 import 'package:delivery_app/src/features/driver/cubit/driver_cubit.dart';
 import 'package:delivery_app/src/features/driver/cubit/driver_state.dart';
-import 'package:latlong2/latlong.dart';
 
 class OrderTrackingMap extends StatefulWidget {
   final OrderModel? order;
@@ -28,13 +28,11 @@ class OrderTrackingMap extends StatefulWidget {
 }
 
 class _OrderTrackingMapState extends State<OrderTrackingMap> {
-  late final MapController _mapController;
-  bool _isMapReady = false;
+  GoogleMapController? _mapController;
 
   @override
   void initState() {
     super.initState();
-    _mapController = MapController();
     locator<OrderTrackingMapCubit>().initDriver(
       locator<DriverCubit>().driver,
     );
@@ -46,7 +44,7 @@ class _OrderTrackingMapState extends State<OrderTrackingMap> {
 
   @override
   void dispose() {
-    _mapController.dispose();
+    _mapController?.dispose();
     super.dispose();
   }
 
@@ -80,9 +78,8 @@ class _OrderTrackingMapState extends State<OrderTrackingMap> {
               (OrderTrackingMapState previous, OrderTrackingMapState current) =>
                   previous.bounds != current.bounds,
           listener: (BuildContext context, OrderTrackingMapState state) {
-            if (_isMapReady && state.bounds != null) {
-              WidgetsBinding.instance
-                  .addPostFrameCallback((_) => _fitBounds(state.bounds!));
+            if (_mapController != null && state.bounds != null) {
+              _fitBounds(state.bounds!);
             }
           },
           child: BlocBuilder<OrderTrackingMapCubit, OrderTrackingMapState>(
@@ -94,40 +91,18 @@ class _OrderTrackingMapState extends State<OrderTrackingMap> {
                           locator<DriverCubit>().driver!.longitude!)
                       : const LatLng(36.7538, 3.0588);
 
-              final double validZoom = widget.initialZoom.clamp(1.0, 18.0);
-
-              return FlutterMap(
-                mapController: _mapController,
-                options: MapOptions(
-                  initialCenter: validCenter,
-                  initialZoom: validZoom,
-                  minZoom: 1.0,
-                  maxZoom: 18.0,
-                  onMapReady: _handleMapReady,
-                  interactionOptions: const InteractionOptions(
-                    flags: InteractiveFlag.drag |
-                        InteractiveFlag.flingAnimation |
-                        InteractiveFlag.pinchZoom |
-                        InteractiveFlag.doubleTapZoom,
-                  ),
+              return GoogleMap(
+                initialCameraPosition: CameraPosition(
+                  target: validCenter,
+                  zoom: widget.initialZoom,
                 ),
-                children: [
-                  TileLayer(
-                    urlTemplate:
-                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    userAgentPackageName: 'com.tawsil.delivery',
-                    maxZoom: 18,
-                    minZoom: 1,
-                  ),
-                  if (state.polylines.isNotEmpty)
-                    PolylineLayer(
-                      polylines: state.polylines,
-                    ),
-                  if (state.markers.isNotEmpty)
-                    MarkerLayer(
-                      markers: state.markers,
-                    ),
-                ],
+                markers: state.markers,
+                polylines: state.polylines,
+                onMapCreated: _onMapCreated,
+                myLocationEnabled: false,
+                myLocationButtonEnabled: false,
+                zoomControlsEnabled: false,
+                mapToolbarEnabled: false,
               );
             },
           ),
@@ -136,20 +111,21 @@ class _OrderTrackingMapState extends State<OrderTrackingMap> {
     );
   }
 
-  void _handleMapReady() {
-    _isMapReady = true;
+  void _onMapCreated(GoogleMapController controller) {
+    _mapController = controller;
     final LatLngBounds? bounds = locator<OrderTrackingMapCubit>().state.bounds;
     if (bounds != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) => _fitBounds(bounds));
+      Future.delayed(const Duration(milliseconds: 300), () {
+        if (mounted) {
+          _fitBounds(bounds);
+        }
+      });
     }
   }
 
   void _fitBounds(LatLngBounds bounds) {
-    _mapController.fitCamera(
-      CameraFit.bounds(
-        bounds: bounds,
-        padding: EdgeInsets.all(widget.boundsPadding),
-      ),
+    _mapController?.animateCamera(
+      CameraUpdate.newLatLngBounds(bounds, widget.boundsPadding),
     );
   }
 

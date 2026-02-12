@@ -12,8 +12,7 @@ import 'package:delivery_app/src/features/orders/widgets/nearby_order_card.dart'
 import 'package:delivery_app/src/features/orders/widgets/order_tracking_map_widget.dart';
 import 'package:delivery_app/src/features/driver/cubit/driver_cubit.dart';
 import 'package:delivery_app/src/features/driver/cubit/driver_state.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class TrackOrdersPage extends StatefulWidget {
   const TrackOrdersPage({
@@ -212,17 +211,15 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
             state is DriverLoaded && state.driver.latitude != null
                 ? LatLng(state.driver.latitude!, state.driver.longitude!)
                 : const LatLng(36.7538, 3.0588);
-        return FlutterMap(
-          options: MapOptions(
-            initialCenter: center,
-            initialZoom: 15.0,
+        return GoogleMap(
+          initialCameraPosition: CameraPosition(
+            target: center,
+            zoom: 15.0,
           ),
-          children: [
-            TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-              userAgentPackageName: 'com.tawsil.delivery',
-            ),
-          ],
+          myLocationEnabled: false,
+          myLocationButtonEnabled: false,
+          zoomControlsEnabled: false,
+          mapToolbarEnabled: false,
         );
       },
     );

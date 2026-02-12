@@ -2,15 +2,14 @@ import 'package:delivery_app/src/core/utils/dependency_injection.dart';
 import 'package:delivery_app/src/features/driver/cubit/driver_cubit.dart';
 import 'package:delivery_app/src/features/driver/models/driver_model.dart';
 import 'package:delivery_app/src/features/orders/models/order_model.dart';
-import 'package:flutter/material.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_map/flutter_map.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:delivery_app/src/core/res/color_app.dart';
-import 'package:latlong2/latlong.dart';
 
 class OrderTrackingMapState {
-  final List<Marker> markers;
-  final List<Polyline> polylines;
+  final Set<Marker> markers;
+  final Set<Polyline> polylines;
   final LatLngBounds? bounds;
   final LatLng center;
 
@@ -22,24 +21,25 @@ class OrderTrackingMapState {
   });
 
   factory OrderTrackingMapState.initial() {
-    return OrderTrackingMapState(
-      markers: const <Marker>[],
-      polylines: const <Polyline>[],
+    return const OrderTrackingMapState(
+      markers: <Marker>{},
+      polylines: <Polyline>{},
       bounds: null,
-      center: const LatLng(36.7538, 3.0588),
+      center: LatLng(36.7538, 3.0588),
     );
   }
 }
 
 class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
   OrderTrackingMapCubit() : super(OrderTrackingMapState.initial());
+
   void initDriver(DriverModel? driver) {
-    if (driver != null) {
-      _emitState(const <Marker>[], const <Polyline>[],
+    if (driver != null &&
+        _isValidCoordinate(driver.latitude, driver.longitude)) {
+      _emitState(<Marker>{}, <Polyline>{},
           LatLng(driver.latitude!, driver.longitude!), null);
     } else {
-      _emitState(const <Marker>[], const <Polyline>[],
-          const LatLng(36.7538, 3.0588), null);
+      _emitState(<Marker>{}, <Polyline>{}, const LatLng(36.7538, 3.0588), null);
     }
   }
 
@@ -48,14 +48,14 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
     final LatLng? deliveryLatLng = _getDeliveryDestinationLatLng(order);
     final LatLng driverLatLng = _getDriverLatLng();
     if (restaurantLatLng == null && deliveryLatLng == null) {
-      _emitState(const <Marker>[], const <Polyline>[], driverLatLng, null);
+      _emitState(<Marker>{}, <Polyline>{}, driverLatLng, null);
       return;
     }
     final List<LatLng> boundPoints =
         _collectBoundPoints(restaurantLatLng, deliveryLatLng, driverLatLng);
-    final List<Marker> markers =
+    final Set<Marker> markers =
         _buildMarkers(order, restaurantLatLng, deliveryLatLng, driverLatLng);
-    final List<Polyline> polylines =
+    final Set<Polyline> polylines =
         _buildPolylines(restaurantLatLng, deliveryLatLng);
     final LatLng center = restaurantLatLng ?? deliveryLatLng ?? driverLatLng;
     _emitState(markers, polylines, center, boundPoints);
@@ -64,13 +64,14 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
   void updateOrders(List<OrderModel> orders) {
     final LatLng driverLatLng = _getDriverLatLng();
     if (orders.isEmpty) {
-      _emitState(const <Marker>[], const <Polyline>[], driverLatLng, null);
+      _emitState(<Marker>{}, <Polyline>{}, driverLatLng, null);
       return;
     }
     final List<LatLng> boundPoints = <LatLng>[];
-    final List<Marker> markers = <Marker>[];
-    final List<Polyline> polylines = <Polyline>[];
-    for (final OrderModel order in orders) {
+    final Set<Marker> markers = <Marker>{};
+    final Set<Polyline> polylines = <Polyline>{};
+    for (int i = 0; i < orders.length; i++) {
+      final OrderModel order = orders[i];
       final LatLng? restaurantLatLng = _getRestaurantLatLng(order);
       final LatLng? deliveryLatLng = _getDeliveryDestinationLatLng(order);
       if (restaurantLatLng == null && deliveryLatLng == null) {
@@ -84,13 +85,11 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
       }
       markers.addAll(
           _buildMarkers(order, restaurantLatLng, deliveryLatLng, driverLatLng));
-      final List<Polyline> orderPolylines =
-          _buildPolylines(restaurantLatLng, deliveryLatLng);
-      polylines.addAll(orderPolylines);
+      polylines.addAll(_buildPolylines(restaurantLatLng, deliveryLatLng));
     }
     boundPoints.add(driverLatLng);
     if (boundPoints.isEmpty) {
-      _emitState(const <Marker>[], const <Polyline>[], driverLatLng, null);
+      _emitState(<Marker>{}, <Polyline>{}, driverLatLng, null);
       return;
     }
     _emitState(markers, polylines, boundPoints.first, boundPoints);
@@ -142,27 +141,27 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
     return boundPoints;
   }
 
-  List<Marker> _buildMarkers(
+  Set<Marker> _buildMarkers(
     OrderModel order,
     LatLng? restaurantLatLng,
     LatLng? deliveryLatLng,
     LatLng driverLatLng,
   ) {
-    final List<Marker> markers = <Marker>[];
+    final Set<Marker> markers = <Marker>{};
     if (restaurantLatLng != null) {
       markers.add(_buildRestaurantMarker(
-          restaurantLatLng, order.restaurantName ?? 'Restaurant'));
+          restaurantLatLng, order.restaurantName ?? 'Restaurant', order.id));
     }
     if (deliveryLatLng != null) {
       markers.add(_buildDeliveryDestinationMarker(
-          deliveryLatLng, order.deliveryAddress ?? 'Destination'));
+          deliveryLatLng, order.deliveryAddress ?? 'Destination', order.id));
     }
     markers.add(_buildDriverMarker(driverLatLng));
     if (order.isDelivering && order.deliveryPerson != null) {
       final LatLng? courierLatLng = _getCourierLatLng(order.deliveryPerson!);
       if (courierLatLng != null) {
-        markers.add(
-            _buildCourierMarker(courierLatLng, order.deliveryPerson!.name));
+        markers.add(_buildCourierMarker(
+            courierLatLng, order.deliveryPerson!.name, order.id));
       }
     }
     return markers;
@@ -175,66 +174,54 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
     return LatLng(person.latitude!, person.longitude!);
   }
 
-  Marker _buildRestaurantMarker(LatLng point, String name) {
+  Marker _buildRestaurantMarker(LatLng point, String name, String orderId) {
     return Marker(
-      point: point,
-      width: 44,
-      height: 44,
-      child: Tooltip(
-        message: name,
-        child:
-            const Icon(Icons.location_on, color: AppColors.redColor, size: 32),
-      ),
+      markerId: MarkerId('restaurant_$orderId'),
+      position: point,
+      infoWindow: InfoWindow(title: name),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
     );
   }
 
-  Marker _buildDeliveryDestinationMarker(LatLng point, String address) {
+  Marker _buildDeliveryDestinationMarker(
+      LatLng point, String address, String orderId) {
     return Marker(
-      point: point,
-      width: 44,
-      height: 44,
-      child: Tooltip(
-        message: address,
-        child: const Icon(Icons.location_on,
-            color: AppColors.primaryColor, size: 32),
-      ),
+      markerId: MarkerId('delivery_$orderId'),
+      position: point,
+      infoWindow: InfoWindow(title: address),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
     );
   }
 
   Marker _buildDriverMarker(LatLng point) {
     return Marker(
-      point: point,
-      width: 44,
-      height: 44,
-      child: const Tooltip(
-        message: 'My Location',
-        child: Icon(Icons.my_location, color: AppColors.greenColor, size: 32),
-      ),
+      markerId: const MarkerId('driver'),
+      position: point,
+      infoWindow: const InfoWindow(title: 'My Location'),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
     );
   }
 
-  Marker _buildCourierMarker(LatLng point, String name) {
+  Marker _buildCourierMarker(LatLng point, String name, String orderId) {
     return Marker(
-      point: point,
-      width: 44,
-      height: 44,
-      child: Tooltip(
-        message: name,
-        child: const Icon(Icons.delivery_dining,
-            color: AppColors.blueAccentColor, size: 32),
-      ),
+      markerId: MarkerId('courier_$orderId'),
+      position: point,
+      infoWindow: InfoWindow(title: name),
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
     );
   }
 
-  List<Polyline> _buildPolylines(
+  Set<Polyline> _buildPolylines(
       LatLng? restaurantLatLng, LatLng? deliveryLatLng) {
-    final List<Polyline> polylines = <Polyline>[];
+    final Set<Polyline> polylines = <Polyline>{};
     if (restaurantLatLng != null && deliveryLatLng != null) {
       polylines.add(
         Polyline(
+          polylineId: PolylineId(
+              '${restaurantLatLng.latitude}_${deliveryLatLng.latitude}'),
           points: <LatLng>[restaurantLatLng, deliveryLatLng],
           color: AppColors.primaryColor,
-          strokeWidth: 4,
+          width: 4,
         ),
       );
     }
@@ -242,8 +229,8 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
   }
 
   void _emitState(
-    List<Marker> markers,
-    List<Polyline> polylines,
+    Set<Marker> markers,
+    Set<Polyline> polylines,
     LatLng center,
     List<LatLng>? boundPointsList,
   ) {
@@ -251,13 +238,26 @@ class OrderTrackingMapCubit extends Cubit<OrderTrackingMapState> {
     if (!_isValidCoordinate(center.latitude, center.longitude)) {
       center = _getDriverLatLng();
     }
-    final LatLngBounds? bounds =
-        boundPointsList != null && boundPointsList.isNotEmpty
-            ? LatLngBounds.fromPoints(boundPointsList)
-            : null;
+    LatLngBounds? bounds;
+    if (boundPointsList != null && boundPointsList.length >= 2) {
+      double minLat = boundPointsList.first.latitude;
+      double maxLat = boundPointsList.first.latitude;
+      double minLng = boundPointsList.first.longitude;
+      double maxLng = boundPointsList.first.longitude;
+      for (final LatLng point in boundPointsList) {
+        if (point.latitude < minLat) minLat = point.latitude;
+        if (point.latitude > maxLat) maxLat = point.latitude;
+        if (point.longitude < minLng) minLng = point.longitude;
+        if (point.longitude > maxLng) maxLng = point.longitude;
+      }
+      bounds = LatLngBounds(
+        southwest: LatLng(minLat, minLng),
+        northeast: LatLng(maxLat, maxLng),
+      );
+    }
     emit(OrderTrackingMapState(
-      markers: List<Marker>.unmodifiable(markers),
-      polylines: List<Polyline>.unmodifiable(polylines),
+      markers: Set<Marker>.from(markers),
+      polylines: Set<Polyline>.from(polylines),
       center: center,
       bounds: bounds,
     ));

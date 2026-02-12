@@ -1,12 +1,14 @@
 import 'package:delivery_app/l10n/app_localizations.dart';
 import 'package:delivery_app/src/core/res/color_app.dart';
-import 'package:delivery_app/src/core/res/media_res.dart';
 import 'package:delivery_app/src/core/res/app_theme.dart';
+import 'package:delivery_app/src/core/utils/dependency_injection.dart';
 import 'package:delivery_app/src/features/orders/cubit/assigned_order_cubit.dart';
 import 'package:delivery_app/src/features/orders/models/order_model.dart';
 import 'package:delivery_app/src/features/orders/pages/order_assigned_page.dart';
+import 'package:delivery_app/src/features/driver/cubit/driver_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 
 class OrderDetailsPage extends StatefulWidget {
@@ -110,14 +112,13 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Map Image Container
+                    // Live Map showing driver and client
                     ClipRRect(
                       borderRadius: BorderRadius.circular(16),
-                      child: Image.asset(
-                        MediaRes.mapImage,
+                      child: SizedBox(
                         width: double.infinity,
                         height: 200,
-                        fit: BoxFit.cover,
+                        child: _buildMiniMap(order),
                       ),
                     ),
                     const SizedBox(height: 15),
@@ -240,6 +241,85 @@ class _OrderDetailsPageState extends State<OrderDetailsPage> {
         fontSize: 18,
         color: AppColors.black,
       ),
+    );
+  }
+
+  Widget _buildMiniMap(OrderModel order) {
+    final driverCubit = locator<DriverCubit>();
+    final driverLat = driverCubit.driver?.latitude;
+    final driverLng = driverCubit.driver?.longitude;
+    final deliveryLat = order.deliveryLatitude;
+    final deliveryLng = order.deliveryLongitude;
+
+    // Default center (Algiers)
+    LatLng center = const LatLng(36.7538, 3.0588);
+    final Set<Marker> markers = {};
+
+    // Driver marker
+    if (driverLat != null && driverLng != null) {
+      final driverPos = LatLng(driverLat, driverLng);
+      center = driverPos;
+      markers.add(Marker(
+        markerId: const MarkerId('driver'),
+        position: driverPos,
+        infoWindow: const InfoWindow(title: 'Ma position'),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
+      ));
+    }
+
+    // Client delivery marker
+    if (deliveryLat != null && deliveryLng != null) {
+      final deliveryPos = LatLng(deliveryLat, deliveryLng);
+      center = deliveryPos;
+      markers.add(Marker(
+        markerId: const MarkerId('client'),
+        position: deliveryPos,
+        infoWindow: InfoWindow(title: order.deliveryAddress ?? 'Client'),
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      ));
+    }
+
+    return GoogleMap(
+      initialCameraPosition: CameraPosition(
+        target: center,
+        zoom: 13.0,
+      ),
+      markers: markers,
+      myLocationEnabled: false,
+      myLocationButtonEnabled: false,
+      zoomControlsEnabled: false,
+      mapToolbarEnabled: false,
+      scrollGesturesEnabled: false,
+      zoomGesturesEnabled: false,
+      rotateGesturesEnabled: false,
+      tiltGesturesEnabled: false,
+      onMapCreated: (GoogleMapController controller) {
+        // Fit bounds to show both markers
+        if (markers.length >= 2) {
+          Future.delayed(const Duration(milliseconds: 300), () {
+            final positions = markers.map((m) => m.position).toList();
+            double minLat = positions.first.latitude;
+            double maxLat = positions.first.latitude;
+            double minLng = positions.first.longitude;
+            double maxLng = positions.first.longitude;
+            for (final pos in positions) {
+              if (pos.latitude < minLat) minLat = pos.latitude;
+              if (pos.latitude > maxLat) maxLat = pos.latitude;
+              if (pos.longitude < minLng) minLng = pos.longitude;
+              if (pos.longitude > maxLng) maxLng = pos.longitude;
+            }
+            controller.animateCamera(
+              CameraUpdate.newLatLngBounds(
+                LatLngBounds(
+                  southwest: LatLng(minLat, minLng),
+                  northeast: LatLng(maxLat, maxLng),
+                ),
+                50.0,
+              ),
+            );
+          });
+        }
+      },
     );
   }
 
