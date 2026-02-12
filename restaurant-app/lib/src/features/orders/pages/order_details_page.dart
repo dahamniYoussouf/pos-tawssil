@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:restaurant_app/l10n/app_localizations.dart';
 import 'package:restaurant_app/src/core/res/color_app.dart';
 import 'package:restaurant_app/src/features/orders/models/order_model.dart';
+import 'package:restaurant_app/src/features/printers/services/print_service.dart';
 
 class OrderDetailsPage extends StatelessWidget {
   const OrderDetailsPage({super.key});
@@ -44,7 +45,7 @@ class OrderDetailsPage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: _buildBottomButton(context, l10n),
+      bottomNavigationBar: _buildBottomButton(context, order, l10n),
     );
   }
 
@@ -352,12 +353,26 @@ class OrderDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildBottomButton(BuildContext context, AppLocalizations l10n) {
+  Widget _buildBottomButton(
+      BuildContext context, OrderModel order, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(37),
       color: AppColors.backgroundPage,
       child: ElevatedButton.icon(
-        onPressed: () {},
+        onPressed: () async {
+          final printService = PrintService();
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Printing...')),
+          );
+          await printService.printOrder(
+            order,
+            onError: (message) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(message)),
+              );
+            },
+          );
+        },
         icon: const Icon(Icons.print_outlined),
         label: Text(l10n.printReceipt),
         style: ElevatedButton.styleFrom(

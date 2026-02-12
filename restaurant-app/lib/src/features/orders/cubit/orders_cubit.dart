@@ -6,11 +6,13 @@ import 'package:restaurant_app/src/features/orders/models/order_model.dart';
 import 'package:restaurant_app/src/features/orders/repositories/order_repository.dart';
 import 'package:restaurant_app/src/features/notifications/cubit/notifications_cubit.dart';
 import 'package:restaurant_app/src/features/notifications/cubit/notifications_state.dart';
+import 'package:restaurant_app/src/features/printers/services/print_service.dart';
 
 class OrdersCubit extends Cubit<OrdersState> {
   final OrderRepository _orderRepository;
   final NotificationsCubit? _notificationsCubit;
   StreamSubscription? _notificationSubscription;
+  final PrintService _printService = PrintService();
 
   OrdersCubit({
     OrderRepository? orderRepository,
@@ -124,6 +126,19 @@ class OrdersCubit extends Cubit<OrdersState> {
           message: 'Order accepted successfully',
           selectedStatus: currentState.selectedStatus,
         ));
+        OrderModel? acceptedOrder;
+        for (final order in currentState.orders) {
+          if (order.id == orderId) {
+            acceptedOrder = order;
+            break;
+          }
+        }
+        if (acceptedOrder != null) {
+          unawaited(_printService.printOrder(
+            acceptedOrder,
+            onError: (message) => print('Print error: $message'),
+          ));
+        }
         // Refresh orders with the same status after successful action
         refreshOrders(status: currentState.selectedStatus);
       },
