@@ -3,7 +3,7 @@ import 'package:delivery_app/src/core/res/color_app.dart';
 import 'package:delivery_app/src/core/res/app_theme.dart';
 import 'package:flutter/material.dart';
 
-class CancellationReasonModal extends StatefulWidget {
+class CancellationReasonModal extends StatelessWidget {
   final Function(String reason, String? otherReason) onConfirm;
 
   const CancellationReasonModal({
@@ -12,32 +12,8 @@ class CancellationReasonModal extends StatefulWidget {
   });
 
   @override
-  State<CancellationReasonModal> createState() =>
-      _CancellationReasonModalState();
-}
-
-class _CancellationReasonModalState extends State<CancellationReasonModal> {
-  final ValueNotifier<String?> _selectedReasonNotifier =
-      ValueNotifier<String?>(null);
-  final TextEditingController _otherReasonController = TextEditingController();
-
-  @override
-  void dispose() {
-    _selectedReasonNotifier.dispose();
-    _otherReasonController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
-
-    final Map<String, String> reasons = {
-      'driver_late': localizations.cancelReasonDriverLate,
-      'client_canceled': localizations.cancelReasonClientCanceled,
-      'technical_issue': localizations.cancelReasonTechnicalIssue,
-      'other': localizations.cancelReasonOther,
-    };
 
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -49,16 +25,21 @@ class _CancellationReasonModalState extends State<CancellationReasonModal> {
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Close Button
-            Align(
-              alignment: Alignment.topRight,
-              child: IconButton(
-                icon: const Icon(Icons.close, color: AppColors.greyLight),
-                onPressed: () => Navigator.of(context).pop(),
+            // Warning Icon
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF14336).withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.warning_amber_rounded,
+                color: Color(0xFFF14336),
+                size: 32,
               ),
             ),
+            const SizedBox(height: 20),
 
             Text(
               localizations.cancelModalTitle,
@@ -66,6 +47,7 @@ class _CancellationReasonModalState extends State<CancellationReasonModal> {
                 fontSize: 20,
                 color: AppColors.textDark,
               ),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             Text(
@@ -74,138 +56,41 @@ class _CancellationReasonModalState extends State<CancellationReasonModal> {
                 color: AppColors.textMedium,
                 fontSize: 14,
               ),
+              textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 28),
 
-            // Reason Options and Other Reason Field
-            ValueListenableBuilder<String?>(
-              valueListenable: _selectedReasonNotifier,
-              builder: (context, selectedReason, _) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ...reasons.entries.map((entry) {
-                      final String key = entry.key;
-                      final String label = entry.value;
-                      final bool isSelected = selectedReason == key;
-
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 16),
-                        child: InkWell(
-                          onTap: () {
-                            _selectedReasonNotifier.value = key;
-                          },
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 24,
-                                height: 24,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  border: Border.all(
-                                    color: isSelected
-                                        ? AppColors.primaryColor
-                                        : AppColors.greyLight,
-                                    width: 2,
-                                  ),
-                                ),
-                                child: isSelected
-                                    ? Center(
-                                        child: Container(
-                                          width: 12,
-                                          height: 12,
-                                          decoration: const BoxDecoration(
-                                            color: AppColors.primaryColor,
-                                            shape: BoxShape.circle,
-                                          ),
-                                        ),
-                                      )
-                                    : null,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Text(
-                                  label,
-                                  style: AppTextStyles.gilmerMedium.copyWith(
-                                    fontSize: 14,
-                                    color: AppColors.textDark,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                    if (selectedReason == 'other') ...[
-                      const SizedBox(height: 8),
-                      TextField(
-                        controller: _otherReasonController,
-                        decoration: InputDecoration(
-                          hintText: localizations.otherReasonHint,
-                          fillColor: AppColors.backgroundLight,
-                          filled: true,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 12,
-                          ),
-                        ),
-                        maxLines: 3,
-                      ),
-                    ],
-                  ],
-                );
-              },
-            ),
-
-            const SizedBox(height: 32),
-
-            // Confirm Button
-            ValueListenableBuilder<String?>(
-              valueListenable: _selectedReasonNotifier,
-              builder: (context, selectedReason, _) {
-                return SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: selectedReason == null
-                        ? null
-                        : () {
-                            widget.onConfirm(
-                              reasons[selectedReason]!,
-                              selectedReason == 'other'
-                                  ? _otherReasonController.text
-                                  : null,
-                            );
-                            Navigator.of(context).pop();
-                          },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(
-                          0xFFF14336), // Vibrant red matching mockup
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      localizations.confirmCancellation,
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+            // Confirm Cancellation Button (Red)
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  onConfirm('cancelled_by_driver', null);
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFF14336),
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
                   ),
-                );
-              },
+                  elevation: 0,
+                ),
+                child: Text(
+                  localizations.confirmCancellation,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
+            const SizedBox(height: 8),
 
             // Return Button
-            Center(
+            SizedBox(
+              width: double.infinity,
               child: TextButton(
                 onPressed: () => Navigator.of(context).pop(),
                 child: Text(

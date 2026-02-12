@@ -526,16 +526,23 @@ class _ManageProfilePageState extends State<ManageProfilePage> {
 
   Widget _buildStorefrontPhoto(
       RestaurantModel restaurant, AppLocalizations l10n) {
+    final bool hasImage =
+        restaurant.imageUrl != null && restaurant.imageUrl!.isNotEmpty;
+
     return Column(
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(24),
-          child: Image.network(
-            restaurant.imageUrl ?? '',
-            height: 200,
-            width: double.infinity,
-            fit: BoxFit.cover,
-          ),
+          child: hasImage
+              ? Image.network(
+                  restaurant.imageUrl!,
+                  height: 200,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      _buildImagePlaceholder(l10n),
+                )
+              : _buildImagePlaceholder(l10n),
         ),
         const SizedBox(height: 16),
         InkWell(
@@ -570,6 +577,43 @@ class _ManageProfilePageState extends State<ManageProfilePage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildImagePlaceholder(AppLocalizations l10n) {
+    return GestureDetector(
+      onTap: _pickImage,
+      child: Container(
+        height: 200,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: AppColors.backgroundLight,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(
+            color: AppColors.borderGrey,
+            style: BorderStyle.solid,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.add_a_photo_outlined,
+              size: 48,
+              color: AppColors.textLightGrey,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              l10n.updatePhoto,
+              style: const TextStyle(
+                color: AppColors.textLightGrey,
+                fontWeight: FontWeight.w600,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
