@@ -8,6 +8,7 @@ import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_state.da
 import 'package:restaurant_app/src/features/profile/widgets/profile_card_widget.dart';
 import 'package:restaurant_app/src/features/profile/widgets/profile_menu_item_widget.dart';
 import 'package:restaurant_app/src/features/profile/widgets/language_selector_widget.dart';
+import 'package:restaurant_app/src/features/printers/pages/printer_settings_page.dart';
 
 import 'package:restaurant_app/src/features/restaurant/pages/manage_profile_page.dart';
 import 'package:restaurant_app/src/core/utils/dependency_injection.dart';
@@ -82,7 +83,14 @@ class _ProfilePageState extends State<ProfilePage> {
             ProfileMenuItemWidget(
               icon: MediaRes.manageIcon,
               title: localizations.printerSettings,
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PrinterSettingsPage(),
+                  ),
+                );
+              },
             ),
             ProfileMenuItemWidget(
               icon: MediaRes.shieldUserIcon,
