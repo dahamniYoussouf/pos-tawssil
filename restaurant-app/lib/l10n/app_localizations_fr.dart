@@ -301,13 +301,54 @@ class AppLocalizationsFr extends AppLocalizations {
   String get statistics => 'Statistiques';
 
   @override
+  String get all => 'Tous';
+
+  @override
+  String get appMobile => 'App Mobile';
+
+  @override
+  String get pos => 'POS';
+
+  @override
   String get today => 'Aujourd\'hui';
+
+  @override
+  String get yesterday => 'Hier';
 
   @override
   String get thisWeek => 'Cette semaine';
 
   @override
   String get thisMonth => 'Ce mois';
+
+  @override
+  String get days7 => '7 jours';
+
+  @override
+  String get days30 => '30 jours';
+
+  @override
+  String get commands => 'Commandes';
+
+  @override
+  String get revenue => 'Revenue';
+
+  @override
+  String get totalRevenueLabel => 'Total Revenue';
+
+  @override
+  String get seeDetails => 'Voir Détails';
+
+  @override
+  String get reviews => 'Reviews';
+
+  @override
+  String get seeAllReviews => 'Voir Tous Les Reviews';
+
+  @override
+  String totalReviewsCount(Object count) {
+    return 'Total $count Reviews';
+  }
 
   @override
   String get custom => 'Personnalisé';
@@ -320,9 +361,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get statusLabel => 'Statut:';
-
-  @override
-  String get all => 'Tous';
 
   @override
   String get accepted => 'Accepté';
@@ -649,9 +687,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deliveryApp => 'Delivery App';
 
   @override
-  String get pos => 'POS';
-
-  @override
   String get success => 'Succès';
 
   @override
@@ -876,4 +911,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get addOptionGroup => '+ Ajouter option group';
+
+  @override
+  String get refresh => 'Actualiser';
 }

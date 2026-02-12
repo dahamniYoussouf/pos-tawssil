@@ -8,6 +8,8 @@ class StatisticsState extends Equatable {
   final String? selectedStatus;
   final double? minPrice;
   final double? maxPrice;
+  final String selectedSource; // all, mobile, pos
+  final String selectedPeriod; // today, yesterday, week, month
 
   const StatisticsState({
     this.statistics,
@@ -16,6 +18,8 @@ class StatisticsState extends Equatable {
     this.selectedStatus,
     this.minPrice,
     this.maxPrice,
+    this.selectedSource = 'all',
+    this.selectedPeriod = 'today',
   });
 
   @override
@@ -26,6 +30,8 @@ class StatisticsState extends Equatable {
         selectedStatus,
         minPrice,
         maxPrice,
+        selectedSource,
+        selectedPeriod,
       ];
 
   StatisticsState copyWith({
@@ -35,6 +41,8 @@ class StatisticsState extends Equatable {
     String? selectedStatus,
     double? minPrice,
     double? maxPrice,
+    String? selectedSource,
+    String? selectedPeriod,
   }) {
     return StatisticsState(
       statistics: statistics ?? this.statistics,
@@ -43,12 +51,17 @@ class StatisticsState extends Equatable {
       selectedStatus: selectedStatus ?? this.selectedStatus,
       minPrice: minPrice ?? this.minPrice,
       maxPrice: maxPrice ?? this.maxPrice,
+      selectedSource: selectedSource ?? this.selectedSource,
+      selectedPeriod: selectedPeriod ?? this.selectedPeriod,
     );
   }
 }
 
 class StatisticsInitial extends StatisticsState {
-  const StatisticsInitial();
+  const StatisticsInitial({
+    super.selectedSource = 'all',
+    super.selectedPeriod = 'today',
+  });
 }
 
 class StatisticsLoading extends StatisticsState {
@@ -59,6 +72,8 @@ class StatisticsLoading extends StatisticsState {
     super.selectedStatus,
     super.minPrice,
     super.maxPrice,
+    super.selectedSource = 'all',
+    super.selectedPeriod = 'today',
   });
 }
 
@@ -70,6 +85,8 @@ class StatisticsLoaded extends StatisticsState {
     super.selectedStatus,
     super.minPrice,
     super.maxPrice,
+    super.selectedSource = 'all',
+    super.selectedPeriod = 'today',
   });
 }
 
@@ -84,9 +101,10 @@ class StatisticsError extends StatisticsState {
     super.selectedStatus,
     super.minPrice,
     super.maxPrice,
+    super.selectedSource = 'all',
+    super.selectedPeriod = 'today',
   });
 
   @override
   List<Object?> get props => [message, ...super.props];
 }
-

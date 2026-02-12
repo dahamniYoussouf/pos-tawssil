@@ -295,13 +295,54 @@ class AppLocalizationsAr extends AppLocalizations {
   String get statistics => 'الإحصائيات';
 
   @override
+  String get all => 'الكل';
+
+  @override
+  String get appMobile => 'التطبيق';
+
+  @override
+  String get pos => 'نقاط البيع';
+
+  @override
   String get today => 'اليوم';
+
+  @override
+  String get yesterday => 'أمس';
 
   @override
   String get thisWeek => 'هذا الأسبوع';
 
   @override
   String get thisMonth => 'هذا الشهر';
+
+  @override
+  String get days7 => '7 أيام';
+
+  @override
+  String get days30 => '30 يوم';
+
+  @override
+  String get commands => 'الطلبات';
+
+  @override
+  String get revenue => 'الإيرادات';
+
+  @override
+  String get totalRevenueLabel => 'إجمالي الإيرادات';
+
+  @override
+  String get seeDetails => 'عرض التفاصيل';
+
+  @override
+  String get reviews => 'التقييمات';
+
+  @override
+  String get seeAllReviews => 'عرض كل التقييمات';
+
+  @override
+  String totalReviewsCount(Object count) {
+    return 'إجمالي $count تقييم';
+  }
 
   @override
   String get custom => 'مخصص';
@@ -314,9 +355,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get statusLabel => 'الحالة:';
-
-  @override
-  String get all => 'الكل';
 
   @override
   String get accepted => 'مقبول';
@@ -638,9 +676,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get deliveryApp => 'تطبيق التوصيل';
 
   @override
-  String get pos => 'نقاط البيع';
-
-  @override
   String get success => 'ناجح';
 
   @override
@@ -864,4 +899,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get addOptionGroup => '+ إضافة مجموعة خيار';
+
+  @override
+  String get refresh => 'تحديث';
 }

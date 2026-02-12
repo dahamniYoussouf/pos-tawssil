@@ -652,11 +652,35 @@ abstract class AppLocalizations {
   /// **'Statistics'**
   String get statistics;
 
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @appMobile.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile App'**
+  String get appMobile;
+
+  /// No description provided for @pos.
+  ///
+  /// In en, this message translates to:
+  /// **'POS'**
+  String get pos;
+
   /// No description provided for @today.
   ///
   /// In en, this message translates to:
   /// **'Today'**
   String get today;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
 
   /// No description provided for @thisWeek.
   ///
@@ -669,6 +693,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This month'**
   String get thisMonth;
+
+  /// No description provided for @days7.
+  ///
+  /// In en, this message translates to:
+  /// **'7 days'**
+  String get days7;
+
+  /// No description provided for @days30.
+  ///
+  /// In en, this message translates to:
+  /// **'30 days'**
+  String get days30;
+
+  /// No description provided for @commands.
+  ///
+  /// In en, this message translates to:
+  /// **'Orders'**
+  String get commands;
+
+  /// No description provided for @revenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Revenue'**
+  String get revenue;
+
+  /// No description provided for @totalRevenueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Revenue'**
+  String get totalRevenueLabel;
+
+  /// No description provided for @seeDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'See Details'**
+  String get seeDetails;
+
+  /// No description provided for @reviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews'**
+  String get reviews;
+
+  /// No description provided for @seeAllReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'See All Reviews'**
+  String get seeAllReviews;
+
+  /// No description provided for @totalReviewsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Total {count} Reviews'**
+  String totalReviewsCount(Object count);
 
   /// No description provided for @custom.
   ///
@@ -693,12 +771,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Status:'**
   String get statusLabel;
-
-  /// No description provided for @all.
-  ///
-  /// In en, this message translates to:
-  /// **'All'**
-  String get all;
 
   /// No description provided for @accepted.
   ///
@@ -1330,12 +1402,6 @@ abstract class AppLocalizations {
   /// **'Delivery App'**
   String get deliveryApp;
 
-  /// No description provided for @pos.
-  ///
-  /// In en, this message translates to:
-  /// **'POS'**
-  String get pos;
-
   /// No description provided for @success.
   ///
   /// In en, this message translates to:
@@ -1779,6 +1845,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'+ Add option group'**
   String get addOptionGroup;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
 }
 
 class _AppLocalizationsDelegate

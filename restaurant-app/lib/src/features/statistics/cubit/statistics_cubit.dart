@@ -38,6 +38,8 @@ class StatisticsCubit extends Cubit<StatisticsState> {
         selectedStatus: state.selectedStatus,
         minPrice: state.minPrice,
         maxPrice: state.maxPrice,
+        selectedSource: state.selectedSource,
+        selectedPeriod: state.selectedPeriod,
       ));
       return;
     }
@@ -49,6 +51,8 @@ class StatisticsCubit extends Cubit<StatisticsState> {
       selectedStatus: state.selectedStatus,
       minPrice: state.minPrice,
       maxPrice: state.maxPrice,
+      selectedSource: state.selectedSource,
+      selectedPeriod: state.selectedPeriod,
     ));
 
     final Either<String, StatisticsModel> result =
@@ -69,6 +73,8 @@ class StatisticsCubit extends Cubit<StatisticsState> {
         selectedStatus: state.selectedStatus,
         minPrice: state.minPrice,
         maxPrice: state.maxPrice,
+        selectedSource: state.selectedSource,
+        selectedPeriod: state.selectedPeriod,
       )),
       (statistics) => emit(StatisticsLoaded(
         statistics: statistics,
@@ -77,6 +83,8 @@ class StatisticsCubit extends Cubit<StatisticsState> {
         selectedStatus: state.selectedStatus,
         minPrice: state.minPrice,
         maxPrice: state.maxPrice,
+        selectedSource: state.selectedSource,
+        selectedPeriod: state.selectedPeriod,
       )),
     );
   }
@@ -103,5 +111,13 @@ class StatisticsCubit extends Cubit<StatisticsState> {
       minPrice: null,
       maxPrice: null,
     ));
+  }
+
+  void setSource(String source) {
+    emit(state.copyWith(selectedSource: source));
+  }
+
+  void setPeriod(String period) {
+    emit(state.copyWith(selectedPeriod: period));
   }
 }

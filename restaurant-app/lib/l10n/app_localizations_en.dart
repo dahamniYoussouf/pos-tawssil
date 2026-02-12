@@ -296,13 +296,54 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statistics => 'Statistics';
 
   @override
+  String get all => 'All';
+
+  @override
+  String get appMobile => 'Mobile App';
+
+  @override
+  String get pos => 'POS';
+
+  @override
   String get today => 'Today';
+
+  @override
+  String get yesterday => 'Yesterday';
 
   @override
   String get thisWeek => 'This week';
 
   @override
   String get thisMonth => 'This month';
+
+  @override
+  String get days7 => '7 days';
+
+  @override
+  String get days30 => '30 days';
+
+  @override
+  String get commands => 'Orders';
+
+  @override
+  String get revenue => 'Revenue';
+
+  @override
+  String get totalRevenueLabel => 'Total Revenue';
+
+  @override
+  String get seeDetails => 'See Details';
+
+  @override
+  String get reviews => 'Reviews';
+
+  @override
+  String get seeAllReviews => 'See All Reviews';
+
+  @override
+  String totalReviewsCount(Object count) {
+    return 'Total $count Reviews';
+  }
 
   @override
   String get custom => 'Custom';
@@ -315,9 +356,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statusLabel => 'Status:';
-
-  @override
-  String get all => 'All';
 
   @override
   String get accepted => 'Accepted';
@@ -642,9 +680,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deliveryApp => 'Delivery App';
 
   @override
-  String get pos => 'POS';
-
-  @override
   String get success => 'Success';
 
   @override
@@ -868,4 +903,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addOptionGroup => '+ Add option group';
+
+  @override
+  String get refresh => 'Refresh';
 }
