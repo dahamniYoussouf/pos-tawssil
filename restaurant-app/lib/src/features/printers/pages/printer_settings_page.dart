@@ -3,7 +3,7 @@ import 'package:restaurant_app/src/core/res/color_app.dart';
 import '../models/restaurant_printer.dart';
 import '../services/local_printer_scanner.dart';
 import '../services/local_print_service.dart';
-import '../services/printer_storage_service.dart';
+import '../services/printer_api_service.dart';
 import '../services/print_service.dart';
 
 class PrinterSettingsPage extends StatefulWidget {
@@ -14,7 +14,7 @@ class PrinterSettingsPage extends StatefulWidget {
 }
 
 class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
-  final PrinterStorageService _storage = PrinterStorageService();
+  final PrinterApiService _printerApi = PrinterApiService();
   final PrintService _printService = PrintService();
 
   List<RestaurantPrinter> _printers = [];
@@ -30,26 +30,69 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
     setState(() {
       _loading = true;
     });
-    final printers = await _storage.loadPrinters();
-    setState(() {
-      _printers = printers;
-      _loading = false;
-    });
+    try {
+      final printers = await _printerApi.fetchPrinters();
+      if (!mounted) return;
+      setState(() {
+        _printers = printers;
+      });
+    } catch (e) {
+      _showError(_errorMessage(e));
+    } finally {
+      if (!mounted) return;
+      setState(() {
+        _loading = false;
+      });
+    }
   }
 
-  Future<void> _savePrinter(RestaurantPrinter printer) async {
-    final exists = _printers.any((p) => p.id == printer.id);
-    if (exists) {
-      await _storage.updatePrinter(printer);
-    } else {
-      await _storage.addPrinter(printer);
+  Future<void> _createPrinter({
+    required String name,
+    required String type,
+    required String ip,
+    required int port,
+    required bool isEnabled,
+    required int paperWidthMm,
+  }) async {
+    try {
+      await _printerApi.createPrinter(
+        name: name,
+        type: type,
+        ip: ip,
+        port: port,
+        isEnabled: isEnabled,
+        paperWidthMm: paperWidthMm,
+      );
+      await _loadPrinters();
+    } catch (e) {
+      _showError(_errorMessage(e));
     }
-    await _loadPrinters();
+  }
+
+  Future<void> _updatePrinter(RestaurantPrinter printer) async {
+    try {
+      await _printerApi.updatePrinter(
+        printerId: printer.id,
+        name: printer.name,
+        type: printer.type,
+        ip: printer.ip,
+        port: printer.port,
+        isEnabled: printer.isEnabled,
+        paperWidthMm: printer.paperWidthMm,
+      );
+      await _loadPrinters();
+    } catch (e) {
+      _showError(_errorMessage(e));
+    }
   }
 
   Future<void> _deletePrinter(RestaurantPrinter printer) async {
-    await _storage.deletePrinter(printer.id);
-    await _loadPrinters();
+    try {
+      await _printerApi.deletePrinter(printer.id);
+      await _loadPrinters();
+    } catch (e) {
+      _showError(_errorMessage(e));
+    }
   }
 
   Future<void> _scanNetwork() async {
@@ -102,6 +145,21 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
     });
     if (!mounted) return;
     _showDetectedPrinters(results);
+  }
+
+  void _showError(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
+
+  String _errorMessage(Object error) {
+    final text = error.toString();
+    if (text.startsWith('Exception: ')) {
+      return text.substring('Exception: '.length);
+    }
+    return text;
   }
 
   void _showDetectedPrinters(List<Map<String, dynamic>> results) {
@@ -260,18 +318,29 @@ class _PrinterSettingsPageState extends State<PrinterSettingsPage> {
                 ElevatedButton(
                   onPressed: () async {
                     if (!formKey.currentState!.validate()) return;
-                    final printerId = printer?.id ??
-                        DateTime.now().millisecondsSinceEpoch.toString();
-                    final newPrinter = RestaurantPrinter(
-                      id: printerId,
-                      name: nameController.text.trim(),
-                      type: typeValue,
-                      ip: ipController.text.trim(),
-                      port: int.parse(portController.text.trim()),
-                      isEnabled: isEnabled,
-                      paperWidthMm: paperWidth,
-                    );
-                    await _savePrinter(newPrinter);
+                    final name = nameController.text.trim();
+                    final ip = ipController.text.trim();
+                    final port = int.parse(portController.text.trim());
+                    if (isEdit && printer != null) {
+                      final updated = printer.copyWith(
+                        name: name,
+                        type: typeValue,
+                        ip: ip,
+                        port: port,
+                        isEnabled: isEnabled,
+                        paperWidthMm: paperWidth,
+                      );
+                      await _updatePrinter(updated);
+                    } else {
+                      await _createPrinter(
+                        name: name,
+                        type: typeValue,
+                        ip: ip,
+                        port: port,
+                        isEnabled: isEnabled,
+                        paperWidthMm: paperWidth,
+                      );
+                    }
                     if (mounted) Navigator.pop(context);
                   },
                   child: const Text('Save'),
