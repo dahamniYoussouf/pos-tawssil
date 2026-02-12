@@ -13,20 +13,71 @@ class RestaurantCubit extends Cubit<RestaurantState> {
         super(RestaurantInitial());
 
   Future<void> fetchRestaurantDetails() async {
-    if (state is RestaurantLoading) return;
-    emit(RestaurantLoading());
+    // Only show loading if we don't have data already
+    if (state is! RestaurantLoaded) {
+      emit(RestaurantLoading());
+    }
+
     final result = await _restaurantRepository.getRestaurantDetails();
     result.fold(
-      (error) => emit(RestaurantError(message: error)),
+      (error) {
+        if (state is! RestaurantLoaded) {
+          emit(RestaurantError(message: error));
+        }
+      },
       (restaurant) {
-        // Initialize status based on isActive or default to 'open' if null
-        final initialStatus = restaurant.status ??
-            (restaurant.isActive == true
-                ? RestaurantStatus.open
-                : RestaurantStatus.closed);
-        emit(RestaurantLoaded(
-          restaurant: restaurant.copyWith(status: initialStatus),
-        ));
+        if (state is RestaurantLoaded) {
+          // hna ndiro Merge details fI nafs state but keep profile info
+          final current = (state as RestaurantLoaded).restaurant;
+          emit(RestaurantLoaded(
+            restaurant: current.copyWith(
+              categories: restaurant.categories,
+            ),
+          ));
+        } else {
+          final initialStatus = restaurant.status ??
+              (restaurant.isActive == true
+                  ? RestaurantStatus.open
+                  : RestaurantStatus.closed);
+          emit(RestaurantLoaded(
+            restaurant: restaurant.copyWith(status: initialStatus),
+          ));
+        }
+      },
+    );
+  }
+
+  Future<void> fetchRestaurantProfile() async {
+    if (state is! RestaurantLoaded) {
+      emit(RestaurantLoading());
+    }
+
+    final result = await _restaurantRepository.getRestaurantProfile();
+    result.fold(
+      (error) {
+        if (state is! RestaurantLoaded) {
+          emit(RestaurantError(message: error));
+        }
+      },
+      (restaurant) {
+        if (state is RestaurantLoaded) {
+          // hna ndiro Merge profile info fI nafs state but keep details like categories
+          final current = (state as RestaurantLoaded).restaurant;
+          emit(RestaurantLoaded(
+            restaurant: restaurant.copyWith(
+              categories: current.categories ?? restaurant.categories,
+              status: current.status ?? restaurant.status,
+            ),
+          ));
+        } else {
+          final initialStatus = restaurant.status ??
+              (restaurant.isActive == true
+                  ? RestaurantStatus.open
+                  : RestaurantStatus.closed);
+          emit(RestaurantLoaded(
+            restaurant: restaurant.copyWith(status: initialStatus),
+          ));
+        }
       },
     );
   }

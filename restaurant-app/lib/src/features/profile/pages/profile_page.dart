@@ -23,7 +23,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    locator<RestaurantCubit>().fetchRestaurantDetails();
+    locator<RestaurantCubit>().fetchRestaurantProfile();
   }
 
   @override

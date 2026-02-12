@@ -25,6 +25,23 @@ class RestaurantRepository {
     }
   }
 
+  Future<Either<String, RestaurantModel>> getRestaurantProfile() async {
+    try {
+      final response = await _restaurantService.getRestaurantProfile();
+      if (response['success'] == true) {
+        final data = response['data'] ?? response['restaurant'] ?? response;
+        final restaurant =
+            RestaurantModel.fromJson(data as Map<String, dynamic>);
+        return Right(restaurant);
+      } else {
+        return Left(
+            response['message'] ?? 'Failed to fetch restaurant profile');
+      }
+    } catch (e) {
+      return Left('Error fetching restaurant profile: ${e.toString()}');
+    }
+  }
+
   Future<Either<String, void>> updateRestaurantProfile(
       RestaurantModel restaurant) async {
     try {
