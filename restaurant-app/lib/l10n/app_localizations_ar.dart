@@ -729,19 +729,34 @@ class AppLocalizationsAr extends AppLocalizations {
   String get statusOpen => 'مفتوح';
 
   @override
-  String get statusBusy => 'مشغول';
-
-  @override
   String get statusClosed => 'مغلق';
 
   @override
   String get statusOpenSubtitle => 'قبول الطلبات';
 
   @override
-  String get statusBusySubtitle => 'مغلق لمدة ساعة';
+  String get statusClosedSubtitle => 'مغلق طوال اليوم';
 
   @override
-  String get statusClosedSubtitle => 'مغلق طوال اليوم';
+  String get statusVacation => 'في عطلة';
+
+  @override
+  String get statusSaturated => 'مشغول جداً';
+
+  @override
+  String get statusOther => 'أخرى';
+
+  @override
+  String get statusVacationSubtitle => 'مغلق للعطلة';
+
+  @override
+  String get statusSaturatedSubtitle => 'طلبات كثيرة جداً';
+
+  @override
+  String get statusOtherSubtitle => 'حدد السبب';
+
+  @override
+  String get availabilityNoteHint => 'أدخل السبب...';
 
   @override
   String get closeRestaurantTitle => 'إغلاق متجرك لمدة';

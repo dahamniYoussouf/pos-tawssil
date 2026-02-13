@@ -27,13 +27,21 @@ class RestaurantStatusBadge extends StatelessWidget {
               color = const Color(0xFF22C55E); // Green
               label = localizations.statusOpen;
               break;
-            case RestaurantStatus.busy:
-              color = AppColors.primary; // Orange/Primary
-              label = localizations.statusBusy;
-              break;
             case RestaurantStatus.closed:
               color = AppColors.red;
               label = localizations.statusClosed;
+              break;
+            case RestaurantStatus.vacation:
+              color = const Color(0xFF6366F1); // Indigo
+              label = localizations.statusVacation;
+              break;
+            case RestaurantStatus.saturated:
+              color = const Color(0xFFEA580C); // Dark Orange
+              label = localizations.statusSaturated;
+              break;
+            case RestaurantStatus.other:
+              color = AppColors.textGrey;
+              label = localizations.statusOther;
               break;
             default:
               color = AppColors.red;
@@ -90,13 +98,19 @@ class RestaurantStatusBadge extends StatelessWidget {
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       backgroundColor: AppColors.white,
       builder: (context) {
         return Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.only(
+            left: 24,
+            right: 24,
+            top: 24,
+            bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -134,18 +148,7 @@ class RestaurantStatusBadge extends StatelessWidget {
                   statusValue: RestaurantStatus.open,
                 ),
 
-              const SizedBox(height: 16),
-
-              _buildStatusOption(
-                context: context,
-                icon: Icons.access_time_filled,
-                color: AppColors.primary,
-                title: localizations.statusBusy,
-                subtitle: localizations.statusBusySubtitle,
-                statusValue: RestaurantStatus.busy,
-              ),
-
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
 
               _buildStatusOption(
                 context: context,
@@ -156,7 +159,40 @@ class RestaurantStatusBadge extends StatelessWidget {
                 statusValue: RestaurantStatus.closed,
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 12),
+
+              _buildStatusOption(
+                context: context,
+                icon: Icons.beach_access,
+                color: const Color(0xFF6366F1),
+                title: localizations.statusVacation,
+                subtitle: localizations.statusVacationSubtitle,
+                statusValue: RestaurantStatus.vacation,
+              ),
+
+              const SizedBox(height: 12),
+
+              _buildStatusOption(
+                context: context,
+                icon: Icons.error_outline,
+                color: const Color(0xFFEA580C),
+                title: localizations.statusSaturated,
+                subtitle: localizations.statusSaturatedSubtitle,
+                statusValue: RestaurantStatus.saturated,
+              ),
+
+              const SizedBox(height: 12),
+
+              _buildStatusOption(
+                context: context,
+                icon: Icons.more_horiz,
+                color: AppColors.textGrey,
+                title: localizations.statusOther,
+                subtitle: localizations.statusOtherSubtitle,
+                statusValue: RestaurantStatus.other,
+              ),
+
+              const SizedBox(height: 12),
             ],
           ),
         );
@@ -173,9 +209,21 @@ class RestaurantStatusBadge extends StatelessWidget {
     required String statusValue,
   }) {
     return InkWell(
-      onTap: () {
-        context.read<RestaurantCubit>().updateStatus(statusValue);
-        Navigator.pop(context);
+      onTap: () async {
+        if (statusValue == RestaurantStatus.other) {
+          Navigator.pop(context); // Close bottom sheet
+          final String? note = await _showNoteDialog(context);
+          if (note != null && note.isNotEmpty) {
+            if (context.mounted) {
+              context
+                  .read<RestaurantCubit>()
+                  .updateStatus(statusValue, note: note);
+            }
+          }
+        } else {
+          context.read<RestaurantCubit>().updateStatus(statusValue);
+          Navigator.pop(context);
+        }
       },
       borderRadius: BorderRadius.circular(12),
       child: Row(
@@ -183,7 +231,7 @@ class RestaurantStatusBadge extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.1),
+              color: color.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 24),
@@ -210,6 +258,43 @@ class RestaurantStatusBadge extends StatelessWidget {
                 ),
               ],
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<String?> _showNoteDialog(BuildContext context) async {
+    final localizations = AppLocalizations.of(context)!;
+    final controller = TextEditingController();
+
+    return showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(localizations.statusOther),
+        content: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            hintText: localizations.availabilityNoteHint,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          autofocus: true,
+          maxLines: 3,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(localizations.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, controller.text),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+            ),
+            child: Text(localizations.update),
           ),
         ],
       ),

@@ -733,19 +733,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get statusOpen => 'Open';
 
   @override
-  String get statusBusy => 'Busy';
-
-  @override
   String get statusClosed => 'Closed';
 
   @override
   String get statusOpenSubtitle => 'Accepting orders';
 
   @override
-  String get statusBusySubtitle => 'Closed for 1 hour';
+  String get statusClosedSubtitle => 'Closed all day';
 
   @override
-  String get statusClosedSubtitle => 'Closed all day';
+  String get statusVacation => 'On Vacation';
+
+  @override
+  String get statusSaturated => 'Saturated';
+
+  @override
+  String get statusOther => 'Other';
+
+  @override
+  String get statusVacationSubtitle => 'Closed for vacation';
+
+  @override
+  String get statusSaturatedSubtitle => 'Too many orders';
+
+  @override
+  String get statusOtherSubtitle => 'Specify a reason';
+
+  @override
+  String get availabilityNoteHint => 'Enter the reason...';
 
   @override
   String get closeRestaurantTitle => 'Close your store for';

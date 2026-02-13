@@ -2,8 +2,10 @@ import 'package:restaurant_app/src/features/categories/models/category_model.dar
 
 class RestaurantStatus {
   static const String open = 'open';
-  static const String busy = 'busy';
   static const String closed = 'closed';
+  static const String vacation = 'vacation';
+  static const String saturated = 'saturated';
+  static const String other = 'other';
 }
 
 class RestaurantModel {

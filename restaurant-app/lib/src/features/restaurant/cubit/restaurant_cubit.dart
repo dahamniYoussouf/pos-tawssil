@@ -82,14 +82,22 @@ class RestaurantCubit extends Cubit<RestaurantState> {
     );
   }
 
-  void updateStatus(String status) {
+  Future<void> updateStatus(String status, {String? note}) async {
     if (state is! RestaurantLoaded) return;
     final currentState = state as RestaurantLoaded;
 
-    // Static update only - update local model
-    emit(RestaurantLoaded(
-      restaurant: currentState.restaurant.copyWith(status: status),
-    ));
+    final previousRestaurant = currentState.restaurant;
+    final updatedRestaurant = previousRestaurant.copyWith(status: status);
+
+    emit(RestaurantLoading());
+
+    final result =
+        await _restaurantRepository.updateRestaurantStatus(status, note: note);
+
+    result.fold(
+      (error) => emit(RestaurantError(message: error)),
+      (_) => emit(RestaurantLoaded(restaurant: updatedRestaurant)),
+    );
   }
 
   Future<void> updateProfile(RestaurantModel restaurant) async {

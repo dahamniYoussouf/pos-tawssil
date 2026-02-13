@@ -27,15 +27,39 @@ class RestaurantRepository {
 
   Future<Either<String, RestaurantModel>> getRestaurantProfile() async {
     try {
-      final response = await _restaurantService.getRestaurantProfile();
-      if (response['success'] == true) {
-        final data = response['data'] ?? response['restaurant'] ?? response;
+      final results = await Future.wait([
+        _restaurantService.getRestaurantProfile(),
+        _restaurantService.getRestaurantDetails(),
+      ]);
+
+      final profileResponse = results[0];
+      final detailsResponse = results[1];
+
+      if (profileResponse['success'] == true) {
+        final profileData = profileResponse['data'] ??
+            profileResponse['restaurant'] ??
+            profileResponse;
+
+        if (detailsResponse['success'] == true) {
+          final detailsData = detailsResponse['data'] ??
+              detailsResponse['restaurant'] ??
+              detailsResponse;
+
+          if (detailsData is Map<String, dynamic>) {
+            // Merge categories and any other missing fields from details
+            if (detailsData.containsKey('categories')) {
+              (profileData as Map<String, dynamic>)['categories'] =
+                  detailsData['categories'];
+            }
+          }
+        }
+
         final restaurant =
-            RestaurantModel.fromJson(data as Map<String, dynamic>);
+            RestaurantModel.fromJson(profileData as Map<String, dynamic>);
         return Right(restaurant);
       } else {
         return Left(
-            response['message'] ?? 'Failed to fetch restaurant profile');
+            profileResponse['message'] ?? 'Failed to fetch restaurant profile');
       }
     } catch (e) {
       return Left('Error fetching restaurant profile: ${e.toString()}');
@@ -72,6 +96,22 @@ class RestaurantRepository {
       }
     } catch (e) {
       return Left('Error uploading restaurant image: ${e.toString()}');
+    }
+  }
+
+  Future<Either<String, void>> updateRestaurantStatus(String status,
+      {String? note}) async {
+    try {
+      final response =
+          await _restaurantService.patchRestaurantStatus(status, note: note);
+      if (response['success'] == true) {
+        return const Right(null);
+      } else {
+        return Left(
+            response['message'] ?? 'Failed to update restaurant status');
+      }
+    } catch (e) {
+      return Left('Error updating restaurant status: ${e.toString()}');
     }
   }
 }

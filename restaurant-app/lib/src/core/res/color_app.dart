@@ -41,8 +41,8 @@ class AppColors {
   static const Color statusDelivering = Color(0xFF26A69A);
 
   static const Color primary = Color(0xFF059669);
-  static const Color statusBusy = Colors.orange;
   static const Color gold = Color(0xFFFFD700);
+
   static const Color goldDark = Color(0xFFB8860B);
   static const Color borderGrey = Color(0xFFE5E7EB);
   static const Color pendingBackground = Color(0x14747480);

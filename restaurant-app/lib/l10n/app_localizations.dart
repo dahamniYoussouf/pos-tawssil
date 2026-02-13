@@ -1504,12 +1504,6 @@ abstract class AppLocalizations {
   /// **'Open'**
   String get statusOpen;
 
-  /// No description provided for @statusBusy.
-  ///
-  /// In en, this message translates to:
-  /// **'Busy'**
-  String get statusBusy;
-
   /// No description provided for @statusClosed.
   ///
   /// In en, this message translates to:
@@ -1522,17 +1516,53 @@ abstract class AppLocalizations {
   /// **'Accepting orders'**
   String get statusOpenSubtitle;
 
-  /// No description provided for @statusBusySubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Closed for 1 hour'**
-  String get statusBusySubtitle;
-
   /// No description provided for @statusClosedSubtitle.
   ///
   /// In en, this message translates to:
   /// **'Closed all day'**
   String get statusClosedSubtitle;
+
+  /// No description provided for @statusVacation.
+  ///
+  /// In en, this message translates to:
+  /// **'On Vacation'**
+  String get statusVacation;
+
+  /// No description provided for @statusSaturated.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturated'**
+  String get statusSaturated;
+
+  /// No description provided for @statusOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get statusOther;
+
+  /// No description provided for @statusVacationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed for vacation'**
+  String get statusVacationSubtitle;
+
+  /// No description provided for @statusSaturatedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many orders'**
+  String get statusSaturatedSubtitle;
+
+  /// No description provided for @statusOtherSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Specify a reason'**
+  String get statusOtherSubtitle;
+
+  /// No description provided for @availabilityNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the reason...'**
+  String get availabilityNoteHint;
 
   /// No description provided for @closeRestaurantTitle.
   ///

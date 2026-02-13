@@ -19,4 +19,15 @@ class RestaurantService extends BaseApiService {
     return await uploadMultipartFile('/uploads/upload',
         file: File(path), fileFieldName: 'image');
   }
+
+  Future<Map<String, dynamic>> patchRestaurantStatus(String status,
+      {String? note}) async {
+    final Map<String, dynamic> data = {
+      'availability_status': status,
+    };
+    if (note != null) {
+      data['availability_note'] = note;
+    }
+    return await patchRequest('/restaurant/status', data: data);
+  }
 }
