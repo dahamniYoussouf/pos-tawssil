@@ -9,7 +9,7 @@ import 'package:client_app/src/features/auth/cubit/auth_state.dart';
 import '../cubit/auth_cubit.dart';
 import 'user_info_page.dart';
 import '../../locations/pages/location_page.dart';
-import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 
 /// Verification Page for OTP code entry
 class VerificationPage extends StatefulWidget {
@@ -414,7 +414,7 @@ class _DevOtpSection extends StatelessWidget {
   }
 }
 
-/// OTP input section with circular fields
+/// OTP input section with square fields
 class _OtpInputSection extends StatelessWidget {
   final TextEditingController otpController;
   final Function(String) onCodeChanged;
@@ -428,36 +428,27 @@ class _OtpInputSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PinCodeTextField(
-      appContext: context,
-      length: 6,
-      controller: otpController,
-      onChanged: onCodeChanged,
-      onCompleted: (value) => onVerify(),
-      mainAxisAlignment: MainAxisAlignment.center,
-      pinTheme: PinTheme(
-        shape: PinCodeFieldShape.circle,
-        fieldHeight: 35,
-        fieldWidth: 35,
-        activeFillColor: ColorApp.backgroundGrey,
-        inactiveFillColor: ColorApp.backgroundGrey,
-        selectedFillColor: ColorApp.backgroundGrey,
-        inactiveColor: ColorApp.greyBorder,
-        selectedColor: ColorApp.greyBorder,
-        borderWidth: 0.7,
-        fieldOuterPadding: const EdgeInsets.symmetric(horizontal: 7),
-      ),
+    return OtpTextField(
+      numberOfFields: 6,
+      borderColor: ColorApp.greyBorder,
+      focusedBorderColor: ColorApp.primary,
+      showFieldAsBox: true,
+      fieldWidth: 46,
+      fieldHeight: 55,
+      borderRadius: BorderRadius.circular(12),
+      margin: const EdgeInsets.symmetric(horizontal: 2),
+      onCodeChanged: onCodeChanged,
+      onSubmit: (String verificationCode) {
+        otpController.text = verificationCode;
+        onVerify();
+      },
       textStyle: const TextStyle(
-        fontSize: 14,
+        fontSize: 18,
         fontWeight: FontWeight.bold,
+        color: ColorApp.black,
+        height: 1.0,
       ),
       keyboardType: TextInputType.number,
-      inputFormatters: [
-        FilteringTextInputFormatter.digitsOnly,
-      ],
-      enableActiveFill: true,
-      animationType: AnimationType.fade,
-      animationDuration: const Duration(milliseconds: 300),
     );
   }
 }
