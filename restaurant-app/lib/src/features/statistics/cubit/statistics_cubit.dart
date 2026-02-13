@@ -110,6 +110,7 @@ class StatisticsCubit extends Cubit<StatisticsState> {
       selectedStatus: null,
       minPrice: null,
       maxPrice: null,
+      selectedPeriod: 'all',
     ));
   }
 
@@ -117,7 +118,44 @@ class StatisticsCubit extends Cubit<StatisticsState> {
     emit(state.copyWith(selectedSource: source));
   }
 
-  void setPeriod(String period) {
-    emit(state.copyWith(selectedPeriod: period));
+  Future<void> setPeriod(String period) async {
+    final now = DateTime.now();
+    DateTime from;
+    DateTime to;
+
+    switch (period) {
+      case 'all':
+        from = DateTime(now.year, now.month, 1);
+        to = now;
+        break;
+      case 'today':
+        from = DateTime(now.year, now.month, now.day);
+        to = now;
+        break;
+      case 'yesterday':
+        final yesterday = now.subtract(const Duration(days: 1));
+        from = DateTime(yesterday.year, yesterday.month, yesterday.day);
+        to = DateTime(
+            yesterday.year, yesterday.month, yesterday.day, 23, 59, 59);
+        break;
+      case 'week':
+        final weekStart = now.subtract(const Duration(days: 6));
+        from = DateTime(weekStart.year, weekStart.month, weekStart.day);
+        to = now;
+        break;
+      case 'month':
+      default:
+        from = DateTime(now.year, now.month, 1);
+        to = now;
+        break;
+    }
+
+    emit(state.copyWith(
+      selectedPeriod: period,
+      dateFrom: from,
+      dateTo: to,
+    ));
+
+    await fetchStatistics();
   }
 }

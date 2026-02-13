@@ -9,7 +9,7 @@ class StatisticsState extends Equatable {
   final double? minPrice;
   final double? maxPrice;
   final String selectedSource; // all, mobile, pos
-  final String selectedPeriod; // today, yesterday, week, month
+  final String selectedPeriod; // all, today, yesterday, week, month
 
   const StatisticsState({
     this.statistics,
@@ -19,7 +19,7 @@ class StatisticsState extends Equatable {
     this.minPrice,
     this.maxPrice,
     this.selectedSource = 'all',
-    this.selectedPeriod = 'today',
+    this.selectedPeriod = 'all',
   });
 
   @override
@@ -60,7 +60,7 @@ class StatisticsState extends Equatable {
 class StatisticsInitial extends StatisticsState {
   const StatisticsInitial({
     super.selectedSource = 'all',
-    super.selectedPeriod = 'today',
+    super.selectedPeriod = 'all',
   });
 }
 
@@ -73,7 +73,7 @@ class StatisticsLoading extends StatisticsState {
     super.minPrice,
     super.maxPrice,
     super.selectedSource = 'all',
-    super.selectedPeriod = 'today',
+    super.selectedPeriod = 'all',
   });
 }
 
@@ -86,7 +86,7 @@ class StatisticsLoaded extends StatisticsState {
     super.minPrice,
     super.maxPrice,
     super.selectedSource = 'all',
-    super.selectedPeriod = 'today',
+    super.selectedPeriod = 'all',
   });
 }
 
@@ -102,7 +102,7 @@ class StatisticsError extends StatisticsState {
     super.minPrice,
     super.maxPrice,
     super.selectedSource = 'all',
-    super.selectedPeriod = 'today',
+    super.selectedPeriod = 'all',
   });
 
   @override

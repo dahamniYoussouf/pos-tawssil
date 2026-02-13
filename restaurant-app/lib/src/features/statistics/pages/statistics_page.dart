@@ -15,59 +15,6 @@ class StatisticsPage extends StatefulWidget {
 }
 
 class _StatisticsPageState extends State<StatisticsPage> {
-  // Fake data
-  final Map<String, Map<String, dynamic>> _fakeData = {
-    'today': {
-      'orders': 42,
-      'revenue': 223241,
-      'chartData': [
-        {'time': '10AM', 'mobile': 5000, 'pos': 4500},
-        {'time': '11AM', 'mobile': 6200, 'pos': 5800},
-        {'time': '12PM', 'mobile': 8500, 'pos': 7200},
-        {'time': '01PM', 'mobile': 7800, 'pos': 8200},
-        {'time': '02PM', 'mobile': 7200, 'pos': 8800},
-        {'time': '03PM', 'mobile': 8800, 'pos': 7500},
-        {'time': '04PM', 'mobile': 9500, 'pos': 8200},
-      ],
-    },
-    'yesterday': {
-      'orders': 38,
-      'revenue': 198450,
-      'chartData': [
-        {'time': '10AM', 'mobile': 4500, 'pos': 4200},
-        {'time': '11AM', 'mobile': 5800, 'pos': 5400},
-        {'time': '12PM', 'mobile': 7800, 'pos': 6800},
-        {'time': '01PM', 'mobile': 7200, 'pos': 7800},
-        {'time': '02PM', 'mobile': 6800, 'pos': 8200},
-        {'time': '03PM', 'mobile': 8200, 'pos': 7100},
-        {'time': '04PM', 'mobile': 8800, 'pos': 7800},
-      ],
-    },
-    'week': {
-      'orders': 294,
-      'revenue': 1562847,
-      'chartData': [
-        {'time': 'Mon', 'mobile': 35000, 'pos': 32000},
-        {'time': 'Tue', 'mobile': 42000, 'pos': 38000},
-        {'time': 'Wed', 'mobile': 48000, 'pos': 44000},
-        {'time': 'Thu', 'mobile': 45000, 'pos': 48000},
-        {'time': 'Fri', 'mobile': 52000, 'pos': 49000},
-        {'time': 'Sat', 'mobile': 58000, 'pos': 54000},
-        {'time': 'Sun', 'mobile': 55000, 'pos': 52000},
-      ],
-    },
-    'month': {
-      'orders': 1247,
-      'revenue': 6854923,
-      'chartData': [
-        {'time': 'W1', 'mobile': 145000, 'pos': 138000},
-        {'time': 'W2', 'mobile': 168000, 'pos': 155000},
-        {'time': 'W3', 'mobile': 182000, 'pos': 172000},
-        {'time': 'W4', 'mobile': 195000, 'pos': 185000},
-      ],
-    },
-  };
-
   @override
   void initState() {
     super.initState();
@@ -80,17 +27,75 @@ class _StatisticsPageState extends State<StatisticsPage> {
     await context.read<StatisticsCubit>().fetchStatistics();
   }
 
-  Map<String, dynamic> _getCurrentData(String period) => _fakeData[period]!;
+  Map<String, dynamic> _buildCurrentData(StatisticsState state) {
+    final periodData = state.statistics?.getPeriodData(state.selectedPeriod);
+    if (periodData != null) {
+      return {
+        'orders': periodData.orders,
+        'revenue': periodData.revenue,
+        'chartData': periodData.chartData
+            .map((point) => <String, dynamic>{
+                  'time': point.time,
+                  'mobile': point.mobile,
+                  'pos': point.pos,
+                })
+            .toList(),
+      };
+    }
 
-  int _getDisplayedOrders(String source, String period) {
-    final orders = _getCurrentData(period)['orders'] as int;
+    final allData = state.statistics?.getPeriodData('all');
+    if (allData != null) {
+      return {
+        'orders': allData.orders,
+        'revenue': allData.revenue,
+        'chartData': allData.chartData
+            .map((point) => <String, dynamic>{
+                  'time': point.time,
+                  'mobile': point.mobile,
+                  'pos': point.pos,
+                })
+            .toList(),
+      };
+    }
+
+    final labels = _getFallbackLabels(state.selectedPeriod);
+    return {
+      'orders': 0,
+      'revenue': 0.0,
+      'chartData': labels
+          .map((label) => <String, dynamic>{
+                'time': label,
+                'mobile': 0.0,
+                'pos': 0.0,
+              })
+          .toList(),
+    };
+  }
+
+  List<String> _getFallbackLabels(String period) {
+    switch (period) {
+      case 'today':
+      case 'yesterday':
+        return ['10AM', '11AM', '12PM', '01PM', '02PM', '03PM', '04PM'];
+      case 'week':
+        return ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      case 'month':
+        return ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+      case 'all':
+      default:
+        return ['Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb'];
+    }
+  }
+
+  int _getDisplayedOrders(String source, StatisticsState state) {
+    final orders = _buildCurrentData(state)['orders'] as int;
     if (source == 'all') return orders;
     if (source == 'mobile') return (orders * 0.55).round();
     return (orders * 0.45).round();
   }
 
-  double _getDisplayedRevenue(String source, String period) {
-    final revenue = (_getCurrentData(period)['revenue'] as num).toDouble();
+  double _getDisplayedRevenue(String source, StatisticsState state) {
+    final revenue = (_buildCurrentData(state)['revenue'] as num).toDouble();
     if (source == 'all') return revenue;
     if (source == 'mobile') return revenue * 0.55;
     return revenue * 0.45;
@@ -202,6 +207,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
+          _buildPeriodChip(context, localizations.all, 'all', state),
+          const SizedBox(width: 12),
           _buildPeriodChip(context, localizations.today, 'today', state),
           const SizedBox(width: 12),
           _buildPeriodChip(
@@ -262,10 +269,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   Widget _buildStatCards(
       AppLocalizations localizations, StatisticsState state) {
-    final displayedOrders =
-        _getDisplayedOrders(state.selectedSource, state.selectedPeriod);
-    final displayedRevenue =
-        _getDisplayedRevenue(state.selectedSource, state.selectedPeriod);
+    final displayedOrders = _getDisplayedOrders(state.selectedSource, state);
+    final displayedRevenue = _getDisplayedRevenue(state.selectedSource, state);
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -337,10 +342,9 @@ class _StatisticsPageState extends State<StatisticsPage> {
 
   Widget _buildRevenueChart(
       AppLocalizations localizations, StatisticsState state) {
-    final chartData =
-        _getCurrentData(state.selectedPeriod)['chartData'] as List;
-    final displayedRevenue =
-        _getDisplayedRevenue(state.selectedSource, state.selectedPeriod);
+    final currentData = _buildCurrentData(state);
+    final chartData = currentData['chartData'] as List;
+    final displayedRevenue = _getDisplayedRevenue(state.selectedSource, state);
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
@@ -540,7 +544,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
       final posValue = (data['pos'] as num).toDouble();
       maxValue = math.max(maxValue, math.max(mobileValue, posValue));
     }
-    return maxValue * 1.2;
+    return maxValue == 0 ? 100 : maxValue * 1.2;
   }
 
   Widget _buildLegendItem(String label, Color color) {
