@@ -137,7 +137,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
                   const SizedBox(height: 24),
                   _buildRevenueChart(localizations, state),
                   const SizedBox(height: 24),
-                  _buildReviewsSection(localizations),
+                  _buildReviewsSection(localizations, state),
                   const SizedBox(height: 24),
                 ],
               ),
@@ -571,7 +571,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
     );
   }
 
-  Widget _buildReviewsSection(AppLocalizations localizations) {
+  Widget _buildReviewsSection(
+      AppLocalizations localizations, StatisticsState state) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       padding: const EdgeInsets.all(20),
@@ -620,8 +621,8 @@ class _StatisticsPageState extends State<StatisticsPage> {
                 size: 32,
               ),
               const SizedBox(width: 8),
-              const Text(
-                '4.9',
+              Text(
+                state.reviewsValue.toStringAsFixed(1),
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
@@ -630,7 +631,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
               ),
               const SizedBox(width: 12),
               Text(
-                localizations.totalReviewsCount(20),
+                localizations.totalReviewsCount(state.reviews.toInt()),
                 style: const TextStyle(
                   fontSize: 14,
                   color: Color(0xFF64748B),
