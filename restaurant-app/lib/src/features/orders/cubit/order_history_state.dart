@@ -20,28 +20,33 @@ class OrderHistoryLoading extends OrderHistoryState {
 }
 
 class OrderHistoryLoaded extends OrderHistoryState {
-  final List<OrderModel> orders;
+  final List<OrderModel> ordersPos;
+  final List<OrderModel> ordersMobile;
   final bool hasMore;
   final int currentPage;
 
   const OrderHistoryLoaded({
-    required this.orders,
+    required this.ordersPos,
+    required this.ordersMobile,
     required super.filters,
     this.hasMore = true,
     this.currentPage = 1,
   });
 
   @override
-  List<Object?> get props => [orders, hasMore, currentPage, filters];
+  List<Object?> get props =>
+      [ordersPos, ordersMobile, hasMore, currentPage, filters];
 
   OrderHistoryLoaded copyWith({
-    List<OrderModel>? orders,
+    List<OrderModel>? ordersPos,
+    List<OrderModel>? ordersMobile,
     bool? hasMore,
     int? currentPage,
     OrderHistoryFilters? filters,
   }) {
     return OrderHistoryLoaded(
-      orders: orders ?? this.orders,
+      ordersMobile: ordersMobile ?? this.ordersMobile,
+      ordersPos: ordersPos ?? this.ordersPos,
       hasMore: hasMore ?? this.hasMore,
       currentPage: currentPage ?? this.currentPage,
       filters: filters ?? this.filters,
@@ -60,4 +65,3 @@ class OrderHistoryError extends OrderHistoryState {
   @override
   List<Object?> get props => [message, filters];
 }
-

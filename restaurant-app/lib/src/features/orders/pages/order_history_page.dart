@@ -7,6 +7,7 @@ import 'package:restaurant_app/src/core/res/media_res.dart';
 import 'package:restaurant_app/src/features/orders/cubit/order_history_cubit.dart';
 import 'package:restaurant_app/src/features/orders/cubit/order_history_state.dart';
 import 'package:restaurant_app/src/features/orders/models/order_history_filters.dart';
+import 'package:restaurant_app/src/features/orders/models/order_model.dart';
 import 'package:restaurant_app/src/features/orders/widgets/order_history_card.dart';
 
 class OrderHistoryPage extends StatefulWidget {
@@ -99,7 +100,8 @@ class OrderHistoryContentWidget extends StatelessWidget {
           return const OrderHistoryLoadingIndicatorWidget();
         } else if (state is OrderHistoryLoaded) {
           final loadedState = state;
-          if (loadedState.orders.isEmpty) {
+          final visibleOrders = _getVisibleOrders(loadedState);
+          if (visibleOrders.isEmpty) {
             return OrderHistoryEmptyStateWidget(filters: loadedState.filters);
           }
           return OrderHistoryOrdersListWidget();
@@ -179,23 +181,24 @@ class _OrderHistoryOrdersListWidgetState
       child: BlocBuilder<OrderHistoryCubit, OrderHistoryState>(
         builder: (context, state) {
           if (state is OrderHistoryLoaded) {
+            final visibleOrders = _getVisibleOrders(state);
             return ListView.builder(
               controller: _scrollController,
               shrinkWrap: true,
               physics: const AlwaysScrollableScrollPhysics(),
               padding: const EdgeInsets.symmetric(vertical: 8),
-              itemCount: state.orders.length + (state.hasMore ? 1 : 0),
+              itemCount: visibleOrders.length + (state.hasMore ? 1 : 0),
               itemBuilder: (context, index) {
-                if (index >= state.orders.length) {
+                if (index >= visibleOrders.length) {
                   return const OrderHistoryLoadingIndicatorWidget();
                 }
                 return OrderHistoryCard(
-                  order: state.orders[index],
+                  order: visibleOrders[index],
                   onTap: () {
                     Navigator.pushNamed(
                       context,
                       '/order-details',
-                      arguments: state.orders[index],
+                      arguments: visibleOrders[index],
                     );
                   },
                 );
@@ -207,6 +210,17 @@ class _OrderHistoryOrdersListWidgetState
       ),
     );
   }
+}
+
+List<OrderModel> _getVisibleOrders(OrderHistoryLoaded state) {
+  final orderType = state.filters.orderType;
+  if (orderType == 'pos') {
+    return state.ordersPos;
+  }
+  if (orderType == 'delivery') {
+    return state.ordersMobile;
+  }
+  return [...state.ordersPos, ...state.ordersMobile];
 }
 
 class OrderHistoryLoadingIndicatorWidget extends StatelessWidget {
@@ -263,7 +277,7 @@ class OrderHistoryEmptyStateWidget extends StatelessWidget {
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: () {
-                context.read<OrderHistoryCubit>().clearFilters();
+                context.read<OrderHistoryCubit>().refresh();
               },
               icon: const Icon(Icons.clear_all, color: AppColors.white),
               label: Text(
