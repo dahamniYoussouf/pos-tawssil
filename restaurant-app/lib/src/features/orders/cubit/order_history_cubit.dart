@@ -135,7 +135,6 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
     // Emit loading state with new filters, then fetch
     // fetchOrderHistory will read state.filters which will be the new filters
     emit(OrderHistoryLoading(filters: filters));
-    await refresh();
   }
 
   // Methods that only update filters without fetching (used in filters widget)

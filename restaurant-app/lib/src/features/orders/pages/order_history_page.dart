@@ -51,7 +51,7 @@ class _OrderHistoryPageState extends State<OrderHistoryPage> {
             onTap: (index) {
               final orderType =
                   index == 1 ? 'delivery' : (index == 2 ? 'pos' : null);
-              context.read<OrderHistoryCubit>().setOrderType(orderType);
+              context.read<OrderHistoryCubit>().setOrderTypeOnly(orderType);
             },
             indicatorColor: AppColors.primaryColor,
             indicatorWeight: 3,
