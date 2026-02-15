@@ -51,6 +51,10 @@ class RestaurantRepository {
               (profileData as Map<String, dynamic>)['categories'] =
                   detailsData['categories'];
             }
+            if (detailsData.containsKey('home_categories')) {
+              (profileData as Map<String, dynamic>)['home_categories'] =
+                  detailsData['home_categories'];
+            }
           }
         }
 

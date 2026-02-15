@@ -1,4 +1,5 @@
 import 'package:restaurant_app/src/features/categories/models/category_model.dart';
+import 'package:restaurant_app/src/features/categories/models/home_category_model.dart';
 
 class RestaurantStatus {
   static const String open = 'open';
@@ -20,6 +21,7 @@ class RestaurantModel {
   final String? willaya;
   final String? zone;
   final List<CategoryModel>? categories;
+  final List<HomeCategoryModel>? homeCategories;
   final String? imageUrl;
   final bool? isActive;
   final bool? isApproved;
@@ -40,6 +42,7 @@ class RestaurantModel {
     this.willaya,
     this.zone,
     this.categories,
+    this.homeCategories,
     this.imageUrl,
     this.isActive,
     this.isApproved,
@@ -94,6 +97,11 @@ class RestaurantModel {
                     }))
               .toList()
           : null,
+      homeCategories: json['home_categories'] != null
+          ? (json['home_categories'] as List)
+              .map((e) => HomeCategoryModel.fromJson(e as Map<String, dynamic>))
+              .toList()
+          : null,
       imageUrl: json['image_url']?.toString() ??
           json['imageUrl']?.toString() ??
           json['photo_url']?.toString() ??
@@ -131,6 +139,7 @@ class RestaurantModel {
       'zone': zone,
       // Send only category names/IDs as strings as expected by PUT /profile
       'categories': categories?.map((e) => e.nom).toList(),
+      'home_categories': homeCategories?.map((e) => e.toJson()).toList(),
       'image_url': imageUrl,
       'is_active': isActive,
       'is_approved': isApproved,
@@ -158,6 +167,7 @@ class RestaurantModel {
     String? willaya,
     String? zone,
     List<CategoryModel>? categories,
+    List<HomeCategoryModel>? homeCategories,
     String? imageUrl,
     bool? isActive,
     bool? isApproved,
@@ -178,6 +188,7 @@ class RestaurantModel {
       willaya: willaya ?? this.willaya,
       zone: zone ?? this.zone,
       categories: categories ?? this.categories,
+      homeCategories: homeCategories ?? this.homeCategories,
       imageUrl: imageUrl ?? this.imageUrl,
       isActive: isActive ?? this.isActive,
       isApproved: isApproved ?? this.isApproved,

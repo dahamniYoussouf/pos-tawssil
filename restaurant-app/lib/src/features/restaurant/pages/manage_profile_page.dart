@@ -3,9 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:restaurant_app/l10n/app_localizations.dart';
 import 'package:restaurant_app/src/core/res/color_app.dart';
 import 'package:restaurant_app/src/core/res/media_res.dart';
+import 'package:restaurant_app/src/core/utils/constant.dart';
 import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_cubit.dart';
 import 'package:restaurant_app/src/features/restaurant/cubit/restaurant_state.dart';
 import 'package:restaurant_app/src/features/restaurant/models/restaurant_model.dart';
+import 'package:restaurant_app/src/features/restaurant/widgets/edit_opening_hours_sheet.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -115,6 +117,17 @@ class _ManageProfilePageState extends State<ManageProfilePage> {
     );
   }
 
+  void _showOpeningHoursDialog(RestaurantModel restaurant) {
+    EditOpeningHoursSheet.show(
+      context,
+      initialHours: Map<String, dynamic>.from(restaurant.openingHours ?? {}),
+      onSave: (updatedHours) {
+        final updated = restaurant.copyWith(openingHours: updatedHours);
+        context.read<RestaurantCubit>().updateProfile(updated);
+      },
+    );
+  }
+
   Widget _buildTextField(String label, TextEditingController controller,
       {int maxLines = 1}) {
     return Column(
@@ -189,7 +202,8 @@ class _ManageProfilePageState extends State<ManageProfilePage> {
                   const SizedBox(height: 12),
                   _buildInfoCard(restaurant, l10n),
                   const SizedBox(height: 24),
-                  _buildSectionHeader(l10n.openingHours, l10n.gerer, () {}),
+                  _buildSectionHeader(l10n.openingHours, l10n.gerer,
+                      () => _showOpeningHoursDialog(restaurant)),
                   const SizedBox(height: 12),
                   _buildOpeningHoursCard(restaurant, l10n),
                   const SizedBox(height: 24),
@@ -205,20 +219,38 @@ class _ManageProfilePageState extends State<ManageProfilePage> {
                   Wrap(
                     spacing: 8,
                     runSpacing: 8,
-                    children: (restaurant.categories ?? []).map((cat) {
-                      return Chip(
-                        label: Text(cat.nom),
-                        backgroundColor: AppColors.primary,
-                        labelStyle: const TextStyle(
-                          color: AppColors.white,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        side: BorderSide.none,
-                      );
-                    }).toList(),
+                    children: [
+                      ...(restaurant.homeCategories ?? []).map((cat) {
+                        return Chip(
+                          label: Text(cat.name),
+                          backgroundColor: AppColors.primary,
+                          labelStyle: const TextStyle(
+                            color: AppColors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          side: BorderSide.none,
+                        );
+                      }),
+                      if ((restaurant.homeCategories ?? []).isEmpty &&
+                          (restaurant.categories ?? []).isNotEmpty)
+                        ...(restaurant.categories ?? []).map((cat) {
+                          return Chip(
+                            label: Text(cat.nom),
+                            backgroundColor: AppColors.primary.withOpacity(0.7),
+                            labelStyle: const TextStyle(
+                              color: AppColors.white,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            side: BorderSide.none,
+                          );
+                        }),
+                    ],
                   ),
                   const SizedBox(height: 24),
                   _buildSectionHeader(
@@ -470,15 +502,7 @@ class _ManageProfilePageState extends State<ManageProfilePage> {
       );
     }
 
-    final dayLabels = {
-      'monday': l10n.monday,
-      'tuesday': l10n.tuesday,
-      'wednesday': l10n.wednesday,
-      'thursday': l10n.thursday,
-      'friday': l10n.friday,
-      'saturday': l10n.saturday,
-      'sunday': l10n.sunday,
-    };
+    final dayLabels = getDayLabels(l10n);
 
     return Container(
       padding: const EdgeInsets.all(20),
