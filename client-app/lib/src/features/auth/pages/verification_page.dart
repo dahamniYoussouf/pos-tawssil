@@ -428,27 +428,44 @@ class _OtpInputSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OtpTextField(
-      numberOfFields: 6,
-      borderColor: ColorApp.greyBorder,
-      focusedBorderColor: ColorApp.primary,
-      showFieldAsBox: true,
-      fieldWidth: 46,
-      fieldHeight: 55,
-      borderRadius: BorderRadius.circular(12),
-      margin: const EdgeInsets.symmetric(horizontal: 2),
-      onCodeChanged: onCodeChanged,
-      onSubmit: (String verificationCode) {
-        otpController.text = verificationCode;
-        onVerify();
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final availableWidth = constraints.maxWidth;
+        const fieldCount = 6;
+        const spacing = 6.0;
+        final totalMargins = spacing * 2 * fieldCount;
+        final fieldWidth =
+            ((availableWidth - totalMargins) / fieldCount).clamp(34.0, 48.0);
+        final fieldHeight = (fieldWidth * 1.2).clamp(42.0, 56.0);
+        final fontSize = (fieldHeight * 0.38).clamp(14.0, 20.0);
+
+        return Center(
+          child: OtpTextField(
+            numberOfFields: fieldCount,
+            borderColor: ColorApp.greyBorder,
+            focusedBorderColor: ColorApp.primary,
+            cursorColor: ColorApp.primary,
+            showFieldAsBox: true,
+            fieldWidth: fieldWidth,
+            fieldHeight: fieldHeight,
+            borderRadius: BorderRadius.circular(12),
+            margin: const EdgeInsets.symmetric(horizontal: spacing),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+            onCodeChanged: onCodeChanged,
+            onSubmit: (String verificationCode) {
+              otpController.text = verificationCode;
+              onVerify();
+            },
+            textStyle: TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.bold,
+              color: ColorApp.black,
+            ),
+            keyboardType: TextInputType.number,
+          ),
+        );
       },
-      textStyle: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: ColorApp.black,
-        height: 1.0,
-      ),
-      keyboardType: TextInputType.number,
     );
   }
 }
