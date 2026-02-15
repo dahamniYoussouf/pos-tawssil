@@ -31,8 +31,6 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
     }
 
     final result = await _repository.fetchOrderHistory(
-      status: currentFilters.status,
-      orderType: currentFilters.orderType,
       dateFrom: currentFilters.dateFrom != null
           ? formatIsoDate(currentFilters.dateFrom!)
           : null,
@@ -50,18 +48,31 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
         OrderHistoryError(message: error, filters: currentFilters),
       ),
       (orders) {
+        final ordersPos = orders.ordersPos;
+        final ordersMobile = orders.ordersMobile;
         if (loadMore && state is OrderHistoryLoaded && !applyFilter) {
           final currentState = state as OrderHistoryLoaded;
           // Prevent duplicates by filtering out orders that already exist
           final existingOrderIds =
-              currentState.orders.map((order) => order.id).toSet();
-          final newOrders = orders
+              currentState.ordersPos.map((order) => order.id).toSet();
+          final newPosOrders = ordersPos
               .where((order) => !existingOrderIds.contains(order.id))
               .toList();
-          final updatedOrders = [...currentState.orders, ...newOrders];
+          final updatedPosOrders = [...currentState.ordersPos, ...newPosOrders];
+
+          final existingMobileOrderIds =
+              currentState.ordersMobile.map((order) => order.id).toSet();
+          final newMobileOrders = ordersMobile
+              .where((order) => !existingMobileOrderIds.contains(order.id))
+              .toList();
+          final updatedMobileOrders = [
+            ...currentState.ordersMobile,
+            ...newMobileOrders,
+          ];
           emit(currentState.copyWith(
-            orders: updatedOrders,
-            hasMore: orders.length >= limit,
+            ordersPos: updatedPosOrders,
+            ordersMobile: updatedMobileOrders,
+            hasMore: ordersPos.length >= limit || ordersMobile.length >= limit,
             currentPage: currentPage,
             filters: currentFilters,
           ));
@@ -69,16 +80,18 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
           // Update existing loaded state with new orders
           final currentState = state as OrderHistoryLoaded;
           emit(currentState.copyWith(
-            orders: orders,
-            hasMore: orders.length >= limit,
+            ordersPos: ordersPos,
+            ordersMobile: ordersMobile,
+            hasMore: ordersPos.length >= limit || ordersMobile.length >= limit,
             currentPage: currentPage,
             filters: currentFilters,
           ));
         } else {
           // Create new loaded state (for initial load or when applying filters)
           emit(OrderHistoryLoaded(
-            orders: orders,
-            hasMore: orders.length >= limit,
+            ordersPos: ordersPos,
+            ordersMobile: ordersMobile,
+            hasMore: ordersPos.length >= limit || ordersMobile.length >= limit,
             currentPage: applyFilter ? 1 : currentPage,
             filters: currentFilters,
           ));
@@ -122,7 +135,6 @@ class OrderHistoryCubit extends Cubit<OrderHistoryState> {
     // Emit loading state with new filters, then fetch
     // fetchOrderHistory will read state.filters which will be the new filters
     emit(OrderHistoryLoading(filters: filters));
-    await refresh();
   }
 
   // Methods that only update filters without fetching (used in filters widget)

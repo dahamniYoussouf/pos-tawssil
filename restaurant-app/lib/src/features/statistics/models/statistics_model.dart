@@ -126,13 +126,15 @@ class StatisticsModel {
 }
 
 class StatisticsPeriodData {
-  final int reviews;
+  final double reviews;
+  final double reviewsValue;
   final int orders;
   final double revenue;
   final List<StatisticsChartDataPoint> chartData;
 
   const StatisticsPeriodData({
     required this.reviews,
+    required this.reviewsValue,
     required this.orders,
     required this.revenue,
     required this.chartData,
@@ -163,7 +165,8 @@ class StatisticsPeriodData {
     }
 
     return StatisticsPeriodData(
-      reviews: parseInt(json['reviews']),
+      reviews: parseDouble(json['reviews']),
+      reviewsValue: parseDouble(json['reviews_value'] ?? json['reviewsValue']),
       orders: parseInt(json['orders']),
       revenue: parseDouble(json['revenue']),
       chartData: parseChartData(json['chartData']),

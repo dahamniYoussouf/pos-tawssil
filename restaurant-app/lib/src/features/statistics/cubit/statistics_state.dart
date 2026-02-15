@@ -10,6 +10,8 @@ class StatisticsState extends Equatable {
   final double? maxPrice;
   final String selectedSource; // all, mobile, pos
   final String selectedPeriod; // all, today, yesterday, week, month
+  final double reviews;
+  final double reviewsValue;
 
   const StatisticsState({
     this.statistics,
@@ -20,6 +22,8 @@ class StatisticsState extends Equatable {
     this.maxPrice,
     this.selectedSource = 'all',
     this.selectedPeriod = 'all',
+    this.reviews = 0,
+    this.reviewsValue = 0,
   });
 
   @override
@@ -32,6 +36,8 @@ class StatisticsState extends Equatable {
         maxPrice,
         selectedSource,
         selectedPeriod,
+        reviews,
+        reviewsValue,
       ];
 
   StatisticsState copyWith({
@@ -43,6 +49,8 @@ class StatisticsState extends Equatable {
     double? maxPrice,
     String? selectedSource,
     String? selectedPeriod,
+    double? reviews,
+    double? reviewsValue,
   }) {
     return StatisticsState(
       statistics: statistics ?? this.statistics,
@@ -53,6 +61,8 @@ class StatisticsState extends Equatable {
       maxPrice: maxPrice ?? this.maxPrice,
       selectedSource: selectedSource ?? this.selectedSource,
       selectedPeriod: selectedPeriod ?? this.selectedPeriod,
+      reviews: reviews ?? this.reviews,
+      reviewsValue: reviewsValue ?? this.reviewsValue,
     );
   }
 }
@@ -87,6 +97,8 @@ class StatisticsLoaded extends StatisticsState {
     super.maxPrice,
     super.selectedSource = 'all',
     super.selectedPeriod = 'all',
+    super.reviews = 0,
+    super.reviewsValue = 0,
   });
 }
 

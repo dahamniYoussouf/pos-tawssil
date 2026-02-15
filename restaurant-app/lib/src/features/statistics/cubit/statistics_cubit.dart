@@ -85,6 +85,9 @@ class StatisticsCubit extends Cubit<StatisticsState> {
         maxPrice: state.maxPrice,
         selectedSource: state.selectedSource,
         selectedPeriod: state.selectedPeriod,
+        reviews: statistics.getPeriodData(state.selectedPeriod)?.reviews ?? 0,
+        reviewsValue:
+            statistics.getPeriodData(state.selectedPeriod)?.reviewsValue ?? 0,
       )),
     );
   }
