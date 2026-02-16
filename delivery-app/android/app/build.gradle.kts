@@ -9,6 +9,7 @@ android {
     namespace = "com.tawsil.delivery_app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
+    useLibrary("org.apache.http.legacy")
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
