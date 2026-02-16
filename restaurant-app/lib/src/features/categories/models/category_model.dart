@@ -20,6 +20,14 @@ class CategoryModel {
   });
 
   factory CategoryModel.fromJson(Map<String, dynamic> json) {
+    int parseInt(dynamic value) {
+      if (value == null) return 0;
+      if (value is int) return value;
+      if (value is num) return value.toInt();
+      if (value is String) return int.tryParse(value) ?? 0;
+      return 0;
+    }
+
     final itemsJson = json['items'] as List<dynamic>? ?? [];
     final items = itemsJson
         .map((item) => MenuItemModel.fromJson(item as Map<String, dynamic>))
@@ -30,9 +38,11 @@ class CategoryModel {
       nom: json['nom']?.toString() ?? '',
       description: json['description']?.toString() ?? '',
       iconeUrl: json['icone_url']?.toString() ?? json['iconeUrl']?.toString(),
-      ordreAffichage: json['ordre_affichage'] ?? json['ordreAffichage'] ?? 0,
+      ordreAffichage:
+          parseInt(json['ordre_affichage'] ?? json['ordreAffichage']),
       items: items,
-      itemsCount: json['items_count'] ?? json['itemsCount'] ?? items.length,
+      itemsCount:
+          parseInt(json['items_count'] ?? json['itemsCount'] ?? items.length),
     );
   }
 

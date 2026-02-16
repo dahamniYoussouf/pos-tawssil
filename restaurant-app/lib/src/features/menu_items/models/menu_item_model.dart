@@ -43,13 +43,8 @@ class MenuItemModel {
   static DateTime? parseDate(dynamic value) {
     if (value == null) return null;
     if (value is DateTime) return value;
-    if (value is String) {
-      try {
-        return DateTime.parse(value);
-      } catch (_) {
-        return null;
-      }
-    }
+    if (value is String) return DateTime.tryParse(value);
+    if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
     return null;
   }
 
@@ -114,8 +109,7 @@ class MenuItemModel {
       'is_available': isAvailable,
       'disponible': isAvailable,
       if (optionGroups.isNotEmpty)
-        'option_groups':
-            optionGroups.map((g) => g.toJson()).toList(),
+        'option_groups': optionGroups.map((g) => g.toJson()).toList(),
     };
   }
 
@@ -131,8 +125,7 @@ class MenuItemModel {
       'photo_url': photoUrl,
       'disponible': isAvailable,
       if (optionGroups.isNotEmpty)
-        'option_groups':
-            optionGroups.map((g) => g.toJson()).toList(),
+        'option_groups': optionGroups.map((g) => g.toJson()).toList(),
     };
   }
 
@@ -148,8 +141,7 @@ class MenuItemModel {
       'photo_url': photoUrl,
       'is_available': isAvailable,
       if (optionGroups.isNotEmpty)
-        'option_groups':
-            optionGroups.map((g) => g.toJson()).toList(),
+        'option_groups': optionGroups.map((g) => g.toJson()).toList(),
     };
   }
 

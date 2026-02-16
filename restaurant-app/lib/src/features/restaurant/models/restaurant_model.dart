@@ -53,6 +53,14 @@ class RestaurantModel {
   });
 
   factory RestaurantModel.fromJson(Map<String, dynamic> json) {
+    bool? parseBool(dynamic value) {
+      if (value == null) return null;
+      if (value is bool) return value;
+      if (value is int) return value != 0;
+      if (value is String) return value.toLowerCase() == 'true' || value == '1';
+      return null;
+    }
+
     return RestaurantModel(
       id: json['id']?.toString() ?? json['_id']?.toString() ?? '',
       name: json['name']?.toString() ?? json['nom']?.toString() ?? '',
@@ -106,12 +114,12 @@ class RestaurantModel {
           json['imageUrl']?.toString() ??
           json['photo_url']?.toString() ??
           json['image']?.toString(),
-      isActive: json['is_active'] ?? json['isActive'],
-      isApproved: json['is_approved'] ??
+      isActive: parseBool(json['is_active'] ?? json['isActive']),
+      isApproved: parseBool(json['is_approved'] ??
           json['isApproved'] ??
           json['approved'] ??
-          (json['status'] == 'approved'),
-      isPremium: json['is_premium'] ?? json['isPremium'],
+          (json['status'] == 'approved')),
+      isPremium: parseBool(json['is_premium'] ?? json['isPremium']),
       rating: json['rating'] != null
           ? (json['rating'] is num
               ? json['rating'].toDouble()
@@ -226,13 +234,23 @@ class RestaurantModel {
         isClosed = value.toLowerCase().contains('fermé') ||
             value.toLowerCase().contains('closed');
       } else if (value is Map) {
-        if (value['is_closed'] == true || value['closed'] == true) {
-          isClosed = true;
-          // Note: Label 'Fermé' should be handled by UI via localization
-        } else {
-          final open = value['open'] ?? value['start'] ?? '';
-          final close = value['close'] ?? value['end'] ?? '';
-          hours = '$open - $close';
+        final rawIsClosed = value['is_closed'] ?? value['closed'];
+        if (rawIsClosed is bool) {
+          isClosed = rawIsClosed;
+        } else if (rawIsClosed is int) {
+          isClosed = rawIsClosed != 0;
+        } else if (rawIsClosed is String) {
+          isClosed = rawIsClosed.toLowerCase() == 'true' || rawIsClosed == '1';
+        }
+
+        if (!isClosed) {
+          final open = (value['open'] ?? value['start'] ?? '').toString();
+          final close = (value['close'] ?? value['end'] ?? '').toString();
+          if (open.isNotEmpty && close.isNotEmpty) {
+            hours = '$open - $close';
+          } else {
+            hours = open.isNotEmpty ? open : close;
+          }
         }
       }
 

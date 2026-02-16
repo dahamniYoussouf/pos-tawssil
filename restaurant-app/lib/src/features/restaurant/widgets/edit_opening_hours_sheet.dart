@@ -128,9 +128,17 @@ class _EditOpeningHoursSheetState extends State<EditOpeningHoursSheet> {
           }
         }
       } else if (value is Map) {
-        isClosed = value['is_closed'] == true || value['closed'] == true;
-        openTime = value['open'] ?? value['start'] ?? "09:00";
-        closeTime = value['close'] ?? value['end'] ?? "18:00";
+        final rawIsClosed = value['is_closed'] ?? value['closed'];
+        if (rawIsClosed is bool) {
+          isClosed = rawIsClosed;
+        } else if (rawIsClosed is int) {
+          isClosed = rawIsClosed != 0;
+        } else if (rawIsClosed is String) {
+          isClosed = rawIsClosed.toLowerCase() == 'true' || rawIsClosed == '1';
+        }
+
+        openTime = (value['open'] ?? value['start'] ?? "09:00").toString();
+        closeTime = (value['close'] ?? value['end'] ?? "18:00").toString();
       }
     }
 
@@ -142,13 +150,18 @@ class _EditOpeningHoursSheetState extends State<EditOpeningHoursSheet> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                label,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 16,
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
                 ),
               ),
+              const SizedBox(width: 8),
               Row(
                 children: [
                   Text(l10n.closedStatus),
