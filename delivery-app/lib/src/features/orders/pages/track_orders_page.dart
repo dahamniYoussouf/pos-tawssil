@@ -5,11 +5,13 @@ import 'package:delivery_app/l10n/app_localizations.dart';
 import 'package:delivery_app/src/core/res/media_res.dart';
 import 'package:delivery_app/src/core/res/color_app.dart';
 import 'package:delivery_app/src/features/orders/cubit/orders_cubit.dart';
+import 'package:delivery_app/src/features/orders/cubit/order_active_cubit.dart';
 import 'package:delivery_app/src/features/orders/cubit/orders_state.dart';
 import 'package:delivery_app/src/features/orders/models/order_model.dart';
 import 'package:delivery_app/src/features/orders/pages/order_assigned_page.dart';
 import 'package:delivery_app/src/features/orders/widgets/nearby_order_card.dart';
 import 'package:delivery_app/src/features/orders/widgets/order_tracking_map_widget.dart';
+import 'package:delivery_app/src/features/orders/widgets/driver_status_bottom_sheet.dart';
 import 'package:delivery_app/src/features/driver/cubit/driver_cubit.dart';
 import 'package:delivery_app/src/features/driver/cubit/driver_state.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -24,6 +26,8 @@ class TrackOrdersPage extends StatefulWidget {
 }
 
 class _TrackOrdersPageState extends State<TrackOrdersPage> {
+  bool _isBottomSheetVisible = false;
+
   @override
   void initState() {
     super.initState();
@@ -48,6 +52,9 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
       _showErrorSnackBar(
           context, _translateErrorMessage(state.message, localizations));
     } else if (state is OrderActionSuccess) {
+      // Refresh active orders list when an order is accepted
+      context.read<OrderActiveCubit>().fetchActiveOrders();
+
       if (state.orderId != null) {
         Navigator.of(context).push(
           MaterialPageRoute(
@@ -137,6 +144,69 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
             left: 0,
             right: 0,
             child: _buildOrdersCards(orders),
+          ),
+
+        // Dynamic Status Toggle Button at Top Right
+        Positioned(
+          top: MediaQuery.of(context).padding.top + 10,
+          right: 20,
+          child: BlocBuilder<DriverCubit, DriverState>(
+            builder: (context, state) {
+              final isActive =
+                  state is DriverLoaded ? state.driver.isActive : false;
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _isBottomSheetVisible = !_isBottomSheetVisible;
+                  });
+                },
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: isActive ? const Color(0xFF10B981) : Colors.red,
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: (isActive ? const Color(0xFF10B981) : Colors.red)
+                            .withOpacity(0.3),
+                        blurRadius: 8,
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Text(
+                        isActive ? localizations.online : localizations.offline,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        isActive
+                            ? Icons.check_circle_outline
+                            : Icons.error_outline,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+
+        // New Status Bottom Sheet
+        if (_isBottomSheetVisible)
+          const Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: DriverStatusBottomSheet(),
           ),
         Positioned(
           top: radarTopPosition,

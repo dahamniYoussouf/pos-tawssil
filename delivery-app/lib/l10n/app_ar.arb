@@ -149,6 +149,14 @@
   "tripEarnings": "أرباح هذه الرحلة",
   "sessionTotal": "إجمالي الجلسة",
   "routeCompleted": "تم إكمال المسار",
-  "backToRadar": "العودة إلى الرادار"
+  "backToRadar": "العودة إلى الرادار",
+  "radarButton": "رادار المسار",
+  "waitingForOrders": "في انتظار الطلبات",
+  "generatedRevenue": "الأرباح المحققة",
+  "deliveredOrders": "الطلبات المسلمة",
+  "auto": "تلقائي",
+  "urgence": "طوارئ",
+  "online": "متصل",
+  "offline": "غير متصل"
 }
 

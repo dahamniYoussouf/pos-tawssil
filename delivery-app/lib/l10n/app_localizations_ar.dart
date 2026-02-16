@@ -406,7 +406,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cashPayment => 'Cash';
 
   @override
-  String get radarButton => 'Traffic Radar';
+  String get radarButton => 'رادار المسار';
 
   @override
   String get dontHaveAccount => 'Don\'t have an account yet? ';
@@ -467,4 +467,25 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get backToRadar => 'العودة إلى الرادار';
+
+  @override
+  String get waitingForOrders => 'في انتظار الطلبات';
+
+  @override
+  String get generatedRevenue => 'الأرباح المحققة';
+
+  @override
+  String get deliveredOrders => 'الطلبات المسلمة';
+
+  @override
+  String get auto => 'تلقائي';
+
+  @override
+  String get urgence => 'طوارئ';
+
+  @override
+  String get online => 'متصل';
+
+  @override
+  String get offline => 'غير متصل';
 }

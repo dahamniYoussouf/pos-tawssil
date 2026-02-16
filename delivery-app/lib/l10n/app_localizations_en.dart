@@ -468,4 +468,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get backToRadar => 'Back to Radar';
+
+  @override
+  String get waitingForOrders => 'Waiting for orders';
+
+  @override
+  String get generatedRevenue => 'Generated revenue';
+
+  @override
+  String get deliveredOrders => 'Delivered orders';
+
+  @override
+  String get auto => 'AUTO';
+
+  @override
+  String get urgence => 'URGENT';
+
+  @override
+  String get online => 'Online';
+
+  @override
+  String get offline => 'Offline';
 }

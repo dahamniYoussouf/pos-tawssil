@@ -477,4 +477,25 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get backToRadar => 'Retour au Radar';
+
+  @override
+  String get waitingForOrders => 'En attente de commandes';
+
+  @override
+  String get generatedRevenue => 'Revenus générés';
+
+  @override
+  String get deliveredOrders => 'Commandes livrées';
+
+  @override
+  String get auto => 'AUTO';
+
+  @override
+  String get urgence => 'URGENCE';
+
+  @override
+  String get online => 'En ligne';
+
+  @override
+  String get offline => 'Hors ligne';
 }

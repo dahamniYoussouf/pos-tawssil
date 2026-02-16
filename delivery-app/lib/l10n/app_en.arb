@@ -474,5 +474,12 @@
   "tripEarnings": "Trip Earnings",
   "sessionTotal": "Session Total",
   "routeCompleted": "Route completed",
-  "backToRadar": "Back to Radar"
+  "backToRadar": "Back to Radar",
+  "waitingForOrders": "Waiting for orders",
+  "generatedRevenue": "Generated revenue",
+  "deliveredOrders": "Delivered orders",
+  "auto": "AUTO",
+  "urgence": "URGENT",
+  "online": "Online",
+  "offline": "Offline"
 }

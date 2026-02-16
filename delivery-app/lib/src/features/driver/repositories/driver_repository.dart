@@ -5,7 +5,8 @@ import 'package:delivery_app/src/features/driver/services/driver_service.dart';
 class DriverRepository {
   final DriverService _driverService;
 
-  DriverRepository({DriverService? driverService}) : _driverService = driverService ?? DriverService();
+  DriverRepository({DriverService? driverService})
+      : _driverService = driverService ?? DriverService();
 
   Future<Either<String, DriverModel>> fetchDriverProfile() async {
     try {
@@ -22,6 +23,20 @@ class DriverRepository {
       }
     } catch (e) {
       return Left('Error fetching driver profile: ${e.toString()}');
+    }
+  }
+
+  Future<Either<String, void>> updateGPS(
+      String driverId, double lat, double lng) async {
+    try {
+      final response = await _driverService.updateGPS(driverId, lat, lng);
+      if (response['success'] == true) {
+        return const Right(null);
+      } else {
+        return Left(response['message'] ?? 'Failed to update GPS');
+      }
+    } catch (e) {
+      return Left('Error updating GPS: ${e.toString()}');
     }
   }
 }

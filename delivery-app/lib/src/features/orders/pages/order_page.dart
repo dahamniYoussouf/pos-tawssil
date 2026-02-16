@@ -5,7 +5,7 @@ import 'package:delivery_app/src/features/orders/cubit/order_active_state.dart';
 import 'package:delivery_app/src/features/orders/widgets/history/order_history_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../pages/order_details_page.dart';
+import 'package:delivery_app/src/features/orders/pages/order_assigned_page.dart';
 import '../models/order_model.dart';
 
 class OrderPage extends StatelessWidget {
@@ -13,15 +13,27 @@ class OrderPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => OrderActiveCubit()..fetchActiveOrders(),
-      child: const OrderView(),
-    );
+    // Rely on global BlocProvider from main.dart
+    return const OrderView();
   }
 }
 
-class OrderView extends StatelessWidget {
+class OrderView extends StatefulWidget {
   const OrderView({super.key});
+
+  @override
+  State<OrderView> createState() => _OrderViewState();
+}
+
+class _OrderViewState extends State<OrderView> {
+  @override
+  void initState() {
+    super.initState();
+    // Refresh active orders when entering the page
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<OrderActiveCubit>().fetchActiveOrders();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,7 +106,7 @@ class OrderView extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      OrderDetailsPage(orderId: item.order!.id),
+                      OrderAssignedPage(orderId: item.order!.id),
                 ),
               );
             },

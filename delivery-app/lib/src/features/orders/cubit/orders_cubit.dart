@@ -7,18 +7,38 @@ import 'package:delivery_app/src/features/orders/repositories/order_repository.d
 import 'package:delivery_app/src/features/notifications/cubit/notifications_cubit.dart';
 import 'package:delivery_app/src/features/notifications/cubit/notifications_state.dart';
 
+import 'package:delivery_app/src/core/services/sound_service.dart';
+
 class OrdersCubit extends Cubit<OrdersState> {
   final OrderRepository _orderRepository;
   final NotificationsCubit? _notificationsCubit;
+  final SoundService _soundService;
   StreamSubscription? _notificationSubscription;
 
   OrdersCubit({
     OrderRepository? orderRepository,
     NotificationsCubit? notificationsCubit,
+    SoundService? soundService,
   })  : _orderRepository = orderRepository ?? locator<OrderRepository>(),
         _notificationsCubit = notificationsCubit,
+        _soundService = soundService ?? locator<SoundService>(),
         super(const OrdersInitial(selectedStatus: OrderStatus.pending)) {
     _listenToNotifications();
+  }
+
+  @override
+  void emit(OrdersState state) {
+    super.emit(state);
+    _handleOrderSound(state);
+  }
+
+  void _handleOrderSound(OrdersState state) {
+    if (state.orders.isNotEmpty &&
+        state.selectedStatus == OrderStatus.pending) {
+      _soundService.playOrderAlert();
+    } else {
+      _soundService.stopOrderAlert();
+    }
   }
 
   void _listenToNotifications() {
@@ -382,6 +402,7 @@ class OrdersCubit extends Cubit<OrdersState> {
   @override
   Future<void> close() {
     _notificationSubscription?.cancel();
+    _soundService.stopOrderAlert();
     return super.close();
   }
 }

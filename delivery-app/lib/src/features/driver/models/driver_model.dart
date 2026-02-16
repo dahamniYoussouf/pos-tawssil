@@ -62,15 +62,20 @@ class DriverModel {
     double? latitude;
     double? longitude;
     final currentLocation = json['current_location'] as Map<String, dynamic>?;
-    if (currentLocation != null && currentLocation['type'] == 'Point' && currentLocation['coordinates'] != null) {
+    if (currentLocation != null &&
+        currentLocation['type'] == 'Point' &&
+        currentLocation['coordinates'] != null) {
       final coords = currentLocation['coordinates'] as List;
       if (coords.length >= 2) {
         longitude = (coords[0] as num).toDouble();
         latitude = (coords[1] as num).toDouble();
       }
     }
-    latitude ??= json['latitude'] != null ? (json['latitude'] as num).toDouble() : null;
-    longitude ??= json['longitude'] != null ? (json['longitude'] as num).toDouble() : null;
+    latitude ??=
+        json['latitude'] != null ? (json['latitude'] as num).toDouble() : null;
+    longitude ??= json['longitude'] != null
+        ? (json['longitude'] as num).toDouble()
+        : null;
     DateTime? parseDateTime(dynamic value) {
       if (value == null) return null;
       if (value is String) {
@@ -87,9 +92,16 @@ class DriverModel {
       id: (json['id'] ?? json['_id'] ?? '').toString(),
       userId: (json['user_id'] ?? '').toString(),
       driverCode: json['driver_code'] ?? '',
-      firstName: json['first_name'] ?? json['firstName'] ?? json['name'] ?? json['nom'] ?? '',
+      firstName: json['first_name'] ??
+          json['firstName'] ??
+          json['name'] ??
+          json['nom'] ??
+          '',
       lastName: json['last_name'] ?? json['lastName'] ?? '',
-      phoneNumber: json['phone'] ?? json['phoneNumber'] ?? json['phone_number'] ?? json['tel'],
+      phoneNumber: json['phone'] ??
+          json['phoneNumber'] ??
+          json['phone_number'] ??
+          json['tel'],
       email: json['email'],
       vehicleType: json['vehicle_type'] ?? json['vehicleType'],
       vehiclePlate: json['vehicle_plate'] ?? json['vehiclePlate'],
@@ -108,6 +120,60 @@ class DriverModel {
       cancellationCount: json['cancellation_count'] ?? 0,
       createdAt: parseDateTime(json['created_at']) ?? DateTime.now(),
       updatedAt: parseDateTime(json['updated_at']) ?? DateTime.now(),
+    );
+  }
+
+  DriverModel copyWith({
+    String? id,
+    String? userId,
+    String? driverCode,
+    String? firstName,
+    String? lastName,
+    String? phoneNumber,
+    String? email,
+    String? vehicleType,
+    String? vehiclePlate,
+    String? licenseNumber,
+    String? status,
+    double? latitude,
+    double? longitude,
+    String? rating,
+    int? totalDeliveries,
+    List<dynamic>? activeOrders,
+    int? maxOrdersCapacity,
+    bool? isVerified,
+    bool? isActive,
+    DateTime? lastActiveAt,
+    String? notes,
+    int? cancellationCount,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) {
+    return DriverModel(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      driverCode: driverCode ?? this.driverCode,
+      firstName: firstName ?? this.firstName,
+      lastName: lastName ?? this.lastName,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      email: email ?? this.email,
+      vehicleType: vehicleType ?? this.vehicleType,
+      vehiclePlate: vehiclePlate ?? this.vehiclePlate,
+      licenseNumber: licenseNumber ?? this.licenseNumber,
+      status: status ?? this.status,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      rating: rating ?? this.rating,
+      totalDeliveries: totalDeliveries ?? this.totalDeliveries,
+      activeOrders: activeOrders ?? this.activeOrders,
+      maxOrdersCapacity: maxOrdersCapacity ?? this.maxOrdersCapacity,
+      isVerified: isVerified ?? this.isVerified,
+      isActive: isActive ?? this.isActive,
+      lastActiveAt: lastActiveAt ?? this.lastActiveAt,
+      notes: notes ?? this.notes,
+      cancellationCount: cancellationCount ?? this.cancellationCount,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 }

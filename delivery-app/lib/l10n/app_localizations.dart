@@ -999,6 +999,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Back to Radar'**
   String get backToRadar;
+
+  /// No description provided for @waitingForOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for orders'**
+  String get waitingForOrders;
+
+  /// No description provided for @generatedRevenue.
+  ///
+  /// In en, this message translates to:
+  /// **'Generated revenue'**
+  String get generatedRevenue;
+
+  /// No description provided for @deliveredOrders.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered orders'**
+  String get deliveredOrders;
+
+  /// No description provided for @auto.
+  ///
+  /// In en, this message translates to:
+  /// **'AUTO'**
+  String get auto;
+
+  /// No description provided for @urgence.
+  ///
+  /// In en, this message translates to:
+  /// **'URGENT'**
+  String get urgence;
+
+  /// No description provided for @online.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get online;
+
+  /// No description provided for @offline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get offline;
 }
 
 class _AppLocalizationsDelegate

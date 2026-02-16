@@ -34,86 +34,134 @@ class OrderAssignedCard extends StatelessWidget {
             currentOrder.restaurantName ?? localizations.restaurant;
         final double deliveryDistance = currentOrder.deliveryDistance ?? 0.0;
 
-        return Container(
-          width: double.infinity,
-          margin: isDelivering
-              ? const EdgeInsets.fromLTRB(16, 0, 16, 50)
-              : EdgeInsets.zero,
-          decoration: BoxDecoration(
-            color: AppColors.white,
-            borderRadius: isDelivering
-                ? BorderRadius.circular(32)
-                : const BorderRadius.only(
-                    topLeft: Radius.circular(32),
-                    topRight: Radius.circular(32),
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              width: double.infinity,
+              margin: isDelivering
+                  ? const EdgeInsets.fromLTRB(16, 0, 16, 50)
+                  : EdgeInsets.zero,
+              decoration: BoxDecoration(
+                color: AppColors.white,
+                borderRadius: isDelivering
+                    ? BorderRadius.circular(32)
+                    : const BorderRadius.only(
+                        topLeft: Radius.circular(32),
+                        topRight: Radius.circular(32),
+                      ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.black.withOpacity(0.1),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (isDelivering)
-                _buildClientHeader(currentOrder)
-              else
-                _buildRestaurantHeader(restaurantName),
-
-              const SizedBox(height: 20),
-
-              // Info Items
-              _buildInfoItem(
-                  Icons.location_on_outlined,
-                  isDelivering
-                      ? (currentOrder.deliveryAddress ?? '--')
-                      : (currentOrder.restaurantAddress ?? '--')),
-
-              Row(
-                children: [
-                  _buildInfoItemSvg(
-                      MediaRes.distanceIcon, '$deliveryDistance KM',
-                      expanded: false),
-                  const SizedBox(width: 16),
-                  Container(width: 20, height: 1, color: AppColors.greyLight),
-                  const SizedBox(width: 16),
-                  _buildInfoItem(Icons.access_time_outlined,
-                      '${currentOrder.deliveryTimeMinutes ?? "--"} min',
-                      expanded: false),
                 ],
               ),
-              _buildInfoItem(Icons.description_outlined,
-                  'Commande #${currentOrder.orderNumber}'),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (isDelivering)
+                    _buildClientHeader(currentOrder)
+                  else
+                    _buildRestaurantHeader(restaurantName),
 
-              const SizedBox(height: 16),
+                  const SizedBox(height: 20),
 
-              // Expandable Details
-              _buildExpandableDetails(localizations, currentOrder),
+                  // Info Items
+                  _buildInfoItem(
+                      Icons.location_on_outlined,
+                      isDelivering
+                          ? (currentOrder.deliveryAddress ?? '--')
+                          : (currentOrder.restaurantAddress ?? '--')),
 
-              const SizedBox(height: 24),
+                  Row(
+                    children: [
+                      _buildInfoItemSvg(
+                          MediaRes.distanceIcon, '$deliveryDistance KM',
+                          expanded: false),
+                      const SizedBox(width: 16),
+                      Container(
+                          width: 20, height: 1, color: AppColors.greyLight),
+                      const SizedBox(width: 16),
+                      _buildInfoItem(Icons.access_time_outlined,
+                          '${currentOrder.deliveryTimeMinutes ?? "--"} min',
+                          expanded: false),
+                    ],
+                  ),
+                  _buildInfoItem(Icons.description_outlined,
+                      'Commande #${currentOrder.orderNumber}'),
 
-              // Actions
-              _buildActionButton(
-                context,
-                localizations,
-                currentOrder,
-                isLoading,
+                  const SizedBox(height: 16),
+
+                  // Expandable Details
+                  _buildExpandableDetails(localizations, currentOrder),
+
+                  const SizedBox(height: 24),
+
+                  // Actions
+                  _buildActionButton(
+                    context,
+                    localizations,
+                    currentOrder,
+                    isLoading,
+                  ),
+                  const SizedBox(height: 12),
+                  if (!isDelivering)
+                    _buildCancelButton(
+                      context,
+                      localizations,
+                      currentOrder.id,
+                      isLoading,
+                    ),
+                ],
               ),
-              const SizedBox(height: 12),
-              if (!isDelivering)
-                _buildCancelButton(
-                  context,
-                  localizations,
-                  currentOrder.id,
-                  isLoading,
+            ),
+            Positioned(
+              top: -70,
+              right: 24,
+              child: GestureDetector(
+                onTap: () {
+                  if (isDelivering) {
+                    if (currentOrder.deliveryLatitude != null &&
+                        currentOrder.deliveryLongitude != null) {
+                      _openInGoogleMaps(currentOrder.deliveryLatitude!,
+                          currentOrder.deliveryLongitude!);
+                    }
+                  } else {
+                    if (currentOrder.restaurantLatitude != null &&
+                        currentOrder.restaurantLongitude != null) {
+                      _openInGoogleMaps(currentOrder.restaurantLatitude!,
+                          currentOrder.restaurantLongitude!);
+                    }
+                  }
+                },
+                child: Container(
+                  width: 65,
+                  height: 65,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.15),
+                        blurRadius: 12,
+                        spreadRadius: 2,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  padding: const EdgeInsets.all(12),
+                  child: Image.asset(
+                    MediaRes.locationShortcutIcon,
+                    fit: BoxFit.contain,
+                  ),
                 ),
-            ],
-          ),
+              ),
+            ),
+          ],
         );
       },
     );
@@ -148,6 +196,19 @@ class OrderAssignedCard extends StatelessWidget {
         ),
       ],
     );
+  }
+
+  Future<void> _openInGoogleMaps(double lat, double lng) async {
+    final uri = Uri.parse('google.navigation:q=$lat,$lng');
+    final fallbackUri =
+        Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
+
+    if (await launcher.canLaunchUrl(uri)) {
+      await launcher.launchUrl(uri);
+    } else if (await launcher.canLaunchUrl(fallbackUri)) {
+      await launcher.launchUrl(fallbackUri,
+          mode: launcher.LaunchMode.externalApplication);
+    }
   }
 
   Widget _buildClientHeader(OrderModel order) {
@@ -613,4 +674,3 @@ class OrderAssignedCard extends StatelessWidget {
     );
   }
 }
-

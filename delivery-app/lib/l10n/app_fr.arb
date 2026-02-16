@@ -177,6 +177,13 @@
   "tripEarnings": "Gains De Cette Course",
   "sessionTotal": "Total De La Session",
   "routeCompleted": "Itinéraire terminé",
-  "backToRadar": "Retour au Radar"
+  "backToRadar": "Retour au Radar",
+  "waitingForOrders": "En attente de commandes",
+  "generatedRevenue": "Revenus générés",
+  "deliveredOrders": "Commandes livrées",
+  "auto": "AUTO",
+  "urgence": "URGENCE",
+  "online": "En ligne",
+  "offline": "Hors ligne"
 }
 
