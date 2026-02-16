@@ -408,6 +408,26 @@
   "@verificationSuccessful": {
     "description": "Verification successful message"
   },
+  "selectVerificationMethod": "Select verification method",
+  "@selectVerificationMethod": {
+    "description": "Select verification method title"
+  },
+  "verificationMethodSubtitle": "Choose how you would like to receive your verification code.",
+  "@verificationMethodSubtitle": {
+    "description": "Subtitle for selecting verification method"
+  },
+  "viaWhatsApp": "Via WhatsApp",
+  "@viaWhatsApp": {
+    "description": "Option to receive code via WhatsApp"
+  },
+  "viaSMS": "Via SMS",
+  "@viaSMS": {
+    "description": "Option to receive code via SMS"
+  },
+  "recommended": "Recommended",
+  "@recommended": {
+    "description": "Recommended badge text"
+  },
   "cartEmptyMessage": "Votre panier est vide",
   "@cartEmptyMessage": {
     "description": "Cart empty message"

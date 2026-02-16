@@ -682,6 +682,36 @@ abstract class AppLocalizations {
   /// **'Vérification réussie!'**
   String get verificationSuccessful;
 
+  /// Select verification method title
+  ///
+  /// In en, this message translates to:
+  /// **'Select verification method'**
+  String get selectVerificationMethod;
+
+  /// Subtitle for selecting verification method
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how you would like to receive your verification code.'**
+  String get verificationMethodSubtitle;
+
+  /// Option to receive code via WhatsApp
+  ///
+  /// In en, this message translates to:
+  /// **'Via WhatsApp'**
+  String get viaWhatsApp;
+
+  /// Option to receive code via SMS
+  ///
+  /// In en, this message translates to:
+  /// **'Via SMS'**
+  String get viaSMS;
+
+  /// Recommended badge text
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get recommended;
+
   /// Cart empty message
   ///
   /// In en, this message translates to:

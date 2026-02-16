@@ -318,6 +318,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String get verificationSuccessful => 'تم التحقق بنجاح!';
 
   @override
+  String get selectVerificationMethod => 'Select verification method';
+
+  @override
+  String get verificationMethodSubtitle =>
+      'Choose how you would like to receive your verification code.';
+
+  @override
+  String get viaWhatsApp => 'Via WhatsApp';
+
+  @override
+  String get viaSMS => 'Via SMS';
+
+  @override
+  String get recommended => 'Recommended';
+
+  @override
   String get cartEmptyMessage => 'سلتك فارغة';
 
   @override

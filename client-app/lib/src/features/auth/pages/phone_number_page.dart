@@ -8,7 +8,7 @@ import 'package:client_app/src/core/extensions/app_localizations_extension.dart'
 import 'package:client_app/src/features/auth/cubit/auth_state.dart';
 import 'package:flutter_svg/svg.dart';
 import '../cubit/auth_cubit.dart';
-import 'verification_page.dart';
+import 'verification_method_page.dart';
 
 class PhoneNumberPage extends StatelessWidget {
   const PhoneNumberPage({Key? key}) : super(key: key);
@@ -50,17 +50,16 @@ class _PhoneNumberViewState extends State<PhoneNumberView> {
 
   void _handleConnect() {
     final phone = _phoneController.text.trim();
-    context.read<AuthCubit>().sendVerificationCode(phone, _countryCode).then(
-      (success) {
-        if (success) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => VerificationPage(phoneNumber: phone),
-            ),
-          );
-        }
-      },
+    if (phone.isEmpty) {
+      context.read<AuthCubit>().sendVerificationCode(
+          phone, _countryCode); // This will trigger error in cubit
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => VerificationMethodPage(phoneNumber: phone),
+      ),
     );
   }
 

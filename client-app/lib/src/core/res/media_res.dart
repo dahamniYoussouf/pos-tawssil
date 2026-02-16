@@ -23,6 +23,8 @@ class MediaRes {
   static const algeriaFlagIcon = '$_baseImage/alg.png';
   static const googleIcon = '$_baseImage/google_icon.png';
   static const appleIcon = '$_baseImage/apple_icon.png';
+  static const whatsappIcon = '$_baseImageIcon/whatsup.svg';
+  static const smsIcon = '$_baseImageIcon/message_1_line.svg';
 
   static const locationIcon = '$_baseImageIcon/location_icon.svg';
   static const locationIconAddress =

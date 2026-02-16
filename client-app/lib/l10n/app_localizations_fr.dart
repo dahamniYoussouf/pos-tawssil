@@ -324,6 +324,23 @@ class AppLocalizationsFr extends AppLocalizations {
   String get verificationSuccessful => 'Vérification réussie!';
 
   @override
+  String get selectVerificationMethod =>
+      'Sélectionnez la méthode de vérification';
+
+  @override
+  String get verificationMethodSubtitle =>
+      'Choisissez comment vous souhaitez recevoir votre code de vérification.';
+
+  @override
+  String get viaWhatsApp => 'Via WhatsApp';
+
+  @override
+  String get viaSMS => 'Via SMS';
+
+  @override
+  String get recommended => 'Recommandé';
+
+  @override
   String get cartEmptyMessage => 'Votre panier est vide';
 
   @override
