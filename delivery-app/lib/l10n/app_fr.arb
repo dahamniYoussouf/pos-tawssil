@@ -184,6 +184,26 @@
   "auto": "AUTO",
   "urgence": "URGENCE",
   "online": "En ligne",
-  "offline": "Hors ligne"
+  "offline": "Hors ligne",
+  "zoneOrdersAvailable": "+{count} commandes disponibles",
+  "@zoneOrdersAvailable": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "zoneOrdersEstimatedTime": "TEMPS ESTIME : {minutes} MIN",
+  "@zoneOrdersEstimatedTime": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "zoneOrdersGo": "Y aller  ▲",
+  "zoneOrdersLoadHigh": "HAUTE",
+  "zoneOrdersLoadMedium": "MOYENNE",
+  "zoneOrdersLoadLow": "BASSE"
 }
 

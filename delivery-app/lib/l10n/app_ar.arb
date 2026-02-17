@@ -157,6 +157,26 @@
   "auto": "تلقائي",
   "urgence": "طوارئ",
   "online": "متصل",
-  "offline": "غير متصل"
+  "offline": "غير متصل",
+  "zoneOrdersAvailable": "+{count} طلبات متاحة",
+  "@zoneOrdersAvailable": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "zoneOrdersEstimatedTime": "الوقت المقدر: {minutes} د",
+  "@zoneOrdersEstimatedTime": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "zoneOrdersGo": "اذهب  ▲",
+  "zoneOrdersLoadHigh": "مرتفع",
+  "zoneOrdersLoadMedium": "متوسط",
+  "zoneOrdersLoadLow": "منخفض"
 }
 

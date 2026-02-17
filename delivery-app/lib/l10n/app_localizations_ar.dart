@@ -488,4 +488,26 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get offline => 'غير متصل';
+
+  @override
+  String zoneOrdersAvailable(int count) {
+    return '+$count طلبات متاحة';
+  }
+
+  @override
+  String zoneOrdersEstimatedTime(int minutes) {
+    return 'الوقت المقدر: $minutes د';
+  }
+
+  @override
+  String get zoneOrdersGo => 'اذهب  ▲';
+
+  @override
+  String get zoneOrdersLoadHigh => 'مرتفع';
+
+  @override
+  String get zoneOrdersLoadMedium => 'متوسط';
+
+  @override
+  String get zoneOrdersLoadLow => 'منخفض';
 }

@@ -481,5 +481,25 @@
   "auto": "AUTO",
   "urgence": "URGENT",
   "online": "Online",
-  "offline": "Offline"
+  "offline": "Offline",
+  "zoneOrdersAvailable": "+{count} available orders",
+  "@zoneOrdersAvailable": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "zoneOrdersEstimatedTime": "ESTIMATED TIME: {minutes} MIN",
+  "@zoneOrdersEstimatedTime": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "zoneOrdersGo": "Go  ▲",
+  "zoneOrdersLoadHigh": "HIGH",
+  "zoneOrdersLoadMedium": "MEDIUM",
+  "zoneOrdersLoadLow": "LOW"
 }

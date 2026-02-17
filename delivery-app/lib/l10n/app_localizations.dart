@@ -1041,6 +1041,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Offline'**
   String get offline;
+
+  /// No description provided for @zoneOrdersAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'+{count} available orders'**
+  String zoneOrdersAvailable(int count);
+
+  /// No description provided for @zoneOrdersEstimatedTime.
+  ///
+  /// In en, this message translates to:
+  /// **'ESTIMATED TIME: {minutes} MIN'**
+  String zoneOrdersEstimatedTime(int minutes);
+
+  /// No description provided for @zoneOrdersGo.
+  ///
+  /// In en, this message translates to:
+  /// **'Go  ▲'**
+  String get zoneOrdersGo;
+
+  /// No description provided for @zoneOrdersLoadHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'HIGH'**
+  String get zoneOrdersLoadHigh;
+
+  /// No description provided for @zoneOrdersLoadMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'MEDIUM'**
+  String get zoneOrdersLoadMedium;
+
+  /// No description provided for @zoneOrdersLoadLow.
+  ///
+  /// In en, this message translates to:
+  /// **'LOW'**
+  String get zoneOrdersLoadLow;
 }
 
 class _AppLocalizationsDelegate

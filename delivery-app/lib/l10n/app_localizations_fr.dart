@@ -498,4 +498,26 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get offline => 'Hors ligne';
+
+  @override
+  String zoneOrdersAvailable(int count) {
+    return '+$count commandes disponibles';
+  }
+
+  @override
+  String zoneOrdersEstimatedTime(int minutes) {
+    return 'TEMPS ESTIME : $minutes MIN';
+  }
+
+  @override
+  String get zoneOrdersGo => 'Y aller  ▲';
+
+  @override
+  String get zoneOrdersLoadHigh => 'HAUTE';
+
+  @override
+  String get zoneOrdersLoadMedium => 'MOYENNE';
+
+  @override
+  String get zoneOrdersLoadLow => 'BASSE';
 }

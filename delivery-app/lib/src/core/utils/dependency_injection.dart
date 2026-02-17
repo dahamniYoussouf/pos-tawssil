@@ -8,6 +8,11 @@ import 'package:delivery_app/src/features/notifications/cubit/notifications_cubi
 import 'package:delivery_app/src/features/notifications/services/notification_service.dart';
 import 'package:delivery_app/src/features/orders/cubit/orders_cubit.dart';
 import 'package:delivery_app/src/features/orders/repositories/order_repository.dart';
+import 'package:delivery_app/src/features/orders/zone_orders/data/datasources/zone_orders_fake_data_source.dart';
+import 'package:delivery_app/src/features/orders/zone_orders/data/repositories/zone_orders_repository_impl.dart';
+import 'package:delivery_app/src/features/orders/zone_orders/domain/repositories/zone_orders_repository.dart';
+import 'package:delivery_app/src/features/orders/zone_orders/domain/usecases/get_zone_orders_usecase.dart';
+import 'package:delivery_app/src/features/orders/zone_orders/presentation/cubit/zone_orders_cubit.dart';
 import 'package:delivery_app/src/features/driver/repositories/driver_repository.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -94,5 +99,23 @@ void setupLocator() {
 
   locator.registerLazySingleton<OrderTrackingMapCubit>(
     () => OrderTrackingMapCubit(),
+  );
+  locator.registerLazySingleton<ZoneOrdersDataSource>(
+    () => ZoneOrdersFakeDataSource(),
+  );
+  locator.registerLazySingleton<ZoneOrdersRepository>(
+    () => ZoneOrdersRepositoryImpl(
+      dataSource: locator<ZoneOrdersDataSource>(),
+    ),
+  );
+  locator.registerLazySingleton<GetZoneOrdersUseCase>(
+    () => GetZoneOrdersUseCase(
+      repository: locator<ZoneOrdersRepository>(),
+    ),
+  );
+  locator.registerFactory<ZoneOrdersCubit>(
+    () => ZoneOrdersCubit(
+      getZoneOrdersUseCase: locator<GetZoneOrdersUseCase>(),
+    ),
   );
 }

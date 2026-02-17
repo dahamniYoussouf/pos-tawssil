@@ -9,6 +9,7 @@ import 'package:delivery_app/src/features/orders/cubit/order_active_cubit.dart';
 import 'package:delivery_app/src/features/orders/cubit/orders_state.dart';
 import 'package:delivery_app/src/features/orders/models/order_model.dart';
 import 'package:delivery_app/src/features/orders/pages/order_assigned_page.dart';
+import 'package:delivery_app/src/features/orders/zone_orders/presentation/pages/zone_orders_page.dart';
 import 'package:delivery_app/src/features/orders/widgets/nearby_order_card.dart';
 import 'package:delivery_app/src/features/orders/widgets/order_tracking_map_widget.dart';
 import 'package:delivery_app/src/features/orders/widgets/driver_status_bottom_sheet.dart';
@@ -197,6 +198,36 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
                 ),
               );
             },
+          ),
+        ),
+
+        Positioned(
+          top: MediaQuery.of(context).padding.top + 10,
+          left: 20,
+          child: GestureDetector(
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const ZoneOrdersPage(),
+                ),
+              );
+            },
+            child: Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.35),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.18),
+                ),
+              ),
+              child: const Icon(
+                Icons.search_rounded,
+                color: Colors.white,
+                size: 24,
+              ),
+            ),
           ),
         ),
 

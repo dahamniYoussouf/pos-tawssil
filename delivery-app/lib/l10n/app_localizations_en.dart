@@ -489,4 +489,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get offline => 'Offline';
+
+  @override
+  String zoneOrdersAvailable(int count) {
+    return '+$count available orders';
+  }
+
+  @override
+  String zoneOrdersEstimatedTime(int minutes) {
+    return 'ESTIMATED TIME: $minutes MIN';
+  }
+
+  @override
+  String get zoneOrdersGo => 'Go  ▲';
+
+  @override
+  String get zoneOrdersLoadHigh => 'HIGH';
+
+  @override
+  String get zoneOrdersLoadMedium => 'MEDIUM';
+
+  @override
+  String get zoneOrdersLoadLow => 'LOW';
 }
