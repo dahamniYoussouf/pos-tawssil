@@ -17,8 +17,12 @@ import 'package:delivery_app/src/features/auth/services/auth_service.dart';
 import 'package:delivery_app/src/features/auth/pages/login_page.dart';
 import 'package:delivery_app/src/features/auth/pages/signup_page.dart';
 import 'package:delivery_app/src/features/home/pages/home_page.dart';
+import 'package:delivery_app/src/features/notifications/services/notification_service.dart';
 import 'package:delivery_app/l10n/app_localizations.dart';
 import 'package:delivery_app/src/core/localization/locale_cubit.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +39,10 @@ Future<void> _init() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   setupLocator();
 }
 
@@ -132,7 +140,9 @@ class _AuthWrapperState extends State<AuthWrapper> {
     if (authState is! AuthSuccess) return;
     _hasRequestedNotificationsConnection = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<NotificationsCubit>().connect();
+      context.read<NotificationsCubit>().connect(
+            userId: authState.userId,
+          );
     });
   }
 

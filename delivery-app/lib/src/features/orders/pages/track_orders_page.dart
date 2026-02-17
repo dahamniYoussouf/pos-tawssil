@@ -27,24 +27,34 @@ class TrackOrdersPage extends StatefulWidget {
 }
 
 class _TrackOrdersPageState extends State<TrackOrdersPage> {
-  bool _isBottomSheetVisible = false;
-
   @override
   void initState() {
     super.initState();
     locator<OrdersCubit>().fetchOrdersNearby();
   }
 
+  void _toggleDriverStatusSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => const DriverStatusBottomSheet(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: BlocProvider<OrdersCubit>.value(
-      value: locator<OrdersCubit>(),
-      child: BlocConsumer<OrdersCubit, OrdersState>(
-        listener: _handleStateChanges,
-        builder: _buildContent,
+      body: Material(
+        child: BlocProvider<OrdersCubit>.value(
+          value: locator<OrdersCubit>(),
+          child: BlocConsumer<OrdersCubit, OrdersState>(
+            listener: _handleStateChanges,
+            builder: _buildContent,
+          ),
+        ),
       ),
-    ));
+    );
   }
 
   void _handleStateChanges(BuildContext context, OrdersState state) {
@@ -156,11 +166,7 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
               final isActive =
                   state is DriverLoaded ? state.driver.isActive : false;
               return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _isBottomSheetVisible = !_isBottomSheetVisible;
-                  });
-                },
+                onTap: () => _toggleDriverStatusSheet(context),
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -231,14 +237,6 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
           ),
         ),
 
-        // New Status Bottom Sheet
-        if (_isBottomSheetVisible)
-          const Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: DriverStatusBottomSheet(),
-          ),
         Positioned(
           top: radarTopPosition,
           left: 0,
@@ -293,8 +291,9 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
           ),
         ),
 
-        // Error handling if needed
-        if (state is OrdersError) _buildErrorOverlay(state.message),
+        // Error handling if needed - must fill the stack to cover full screen
+        if (state is OrdersError)
+          Positioned.fill(child: _buildErrorOverlay(state.message)),
       ],
     );
   }
