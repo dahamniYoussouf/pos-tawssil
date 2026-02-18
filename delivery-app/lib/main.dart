@@ -2,6 +2,9 @@ import 'package:delivery_app/src/features/notifications/cubit/notifications_cubi
 import 'package:delivery_app/src/features/orders/cubit/orders_cubit.dart';
 import 'package:delivery_app/src/features/driver/cubit/driver_cubit.dart';
 import 'package:delivery_app/src/features/home/cubit/navigation_cubit.dart';
+import 'package:delivery_app/src/features/locations/cubit/location_cubit.dart';
+import 'package:delivery_app/src/features/locations/cubit/location_state.dart';
+import 'package:delivery_app/src/features/locations/pages/location_page.dart';
 import 'package:delivery_app/src/features/orders/cubit/order_active_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -71,6 +74,9 @@ class MyApp extends StatelessWidget {
         BlocProvider<NavigationCubit>(
           create: (context) => NavigationCubit(),
         ),
+        BlocProvider<LocationCubit>(
+          create: (context) => LocationCubit(),
+        ),
         BlocProvider<LocaleCubit>(
           create: (context) => LocaleCubit(),
         ),
@@ -116,6 +122,7 @@ class AuthWrapper extends StatefulWidget {
 class _AuthWrapperState extends State<AuthWrapper> {
   bool _hasCheckedAuth = false;
   bool _hasRequestedNotificationsConnection = false;
+  bool _hasLoadedLocation = false;
 
   @override
   void initState() {
@@ -146,18 +153,28 @@ class _AuthWrapperState extends State<AuthWrapper> {
     });
   }
 
+  void _loadLocationIfNeeded() {
+    if (_hasLoadedLocation) return;
+    _hasLoadedLocation = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<LocationCubit>().loadSavedLocation();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, authState) {
         if (authState is AuthSuccess) {
-          return BlocListener<AuthCubit, AuthState>(
-            listenWhen: (previous, current) =>
-                current is AuthSuccess && previous is! AuthSuccess,
-            listener: (context, state) {
-              _connectNotificationsIfNeeded(authState: state);
+          _connectNotificationsIfNeeded(authState: authState);
+          _loadLocationIfNeeded();
+          return BlocBuilder<LocationCubit, LocationState>(
+            builder: (context, locationState) {
+              if (locationState is LocationSuccess) {
+                return const HomePage();
+              }
+              return const LocationPage();
             },
-            child: const HomePage(),
           );
         } else if (authState is AuthChecking) {
           return const Scaffold(

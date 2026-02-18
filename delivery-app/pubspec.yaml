@@ -23,6 +23,8 @@ dependencies:
   intl: ^0.20.0
   google_maps_flutter: ^2.5.0
   geolocator: ^10.1.0
+  geocoding: ^3.0.0
+  permission_handler: ^11.0.1
   flutter_svg: ^2.0.17
   shared_preferences: ^2.5.4
   url_launcher: ^6.3.1

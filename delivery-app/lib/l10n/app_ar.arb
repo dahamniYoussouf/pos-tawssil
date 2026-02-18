@@ -177,6 +177,21 @@
   "zoneOrdersGo": "اذهب  ▲",
   "zoneOrdersLoadHigh": "مرتفع",
   "zoneOrdersLoadMedium": "متوسط",
-  "zoneOrdersLoadLow": "منخفض"
+  "zoneOrdersLoadLow": "منخفض",
+  "allowLocation": "السماح لـ « tawsil » باستخدام موقعك؟",
+  "locationPurpose": "موقعك يساعدنا في العثور على المطاعم القريبة والتوصيل إليك",
+  "allowOnce": "السماح مرة واحدة",
+  "allowWhenActive": "السماح عند الاستخدام",
+  "doNotAllow": "عدم السماح",
+  "permissionDenied": "تم رفض الإذن",
+  "shareLocationTitle": "أين يجب أن نوصل؟",
+  "shareLocationDescription": "شارك موقعك أو أدخل عنوان للبدء",
+  "shareLocationButton": "مشاركة موقعي",
+  "addAddressButton": "إدخال العنوان يدوياً",
+  "enterAddress": "إدخال العنوان",
+  "addressHint": "أدخل عنوان التوصيل",
+  "gpsDisabled": "نظام GPS معطل",
+  "gpsDisabledMessage": "يرجى تمكين نظام GPS لمشاركة موقعك",
+  "enableGPS": "تفعيل GPS"
 }
 
