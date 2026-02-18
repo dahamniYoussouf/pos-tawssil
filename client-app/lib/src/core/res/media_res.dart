@@ -17,7 +17,7 @@ class MediaRes {
   static const deliveryEndIcon = '$_baseImageIcon/delivery_end_icon.svg';
   static const pretRecupererIcon = '$_baseImageIcon/pret_recuperer_icon.svg';
   static const recupererIcon = '$_baseImageIcon/recuperer_icon.svg';
-  static const tawwsilIcon = '$_baseImageIcon/tawwsil_icon.png';
+  static const tawwsilIcon = 'assets/icons/tawwsil.png';
   static const doubleArrowUpIcon = '$_baseImageIcon/double_arrow.svg';
   static const backButtonIcon = '$_baseImageIcon/back_button_icon.svg';
   static const algeriaFlagIcon = '$_baseImage/alg.png';

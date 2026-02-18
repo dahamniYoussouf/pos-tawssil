@@ -6,6 +6,7 @@ class LocationService {
   StreamSubscription<Position>? _positionStreamSubscription;
 
   /// Check if location services are enabled and permissions are granted
+  /// Note: Does NOT request permissions — that is handled by LocationCubit.
   Future<bool> checkPermissions() async {
     bool serviceEnabled;
     LocationPermission permission;
@@ -19,20 +20,10 @@ class LocationService {
     }
 
     permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        dev.log('[LocationService] Location permissions are denied',
-            name: 'LocationService');
-        return false;
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      dev.log(
-        '[LocationService] Location permissions are permanently denied, we cannot request permissions.',
-        name: 'LocationService',
-      );
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      dev.log('[LocationService] Location permissions not granted: $permission',
+          name: 'LocationService');
       return false;
     }
 

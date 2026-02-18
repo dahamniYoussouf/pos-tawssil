@@ -81,7 +81,7 @@ class _VerificationMethodPageState extends State<VerificationMethodPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Image.asset(
-                                'assets/icons/tawwsil.png',
+                                MediaRes.tawwsilIcon,
                                 width: 200,
                                 height: 80,
                                 fit: BoxFit.contain,
