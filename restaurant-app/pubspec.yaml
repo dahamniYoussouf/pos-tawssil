@@ -22,7 +22,6 @@ dependencies:
   google_fonts: ^4.0.4
   path_provider: ^2.1.1
   intl: ^0.20.0
-  socket_io_client: ^2.0.3+1
   image_picker: ^1.0.7
   flutter_svg: ^2.0.17
   dotted_border: ^2.1.0
@@ -30,6 +29,9 @@ dependencies:
   shared_preferences: ^2.2.2
   esc_pos_utils: ^1.1.0
   image: 3.3.0
+  firebase_core: ^4.4.0
+  firebase_messaging: ^16.0.4
+  flutter_local_notifications: ^19.4.2
 
 dev_dependencies:
   flutter_test:

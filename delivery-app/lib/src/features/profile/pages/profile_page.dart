@@ -77,16 +77,21 @@ class _ProfilePageState extends State<ProfilePage> {
               );
             }
             if (state is DriverLoaded) {
-              return SingleChildScrollView(
-                child: Column(
-                  children: [
-                    ProfileHeaderWidget(driver: state.driver),
-                    ProfileStatsWidget(driver: state.driver),
-                    const LanguageSelectorWidget(),
-                    const SizedBox(height: 24),
-                    const ProfileMenuListWidget(),
-                    const SizedBox(height: 24),
-                  ],
+              return RefreshIndicator(
+                onRefresh: () => locator<DriverCubit>().fetchDriverProfile(),
+                color: AppColors.primaryColor,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  child: Column(
+                    children: [
+                      ProfileHeaderWidget(driver: state.driver),
+                      ProfileStatsWidget(driver: state.driver),
+                      const LanguageSelectorWidget(),
+                      const SizedBox(height: 24),
+                      const ProfileMenuListWidget(),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
                 ),
               );
             }

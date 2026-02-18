@@ -24,6 +24,10 @@ import 'package:restaurant_app/src/features/orders/pages/order_details_page.dart
 import 'package:restaurant_app/l10n/app_localizations.dart';
 
 import 'package:restaurant_app/src/core/localization/locale_cubit.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:restaurant_app/firebase_options.dart';
+import 'package:restaurant_app/src/features/notifications/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -40,6 +44,10 @@ Future<void> _init() async {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   setupLocator();
 }
 
@@ -139,7 +147,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
         await context.read<AuthCubit>().checkAuthenticationStatus();
         final authState = context.read<AuthCubit>().state;
         if (authState is AuthSuccess) {
-          context.read<NotificationsCubit>().connect();
+          context.read<NotificationsCubit>().connect(userId: authState.userId);
         }
       }
     }
@@ -151,7 +159,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
       listener: (context, state) {
         final notificationsCubit = context.read<NotificationsCubit>();
         if (state is AuthSuccess) {
-          notificationsCubit.connect();
+          notificationsCubit.connect(userId: state.userId);
         } else {
           notificationsCubit.disconnect();
         }

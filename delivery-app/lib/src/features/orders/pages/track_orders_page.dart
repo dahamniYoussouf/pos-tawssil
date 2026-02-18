@@ -311,15 +311,16 @@ class _TrackOrdersPageState extends State<TrackOrdersPage> {
             state is DriverLoaded && state.driver.latitude != null
                 ? LatLng(state.driver.latitude!, state.driver.longitude!)
                 : const LatLng(36.7538, 3.0588);
+
         return GoogleMap(
           initialCameraPosition: CameraPosition(
             target: center,
-            zoom: 15.0,
+            zoom: 13.0,
           ),
-          myLocationEnabled: false,
+          myLocationEnabled: true,
           myLocationButtonEnabled: false,
           zoomControlsEnabled: false,
-          mapToolbarEnabled: false,
+          mapToolbarEnabled: true,
         );
       },
     );

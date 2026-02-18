@@ -25,10 +25,10 @@ class NotificationsCubit extends Cubit<NotificationsState> {
     );
   }
 
-  Future<void> connect() async {
+  Future<void> connect({String? userId}) async {
     emit(const NotificationsConnecting());
     try {
-      await _notificationService.connect();
+      await _notificationService.connect(userId: userId);
       if (_notificationService.isConnected) {
         emit(const NotificationsConnected());
       } else {

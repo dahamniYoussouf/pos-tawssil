@@ -36,6 +36,10 @@ import 'src/features/home/pages/home_page.dart';
 
 // Service Imports
 import 'src/features/auth/services/auth_service.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:client_app/firebase_options.dart';
+import 'package:client_app/src/core/services/notification_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,6 +55,10 @@ void main() async {
 Future<void> _init() async {
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   setupLocator();
 }
 
@@ -170,7 +178,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
     if (authState is! AuthSuccess) return;
     _hasRequestedNotificationsConnection = true;
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<NotificationsCubit>().connect();
+      context.read<NotificationsCubit>().connect(userId: authState.userId);
     });
   }
 
