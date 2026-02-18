@@ -204,6 +204,20 @@
   "zoneOrdersGo": "Y aller  ▲",
   "zoneOrdersLoadHigh": "HAUTE",
   "zoneOrdersLoadMedium": "MOYENNE",
-  "zoneOrdersLoadLow": "BASSE"
+  "zoneOrdersLoadLow": "BASSE",
+  "allowLocation": "Autoriser « tawsil » à utiliser votre position ?",
+  "locationPurpose": "Votre position nous aide à trouver les restaurants proches et à vous livrer",
+  "allowOnce": "Autoriser une fois",
+  "allowWhenActive": "Autoriser quand l'app est active",
+  "doNotAllow": "Ne pas autoriser",
+  "permissionDenied": "Autorisation refusée",
+  "shareLocationTitle": "Où devons-nous livrer ?",
+  "shareLocationDescription": "Partagez votre position ou entrez une adresse pour commencer",
+  "shareLocationButton": "Partager ma position",
+  "addAddressButton": "Entrer l'adresse manuellement",
+  "enterAddress": "Entrer l'adresse",
+  "addressHint": "Entrez votre adresse de livraison",
+  "gpsDisabled": "GPS Désactivé",
+  "gpsDisabledMessage": "Veuillez activer le GPS pour partager votre position",
+  "enableGPS": "Activer le GPS"
 }
-

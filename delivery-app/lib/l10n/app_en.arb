@@ -501,5 +501,20 @@
   "zoneOrdersGo": "Go  ▲",
   "zoneOrdersLoadHigh": "HIGH",
   "zoneOrdersLoadMedium": "MEDIUM",
-  "zoneOrdersLoadLow": "LOW"
+  "zoneOrdersLoadLow": "LOW",
+  "allowLocation": "Allow \"tawsil\" to use your location?",
+  "locationPurpose": "Your location helps us find nearby restaurants and deliver to you",
+  "allowOnce": "Allow Once",
+  "allowWhenActive": "Allow When Active",
+  "doNotAllow": "Don't Allow",
+  "permissionDenied": "Permission denied",
+  "shareLocationTitle": "Where should we deliver?",
+  "shareLocationDescription": "Share your location or enter an address to get started",
+  "shareLocationButton": "Share my location",
+  "addAddressButton": "Enter address manually",
+  "enterAddress": "Enter Address",
+  "addressHint": "Enter your delivery address",
+  "gpsDisabled": "GPS Disabled",
+  "gpsDisabledMessage": "Please enable GPS to share your location",
+  "enableGPS": "Enable GPS"
 }

@@ -1077,6 +1077,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'LOW'**
   String get zoneOrdersLoadLow;
+
+  /// No description provided for @allowLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow \"tawsil\" to use your location?'**
+  String get allowLocation;
+
+  /// No description provided for @locationPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Your location helps us find nearby restaurants and deliver to you'**
+  String get locationPurpose;
+
+  /// No description provided for @allowOnce.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Once'**
+  String get allowOnce;
+
+  /// No description provided for @allowWhenActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow When Active'**
+  String get allowWhenActive;
+
+  /// No description provided for @doNotAllow.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t Allow'**
+  String get doNotAllow;
+
+  /// No description provided for @permissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied'**
+  String get permissionDenied;
+
+  /// No description provided for @shareLocationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Where should we deliver?'**
+  String get shareLocationTitle;
+
+  /// No description provided for @shareLocationDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Share your location or enter an address to get started'**
+  String get shareLocationDescription;
+
+  /// No description provided for @shareLocationButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Share my location'**
+  String get shareLocationButton;
+
+  /// No description provided for @addAddressButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter address manually'**
+  String get addAddressButton;
+
+  /// No description provided for @enterAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Address'**
+  String get enterAddress;
+
+  /// No description provided for @addressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your delivery address'**
+  String get addressHint;
+
+  /// No description provided for @gpsDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'GPS Disabled'**
+  String get gpsDisabled;
+
+  /// No description provided for @gpsDisabledMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enable GPS to share your location'**
+  String get gpsDisabledMessage;
+
+  /// No description provided for @enableGPS.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable GPS'**
+  String get enableGPS;
 }
 
 class _AppLocalizationsDelegate

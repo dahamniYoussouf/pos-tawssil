@@ -511,4 +511,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get zoneOrdersLoadLow => 'LOW';
+
+  @override
+  String get allowLocation => 'Allow \"tawsil\" to use your location?';
+
+  @override
+  String get locationPurpose =>
+      'Your location helps us find nearby restaurants and deliver to you';
+
+  @override
+  String get allowOnce => 'Allow Once';
+
+  @override
+  String get allowWhenActive => 'Allow When Active';
+
+  @override
+  String get doNotAllow => 'Don\'t Allow';
+
+  @override
+  String get permissionDenied => 'Permission denied';
+
+  @override
+  String get shareLocationTitle => 'Where should we deliver?';
+
+  @override
+  String get shareLocationDescription =>
+      'Share your location or enter an address to get started';
+
+  @override
+  String get shareLocationButton => 'Share my location';
+
+  @override
+  String get addAddressButton => 'Enter address manually';
+
+  @override
+  String get enterAddress => 'Enter Address';
+
+  @override
+  String get addressHint => 'Enter your delivery address';
+
+  @override
+  String get gpsDisabled => 'GPS Disabled';
+
+  @override
+  String get gpsDisabledMessage => 'Please enable GPS to share your location';
+
+  @override
+  String get enableGPS => 'Enable GPS';
 }

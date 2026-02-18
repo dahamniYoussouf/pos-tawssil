@@ -510,4 +510,50 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get zoneOrdersLoadLow => 'منخفض';
+
+  @override
+  String get allowLocation => 'السماح لـ « tawsil » باستخدام موقعك؟';
+
+  @override
+  String get locationPurpose =>
+      'موقعك يساعدنا في العثور على المطاعم القريبة والتوصيل إليك';
+
+  @override
+  String get allowOnce => 'السماح مرة واحدة';
+
+  @override
+  String get allowWhenActive => 'السماح عند الاستخدام';
+
+  @override
+  String get doNotAllow => 'عدم السماح';
+
+  @override
+  String get permissionDenied => 'تم رفض الإذن';
+
+  @override
+  String get shareLocationTitle => 'أين يجب أن نوصل؟';
+
+  @override
+  String get shareLocationDescription => 'شارك موقعك أو أدخل عنوان للبدء';
+
+  @override
+  String get shareLocationButton => 'مشاركة موقعي';
+
+  @override
+  String get addAddressButton => 'إدخال العنوان يدوياً';
+
+  @override
+  String get enterAddress => 'إدخال العنوان';
+
+  @override
+  String get addressHint => 'أدخل عنوان التوصيل';
+
+  @override
+  String get gpsDisabled => 'نظام GPS معطل';
+
+  @override
+  String get gpsDisabledMessage => 'يرجى تمكين نظام GPS لمشاركة موقعك';
+
+  @override
+  String get enableGPS => 'تفعيل GPS';
 }

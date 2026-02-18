@@ -520,4 +520,53 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get zoneOrdersLoadLow => 'BASSE';
+
+  @override
+  String get allowLocation =>
+      'Autoriser « tawsil » à utiliser votre position ?';
+
+  @override
+  String get locationPurpose =>
+      'Votre position nous aide à trouver les restaurants proches et à vous livrer';
+
+  @override
+  String get allowOnce => 'Autoriser une fois';
+
+  @override
+  String get allowWhenActive => 'Autoriser quand l\'app est active';
+
+  @override
+  String get doNotAllow => 'Ne pas autoriser';
+
+  @override
+  String get permissionDenied => 'Autorisation refusée';
+
+  @override
+  String get shareLocationTitle => 'Où devons-nous livrer ?';
+
+  @override
+  String get shareLocationDescription =>
+      'Partagez votre position ou entrez une adresse pour commencer';
+
+  @override
+  String get shareLocationButton => 'Partager ma position';
+
+  @override
+  String get addAddressButton => 'Entrer l\'adresse manuellement';
+
+  @override
+  String get enterAddress => 'Entrer l\'adresse';
+
+  @override
+  String get addressHint => 'Entrez votre adresse de livraison';
+
+  @override
+  String get gpsDisabled => 'GPS Désactivé';
+
+  @override
+  String get gpsDisabledMessage =>
+      'Veuillez activer le GPS pour partager votre position';
+
+  @override
+  String get enableGPS => 'Activer le GPS';
 }
