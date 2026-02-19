@@ -20,6 +20,8 @@ class MediaRes {
       '$_baseImageIcon/pret_recuperer_icon.svg';
   static const String recupererIcon = '$_baseImageIcon/recuperer_icon.svg';
   static const String algeriaFlag = '$_baseImageIcon/algeriaFlag.png';
+  static const String splash1 = '$_baseImageIcon/splash1.png';
+  static const String splash2 = '$_baseImageIcon/splash2.png';
 
   // nav bar icons
   static const String radarNavBarIcon =

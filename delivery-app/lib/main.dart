@@ -12,6 +12,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:delivery_app/src/features/onboarding/pages/onboarding_page.dart';
 import 'package:delivery_app/src/core/res/app_theme.dart';
 import 'package:delivery_app/src/core/utils/dependency_injection.dart';
 import 'package:delivery_app/src/features/auth/cubit/auth_cubit.dart';
@@ -34,7 +35,7 @@ void main() async {
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: HydratedStorageDirectory(storageDirectory.path),
   );
-  runApp(const MyApp());
+  runApp(const MyApp(showOnboarding: true));
 }
 
 Future<void> _init() async {
@@ -50,7 +51,8 @@ Future<void> _init() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final bool showOnboarding;
+  const MyApp({super.key, this.showOnboarding = false});
 
   @override
   Widget build(BuildContext context) {
@@ -99,8 +101,9 @@ class MyApp extends StatelessWidget {
             ],
             locale: state.locale,
             theme: AppTheme.lightTheme,
-            initialRoute: '/home',
+            initialRoute: showOnboarding ? '/onboarding' : '/home',
             routes: {
+              '/onboarding': (context) => const OnboardingPage(),
               '/login': (context) => const LoginPage(),
               '/signup': (context) => const SignupPage(),
               '/home': (context) => const AuthWrapper(),
