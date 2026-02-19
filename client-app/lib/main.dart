@@ -40,6 +40,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:client_app/firebase_options.dart';
 import 'package:client_app/src/core/services/notification_service.dart';
+import 'package:client_app/src/features/onboarding/pages/onboarding_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -136,7 +137,7 @@ class MyApp extends StatelessWidget {
               Locale('ar', 'DZ'),
             ],
             theme: AppTheme.lightTheme,
-            home: AuthWrapper(),
+            home: const OnboardingPage(nextPage: AuthWrapper()),
           );
         },
       ),
@@ -197,12 +198,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
                 ? UserInfoPage(userId: authState.userId)
                 : const HomePage(),
           );
-        // } else if (authState is AuthLoading) {
-        //   return const Scaffold(
-        //     body: Center(
-        //       child: CircularProgressIndicator(),
-        //     ),
-        //   );
+          // } else if (authState is AuthLoading) {
+          //   return const Scaffold(
+          //     body: Center(
+          //       child: CircularProgressIndicator(),
+          //     ),
+          //   );
         } else {
           return const PhoneNumberPage();
         }

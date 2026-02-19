@@ -108,4 +108,8 @@ class MediaRes {
       '$_baseImageIcon/tracking_order_icon_step_3.svg';
   static const trackingOrderIconStep4 =
       '$_baseImageIcon/tracking_order_icon_step_4.svg';
+
+  // onboarding splash
+  static const splash1 = '$_baseImage/splash1.png';
+  static const splash2 = '$_baseImage/splash2.png';
 }

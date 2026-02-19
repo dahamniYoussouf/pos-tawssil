@@ -42,4 +42,6 @@ class ColorApp {
   static const Color promoYellowColor = Color(0xFFFFFB00);
 
   static const Color navBarIconColor = Color(0xFF4B5563);
+
+  static const Color onboardingBg = Color(0xFF047857);
 }
