@@ -47,14 +47,17 @@ class DriverCubit extends Cubit<DriverState> {
     });
   }
 
-  void toggleActiveStatus() {
+  Future<void> toggleActiveStatus() async {
     if (state is DriverLoaded) {
       final currentDriver = (state as DriverLoaded).driver;
       final newIsActive = !currentDriver.isActive;
+      final apiStatus = newIsActive ? 'available' : 'offline';
+
+      // Optimistic update
       emit(DriverLoaded(
         driver: currentDriver.copyWith(
           isActive: newIsActive,
-          status: newIsActive ? 'online' : 'offline',
+          status: apiStatus,
         ),
       ));
 
@@ -63,6 +66,29 @@ class DriverCubit extends Cubit<DriverState> {
       } else {
         _locationService.stopTracking();
       }
+
+      // Call API
+      final result = await _driverRepository.updateStatus(apiStatus);
+      result.fold(
+        (error) {
+          dev.log('[DriverCubit] Failed to update status: $error',
+              name: 'DriverCubit');
+          // Revert on failure
+          emit(DriverLoaded(
+            driver: currentDriver.copyWith(
+              isActive: !newIsActive,
+              status: !newIsActive ? 'available' : 'offline',
+            ),
+          ));
+          if (!newIsActive) {
+            _startLocationTracking(currentDriver.id);
+          } else {
+            _locationService.stopTracking();
+          }
+        },
+        (_) => dev.log('[DriverCubit] Status updated to $apiStatus',
+            name: 'DriverCubit'),
+      );
     }
   }
 

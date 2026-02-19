@@ -15,4 +15,11 @@ class DriverService extends BaseApiService {
       },
     );
   }
+
+  Future<Map<String, dynamic>> updateStatus(String status) async {
+    return await patchRequest(
+      '/driver/status',
+      data: {'status': status},
+    );
+  }
 }

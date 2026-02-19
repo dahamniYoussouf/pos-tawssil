@@ -39,7 +39,10 @@ class BaseApiService {
   Map<String, dynamic> _handleError(DioException e) {
     late int status;
 
-    if (e.error is SocketException || e.type == DioExceptionType.connectionTimeout || e.type == DioExceptionType.sendTimeout || e.type == DioExceptionType.receiveTimeout) {
+    if (e.error is SocketException ||
+        e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.sendTimeout ||
+        e.type == DioExceptionType.receiveTimeout) {
       status = -3;
     } else if (e.response?.statusCode == 401) {
       status = -1;
@@ -58,7 +61,8 @@ class BaseApiService {
       if (responseData.containsKey('errors')) {
         errorResponse['errors'] = responseData['errors'];
       }
-      if (responseData.containsKey('message') && responseData['message'] != null) {
+      if (responseData.containsKey('message') &&
+          responseData['message'] != null) {
         errorResponse['message'] = responseData['message'];
       }
     }
@@ -155,6 +159,33 @@ class BaseApiService {
     }
   }
 
+  Future<Map<String, dynamic>> patchRequest(
+    String endpoint, {
+    dynamic data,
+    Map<String, dynamic>? queryParameters,
+    bool includeAuth = true,
+    String? baseUrl,
+  }) async {
+    try {
+      dio.options.headers = await _getHeaders(includeAuth: includeAuth);
+      final url = baseUrl ?? '${ApiConfig.baseUrl}$endpoint';
+      final response = await dio.patch(
+        url,
+        data: data,
+        queryParameters: queryParameters,
+      );
+      return _processResponse(response);
+    } on DioException catch (e) {
+      return _handleError(e);
+    } catch (e) {
+      return {
+        'status': -2,
+        'success': false,
+        'message': 'An unexpected error occurred',
+      };
+    }
+  }
+
   Future<Map<String, dynamic>> deleteRequest(
     String endpoint, {
     dynamic data,
@@ -183,7 +214,9 @@ class BaseApiService {
   }
 
   Map<String, dynamic> _processResponse(Response response) {
-    if (response.statusCode != null && response.statusCode! >= 200 && response.statusCode! < 300) {
+    if (response.statusCode != null &&
+        response.statusCode! >= 200 &&
+        response.statusCode! < 300) {
       final data = response.data;
 
       if (data is Map<String, dynamic>) {
@@ -210,4 +243,3 @@ class BaseApiService {
     };
   }
 }
-

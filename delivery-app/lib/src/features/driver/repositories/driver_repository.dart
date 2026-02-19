@@ -39,4 +39,17 @@ class DriverRepository {
       return Left('Error updating GPS: ${e.toString()}');
     }
   }
+
+  Future<Either<String, void>> updateStatus(String status) async {
+    try {
+      final response = await _driverService.updateStatus(status);
+      if (response['success'] == true) {
+        return const Right(null);
+      } else {
+        return Left(response['message'] ?? 'Failed to update status');
+      }
+    } catch (e) {
+      return Left('Error updating status: ${e.toString()}');
+    }
+  }
 }
