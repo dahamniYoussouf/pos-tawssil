@@ -1,6 +1,8 @@
 import 'package:delivery_app/l10n/app_localizations.dart';
 import 'package:delivery_app/src/features/driver/cubit/driver_cubit.dart';
 import 'package:delivery_app/src/features/driver/cubit/driver_state.dart';
+import 'package:delivery_app/src/features/orders/cubit/orders_cubit.dart';
+import 'package:delivery_app/src/core/utils/dependency_injection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -91,8 +93,20 @@ class DriverStatusBottomSheet extends StatelessWidget {
 
                       // Power Button
                       GestureDetector(
-                        onTap: () {
-                          context.read<DriverCubit>().toggleActiveStatus();
+                        onTap: () async {
+                          final driverCubit = context.read<DriverCubit>();
+                          final ordersCubit = locator<OrdersCubit>();
+                          final wasActive = driver?.isActive ?? false;
+
+                          await driverCubit.toggleActiveStatus();
+
+                          if (wasActive) {
+                            // Going offline → clear orders immediately
+                            ordersCubit.clearOrders();
+                          } else {
+                            // Going online → fetch fresh orders
+                            ordersCubit.fetchOrdersNearby();
+                          }
                         },
                         child: Container(
                           width: 50,

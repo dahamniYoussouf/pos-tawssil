@@ -146,6 +146,16 @@ class OrdersCubit extends Cubit<OrdersState> {
     );
   }
 
+  void clearOrders() {
+    if (isClosed) return;
+    final currentStatus = state.selectedStatus;
+    emit(OrdersLoaded(
+        orders: const [],
+        hasMore: false,
+        currentPage: 1,
+        selectedStatus: currentStatus));
+  }
+
   Future<void> fetchOrdersNearby() async {
     if (isClosed) return;
     List<OrderModel> currentOrders = [];
