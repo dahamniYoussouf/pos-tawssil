@@ -21,7 +21,6 @@ class _LoginScreenState extends State<LoginScreen>
 
   bool _isLoading = false;
   bool _obscurePassword = true;
-  bool _rememberMe = false;
   String? _errorMessage;
   DateTime _currentTime = DateTime.now();
   Timer? _timer;
@@ -67,7 +66,6 @@ class _LoginScreenState extends State<LoginScreen>
     );
 
     _checkExistingSession();
-    _loadRememberedCredentials();
     
     // Start timer for real-time clock
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -77,23 +75,6 @@ class _LoginScreenState extends State<LoginScreen>
         });
       }
     });
-  }
-
-  Future<void> _loadRememberedCredentials() async {
-    final prefs = await SharedPreferences.getInstance();
-    final rememberedEmail = prefs.getString('remembered_email');
-    final rememberedPassword = prefs.getString('remembered_password');
-    final shouldRemember = prefs.getBool('remember_me') ?? false;
-
-    if (shouldRemember && rememberedEmail != null) {
-      setState(() {
-        _rememberMe = true;
-        _emailController.text = rememberedEmail;
-        if (rememberedPassword != null) {
-          _passwordController.text = rememberedPassword;
-        }
-      });
-    }
   }
 
   Future<void> _checkExistingSession() async {
@@ -122,17 +103,11 @@ class _LoginScreenState extends State<LoginScreen>
         _passwordController.text,
       );
 
-      // Save credentials if remember me is checked
+      // Clear any previously remembered credentials
       final prefs = await SharedPreferences.getInstance();
-      if (_rememberMe) {
-        await prefs.setString('remembered_email', _emailController.text.trim());
-        await prefs.setString('remembered_password', _passwordController.text);
-        await prefs.setBool('remember_me', true);
-      } else {
-        await prefs.remove('remembered_email');
-        await prefs.remove('remembered_password');
-        await prefs.setBool('remember_me', false);
-      }
+      await prefs.remove('remembered_email');
+      await prefs.remove('remembered_password');
+      await prefs.setBool('remember_me', false);
 
       if (mounted) {
         Navigator.of(context).pushReplacement(
@@ -807,67 +782,6 @@ class _LoginScreenState extends State<LoginScreen>
               return null;
             },
             onFieldSubmitted: (_) => _login(),
-          ),
-          const SizedBox(height: 20),
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final isCompact = constraints.maxWidth < 360;
-              final rememberRow = Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Checkbox(
-                    value: _rememberMe,
-                    onChanged: (value) {
-                      setState(() => _rememberMe = value ?? false);
-                    },
-                    activeColor: TawsilColors.primary,
-                  ),
-                  Flexible(
-                    child: Text(
-                      'Se souvenir de moi',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: TawsilColors.textSecondary,
-                      ),
-                    ),
-                  ),
-                ],
-              );
-              final forgotButton = TextButton(
-                onPressed: () {
-                  // TODO: Implement forgot password
-                },
-                child: Text(
-                  'Mot de passe oublié?',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: TawsilColors.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              );
-
-              if (isCompact) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    rememberRow,
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: forgotButton,
-                    ),
-                  ],
-                );
-              }
-
-              return Row(
-                children: [
-                  rememberRow,
-                  const Spacer(),
-                  forgotButton,
-                ],
-              );
-            },
           ),
           const SizedBox(height: 24),
           SizedBox(

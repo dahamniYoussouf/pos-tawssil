@@ -1,6 +1,6 @@
 class ApiConfig {
   // Backend API URL
-  static const String baseUrl = 'https://wpricoh14061.icosnetcloud.com/api/';
+  static const String baseUrl = 'https://tawsilapp.com/api/';
 
   static const String restaurantPrefix = '';
   

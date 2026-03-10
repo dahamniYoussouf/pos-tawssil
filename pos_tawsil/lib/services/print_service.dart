@@ -123,7 +123,6 @@ class PrintService {
         orderNumber: order.orderNumber,
       );
       if (inProgressOrDone) {
-        print('⚠️ Order #${order.orderNumber} already printed or in progress. Skipping to avoid duplicate.');
         _lastSuccess = true;
         _lastError = null;
         _updateStatus();
@@ -210,7 +209,6 @@ class PrintService {
             deviceKey,
           );
           if (alreadyPrintedToDevice) {
-            print('⚠️ Order #${order.orderNumber} already printed to ${printer.name} ($deviceKey). Skipping.');
             continue;
           }
         }
@@ -230,10 +228,8 @@ class PrintService {
             deviceKey: deviceKey,
             success: true,
           );
-          print('✅ Printed order #${order.orderNumber} to ${printer.name}');
           atLeastOneSuccess = true;
         } catch (e) {
-          print('❌ Failed to print to ${printer.name}: $e');
           await _printLogService.logPrint(
             orderId: order.id,
             orderNumber: order.orderNumber,
@@ -255,7 +251,6 @@ class PrintService {
     } catch (e) {
       _lastError = e.toString();
       if (onError != null) onError(_lastError!);
-      print('❌ Print error: $_lastError');
     } finally {
       _isPrinting = false;
       _queueLength = _queueLength > 0 ? _queueLength - 1 : 0;
@@ -287,17 +282,14 @@ class PrintService {
 
         try {
           await LocalPrintService.openCashDrawerDirectly(printer);
-          print('✅ Cash drawer opened on ${printer.name}');
           return; // Success, exit
         } catch (e) {
-          print('⚠️ Failed to open drawer on ${printer.name}: $e');
           // Try next printer
         }
       }
 
       throw Exception('Impossible d\'ouvrir le tiroir-caisse sur aucune imprimante configurée');
     } catch (e) {
-      print('❌ Cash drawer error: $e');
       rethrow;
     }
   }
@@ -305,7 +297,6 @@ class PrintService {
   /// Invalide le cache des imprimantes (force le rechargement)
   Future<void> invalidatePrintersCache() async {
     // Le cache est géré par l'API, cette méthode permet de forcer le rechargement
-    print('🔄 Invalidating printers cache');
   }
 
   /// Print an order (synchronous wrapper for printOrderAsync)
@@ -322,7 +313,6 @@ class PrintService {
         return printers;
       }
     } catch (e) {
-      print('⚠️ Could not fetch printers from API: $e');
     }
 
     // Fallback: return empty list (user needs to configure printers)

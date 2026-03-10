@@ -1,4 +1,4 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_config.dart';
@@ -42,18 +42,12 @@ class ApiService {
           if (_authToken != null) {
             options.headers['Authorization'] = 'Bearer $_authToken';
           }
-          print('📤 Request: ${options.method} ${options.path}');
-          print('📤 Data: ${options.data}');
           return handler.next(options);
         },
         onResponse: (response, handler) {
-          print('✅ Response: ${response.statusCode} ${response.requestOptions.path}');
-          print('✅ Response Data: ${response.data}');
           return handler.next(response);
         },
         onError: (error, handler) async {
-          print('❌ Error: ${error.response?.statusCode} ${error.message}');
-          print('❌ Error Data: ${error.response?.data}');
           final shouldRetry = _shouldRefreshToken(error);
           final alreadyRetried = error.requestOptions.extra['retry'] == true;
           final isAuthCall = _isAuthEndpoint(error.requestOptions.path);
@@ -116,6 +110,25 @@ class ApiService {
     return true;
   }
 
+  String _formatDioError(DioException e, {String? fallbackMessage}) {
+    final status = e.response?.statusCode;
+    String? serverMessage;
+    final data = e.response?.data;
+    if (data is Map && data['message'] != null) {
+      serverMessage = data['message'].toString();
+    } else if (data is String && data.trim().isNotEmpty) {
+      serverMessage = data;
+    }
+
+    var message = serverMessage ?? e.message;
+    if (message == null || message.trim().isEmpty || message.trim().toLowerCase() == 'null') {
+      message = fallbackMessage ?? 'Erreur reseau';
+    }
+
+    final prefix = status != null ? 'Erreur ($status)' : 'Erreur';
+    return '$prefix: $message';
+  }
+
   Future<String?> _refreshAccessToken() async {
     await _loadTokensIfNeeded();
     if (_refreshToken == null || _refreshToken!.isEmpty) {
@@ -128,7 +141,6 @@ class ApiService {
 
     _refreshCompleter = Completer<String?>();
     try {
-      print('🔄 Refreshing access token...');
       final response = await _tokenDio.post('/auth/refresh', data: {
         'refresh_token': _refreshToken,
       });
@@ -142,11 +154,9 @@ class ApiService {
       _authToken = newToken;
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('auth_token', newToken);
-      print('✅ Access token refreshed');
       _refreshCompleter!.complete(newToken);
       return newToken;
     } catch (e) {
-      print('❌ Token refresh failed: $e');
       _refreshCompleter!.complete(null);
       return null;
     } finally {
@@ -166,7 +176,6 @@ class ApiService {
   
   Future<void> login(String email, String password) async {
     try {
-      print('🔐 Attempting cashier login for: $email');
       
       final response = await _dio.post('/auth/login', data: {
         'email': email,
@@ -174,7 +183,6 @@ class ApiService {
         'type': 'cashier', // ✅ Changé de 'restaurant' à 'cashier'
       });
 
-      print('📥 Full Response: ${response.data}');
 
       if (response.data['access_token'] == null) {
         final errorMsg = response.data['message'] ?? 'Login failed';
@@ -193,10 +201,6 @@ class ApiService {
       _cashierId = profile['id'];
       _restaurantId = profile['restaurant_id']; // Le cashier a un restaurant_id
       
-      print('✅ Cashier login successful');
-      print('✅ Token: ${_authToken?.substring(0, 20)}...');
-      print('✅ Cashier ID: $_cashierId');
-      print('✅ Restaurant ID: $_restaurantId');
       
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('auth_token', _authToken!);
@@ -210,24 +214,17 @@ class ApiService {
       if (profile['first_name'] != null && profile['last_name'] != null) {
         final cashierName = '${profile['first_name']} ${profile['last_name']}';
         await prefs.setString('cashier_name', cashierName);
-        print('✅ Cashier Name: $cashierName');
       }
       
       if (profile['cashier_code'] != null) {
         await prefs.setString('cashier_code', profile['cashier_code']);
-        print('✅ Cashier Code: ${profile['cashier_code']}');
       }
 
       // ✅ Stocker le nom du restaurant si disponible
       if (profile['restaurant'] != null && profile['restaurant']['name'] != null) {
         await prefs.setString('restaurant_name', profile['restaurant']['name']);
-        print('✅ Restaurant Name: ${profile['restaurant']['name']}');
       }
     } on DioException catch (e) {
-      print('❌ Login DioException: ${e.type}');
-      print('❌ Status Code: ${e.response?.statusCode}');
-      print('❌ Response Data: ${e.response?.data}');
-      print('❌ Message: ${e.message}');
       
       if (e.response?.statusCode == 401) {
         final errorMsg = e.response?.data['message'] ?? 'Email ou mot de passe incorrect';
@@ -247,7 +244,6 @@ class ApiService {
         throw Exception('Erreur de connexion: ${e.message}');
       }
     } catch (e) {
-      print('❌ Unexpected error: $e');
       throw Exception('Erreur inattendue: ${e.toString()}');
     }
   }
@@ -271,7 +267,6 @@ class ApiService {
   
   Future<List<FoodCategory>> fetchFoodCategories() async {
     try {
-      print('📥 Fetching food categories...');
 
       // Priorité: endpoint restaurant avec restaurant_id du caissier
       if (_restaurantId == null) {
@@ -295,7 +290,6 @@ class ApiService {
         }
       }
 
-      print('📥 Categories Response: ${response.data}');
 
       if (response.data == null) {
         throw Exception('No response data');
@@ -312,17 +306,14 @@ class ApiService {
         throw Exception('No categories data in response');
       }
 
-      print('✅ Fetched ${dataList.length} categories');
 
       return dataList.map((json) => FoodCategory.fromJson(json)).toList();
     } on DioException catch (e) {
-      print('❌ Category fetch error: ${e.response?.data ?? e.message}');
       if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
         throw Exception('Non autorisé. Veuillez vous reconnecter.');
       }
-      throw Exception('Erreur: ${e.response?.data?['message'] ?? e.message}');
+      throw Exception(_formatDioError(e));
     } catch (e) {
-      print('❌ Unexpected error: $e');
       rethrow;
     }
   }
@@ -331,13 +322,10 @@ class ApiService {
   
   Future<List<MenuItem>> fetchMenuItems() async {
     try {
-      print('📥 Fetching menu items...');
       
       // ✅ Le cashier utilise l'endpoint restaurant
       final response = await _dio.get('/menuitem/cashier/menu');
       
-      print('📥 Menu Items Response Status: ${response.statusCode}');
-      print('📥 Menu Items Response Data: ${response.data}');
       
       if (response.data == null) {
         throw Exception('No response data');
@@ -351,21 +339,17 @@ class ApiService {
 
       final List<dynamic>? dataList = response.data['data'];
       if (dataList == null) {
-        print('⚠️ No menu items in response, returning empty list');
         return [];
       }
       
-      print('✅ Fetched ${dataList.length} menu items');
       
       return dataList.map((json) => MenuItem.fromJson(json)).toList();
     } on DioException catch (e) {
-      print('❌ Menu items fetch error: ${e.response?.statusCode} - ${e.response?.data ?? e.message}');
       if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
         throw Exception('Non autorisé. Veuillez vous reconnecter.');
       }
-      throw Exception('Erreur: ${e.response?.data?['message'] ?? e.message}');
+      throw Exception(_formatDioError(e));
     } catch (e) {
-      print('❌ Unexpected error: $e');
       rethrow;
     }
   }
@@ -385,7 +369,6 @@ class ApiService {
         throw Exception('Cashier ID not found. Please login again.');
       }
 
-      print('📤 Creating order as cashier...');
       
       final orderData = {
         ...order.toJson(),
@@ -395,7 +378,6 @@ class ApiService {
         'created_by_cashier_id': cashierId,
       };
       
-      print('📤 Order data: $orderData');
 
       // ✅ Utiliser l'endpoint POS spécifique aux cashiers
       final response = await _dio.post(
@@ -408,7 +390,6 @@ class ApiService {
         ),
       );
 
-      print('📥 Order Response: ${response.data}');
       
       if (response.data == null) {
         throw Exception('No response data');
@@ -425,11 +406,9 @@ class ApiService {
         throw Exception('No order data in response');
       }
 
-      print('✅ Order created: ${orderData2['order_number']}');
       
       return orderData2;
     } on DioException catch (e) {
-      print('❌ Order creation error: ${e.response?.statusCode} - ${e.response?.data ?? e.message}');
       
       if (e.response?.statusCode == 400) {
         final errorMsg = e.response?.data['message'] ?? 'Données invalides';
@@ -444,9 +423,8 @@ class ApiService {
         throw Exception('Endpoint non trouvé. Vérifiez la configuration de l\'API.');
       }
       
-      throw Exception('Erreur: ${e.response?.data?['message'] ?? e.message}');
+      throw Exception(_formatDioError(e));
     } catch (e) {
-      print('❌ Unexpected error: $e');
       rethrow;
     }
   }
@@ -459,7 +437,6 @@ class ApiService {
         throw Exception('Restaurant ID not found. Please login again.');
       }
 
-      print('📥 Fetching orders history for restaurant: $restaurantId');
       final response = await _dio.get('/order/cashier/history');
 
       if (response.data == null) {
@@ -471,16 +448,23 @@ class ApiService {
         throw Exception('No orders data in response');
       }
 
-      print('✅ History fetched: ${dataList.length} orders');
       return dataList.map((json) => Order.fromJson(json)).toList();
     } on DioException catch (e) {
-      print('❌ Orders history fetch error: ${e.response?.statusCode} - ${e.response?.data ?? e.message}');
-      if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
-        throw Exception('Non autorisé. Veuillez vous reconnecter.');
+      final status = e.response?.statusCode;
+      if (status == 401 || status == 403) {
+        throw Exception('Non autoris??. Veuillez vous reconnecter.');
       }
-      throw Exception('Erreur: ${e.response?.data?['message'] ?? e.message}');
+      String? serverMessage;
+      final data = e.response?.data;
+      if (data is Map && data['message'] != null) {
+        serverMessage = data['message'].toString();
+      } else if (data is String && data.trim().isNotEmpty) {
+        serverMessage = data;
+      }
+      final fallback = e.message ?? 'Erreur reseau';
+      final statusLabel = status != null ? ' ($status)' : '';
+      throw Exception('Erreur$statusLabel: ${serverMessage ?? fallback}');
     } catch (e) {
-      print('❌ Unexpected error fetching orders history: $e');
       rethrow;
     }
   }
@@ -488,7 +472,6 @@ class ApiService {
   // ✅ Méthode pour récupérer le profil du cashier
   Future<Map<String, dynamic>> getCashierProfile() async {
     try {
-      print('📥 Fetching cashier profile...');
       
       final response = await _dio.get('/cashier/profile/me');
       
@@ -507,19 +490,16 @@ class ApiService {
         throw Exception('No profile data in response');
       }
       
-      print('✅ Cashier profile fetched');
       
       return profileData;
     } on DioException catch (e) {
-      print('❌ Profile fetch error: ${e.response?.data ?? e.message}');
-      throw Exception('Erreur: ${e.response?.data?['message'] ?? e.message}');
+      throw Exception(_formatDioError(e));
     }
   }
 
   // ✅ Méthode pour mettre à jour le statut du cashier
   Future<void> updateCashierStatus(String status) async {
     try {
-      print('📤 Updating cashier status to: $status');
       
       final response = await _dio.patch('/cashier/status', data: {
         'status': status, // active, on_break, offline
@@ -535,10 +515,8 @@ class ApiService {
         throw Exception(errorMsg);
       }
       
-      print('✅ Cashier status updated to: $status');
     } on DioException catch (e) {
-      print('❌ Status update error: ${e.response?.data ?? e.message}');
-      throw Exception('Erreur: ${e.response?.data?['message'] ?? e.message}');
+      throw Exception(_formatDioError(e));
     }
   }
 
@@ -560,7 +538,6 @@ class ApiService {
       }
       return Map<String, dynamic>.from(data);
     } on DioException catch (e) {
-      print('❌ Dashboard fetch error: ${e.response?.statusCode} - ${e.response?.data ?? e.message}');
       throw Exception(e.response?.data?['message'] ?? e.message);
     } catch (e) {
       rethrow;
@@ -577,7 +554,6 @@ class ApiService {
         throw Exception('Restaurant ID not found. Please login again.');
       }
 
-      print('📥 Fetching printers for restaurant: $restaurantId');
       
       // Essayer d'abord l'endpoint cashier (si disponible)
       Response response;
@@ -589,7 +565,6 @@ class ApiService {
       } on DioException catch (e) {
         // Si l'endpoint cashier n'existe pas (404), utiliser l'endpoint admin
         if (e.response?.statusCode == 404) {
-          print('⚠️ Cashier endpoint not found, trying admin endpoint...');
           response = await _dio.get('/restaurant/admin/printers/$restaurantId');
         } else {
           rethrow;
@@ -608,20 +583,16 @@ class ApiService {
 
       final List<dynamic>? dataList = response.data['data'];
       if (dataList == null) {
-        print('⚠️ No printers in response, returning empty list');
         return [];
       }
 
-      print('✅ Fetched ${dataList.length} printers');
       return dataList.map((json) => RestaurantPrinter.fromJson(json)).toList();
     } on DioException catch (e) {
-      print('❌ Printers fetch error: ${e.response?.statusCode} - ${e.response?.data ?? e.message}');
       if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
         throw Exception('Non autorisé. Veuillez vous reconnecter.');
       }
-      throw Exception('Erreur: ${e.response?.data?['message'] ?? e.message}');
+      throw Exception(_formatDioError(e));
     } catch (e) {
-      print('❌ Unexpected error fetching printers: $e');
       rethrow;
     }
   }
@@ -643,7 +614,6 @@ class ApiService {
     required int paperWidthMm,
   }) async {
     try {
-      print('📤 Creating printer: $name (connection: $connectionType)');
       final vid = usbVendorId;
       final pid = usbProductId;
       final vname = usbVendorName;
@@ -678,16 +648,13 @@ class ApiService {
         throw Exception('No printer data in response');
       }
 
-      print('✅ Printer created: ${printerData['name']}');
       return RestaurantPrinter.fromJson(printerData);
     } on DioException catch (e) {
-      print('❌ Printer creation error: ${e.response?.statusCode} - ${e.response?.data ?? e.message}');
       if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
         throw Exception('Non autorisé. Veuillez vous reconnecter.');
       }
-      throw Exception('Erreur: ${e.response?.data?['message'] ?? e.message}');
+      throw Exception(_formatDioError(e));
     } catch (e) {
-      print('❌ Unexpected error creating printer: $e');
       rethrow;
     }
   }
@@ -695,7 +662,6 @@ class ApiService {
   /// Supprime une imprimante
   Future<void> deletePrinter(String printerId) async {
     try {
-      print('🗑️ Deleting printer: $printerId');
       
       final response = await _dio.delete('/restaurant/admin/printers/$printerId');
 
@@ -709,18 +675,15 @@ class ApiService {
         throw Exception(errorMsg);
       }
 
-      print('✅ Printer deleted successfully');
     } on DioException catch (e) {
-      print('❌ Printer deletion error: ${e.response?.statusCode} - ${e.response?.data ?? e.message}');
       if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
         throw Exception('Non autorisé. Veuillez vous reconnecter.');
       }
       if (e.response?.statusCode == 404) {
         throw Exception('Imprimante non trouvée. Elle a peut-être déjà été supprimée.');
       }
-      throw Exception('Erreur: ${e.response?.data?['message'] ?? e.message}');
+      throw Exception(_formatDioError(e));
     } catch (e) {
-      print('❌ Unexpected error deleting printer: $e');
       rethrow;
     }
   }
@@ -742,7 +705,6 @@ class ApiService {
     required int paperWidthMm,
   }) async {
     try {
-      print('📤 Updating printer: $printerId (connection: $connectionType)');
       final vid = usbVendorId;
       final pid = usbProductId;
       final vname = usbVendorName;
@@ -776,16 +738,13 @@ class ApiService {
         throw Exception('No printer data in response');
       }
 
-      print('✅ Printer updated: ${printerData['name']}');
       return RestaurantPrinter.fromJson(printerData);
     } on DioException catch (e) {
-      print('❌ Printer update error: ${e.response?.statusCode} - ${e.response?.data ?? e.message}');
       if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
         throw Exception('Non autorisé. Veuillez vous reconnecter.');
       }
-      throw Exception('Erreur: ${e.response?.data?['message'] ?? e.message}');
+      throw Exception(_formatDioError(e));
     } catch (e) {
-      print('❌ Unexpected error updating printer: $e');
       rethrow;
     }
   }

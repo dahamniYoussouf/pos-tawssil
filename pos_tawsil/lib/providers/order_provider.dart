@@ -30,7 +30,6 @@ class OrderProvider with ChangeNotifier {
   
   double get total {
     final sum = _currentOrder?.totalAmount ?? 0.0;
-    print('💰 total: $sum DA');
     return sum;
   }
 
@@ -40,7 +39,6 @@ class OrderProvider with ChangeNotifier {
   
   int get itemCount {
     final count = _currentOrder?.items.length ?? 0;
-    print('📊 itemCount: $count');
     return count;
   }
 
@@ -56,17 +54,13 @@ class OrderProvider with ChangeNotifier {
       _selectedCashierId = prefs.getString('cashier_id');
       _restaurantId = prefs.getString('restaurant_id');
       
-      print('👤 Loaded Cashier ID: $_selectedCashierId');
-      print('🏪 Loaded Restaurant ID: $_restaurantId');
     } catch (e) {
-      print('⚠️ Error loading cashier info: $e');
     }
   }
 
   // ========== CASHIER SELECTION ==========
   
   void selectCashier(String cashierId) {
-    print('👤 Selecting cashier: $cashierId');
     _selectedCashierId = cashierId;
     _startNewOrder();
     notifyListeners();
@@ -79,7 +73,6 @@ class OrderProvider with ChangeNotifier {
     final now = DateTime.now();
     final orderNumber = 'POS-${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}-${now.millisecondsSinceEpoch % 10000}';
 
-    print('🆕 Creating new order: $orderNumber');
 
     _currentOrder = Order(
       id: uuid.v4(),
@@ -97,17 +90,14 @@ class OrderProvider with ChangeNotifier {
       synced: false,
     );
     
-    print('✅ Order created with ID: ${_currentOrder!.id}');
   }
 
   // ========== ORDER MANAGEMENT ==========
   
   void addItem(MenuItem menuItem, {int quantity = 1, String? specialInstructions, List<OrderItemAddition> additions = const []}) async {
-    print('🔵 addItem called: ${menuItem.nom}');
     
     // ✅ Si pas de commande en cours, en créer une automatiquement
     if (_currentOrder == null) {
-      print('🆕 No current order, creating one automatically');
       await _startNewOrder();
     }
 
@@ -132,7 +122,6 @@ class OrderProvider with ChangeNotifier {
 
     if (existingIndex != -1) {
       // Update quantity
-      print('➕ Incrementing quantity for existing item');
       final existing = _currentOrder!.items[existingIndex];
       _currentOrder!.items[existingIndex] = existing.copyWith(
         quantite: existing.quantite + quantity,
@@ -144,7 +133,6 @@ class OrderProvider with ChangeNotifier {
       );
     } else {
       // Add new item
-      print('✨ Adding new item to order');
       final orderItem = OrderItem(
         id: uuid.v4(),
         orderId: _currentOrder!.id,
@@ -165,24 +153,19 @@ class OrderProvider with ChangeNotifier {
       _currentOrder!.items.add(orderItem);
     }
 
-    print('✅ Order now has ${_currentOrder!.items.length} items');
     _recalculateTotal();
     notifyListeners();
-    print('🔔 notifyListeners called');
   }
 
   void removeItem(String itemId) {
-    print('🔵 removeItem: $itemId');
     if (_currentOrder == null) return;
     
     _currentOrder!.items.removeWhere((item) => item.id == itemId);
     _recalculateTotal();
     notifyListeners();
-    print('🔔 notifyListeners called');
   }
 
   void updateItemQuantity(String itemId, int newQuantity) {
-    print('🔵 updateItemQuantity: $itemId -> $newQuantity');
     if (_currentOrder == null) return;
     
     if (newQuantity <= 0) {
@@ -207,7 +190,6 @@ class OrderProvider with ChangeNotifier {
       
       _recalculateTotal();
       notifyListeners();
-      print('🔔 notifyListeners called');
     }
   }
 
@@ -217,7 +199,6 @@ class OrderProvider with ChangeNotifier {
     final before = _sumOrder(usePromo: false);
     final after = _sumOrder(usePromo: true);
 
-    print('Recalculating totals: $before -> $after DA');
 
     _currentOrder = _currentOrder!.copyWith(
       subtotal: before,
@@ -248,14 +229,11 @@ class OrderProvider with ChangeNotifier {
     bool printTicket = true,
     bool openDrawer = true,
   }) async {
-    print('completeOrder called');
     // Eviter les doubles validations (double clic, multi-tap)
     if (_isProcessing) {
-      print('WARN: Order is already processing, skipping duplicate submit');
       return;
     }
     if (_currentOrder == null || _currentOrder!.items.isEmpty) {
-      print('⚠️ No order to complete');
       throw Exception('Commande vide');
     }
 
@@ -269,12 +247,10 @@ class OrderProvider with ChangeNotifier {
         updatedAt: DateTime.now(),
       );
 
-      print('💾 Saving order to database...');
       
       // Save to local database
       await _db.insertOrder(_currentOrder!);
 
-      print('✅ Order saved successfully');
 
       // Si en ligne, synchroniser immédiatement pour récupérer le numéro PKP
       // afin d'imprimer un seul ticket avec l'ordre serveur.
@@ -300,23 +276,19 @@ class OrderProvider with ChangeNotifier {
           }
         }
       } catch (e) {
-        print('⚠️ Immediate sync failed: $e');
       }
 
       // Print ticket if requested (asynchronously, doesn't block)
       if (printTicket) {
         try {
-          print('🖨️ Printing order...');
           // Utiliser printOrderAsync pour ne pas bloquer l'UI
           _printer.printOrderAsync(
             _currentOrder!,
             onError: (error) {
-              print('❌ Print error: $error');
               // L'erreur sera gérée par le Stream de statut
             },
           );
         } catch (e) {
-          print('❌ Print queue failed: $e');
           // Don't block order if print fails
         }
       }
@@ -324,22 +296,18 @@ class OrderProvider with ChangeNotifier {
       // Open cash drawer if requested
       if (openDrawer && paymentMethod == 'cash_on_delivery') {
         try {
-          print('💵 Opening cash drawer...');
           await _printer.openCashDrawer();
         } catch (e) {
-          print('❌ Cash drawer failed: $e');
         }
       }
 
       // Try to sync immediately if online
-      print('🔄 Syncing to API...');
       if (!syncedNow) {
         _sync.syncOrdersToApi();
       }
 
       // Reset for next order
       await _startNewOrder();
-      print('🔔 Order completed and reset');
     } finally {
       _isProcessing = false;
       notifyListeners();
@@ -347,10 +315,8 @@ class OrderProvider with ChangeNotifier {
   }
 
   void cancelOrder() async {
-    print('🔵 cancelOrder called');
     await _startNewOrder();
     notifyListeners();
-    print('🔔 notifyListeners called');
   }
 }
 

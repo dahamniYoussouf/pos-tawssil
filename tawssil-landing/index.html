@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tawsil - Livraison de plats en Algérie</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800;900&family=Sigmar+One&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Header -->
@@ -15,8 +16,7 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <img src="assets/images/logo_green.webp" alt="Tawsil Logo" class="logo-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-                    <span class="logo-icon" style="display:none;">⚡</span>
+                    <img src="assets/images/logo_green.png" alt="Tawsil Logo" class="logo-img">
                 </div>
                 <nav class="nav">
                     <a href="#accueil" class="nav-link">Accueil</a>
@@ -26,7 +26,6 @@
                     <a href="#contact" class="nav-link">Contact</a>
                 </nav>
                 <div class="header-actions">
-                    <button class="btn-text">Se connecter</button>
                     <button class="btn-primary">Télécharger l'app</button>
                 </div>
                 <button class="mobile-menu-toggle" id="mobileMenuToggle">
@@ -37,6 +36,17 @@
             </div>
         </div>
     </header>
+
+    <div class="floating-register-cta" aria-label="Accès rapide aux formulaires d'inscription">
+        <a href="#driver-form-card" class="floating-register-btn floating-register-btn-driver">
+            <span class="floating-register-kicker">Inscription</span>
+            <span class="floating-register-label">Livreur</span>
+        </a>
+        <a href="#partner-form-card" class="floating-register-btn floating-register-btn-restaurant">
+            <span class="floating-register-kicker">Inscription</span>
+            <span class="floating-register-label">Restaurant</span>
+        </a>
+    </div>
 
     <!-- Hero Section -->
     <section id="accueil" class="hero">
@@ -94,7 +104,7 @@
                 </div>
                 <div class="hero-image">
                     <div class="food-display">
-                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800&q=80&auto=format&fit=crop" alt="Plats algériens" class="hero-food-image">
+                        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=900&q=80&auto=format&fit=crop" alt="Plats algériens" class="hero-food-image">
                         <div class="food-overlay">
                             <div class="food-item-float item-1">
                                 <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=200&q=80&auto=format&fit=crop" alt="Pizza">
@@ -103,7 +113,7 @@
                                 <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=200&q=80&auto=format&fit=crop" alt="Burger">
                             </div>
                             <div class="food-item-float item-3">
-                                <img src="https://images.unsplash.com/photo-1546069901-5a7393c8d5b3?w=200&q=80&auto=format&fit=crop" alt="Salade">
+                                <img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?w=200&q=80&auto=format&fit=crop" alt="Salade fraîche">
                             </div>
                         </div>
                         <div class="delivery-badge">
@@ -111,23 +121,29 @@
                             <span>Livraison estimée 15-25 min</span>
                         </div>
                         <div class="phone-mockup-hero">
-                            <div class="phone-screen-hero">
-                                <div class="app-preview">
+                            <div class="phone-screen-hero has-screenshot">
+                                <img
+                                    src="assets/images/app_screen.png"
+                                    alt="Capture d'??cran de l'application Tawssil"
+                                    class="app-screenshot"
+                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+                                >
+                                <div class="app-preview" style="display:none;">
                                     <div class="app-header-preview">
                                         <img src="assets/images/logo_green.webp" alt="Tawsil" class="app-logo-small" onerror="this.style.display='none';">
                                         <span class="app-header-text">Tawsil</span>
                                     </div>
                                     <div class="app-item">
-                                        <span class="app-emoji">🍔</span>
+                                        <span class="app-emoji">????</span>
                                         <span>Burger Deluxe</span>
                                     </div>
                                     <div class="app-item">
-                                        <span class="app-emoji">🍕</span>
+                                        <span class="app-emoji">????</span>
                                         <span>Pizza Margherita</span>
                                     </div>
                                     <div class="app-item">
-                                        <span class="app-emoji">🥗</span>
-                                        <span>Salade Méditerranéenne</span>
+                                        <span class="app-emoji">????</span>
+                                        <span>Salade M??diterran??enne</span>
                                     </div>
                                 </div>
                             </div>
@@ -296,7 +312,7 @@
                     </div>
                     <div class="step-content">
                         <h3 class="step-title">Entrez votre adresse</h3>
-                        <p class="step-description">Partagez votre localisation pour trouver les restaurants à proximité.</p>
+                        <p class="step-description">Partagez votre localisation pour trouver les restaurants proches rapidement.</p>
                         <div class="step-speed-badge">
                             <span class="speed-icon">⚡</span>
                             <span>Instantané</span>
@@ -319,7 +335,7 @@
                     </div>
                     <div class="step-content">
                         <h3 class="step-title">Choisissez votre plat</h3>
-                        <p class="step-description">Parcourez les menus et sélectionnez vos plats préférés.</p>
+                        <p class="step-description">Parcourez le menu et sélectionnez vos plats favoris aujourd’hui.</p>
                         <div class="step-speed-badge">
                             <span class="speed-icon">⚡</span>
                             <span>Rapide</span>
@@ -364,8 +380,8 @@
                         <span class="step-number">4</span>
                     </div>
                     <div class="step-content">
-                        <h3 class="step-title">Savourez !</h3>
-                        <p class="step-description">Recevez votre commande et profitez de votre repas.</p>
+                        <h3 class="step-title">Savourez votre repas</h3>
+                        <p class="step-description">Recevez votre commande chaude et profitez pleinement du repas.</p>
                         <div class="step-speed-badge">
                             <span class="speed-icon">⚡</span>
                             <span>~25 min</span>
@@ -475,7 +491,7 @@
         <div class="container">
             <div class="driver-content">
                 <div class="driver-image">
-                    <img src="https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=600&q=80&auto=format&fit=crop" alt="Livreur Tawssil" class="driver-photo">
+                    <img src="https://images.pexels.com/photos/4392873/pexels-photo-4392873.jpeg?auto=compress&cs=tinysrgb&h=900" alt="Livreur Tawssil sur scooter" class="driver-photo">
                     <div class="driver-badge">
                         <span>🚴</span>
                         <span>Rejoignez-nous</span>
@@ -487,32 +503,59 @@
                     <p class="section-description">
                         Rejoignez notre communauté de livreurs et gagnez de l'argent en toute flexibilité. Travaillez selon votre propre horaire et recevez vos paiements rapidement.
                     </p>
-                    <ul class="driver-benefits">
-                        <li>
-                            <span class="check-icon">✓</span>
-                            <span>Horaires flexibles - travaillez quand vous voulez</span>
-                        </li>
-                        <li>
-                            <span class="check-icon">✓</span>
-                            <span>Revenus compétitifs avec bonus de performance</span>
-                        </li>
-                        <li>
-                            <span class="check-icon">✓</span>
-                            <span>Paiements hebdomadaires rapides et sécurisés</span>
-                        </li>
-                        <li>
-                            <span class="check-icon">✓</span>
-                            <span>Support dédié et formation gratuite</span>
-                        </li>
-                        <li>
-                            <span class="check-icon">✓</span>
-                            <span>Application dédiée pour gérer vos livraisons</span>
-                        </li>
-                    </ul>
-                    <button class="btn-primary btn-large">
-                        Postuler maintenant
-                        <span class="btn-icon">→</span>
-                    </button>
+                    <div class="driver-cta-space"></div>
+                    <div class="driver-form-card partner-form" id="driver-form-card">
+                        <h3 class="form-title">Inscription livreur</h3>
+                        <form class="registration-form driver-registration" data-role="driver">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Prénom *</label>
+                                    <input type="text" name="first_name" placeholder="Ex: Karim" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Nom *</label>
+                                    <input type="text" name="last_name" placeholder="Ex: Benali" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Email *</label>
+                                    <input type="email" name="email" placeholder="exemple@email.com" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Téléphone *</label>
+                                    <input type="tel" name="phone" placeholder="213 555 123 456" required>
+                                    <span class="form-help">Format attendu: 213XXXXXXXXX</span>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Mot de passe *</label>
+                                    <input type="password" name="password" placeholder="Au moins 6 caractères" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Type de véhicule</label>
+                                    <select name="vehicle_type">
+                                        <option value="scooter" selected>Scooter</option>
+                                        <option value="motorcycle">Moto</option>
+                                        <option value="bicycle">Vélo</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Matricule (optionnel)</label>
+                                    <input type="text" name="vehicle_plate" placeholder="Ex: 123-AL-16">
+                                </div>
+                                <div class="form-group">
+                                    <label>Numéro de permis (optionnel)</label>
+                                    <input type="text" name="license_number" placeholder="Ex: DZ-2026-0001">
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-primary btn-full">Créer mon compte livreur</button>
+                            <p class="form-message" aria-live="polite"></p>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
@@ -550,34 +593,74 @@
                             <span>Zéro frais d'inscription - payez uniquement par commande</span>
                         </li>
                     </ul>
-                    <button id="partner-btn" class="btn-primary btn-large partner-btn-animated">
-                        <span class="btn-food-icon">🍽️</span>
-                        <span class="btn-text">Devenir partenaire</span>
-                        <span class="btn-icon">→</span>
-                        <span class="btn-shine"></span>
-                    </button>
+                    <a id="partner-btn" class="partner-cta-image" href="#partner-form-card" aria-label="Devenir partenaire restaurant">
+                        <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?w=1200&q=80&auto=format&fit=crop" alt="Restaurant partenaire Tawssil" loading="lazy">
+                    </a>
                 </div>
-                <div class="partner-form">
+                <div class="partner-form" id="partner-form-card">
                     <h3 class="form-title">Inscription rapide</h3>
-                    <form class="registration-form">
-                        <div class="form-group">
-                            <label>Nom du restaurant</label>
-                            <input type="text" placeholder="Ex: Restaurant El Djazair">
+                    <form class="registration-form restaurant-registration" data-role="restaurant">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Nom du restaurant *</label>
+                                <input type="text" name="name" placeholder="Ex: Restaurant El Djazair" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email *</label>
+                                <input type="email" name="email" placeholder="contact@restaurant.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Téléphone</label>
+                                <input type="tel" name="phone_number" placeholder="213 555 123 456">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Numéro de téléphone</label>
-                            <input type="tel" placeholder="+213 555 123 456">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Mot de passe *</label>
+                                <input type="password" name="password" placeholder="Au moins 6 caractères" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Adresse</label>
+                                <input type="text" name="address" placeholder="Ex: 12 rue des Oliviers, Alger">
+                            </div>
+                            <div class="form-group">
+                                <label>Wilaya</label>
+                                <select name="wilaya_code" class="wilaya-select">
+                                    <option value="">Sélectionnez une wilaya</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label>Wilaya</label>
-                            <select>
-                                <option>Sélectionnez votre wilaya</option>
-                                <option>Alger</option>
-                                <option>Oran</option>
-                                <option>Constantine</option>
-                            </select>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Commune</label>
+                                <select name="commune_select" class="commune-select" disabled>
+                                    <option value="">Sélectionnez une commune</option>
+                                </select>
+                                <input type="hidden" name="commune_id">
+                            </div>
+                            <div class="form-group span-2">
+                                <label>Localisation *</label>
+                                <input type="hidden" name="lat" required>
+                                <input type="hidden" name="lng" required>
+                                <div class="location-picker-card">
+                                    <div class="location-picker-copy">
+                                        <span class="location-picker-status" data-location-status>Aucune position sélectionnée</span>
+                                        <span class="location-picker-help">Ouvrez la carte, placez le repère puis validez la localisation.</span>
+                                    </div>
+                                    <button type="button" class="btn-map-picker" id="openRestaurantMapBtn">
+                                        Choisir sur la carte
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group full">
+                                <label>Catégories *</label>
+                                <div class="category-options" data-category-options="restaurant"></div>
+                            </div>
                         </div>
                         <button type="submit" class="btn-primary btn-full">Envoyer ma demande</button>
+                        <p class="form-message" aria-live="polite"></p>
                     </form>
                 </div>
             </div>
@@ -596,14 +679,15 @@
                 </div>
                 <form class="newsletter-form">
                     <div class="newsletter-input-group">
-                        <input type="email" placeholder="Votre adresse email" required class="newsletter-input">
+                        <input type="email" name="email" placeholder="Votre adresse email" required class="newsletter-input">
                         <button type="submit" class="btn-primary btn-newsletter">
                             S'abonner
                             <span class="btn-icon">→</span>
                         </button>
                     </div>
+                    <p class="newsletter-message" aria-live="polite"></p>
                     <p class="newsletter-privacy">
-                        En vous abonnant, vous acceptez notre <a href="#">Politique de confidentialité</a>
+                        En vous abonnant, vous acceptez notre <a href="/privacy-policy">Politique de confidentialité</a>
                     </p>
                 </form>
             </div>
@@ -616,8 +700,7 @@
             <div class="footer-top">
                 <div class="footer-brand">
                     <div class="footer-logo">
-                        <img src="assets/images/logo_green.webp" alt="Tawsil Logo" class="logo-img-footer" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
-                        <span class="logo-icon" style="display:none;">⚡</span>
+                        <img src="assets/images/logo_green.png" alt="Tawsil Logo" class="logo-img-footer">
                     </div>
                     <p class="footer-tagline">
                         <span class="arabic-highlight">في خدمتك</span> - Votre plateforme de livraison de plats préférée en Algérie
@@ -663,7 +746,7 @@
                     <div class="footer-column">
                         <h4>Légal</h4>
                         <a href="#">Conditions générales</a>
-                        <a href="#">Politique de confidentialité</a>
+                        <a href="/privacy-policy">Politique de confidentialité</a>
                         <a href="#">Cookies</a>
                         <a href="#">Mentions légales</a>
                     </div>
@@ -698,6 +781,38 @@
         </div>
     </footer>
 
+    <!-- Congrats Overlay -->
+    <div class="congrats-overlay" id="congratsOverlay" aria-hidden="true">
+        <div class="congrats-card">
+            <h1 class="congrats-title">Félicitations !</h1>
+            <p class="congrats-subtitle">Votre demande a bien été envoyée.</p>
+            <div class="congrats-blobs" aria-hidden="true"></div>
+        </div>
+    </div>
+
+    <div class="map-modal" id="restaurantLocationModal" aria-hidden="true">
+        <div class="map-modal-backdrop" data-map-close></div>
+        <div class="map-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="restaurantLocationTitle">
+            <button type="button" class="map-modal-close" aria-label="Fermer" data-map-close>&times;</button>
+            <div class="map-modal-header">
+                <h3 id="restaurantLocationTitle">Choisir la localisation du restaurant</h3>
+                <p>Cliquez sur la carte pour placer le repère exact du restaurant.</p>
+            </div>
+            <div class="map-modal-body">
+                <div id="restaurantLocationMap" class="map-canvas"></div>
+                <div class="map-coordinates-box">
+                    <span class="map-coordinates-label">Coordonnées sélectionnées</span>
+                    <strong class="map-coordinates-value" id="restaurantLocationCoords">Aucune position choisie</strong>
+                </div>
+            </div>
+            <div class="map-modal-actions">
+                <button type="button" class="btn-secondary-outline" data-map-close>Annuler</button>
+                <button type="button" class="btn-primary" id="confirmRestaurantMapBtn" disabled>Valider cette position</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

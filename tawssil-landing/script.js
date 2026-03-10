@@ -97,49 +97,591 @@ document.querySelectorAll('.faq-item').forEach(item => {
     }
 });
 
-// Form submission with realistic validation
-const registrationForm = document.querySelector('.registration-form');
-if (registrationForm) {
-    registrationForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const formData = new FormData(registrationForm);
-        const restaurantName = registrationForm.querySelector('input[type="text"]').value;
-        const phone = registrationForm.querySelector('input[type="tel"]').value;
-        const wilaya = registrationForm.querySelector('select').value;
-        
-        // Simple validation
-        if (!restaurantName || !phone || !wilaya || wilaya === 'Sélectionnez votre wilaya') {
-            alert('Veuillez remplir tous les champs.');
+// Registration forms (driver + restaurant)
+const REGISTER_ENDPOINT = '/api/auth/register';
+
+const sanitizePhone = (value) => String(value || '')
+    .replace(/\s+/g, '')
+    .replace(/^\+/, '');
+
+const slugify = (value) => String(value || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+
+const setFormMessage = (form, message, type) => {
+    const messageEl = form.querySelector('.form-message');
+    if (!messageEl) {
+        return;
+    }
+    messageEl.textContent = message || '';
+    messageEl.classList.remove('success', 'error', 'show');
+    if (message) {
+        messageEl.classList.add(type || 'error', 'show');
+    }
+};
+
+const setFormLoading = (form, isLoading) => {
+    const submitBtn = form.querySelector('button[type="submit"]');
+    if (submitBtn) {
+        submitBtn.disabled = isLoading;
+        submitBtn.dataset.originalText = submitBtn.dataset.originalText || submitBtn.textContent;
+        submitBtn.textContent = isLoading ? 'Envoi en cours...' : submitBtn.dataset.originalText;
+    }
+};
+
+const cleanPayload = (payload) => {
+    const cleaned = { ...payload };
+    Object.keys(cleaned).forEach((key) => {
+        if (cleaned[key] === '' || cleaned[key] === null || cleaned[key] === undefined) {
+            delete cleaned[key];
+        }
+    });
+    return cleaned;
+};
+
+const collectCategories = (form) => {
+    const selected = Array.from(form.querySelectorAll('.category-options input[type="checkbox"]:checked'))
+        .map((input) => input.value)
+        .filter(Boolean);
+    return Array.from(new Set(selected));
+};
+
+const buildDriverPayload = (form) => {
+    return cleanPayload({
+        type: 'driver',
+        first_name: form.querySelector('input[name="first_name"]')?.value?.trim(),
+        last_name: form.querySelector('input[name="last_name"]')?.value?.trim(),
+        email: form.querySelector('input[name="email"]')?.value?.trim(),
+        phone: sanitizePhone(form.querySelector('input[name="phone"]')?.value),
+        password: form.querySelector('input[name="password"]')?.value,
+        vehicle_type: form.querySelector('select[name="vehicle_type"]')?.value,
+        vehicle_plate: form.querySelector('input[name="vehicle_plate"]')?.value?.trim(),
+        license_number: form.querySelector('input[name="license_number"]')?.value?.trim(),
+        device_platform: 'web',
+        device_id: `landing-${Date.now()}`
+    });
+};
+
+const buildRestaurantPayload = (form) => {
+    return cleanPayload({
+        type: 'restaurant',
+        name: form.querySelector('input[name="name"]')?.value?.trim(),
+        email: form.querySelector('input[name="email"]')?.value?.trim(),
+        password: form.querySelector('input[name="password"]')?.value,
+        phone_number: sanitizePhone(form.querySelector('input[name="phone_number"]')?.value),
+        address: form.querySelector('input[name="address"]')?.value?.trim(),
+        commune_id: form.querySelector('input[name="commune_id"]')?.value?.trim(),
+        lat: form.querySelector('input[name="lat"]')?.value,
+        lng: form.querySelector('input[name="lng"]')?.value,
+        categories: collectCategories(form),
+        device_platform: 'web',
+        device_id: `landing-${Date.now()}`
+    });
+};
+
+const restaurantLocationState = {
+    map: null,
+    marker: null,
+    pendingLocation: null
+};
+
+const getRestaurantLocationInputs = (form) => ({
+    lat: form?.querySelector('input[name="lat"]'),
+    lng: form?.querySelector('input[name="lng"]')
+});
+
+const readRestaurantLocation = (form) => {
+    const { lat, lng } = getRestaurantLocationInputs(form);
+    const latValue = Number(lat?.value);
+    const lngValue = Number(lng?.value);
+    if (!Number.isFinite(latValue) || !Number.isFinite(lngValue)) {
+        return null;
+    }
+    return { lat: latValue, lng: lngValue };
+};
+
+const formatCoordinate = (value) => Number(value).toFixed(6);
+
+const updateRestaurantLocationSummary = (form, location = readRestaurantLocation(form)) => {
+    const statusEl = form?.querySelector('[data-location-status]');
+    if (!statusEl) {
+        return;
+    }
+    statusEl.textContent = location
+        ? 'Position sélectionnée sur la carte'
+        : 'Aucune position sélectionnée';
+    statusEl.dataset.coords = location
+        ? `${formatCoordinate(location.lat)}, ${formatCoordinate(location.lng)}`
+        : '';
+};
+
+const setRestaurantLocation = (form, location) => {
+    const { lat, lng } = getRestaurantLocationInputs(form);
+    if (lat) lat.value = location ? formatCoordinate(location.lat) : '';
+    if (lng) lng.value = location ? formatCoordinate(location.lng) : '';
+    updateRestaurantLocationSummary(form, location);
+};
+
+const updateMapCoordinatesDisplay = (location) => {
+    const coordsEl = document.getElementById('restaurantLocationCoords');
+    const confirmBtn = document.getElementById('confirmRestaurantMapBtn');
+    if (coordsEl) {
+        coordsEl.textContent = location
+            ? `${formatCoordinate(location.lat)}, ${formatCoordinate(location.lng)}`
+            : 'Aucune position choisie';
+    }
+    if (confirmBtn) {
+        confirmBtn.disabled = !location;
+    }
+};
+
+const ensureRestaurantMapMarker = (location) => {
+    if (!restaurantLocationState.map || !window.L) {
+        return;
+    }
+    if (!location) {
+        if (restaurantLocationState.marker) {
+            restaurantLocationState.map.removeLayer(restaurantLocationState.marker);
+            restaurantLocationState.marker = null;
+        }
+        return;
+    }
+    if (!restaurantLocationState.marker) {
+        restaurantLocationState.marker = window.L.marker([location.lat, location.lng]).addTo(restaurantLocationState.map);
+    } else {
+        restaurantLocationState.marker.setLatLng([location.lat, location.lng]);
+    }
+};
+
+const formatErrors = (errors) => {
+    if (!Array.isArray(errors)) {
+        return '';
+    }
+    return errors
+        .map((err) => {
+            if (!err) return '';
+            const field = err.field || err.path || err.param;
+            const message = err.message || err.msg || err.error || '';
+            return field ? `${field}: ${message}` : message;
+        })
+        .filter(Boolean)
+        .join('\n');
+};
+
+const submitRegistration = async (form, payload) => {
+    setFormMessage(form, '');
+    setFormLoading(form, true);
+
+    try {
+        const response = await fetch(REGISTER_ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok) {
+            const errorDetails = formatErrors(data.errors);
+            const errorMessage = errorDetails || data.message || 'Une erreur est survenue.';
+            setFormMessage(form, errorMessage, 'error');
             return;
         }
-        
-        // Show success message
-        const successMsg = document.createElement('div');
-        successMsg.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 32px;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            z-index: 10000;
-            text-align: center;
-            max-width: 400px;
-        `;
-        successMsg.innerHTML = `
-            <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
-            <h3 style="font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--primary);">Demande envoyée !</h3>
-            <p style="color: var(--text-secondary); margin-bottom: 24px;">Merci ${restaurantName}, nous vous contacterons bientôt.</p>
-            <button onclick="this.parentElement.remove()" style="background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer;">Fermer</button>
-        `;
-        document.body.appendChild(successMsg);
-        
-        registrationForm.reset();
+
+        setFormMessage(form, 'Inscription envoyée avec succès. Notre équipe vous contactera rapidement.', 'success');
+        triggerCongrats(payload.type === 'driver' ? 'Bienvenue !' : 'Merci !');
+        form.reset();
+        if (payload.type === 'restaurant') {
+            setRestaurantLocation(form, null);
+        }
+    } catch (error) {
+        setFormMessage(form, 'Impossible de contacter le serveur. Réessayez dans quelques minutes.', 'error');
+    } finally {
+        setFormLoading(form, false);
+    }
+};
+
+document.querySelectorAll('.registration-form[data-role]').forEach((form) => {
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        const role = form.dataset.role;
+        const payload = role === 'driver' ? buildDriverPayload(form) : buildRestaurantPayload(form);
+
+        if (role === 'driver') {
+            if (!payload.first_name || !payload.last_name || !payload.email || !payload.password || !payload.phone) {
+                setFormMessage(form, 'Veuillez remplir tous les champs obligatoires.', 'error');
+                return;
+            }
+        }
+
+        if (role === 'restaurant') {
+            if (!payload.name || !payload.email || !payload.password || !payload.lat || !payload.lng) {
+                setFormMessage(form, 'Veuillez remplir tous les champs obligatoires.', 'error');
+                return;
+            }
+            if (!payload.categories || payload.categories.length === 0) {
+                setFormMessage(form, 'Choisissez au moins une catégorie.', 'error');
+                return;
+            }
+        }
+
+        submitRegistration(form, payload);
+    });
+});
+
+const fetchCategories = async () => {
+    const endpoints = ['/api/home-category', '/home-category'];
+    for (const endpoint of endpoints) {
+        try {
+            const response = await fetch(endpoint);
+            if (response.ok) {
+                const data = await response.json();
+                if (data && Array.isArray(data.data)) {
+                    return data.data;
+                }
+            }
+        } catch (error) {
+            // continue to next endpoint
+        }
+    }
+    return [];
+};
+
+const renderCategoryOptions = (categories) => {
+    const containers = document.querySelectorAll('[data-category-options]');
+    if (!containers.length) {
+        return;
+    }
+    containers.forEach((container) => {
+        container.innerHTML = '';
+        categories.forEach((category) => {
+            const label = document.createElement('label');
+            label.className = 'category-option';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = category.slug;
+            checkbox.name = 'categories[]';
+
+            const text = document.createElement('span');
+            text.textContent = category.name;
+
+            label.appendChild(checkbox);
+            label.appendChild(text);
+            container.appendChild(label);
+        });
+    });
+};
+
+fetchCategories().then((categories) => {
+    if (Array.isArray(categories) && categories.length) {
+        renderCategoryOptions(categories);
+    }
+});
+
+const fetchWilayas = async () => {
+    const endpoints = ['/api/geo/wilayas', '/geo/wilayas'];
+    for (const endpoint of endpoints) {
+        try {
+            const response = await fetch(endpoint);
+            if (response.ok) {
+                const data = await response.json();
+                if (data && Array.isArray(data.data)) {
+                    return data.data;
+                }
+            }
+        } catch (error) {
+            // continue to next endpoint
+        }
+    }
+    return [];
+};
+
+const fetchCommunes = async (wilayaCode) => {
+    if (!wilayaCode) {
+        return [];
+    }
+    const encoded = encodeURIComponent(wilayaCode);
+    const endpoints = [
+        `/api/geo/communes?wilaya_code=${encoded}`,
+        `/geo/communes?wilaya_code=${encoded}`
+    ];
+    for (const endpoint of endpoints) {
+        try {
+            const response = await fetch(endpoint);
+            if (response.ok) {
+                const data = await response.json();
+                if (data && Array.isArray(data.data)) {
+                    return data.data;
+                }
+            }
+        } catch (error) {
+            // continue to next endpoint
+        }
+    }
+    return [];
+};
+
+const initGeoSelectors = async () => {
+    const form = document.querySelector('.restaurant-registration');
+    if (!form) return;
+
+    const wilayaSelect = form.querySelector('select[name="wilaya_code"]');
+    const communeSelect = form.querySelector('select[name="commune_select"]');
+    const communeInput = form.querySelector('input[name="commune_id"]');
+
+    if (!wilayaSelect || !communeSelect || !communeInput) return;
+
+    const wilayas = await fetchWilayas();
+    if (!wilayas.length) {
+        wilayaSelect.innerHTML = '<option value="">Wilayas indisponibles</option>';
+        wilayaSelect.disabled = true;
+        return;
+    }
+
+    wilayaSelect.innerHTML = '<option value="">Sélectionnez une wilaya</option>';
+    wilayas.forEach((wilaya) => {
+        const option = document.createElement('option');
+        option.value = wilaya.code;
+        option.textContent = wilaya.name_ar
+            ? `${wilaya.code} - ${wilaya.name} (${wilaya.name_ar})`
+            : `${wilaya.code} - ${wilaya.name}`;
+        wilayaSelect.appendChild(option);
+    });
+
+    wilayaSelect.addEventListener('change', async () => {
+        const code = wilayaSelect.value;
+        communeInput.value = '';
+        communeSelect.innerHTML = '<option value="">Sélectionnez une commune</option>';
+        communeSelect.disabled = !code;
+        if (!code) return;
+
+        const communes = await fetchCommunes(code);
+        if (!communes.length) {
+            communeSelect.innerHTML = '<option value="">Aucune commune trouvée</option>';
+            return;
+        }
+
+        communeSelect.innerHTML = '<option value="">Sélectionnez une commune</option>';
+        communes.forEach((commune) => {
+            const option = document.createElement('option');
+            option.value = commune.id;
+            option.textContent = commune.name_ar
+                ? `${commune.name} (${commune.name_ar})`
+                : commune.name;
+            communeSelect.appendChild(option);
+        });
+    });
+
+    communeSelect.addEventListener('change', () => {
+        communeInput.value = communeSelect.value || '';
+    });
+};
+
+const initRestaurantLocationPicker = () => {
+    const form = document.querySelector('.restaurant-registration');
+    const modal = document.getElementById('restaurantLocationModal');
+    const openBtn = document.getElementById('openRestaurantMapBtn');
+    const confirmBtn = document.getElementById('confirmRestaurantMapBtn');
+    const mapContainer = document.getElementById('restaurantLocationMap');
+    const closeTriggers = modal ? Array.from(modal.querySelectorAll('[data-map-close]')) : [];
+    const defaultCenter = [28.0339, 1.6596];
+
+    if (!form || !modal || !openBtn || !confirmBtn || !mapContainer) {
+        return;
+    }
+
+    const closeModal = () => {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('modal-open');
+    };
+
+    const openModal = () => {
+        if (!window.L) {
+            setFormMessage(form, 'La carte est indisponible pour le moment. Réessayez dans quelques instants.', 'error');
+            return;
+        }
+
+        if (!restaurantLocationState.map) {
+            restaurantLocationState.map = window.L.map(mapContainer, {
+                zoomControl: true,
+                scrollWheelZoom: true
+            }).setView(defaultCenter, 6);
+
+            window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap'
+            }).addTo(restaurantLocationState.map);
+
+            restaurantLocationState.map.on('click', (event) => {
+                restaurantLocationState.pendingLocation = {
+                    lat: event.latlng.lat,
+                    lng: event.latlng.lng
+                };
+                ensureRestaurantMapMarker(restaurantLocationState.pendingLocation);
+                updateMapCoordinatesDisplay(restaurantLocationState.pendingLocation);
+            });
+        }
+
+        const existingLocation = readRestaurantLocation(form);
+        restaurantLocationState.pendingLocation = existingLocation;
+        ensureRestaurantMapMarker(existingLocation);
+        updateMapCoordinatesDisplay(existingLocation);
+
+        if (existingLocation) {
+            restaurantLocationState.map.setView([existingLocation.lat, existingLocation.lng], 15);
+        } else {
+            restaurantLocationState.map.setView(defaultCenter, 6);
+        }
+
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('modal-open');
+
+        window.setTimeout(() => {
+            restaurantLocationState.map.invalidateSize();
+        }, 80);
+    };
+
+    openBtn.addEventListener('click', openModal);
+
+    closeTriggers.forEach((trigger) => {
+        trigger.addEventListener('click', closeModal);
+    });
+
+    confirmBtn.addEventListener('click', () => {
+        if (!restaurantLocationState.pendingLocation) {
+            return;
+        }
+        setRestaurantLocation(form, restaurantLocationState.pendingLocation);
+        closeModal();
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && modal.classList.contains('is-open')) {
+            closeModal();
+        }
+    });
+
+    updateRestaurantLocationSummary(form);
+};
+
+initRestaurantLocationPicker();
+initGeoSelectors();
+
+const newsletterForm = document.querySelector(".newsletter-form");
+if (newsletterForm) {
+    newsletterForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const emailInput = newsletterForm.querySelector('input[name="email"]');
+        const messageEl = newsletterForm.querySelector(".newsletter-message");
+        const email = emailInput?.value?.trim() || "";
+
+        if (!email) {
+            if (messageEl) {
+                messageEl.textContent = "Veuillez saisir une adresse email valide.";
+                messageEl.className = "newsletter-message error";
+            }
+            return;
+        }
+
+        const payload = {
+            email,
+            source: "landing",
+            locale: document.documentElement.lang || "fr"
+        };
+
+        const endpoints = ["/api/newsletter/subscribe", "/newsletter/subscribe"];
+        let success = false;
+        let lastError = null;
+
+        for (const endpoint of endpoints) {
+            try {
+                const response = await fetch(endpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json().catch(() => ({}));
+                if (response.ok) {
+                    success = true;
+                    if (messageEl) {
+                        messageEl.textContent = "Merci ! Vous êtes bien inscrit.";
+                        messageEl.className = "newsletter-message success";
+                    }
+                    triggerCongrats('Merci !');
+                    newsletterForm.reset();
+                    break;
+                }
+
+                lastError = data?.message || "Une erreur est survenue.";
+            } catch (err) {
+                lastError = "Impossible de contacter le serveur.";
+            }
+        }
+
+if (!success && messageEl) {
+    messageEl.textContent = lastError || "Une erreur est survenue.";
+    messageEl.className = "newsletter-message error";
+}
     });
 }
+
+const triggerCongrats = (title) => {
+    const overlay = document.getElementById('congratsOverlay');
+    if (!overlay) return;
+
+    const titleEl = overlay.querySelector('.congrats-title');
+    if (titleEl && title) {
+        titleEl.textContent = title;
+    }
+
+    const blobsContainer = overlay.querySelector('.congrats-blobs');
+    if (!blobsContainer) return;
+
+    if (!blobsContainer.childElementCount) {
+        for (let i = 0; i < 22; i += 1) {
+            const blob = document.createElement('span');
+            blob.className = 'congrats-blob';
+            blobsContainer.appendChild(blob);
+        }
+    }
+
+    overlay.classList.add('show');
+
+    const blobs = Array.from(blobsContainer.children);
+    blobs.forEach((blob) => {
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 120 + Math.random() * 160;
+        const x = Math.cos(angle) * distance;
+        const y = Math.sin(angle) * distance;
+        const duration = 700 + Math.random() * 600;
+        const delay = Math.random() * 120;
+
+        blob.animate(
+            [
+                { transform: 'translate(-50%, -50%) scale(0.6)', opacity: 0 },
+                { transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(1.1)`, opacity: 1 },
+                { transform: `translate(calc(-50% + ${x}px), calc(-50% + ${y}px)) scale(0.8)`, opacity: 0 }
+            ],
+            { duration, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)', delay }
+        );
+    });
+
+    window.setTimeout(() => {
+        overlay.classList.remove('show');
+    }, 1800);
+};
 
 // Add to cart functionality (demo)
 document.querySelectorAll('.btn-add').forEach(btn => {
