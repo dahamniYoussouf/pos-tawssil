@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Restaurant - Tawssil Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f4f6fb;
+      color: #0f172a;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #edf2ff; }
+    .restaurant-shell {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      min-height: 100vh;
+      gap: 1rem;
+      padding: 1.5rem;
+    }
+    .restaurant-sidebar {
+      background: #0f172a;
+      border-radius: 28px;
+      padding: 2rem;
+      color: #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      box-shadow: 0 25px 45px rgba(15,23,42,0.2);
+    }
+    .brand-block {
+      font-size: 1.8rem;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+    }
+    .sidebar-panel {
+      background: rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    input, button {
+      font-family: inherit;
+    }
+    .sidebar-panel input {
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.3);
+      padding: 0.85rem;
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+    }
+    .sidebar-panel button {
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0ea5e9, #2563eb);
+      color: #fff;
+      padding: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .sidebar-panel .status-badge {
+      margin-top: 0.2rem;
+      display: inline-flex;
+      align-items: center;
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.1);
+      font-size: 0.85rem;
+    }
+    .sidebar-panel .info-card {
+      border-radius: 16px;
+      border: 1px dashed rgba(255,255,255,0.3);
+      padding: 0.8rem;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.8);
+    }
+    .restaurant-main {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .panel {
+      background: #fff;
+      border-radius: 24px;
+      padding: 1.5rem;
+      box-shadow: 0 25px 45px rgba(15,23,42,0.08);
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .panel-header h2 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+    .panel-header button {
+      border: none;
+      border-radius: 14px;
+      padding: 0.6rem 1.25rem;
+      background: #0ea5e9;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    #r_orders {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      max-height: 520px;
+      overflow-y: auto;
+    }
+    .order-card {
+      border: 1px solid rgba(15,23,42,0.08);
+      border-radius: 18px;
+      padding: 1rem;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+    .order-card h3 {
+      margin: 0;
+      font-size: 1.05rem;
+    }
+    .order-card .status-badge {
+      background: rgba(14,165,233,0.15);
+      color: #0ea5e9;
+    }
+    .order-card .order-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      color: #475569;
+      font-size: 0.9rem;
+    }
+    .order-card .order-actions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .order-card button {
+      border: none;
+      border-radius: 12px;
+      padding: 0.45rem 0.9rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .order-card button.success { background: #10b981; color: #fff; }
+    .order-card button.warning { background: #f59e0b; color: #fff; }
+    .order-card button.danger { background: #ef4444; color: #fff; }
+    #r_log {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 1rem;
+      border-radius: 18px;
+      min-height: 220px;
+      overflow-y: auto;
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+    .empty {
+      text-align: center;
+      color: #64748b;
+      font-style: italic;
+    }
+    @media (max-width: 900px) {
+      .restaurant-shell {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <script>
+    function loadFirebaseFallback() {
+      if (window.__firebaseFallbackLoading) return;
+      window.__firebaseFallbackLoading = true;
+      const app = document.createElement('script');
+      app.src = '/firebase/firebase-app-compat.js';
+      app.defer = true;
+      const msg = document.createElement('script');
+      msg.src = '/firebase/firebase-messaging-compat.js';
+      msg.defer = true;
+      document.head.appendChild(app);
+      document.head.appendChild(msg);
+    }
+  </script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js" onerror="loadFirebaseFallback()"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging-compat.js" onerror="loadFirebaseFallback()"></script>
+</head>
+<body>
+  <div class="restaurant-shell">
+    <aside class="restaurant-sidebar">
+      <div class="brand-block">
+        <span>Tawssil</span>
+        <span>Admin</span>
+      </div>
+      <div class="sidebar-panel">
+        <h2 style="margin:0 0 0.5rem;">Connexion</h2>
+        <input id="r_email" placeholder="Email" type="email" value="restaurant1@example.com">
+        <input id="r_password" type="password" placeholder="Password" value="password123">
+        <button onclick="restaurantLogin()">Se connecter</button>
+        <div id="login_status" class="status-badge" style="display:none;"></div>
+      </div>
+      <div class="info-card">
+        <p>Voici votre tableau de bord en direct.</p>
+        <p>Actualisez votre liste d'ordres pour suivre l'activité client.</p>
+      </div>
+    </aside>
+    <section class="restaurant-main">
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Commandes entrantes</h2>
+          <button onclick="loadOrders()">Rafraîchir</button>
+        </div>
+        <div id="r_orders">
+          <div class="empty">Aucune commande urgente pour l'instant.</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <h2>Journal d'activité</h2>
+        </div>
+        <pre id="r_log" class="log">Waiting for connection...</pre>
+      </div>
+    </section>
+  </div>
+  <script>
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDuWuOT_PzhonVC8jIZn9OqxSHruOrDobc",
+  authDomain: "tawssi.firebaseapp.com",
+  projectId: "tawssi",
+  storageBucket: "tawssi.firebasestorage.app",
+  messagingSenderId: "746654963305",
+  appId: "1:746654963305:web:a9858d9e05dc50b84bb4f8"
+};
+const FIREBASE_VAPID_KEY = "BEf8u4HbFK1KyTnYqhFGFnrvY9QFjMdTaktOiP60T1NrLov7odAhqtvMqmouPW_DkyVRNH5LkW94OAGUNULmoUw";
+
+let messaging = null;
+let fcmToken = null;
+let swRegistration = null;
+let firebaseInitPromise = null;
+let auth = { role: null, token: null, user: null, profile: null };
+
+function log(...msg) {
+  const e = document.getElementById('r_log');
+  e.textContent = `[${new Date().toLocaleTimeString()}] ${msg.join(' ')}\n` + e.textContent;
+}
+
+function resolveOrderId(data = {}) {
+  return data.orderId || data.order_id || data.order?.id || data.id || null;
+}
+
+function resolveOrderNumber(data = {}) {
+  return data.orderNumber || data.order_number || data.order?.order_number || resolveOrderId(data) || 'N/A';
+}
+
+function normalizeRestaurantNotification(data = {}) {
+  return {
+    type: data.type || data.event || data.notification_type || null,
+    orderId: resolveOrderId(data),
+    orderNumber: resolveOrderNumber(data),
+    message: data.message || data.title || data.body || '',
+    raw: data
+  };
+}
+
+async function apiFetch(url, options = {}) {
+  const token = auth.token || '';
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {})
+  };
+  const response = await fetch(url, { ...options, headers });
+  return response;
+}
+
+function waitForFirebaseReady(timeoutMs = 6000) {
+  if (firebaseInitPromise) return firebaseInitPromise;
+  firebaseInitPromise = new Promise((resolve) => {
+    const start = Date.now();
+    const timer = setInterval(() => {
+      if (window.firebase && firebase.messaging) {
+        clearInterval(timer);
+        resolve(true);
+        return;
+      }
+      if (Date.now() - start > timeoutMs) {
+        clearInterval(timer);
+        resolve(false);
+      }
+    }, 120);
+  });
+  return firebaseInitPromise;
+}
+
+function parseFirebasePayload(payload = {}) {
+  const data = {};
+  const raw = payload.data || {};
+  Object.entries(raw).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+    if (typeof value !== 'string') {
+      data[key] = value;
+      return;
+    }
+    const trimmed = value.trim();
+    if (
+      (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+      (trimmed.startsWith('[') && trimmed.endsWith(']'))
+    ) {
+      try {
+        data[key] = JSON.parse(trimmed);
+        return;
+      } catch (_err) {
+        // keep string
+      }
+    }
+    data[key] = value;
+  });
+
+  if (payload.notification) {
+    if (!data.title && payload.notification.title) data.title = payload.notification.title;
+    if (!data.body && payload.notification.body) data.body = payload.notification.body;
+  }
+
+  if (data.body && !data.message) data.message = data.body;
+  return data;
+}
+
+async function registerDeviceToken(token) {
+  if (!auth.token || !token) return;
+  const deviceId = `web-${auth.role || 'restaurant'}-${auth.user?.id || auth.profile?.id || 'guest'}`;
+
+  try {
+    const r = await apiFetch('/notifications/token', {
+      method: 'POST',
+      body: JSON.stringify({
+        token,
+        platform: 'web',
+        device_id: deviceId
+      })
+    });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      log('⚠️ Token registration failed:', j.message || r.status);
+      return;
+    }
+    log('✅ Firebase token registered');
+  } catch (err) {
+    log('⚠️ Token registration error:', err.message);
+  }
+}
+
+function handleFirebaseMessage(payload = {}) {
+  const data = parseFirebasePayload(payload);
+  const notif = normalizeRestaurantNotification(data);
+  const event = notif.type || data.event || null;
+
+  log('📬 Notification:', JSON.stringify(data));
+  if (notif.message) {
+    log('🔔', notif.message);
+  }
+
+  if (event === 'order_update') {
+    const orderNumber = resolveOrderNumber(data);
+    log('🔄 Order updated:', orderNumber, JSON.stringify(data));
+    loadOrders();
+    return;
+  }
+
+  if (event === 'new_order' || event === 'order_created' || (notif.message && notif.message.includes('order'))) {
+    loadOrders();
+    log('🔔 New order received! Refreshing list...');
+  }
+
+  const shouldPrint = data.should_print === true || data.should_print === 'true' || data.shouldPrint === true || data.shouldPrint === 'true';
+  if (event === 'order_accepted_print' && shouldPrint) {
+    log('🖨️ Impression requise pour la commande #' + notif.orderNumber);
+    log('⚠️ NOTE: L\'impression doit se faire depuis l\'application mobile du restaurateur');
+    log('⚠️ L\'application mobile doit être connectée au WiFi de l\'imprimante');
+    log('⚠️ Les données de la commande sont disponibles dans la notification pour l\'impression locale');
+
+    if (notif.orderNumber) {
+      alert(`🖨️ Commande #${notif.orderNumber} acceptée - Impression requise!\n\n` +
+            `L'impression doit se faire depuis l'application mobile du restaurateur ` +
+            `qui est connectée au WiFi de l'imprimante.`);
+    }
+
+    loadOrders();
+  }
+}
+
+async function initFirebaseMessaging() {
+  if (messaging) return;
+
+  const ready = await waitForFirebaseReady();
+  if (!ready) {
+    log('⚠️ Firebase SDK not loaded');
+    return;
+  }
+
+  if (!firebase.apps?.length) {
+    firebase.initializeApp(FIREBASE_CONFIG);
+  }
+
+  if (!('serviceWorker' in navigator)) {
+    log('⚠️ Service worker not supported in this browser');
+    return;
+  }
+
+  try {
+    swRegistration = await navigator.serviceWorker.register('/firebase-messaging-sw.js');
+    await navigator.serviceWorker.ready;
+  } catch (err) {
+    log('⚠️ Service worker registration failed:', err.message);
+    return;
+  }
+
+  messaging = firebase.messaging();
+
+  if (!('Notification' in window)) {
+    log('⚠️ Notifications not supported in this browser');
+    return;
+  }
+
+  if (Notification.permission === 'default') {
+    await Notification.requestPermission();
+  }
+
+  if (Notification.permission !== 'granted') {
+    log('⚠️ Notifications permission denied');
+  } else {
+    try {
+      fcmToken = await messaging.getToken({
+        vapidKey: FIREBASE_VAPID_KEY,
+        serviceWorkerRegistration: swRegistration
+      });
+      if (fcmToken) {
+        localStorage.setItem('fcm_token', fcmToken);
+        await registerDeviceToken(fcmToken);
+      } else {
+        log('⚠️ Unable to get Firebase token');
+      }
+    } catch (err) {
+      log('⚠️ Firebase token error:', err.message);
+    }
+  }
+
+  messaging.onMessage((payload) => {
+    handleFirebaseMessage(payload);
+  });
+
+  log('✅ Firebase messaging initialized');
+}
+async function restaurantLogin() {
+  const email = document.getElementById('r_email').value;
+  const password = document.getElementById('r_password').value;
+
+  try {
+    const r = await apiFetch('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password, type:'restaurant' })
+    });
+    const j = await r.json();
+
+    if (r.ok) {
+      auth = { role: 'restaurant', token: j.access_token, user: j.user, profile: j.profile };
+      initFirebaseMessaging();
+      document.getElementById('login_status').style.display = 'inline-block';
+      document.getElementById('login_status').textContent = '✅ Logged in as ' + j.user.email;
+      log('✅ Restaurant logged in:', j.user.email);
+      loadOrders();
+    } else {
+      alert('Login failed: ' + (j.message || 'Unknown error'));
+      log('❌ Login failed:', j.message);
+    }
+  } catch (e) {
+    alert('Error: ' + e.message);
+    log('❌ Error:', e.message);
+  }
+}
+
+async function loadOrders() {
+  if (!auth?.token) {
+    log('Restaurant not authenticated');
+    return;
+  }
+
+  try {
+    const url = `/api/order/restaurant/orders?status=pending`;
+    log('📡 Fetching orders from:', url);
+    const r = await apiFetch(url);
+    const j = await r.json();
+
+    const box = document.getElementById('r_orders');
+    box.innerHTML = '';
+
+    let orders = j.data || j.orders || (Array.isArray(j) ? j : []);
+    if (orders.length === 0) {
+      box.innerHTML = '<div class="empty">No pending orders</div>';
+      return;
+    }
+
+    orders.forEach(o => renderOrder(o));
+    log(`📋 Loaded ${orders.length} order(s)`);
+  } catch (e) {
+    log('❌ Error loading orders:', e.message);
+  }
+}
+
+function renderOrder(o) {
+  const box = document.getElementById('r_orders');
+  const d = document.createElement('div');
+  d.className = 'card';
+  const statusClass = o.status || 'pending';
+  const itemsHtml = o.order_items?.map(item =>
+    `<div>${item.quantite}x ${item.menu_item?.nom || 'Item'} - ${parseFloat(item.prix_total || 0).toFixed(0)} DA</div>`
+  ).join('') || '<div>No items</div>';
+
+  d.innerHTML = `
+    <div class="order-header">
+      <div>
+        <strong style="font-size:18px">Order #${o.order_number || o.id}</strong><br>
+        <span class="status-badge ${statusClass}">${statusClass}</span>
+      </div>
+      <div style="text-align:right">
+        <strong style="font-size:20px;color:#0f62fe">${parseFloat(o.total_amount || 0).toFixed(0)} DA</strong>
+      </div>
+    </div>
+    <div class="order-items">
+      <strong>Items:</strong>
+      ${itemsHtml}
+    </div>
+    <div style="color:#666;font-size:13px;margin:10px 0">
+      <strong>Client:</strong> ${o.client?.first_name || ''} ${o.client?.last_name || ''} (${o.client?.phone_number || ''})<br>
+      <strong>Delivery:</strong> ${o.delivery_address || 'No address'}<br>
+      <strong>Payment:</strong> ${o.payment_method || 'cash'}<br>
+      <strong>Time:</strong> ${new Date(o.created_at).toLocaleTimeString()}
+    </div>
+    <div class="row">
+      <button class="success" onclick="changeStatus('${o.id}','accepted')">✅ Accept</button>
+      <button class="warning" onclick="changeStatus('${o.id}','preparing')">👨‍🍳 Preparing</button>
+      <button onclick="changeStatus('${o.id}','ready')">✓ Ready</button>
+    </div>
+  `;
+  box.append(d);
+}
+
+async function changeStatus(orderId, newStatus) {
+  const endpoint = newStatus === 'accepted' ? 'accept' :
+                   newStatus === 'preparing' ? 'preparing' : 'ready';
+  try {
+    const r = await apiFetch(`/api/order/${orderId}/${endpoint}`, { method: 'POST' });
+    if (r.ok) {
+      log(`✅ Order #${orderId} → ${newStatus}`);
+      loadOrders();
+    } else {
+      const j = await r.json();
+      alert('Error: ' + (j.message || 'Unknown error'));
+      log(`❌ Failed to update order #${orderId}:`, j.message);
+    }
+  } catch (e) {
+    alert('Error: ' + e.message);
+    log('❌ Error:', e.message);
+  }
+}
+</script>
+</body>
+</html>
+
+
+

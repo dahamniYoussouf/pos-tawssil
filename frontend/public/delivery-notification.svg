@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Delivery meal">
+  <rect width="128" height="128" rx="28" fill="#0f766e"/>
+  <circle cx="38" cy="93" r="12" fill="#f8fafc"/>
+  <circle cx="91" cy="93" r="12" fill="#f8fafc"/>
+  <circle cx="38" cy="93" r="6" fill="#0f172a"/>
+  <circle cx="91" cy="93" r="6" fill="#0f172a"/>
+  <path d="M26 86h18l10-22h26l13 22h9" fill="none" stroke="#f8fafc" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"/>
+  <path d="M52 42h22c7 0 12 5 12 12v10H52z" fill="#fbbf24"/>
+  <path d="M60 34h26c6 0 10 4 10 10v6H60z" fill="#fb7185"/>
+  <path d="M82 52h15l9 13" fill="none" stroke="#f8fafc" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"/>
+  <path d="M31 60h20" fill="none" stroke="#f8fafc" stroke-linecap="round" stroke-width="8"/>
+  <path d="M33 48h14" fill="none" stroke="#f8fafc" stroke-linecap="round" stroke-width="8"/>
+</svg>

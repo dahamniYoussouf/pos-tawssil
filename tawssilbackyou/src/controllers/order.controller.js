@@ -1,0 +1,884 @@
+import * as orderService from "../services/order.service.js";
+import { createOrderWithItems, getOrdersByRestaurant } from "../services/orderWithItem.js";
+import Cashier from '../models/Cashier.js';
+import Restaurant from '../models/Restaurant.js';
+import SystemConfig from "../models/SystemConfig.js";
+
+
+// ==================== ORDER CRUD ====================
+// src/controllers/order.controller.js
+
+const resolveRestaurantIdFromToken = async (req) => {
+  if (req.user?.restaurant_id) {
+    return req.user.restaurant_id;
+  }
+
+  const restaurant = req.user?.id
+    ? await Restaurant.findOne({
+        where: { user_id: req.user.id },
+        attributes: ["id"],
+        raw: true
+      })
+    : null;
+
+  if (restaurant?.id) {
+    req.user.restaurant_id = restaurant.id;
+    return restaurant.id;
+  }
+
+  const error = new Error("Restaurant profile not found in token");
+  error.status = 403;
+  throw error;
+};
+
+const resolveRestaurantIdFromCashierToken = async (req) => {
+  const cashierId = req.user?.cashier_id;
+  if (!cashierId) {
+    const error = new Error("Cashier profile not found in token");
+    error.status = 403;
+    throw error;
+  }
+
+  const cashier = await Cashier.findByPk(cashierId, {
+    attributes: ["id", "restaurant_id"],
+    raw: true
+  });
+
+  if (cashier?.restaurant_id) {
+    return cashier.restaurant_id;
+  }
+
+  const error = new Error("Cashier restaurant not found");
+  error.status = 403;
+  throw error;
+};
+
+// ✅ Create order with items - client_id from JWT
+export const createOrder = async (req, res, next) => {
+  try {
+    // ✅ Get client_id from JWT token
+    const client_id = req.user.client_id;
+    
+    if (!client_id) {
+      return res.status(400).json({
+        success: false,
+        message: "Client profile not found in token"
+      });
+    }
+
+    // Merge client_id with request body
+    const orderData = {
+      ...req.body,
+      client_id // Override any client_id in body with authenticated user's ID
+    };
+
+    const order = await createOrderWithItems(orderData);
+    
+    const { _idempotent, ...orderPayload } = order || {};
+    res.status(201).json({
+      success: true,
+      message: "Order created successfully",
+      data: orderPayload
+    });
+  } catch (err) {
+    if (err.name === "SequelizeValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: "Validation error",
+        errors: err.errors.map(e => ({
+          field: e.path,
+          message: e.message
+        }))
+      });
+    }
+    
+    const status = err.status || 500;
+    return res.status(status).json({
+      success: false,
+      message: err.message || "Failed to create order",
+      ...(process.env.NODE_ENV === 'development' && { error: err.stack })
+    });
+  }
+};
+
+
+// ✅ Create order from POS - requires cashier authentication
+export const createOrderFromPOS = async (req, res, next) => {
+  try {
+    // ✅ Get cashier_id from JWT token (must be authenticated)
+    const cashier_id = req.user?.cashier_id;
+    
+    if (!cashier_id) {
+      return res.status(401).json({
+        success: false,
+        message: "Cashier authentication required for POS orders"
+      });
+    }
+
+    // ✅ Verify cashier has permission to create orders
+    const cashier = await Cashier.findByPk(cashier_id);
+    if (!cashier) {
+      return res.status(404).json({
+        success: false,
+        message: "Cashier profile not found"
+      });
+    }
+
+    if (!cashier.hasPermission('can_create_orders')) {
+      return res.status(403).json({
+        success: false,
+        message: "You don't have permission to create orders"
+      });
+    }
+
+    // ✅ Merge order data with cashier info
+    const orderData = {
+      ...req.body,
+      created_by_cashier_id: cashier_id, // Track who created the order
+      restaurant_id: cashier.restaurant_id, // Use cashier's restaurant
+      order_type: req.body.order_type || 'pickup' // Default to pickup for POS
+    };
+
+    const order = await createOrderWithItems(orderData);
+    const { _idempotent, ...orderPayload } = order || {};
+
+    // ✅ Increment cashier's order count only on first creation
+    if (!_idempotent) {
+      await cashier.incrementOrderCount(orderPayload.total_amount);
+    }
+    
+    res.status(201).json({
+      success: true,
+      message: "Order created successfully via POS",
+      data: {
+        ...orderPayload,
+        cashier: {
+          id: cashier.id,
+          name: cashier.getFullName(),
+          cashier_code: cashier.cashier_code
+        }
+      }
+    });
+  } catch (err) {
+    if (err.name === "SequelizeValidationError") {
+      return res.status(400).json({
+        success: false,
+        message: "Validation error",
+        errors: err.errors.map(e => ({
+          field: e.path,
+          message: e.message
+        }))
+      });
+    }
+    
+    const status = err.status || 500;
+    return res.status(status).json({
+      success: false,
+      message: err.message || "Failed to create order",
+      ...(process.env.NODE_ENV === 'development' && { error: err.stack })
+    });
+  }
+};
+
+
+// Get all orders with filters
+export const getAllOrders = async (req, res, next) => {
+  try {
+    const result = await orderService.getAllOrdersService(req.query);
+    res.json({
+      success: true,
+      data: result.orders,
+      pagination: result.pagination
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Get order by ID
+export const getOrderById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const order = await orderService.getOrderByIdService(id);
+    
+    res.json({
+      success: true,
+      data: order
+    });
+  } catch (err) {
+    if (err.status === 404) {
+      return res.status(404).json({
+        success: false,
+        message: err.message || "Order not found"
+      });
+    }
+    next(err);
+  }
+};
+
+// Get client orders
+export const getClientOrders = async (req, res, next) => {
+  try {
+    const { clientId } = req.params;
+      if (!clientId) {
+      return res.status(400).json({
+        success: false,
+        message: "Client profile not found"
+      });
+    }
+    const result = await orderService.getClientOrdersService(clientId, req.query);
+    
+    res.json({
+      success: true,
+      data: result.orders,
+      pagination: result.pagination
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// ==================== STATUS TRANSITIONS ====================
+
+// Restaurant accepts order (PENDING -> ACCEPTED)
+export const acceptOrder = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { preparation_time } = req.body; // restaurant provides this
+
+    const role = req.user?.role;
+    const restaurantId = role === "admin" ? null : await resolveRestaurantIdFromToken(req);
+    const actor = {
+      role,
+      userId: req.user?.id,
+      ...(restaurantId ? { restaurantId } : {})
+    };
+
+    const order = await orderService.acceptOrder(id, actor, { preparation_time });
+    
+    res.json({
+      success: true,
+      message: `Order accepted with ${preparation_time || 15} minutes preparation time`,
+      data: order
+    });
+  } catch (err) {
+    if (err.status === 404) {
+      return res.status(404).json({
+        success: false,
+        message: err.message
+      });
+    }
+    if (err.status === 400) {
+      return res.status(400).json({
+        success: false,
+        message: err.message
+      });
+    }
+    if (err.status === 403) {
+      return res.status(403).json({
+        success: false,
+        message: err.message
+      });
+    }
+    next(err);
+  }
+};
+
+// Restaurant declines order (PENDING/ACCEPTED -> DECLINED)
+export const declineOrder = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+    
+    if (!reason) {
+      return res.status(400).json({
+        success: false,
+        message: "Decline reason is required"
+      });
+    }
+    
+    const role = req.user?.role;
+    const restaurantId = role === "admin" ? null : await resolveRestaurantIdFromToken(req);
+    const actor = {
+      role,
+      userId: req.user?.id,
+      ...(restaurantId ? { restaurantId } : {})
+    };
+
+    const order = await orderService.declineOrder(id, reason, actor);
+    
+    res.json({
+      success: true,
+      message: "Order declined",
+      data: order
+    });
+  } catch (err) {
+    if (err.status === 404) {
+      return res.status(404).json({
+        success: false,
+        message: err.message
+      });
+    }
+    if (err.status === 400) {
+      return res.status(400).json({
+        success: false,
+        message: err.message
+      });
+    }
+    if (err.status === 403) {
+      return res.status(403).json({
+        success: false,
+        message: err.message
+      });
+    }
+    next(err);
+  }
+};
+
+// Assign driver or complete pickup (ACCEPTED/PREPARING -> ASSIGNED/DELIVERED)
+export const assignDriverOrComplete = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    const actor = {
+      role: req.user?.role,
+      userId: req.user?.id,
+      driverId: req.user?.driver_id
+    };
+
+    const isDriverRole = req.user?.role === "driver";
+    let driver_id = isDriverRole ? req.user?.driver_id : null;
+
+    if (isDriverRole) {
+      if (!driver_id) {
+        return res.status(400).json({
+          success: false,
+          message: "Driver profile not found in token"
+        });
+      }
+
+      actor.driverId = driver_id;
+    } else if (req.user?.role === "restaurant") {
+      actor.restaurantId = await resolveRestaurantIdFromToken(req);
+      driver_id = req.body?.driver_id || null;
+    } else if (req.user?.role === "cashier") {
+      actor.restaurantId = await resolveRestaurantIdFromCashierToken(req);
+      driver_id = req.body?.driver_id || null;
+    } else if (req.user?.role === "admin") {
+      driver_id = req.body?.driver_id || null;
+    } else {
+      return res.status(403).json({
+        success: false,
+        message: "Access restricted"
+      });
+    }
+    
+    const order = await orderService.assignDriverOrComplete(id, driver_id, actor);
+    
+    const message = order.order_type === 'pickup' 
+      ? "Pickup order completed" 
+      : "Driver assigned successfully";
+    
+    res.json({
+      success: true,
+      message,
+      data: order
+    });
+  } catch (err) {
+    if (err.status === 404) {
+      return res.status(404).json({
+        success: false,
+        message: err.message
+      });
+    }
+    if (err.status === 400) {
+      return res.status(400).json({
+        success: false,
+        message: err.message
+      });
+    }
+    if (err.status === 403) {
+      return res.status(403).json({
+        success: false,
+        message: err.message,
+        ...(err.code ? { code: err.code } : {})
+      });
+    }
+    next(err);
+  }
+};
+
+// Driver starts delivery (ASSIGNED -> DELIVERING)
+export const startDelivering = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    const actor = {
+      role: req.user?.role,
+      userId: req.user?.id,
+      driverId: req.user?.driver_id
+    };
+
+    const order = await orderService.startDelivering(id, actor);
+    
+    res.json({
+      success: true,
+      message: "Delivery started",
+      data: order
+    });
+  } catch (err) {
+    if (err.status === 404) {
+      return res.status(404).json({
+        success: false,
+        message: err.message
+      });
+    }
+    if (err.status === 400) {
+      return res.status(400).json({
+        success: false,
+        message: err.message
+      });
+    }
+    if (err.status === 403) {
+      return res.status(403).json({
+        success: false,
+        message: err.message
+      });
+    }
+    next(err);
+  }
+};
+
+// Driver completes delivery (DELIVERING -> DELIVERED)
+export const completeDelivery = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    const actor = {
+      role: req.user?.role,
+      userId: req.user?.id,
+      driverId: req.user?.driver_id
+    };
+
+    const order = await orderService.completeDelivery(id, actor);
+    
+    res.json({
+      success: true,
+      message: "Delivery completed successfully",
+      data: order
+    });
+  } catch (err) {
+    if (err.status === 404) {
+      return res.status(404).json({
+        success: false,
+        message: err.message
+      });
+    }
+    if (err.status === 400) {
+      return res.status(400).json({
+        success: false,
+        message: err.message
+      });
+    }
+    if (err.status === 403) {
+      return res.status(403).json({
+        success: false,
+        message: err.message
+      });
+    }
+    next(err);
+  }
+};
+
+// ==================== DRIVER GPS TRACKING ====================
+
+// Update driver GPS location (every 25s during delivery)
+export const updateDriverGPS = async (req, res, next) => {
+  try {
+    const { driverId } = req.params;
+    const { longitude, latitude } = req.body;
+    
+    if (!longitude || !latitude) {
+      return res.status(400).json({
+        success: false,
+        message: "Longitude and latitude are required"
+      });
+    }
+    
+    const result = await orderService.updateDriverGPS(driverId, longitude, latitude);
+    
+    res.json({
+      success: true,
+      message: "GPS location updated",
+      data: result
+    });
+  } catch (err) {
+    if (err.status === 404) {
+      return res.status(404).json({
+        success: false,
+        message: err.message
+      });
+    }
+    if (err.status === 400) {
+      return res.status(400).json({
+        success: false,
+        message: err.message
+      });
+    }
+    next(err);
+  }
+};
+
+// Get real-time order tracking (for client)
+export const getOrderTracking = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    
+    const tracking = await orderService.getOrderTracking(id);
+    
+    res.json({
+      success: true,
+      data: tracking
+    });
+  } catch (err) {
+    if (err.status === 404) {
+      return res.status(404).json({
+        success: false,
+        message: err.message
+      });
+    }
+    next(err);
+  }
+};
+
+// ==================== RATING ====================
+
+export const addRestaurantRating = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { restaurant_rating, restaurant_review_comment } = req.body;
+
+    const order = await orderService.addRestaurantRatingService(
+      id,
+      restaurant_rating,
+      restaurant_review_comment
+    );
+
+    res.json({
+      success: true,
+      message: "Restaurant rating submitted successfully",
+      data: order
+    });
+  } catch (err) {
+    if (err.status === 404) {
+      return res.status(404).json({
+        success: false,
+        message: err.message
+      });
+    }
+    if (err.status === 400) {
+      return res.status(400).json({
+        success: false,
+        message: err.message
+      });
+    }
+    next(err);
+  }
+};
+
+export const addDriverRating = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { driver_rating, driver_review_comment } = req.body;
+
+    const order = await orderService.addDriverRatingService(
+      id,
+      driver_rating,
+      driver_review_comment
+    );
+
+    res.json({
+      success: true,
+      message: "Driver rating submitted successfully",
+      data: order
+    });
+  } catch (err) {
+    if (err.status === 404) {
+      return res.status(404).json({
+        success: false,
+        message: err.message
+      });
+    }
+    if (err.status === 400) {
+      return res.status(400).json({
+        success: false,
+        message: err.message
+      });
+    }
+    next(err);
+  }
+};
+
+
+// Start preparing order → Notifies nearby drivers
+export const startPreparingOrder = async (req, res, next) => {
+  try {
+    const actor = {
+      role: req.user?.role,
+      userId: req.user?.id
+    };
+
+    if (req.user?.role === "restaurant") {
+      actor.restaurantId = await resolveRestaurantIdFromToken(req);
+    } else if (req.user?.role === "cashier") {
+      actor.restaurantId = await resolveRestaurantIdFromCashierToken(req);
+    }
+
+    const order = await orderService.startPreparing(req.params.id, actor);
+
+    if (!order) {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot start preparing this order (it must be accepted first)"
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Order is now being prepared",
+      order
+    });
+  } catch (error) {
+    if (error?.status) {
+      return res.status(error.status).json({
+        success: false,
+        message: error.message
+      });
+    }
+    next(error);
+  }
+};
+
+
+// Get orders by restaurant ID
+export const getRestaurantOrders = async (req, res, next) => {
+  try {
+    const restaurant_id = await resolveRestaurantIdFromToken(req);
+    const filters = {
+      status: req.query.status || req.query.statut,
+      order_type: req.query.order_type,
+      page: req.query.page,
+      limit: req.query.limit || req.query.pageSize
+    };
+    
+    const result = await getOrdersByRestaurant(restaurant_id, filters);
+    
+    res.json({
+      success: true,
+      message: 'Orders retrieved successfully',
+      data: result.orders,
+      pagination: result.pagination,
+      count: result.pagination.items_in_page,
+      total: result.pagination.total_items
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// Get orders for authenticated cashier (by their restaurant)
+export const getCashierOrders = async (req, res, next) => {
+  try {
+    const cashierId = req.user?.cashier_id;
+    if (!cashierId) {
+      return res.status(401).json({
+        success: false,
+        message: "Cashier authentication required"
+      });
+    }
+
+    const cashier = await Cashier.findByPk(cashierId, {
+      attributes: ['id', 'restaurant_id']
+    });
+
+    if (!cashier) {
+      return res.status(404).json({
+        success: false,
+        message: "Cashier not found"
+      });
+    }
+
+    const filters = {
+      status: req.query.status || req.query.statut,
+      order_type: req.query.order_type,
+      page: req.query.page,
+      limit: req.query.limit || req.query.pageSize
+    };
+
+    const result = await getOrdersByRestaurant(cashier.restaurant_id, filters);
+
+    res.json({
+      success: true,
+      message: 'Orders retrieved successfully',
+      data: result.orders,
+      pagination: result.pagination,
+      count: result.pagination.items_in_page,
+      total: result.pagination.total_items
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+
+// ==================== CONTROLLER ====================
+// Add this to order.controller.js
+
+/**
+ * Get nearby orders for authenticated driver
+ * GET /api/orders/nearby
+ */
+export const getNearbyOrders = async (req, res, next) => {
+  try {
+    // Get driver ID from authenticated user
+    const driverId = req.user?.driver_id || req.user?.id;
+    
+    if (!driverId) {
+      return res.status(401).json({
+        success: false,
+        message: "Driver authentication required"
+      });
+    }
+
+    const result = await orderService.getNearbyOrders(driverId, req.query);
+    
+    res.json({
+      success: true,
+      message: `Found ${result.orders.length} nearby orders`,
+      data: result.orders,
+      pagination: result.pagination,
+      driver_location: result.driver_location,
+      search_radius_km: result.search_radius_km
+    });
+  } catch (err) {
+    if (err.status === 404) {
+      return res.status(404).json({
+        success: false,
+        message: err.message
+      });
+    }
+    if (err.status === 400) {
+      return res.status(400).json({
+        success: false,
+        message: err.message
+      });
+    }
+    next(err);
+  }
+};
+
+
+/**
+ * POST /api/orders/:id/driver-cancel
+ * Driver cancels an order they're assigned to
+ */
+export const driverCancelOrder = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+    
+    // Récupérer l'ID du livreur depuis le JWT
+    const driverId = req.user.driver_id;
+    
+    if (!driverId) {
+      return res.status(400).json({
+        success: false,
+        message: "Driver profile not found in token"
+      });
+    }
+
+    if (!reason || reason.trim().length < 10) {
+      return res.status(400).json({
+        success: false,
+        message: "Cancellation reason must be at least 10 characters"
+      });
+    }
+    
+    const result = await orderService.driverCancelOrder(id, driverId, reason);
+
+    let maxDriverCancellations = 3;
+    try {
+      const configuredMax = await SystemConfig.get('max_driver_cancellations', 3);
+      const parsedMax = Number.parseInt(String(configuredMax), 10);
+      if (Number.isFinite(parsedMax) && parsedMax >= 1 && parsedMax <= 20) {
+        maxDriverCancellations = parsedMax;
+      }
+    } catch (error) {
+      console.error("❌ Error reading max_driver_cancellations config:", error);
+    }
+    
+    res.json({
+      success: true,
+      message: "Order cancelled successfully",
+      data: {
+        order: {
+          id: result.order.id,
+          order_number: result.order.order_number,
+          status: result.order.status
+        },
+        driver: result.driver,
+        warning: result.driver.cancellation_count >= maxDriverCancellations 
+          ? "Warning: Multiple cancellations detected. Admin has been notified."
+          : null
+      }
+    });
+  } catch (err) {
+    if (err.status === 404) {
+      return res.status(404).json({
+        success: false,
+        message: err.message
+      });
+    }
+    if (err.status === 400 || err.status === 403) {
+      return res.status(err.status).json({
+        success: false,
+        message: err.message
+      });
+    }
+    next(err);
+  }
+};
+
+// Driver marks arrival at restaurant
+export const driverArrived = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const actor = {
+      role: req.user?.role,
+      userId: req.user?.id,
+      driverId: req.user?.driver_id
+    };
+
+    const order = await orderService.driverArrived(id, actor);
+    res.json({ success: true, message: "Driver marked as arrived at restaurant", data: order });
+  } catch (err) {
+    if (err.status === 404) return res.status(404).json({ success: false, message: err.message });
+    if (err.status === 400) return res.status(400).json({ success: false, message: err.message });
+    if (err.status === 403) return res.status(403).json({ success: false, message: err.message });
+    next(err);
+  }
+};
+
+// Preview distances/ETAs for driver before accepting
+export const getRoutePreview = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { driver_lat, driver_lng } = req.query;
+    const result = await orderService.getRoutePreview(id, parseFloat(driver_lng), parseFloat(driver_lat));
+    res.json({ success: true, data: result });
+  } catch (err) {
+    if (err.status === 404) return res.status(404).json({ success: false, message: err.message });
+    next(err);
+  }
+};

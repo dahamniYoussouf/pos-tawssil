@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin - Notifications Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<style>
+body{font-family:Arial,Helvetica,sans-serif;background:#f4f6fa;margin:0;padding:20px;min-height:100vh}
+.container{max-width:1200px;margin:0 auto}
+h1{text-align:center;color:#0f62fe;margin-bottom:30px}
+.section{background:#fff;padding:20px;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,.1);margin-bottom:20px}
+h2{margin-top:0;color:#0f62fe;font-size:18px;border-bottom:2px solid #e5e7eb;padding-bottom:10px}
+input,button,select{width:100%;padding:10px;margin:6px 0;border:1px solid #ccc;border-radius:6px;box-sizing:border-box;font-size:14px}
+button{background:#0f62fe;color:#fff;font-weight:bold;cursor:pointer;border:none}
+button:hover{background:#084cd2}
+button.danger{background:#dc2626}
+button.danger:hover{background:#991b1b}
+button.success{background:#10b981}
+button.success:hover{background:#059669}
+.card{border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin:12px 0;background:#fafbff;position:relative}
+.card.unread{border-left:4px solid #0f62fe;background:#eef2ff}
+.card.pending{border-left:4px solid #f59e0b;background:#fef3c7}
+.row{display:flex;gap:8px}
+.row>*{flex:1}
+.status-badge{display:inline-block;background:#eef2ff;border-radius:999px;padding:4px 12px;font-size:12px;font-weight:bold;color:#0f62fe;margin:4px 0}
+.status-badge.unread{background:#fef3c7;color:#92400e}
+.status-badge.resolved{background:#d1fae5;color:#065f46}
+.log{background:#0b1020;color:#d1fae5;padding:15px;border-radius:6px;height:300px;overflow:auto;font-family:monospace;font-size:12px}
+.empty{color:#999;font-style:italic;text-align:center;padding:20px}
+.notification-header{display:flex;justify-content:space-between;align-items:start;margin-bottom:10px}
+.notification-details{background:#f9fafb;padding:10px;border-radius:6px;margin:10px 0;font-size:13px}
+.action-buttons{display:flex;gap:8px;margin-top:10px}
+.action-buttons button{width:auto;padding:8px 16px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:20px}
+.stat-card{background:#fff;padding:15px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.1);text-align:center}
+.stat-value{font-size:32px;font-weight:bold;color:#0f62fe}
+.stat-label{font-size:14px;color:#666;margin-top:5px}
+.api-sim-section{background:linear-gradient(135deg,#0f172a,#1e2a44);color:#f8fafc;padding:20px;border-radius:12px;margin-bottom:20px;border:1px solid rgba(248,250,252,.15)}
+.api-sim-section h2{margin-top:0;color:#a6d6ff}
+.api-sim-description{margin:0 0 15px;color:#cbd5f5;font-size:14px;max-width:960px}
+.api-sim-controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;align-items:center}
+.api-sim-controls select{flex:1;max-width:280px;background:#0b1a30;color:#f8fafc;border:1px solid rgba(255,255,255,.4)}
+.api-sim-controls button{background:#10b981;color:#fff;border-radius:8px;padding:10px 16px;font-size:14px;font-weight:600;border:none;cursor:pointer;transition:transform .2s ease}
+.api-sim-controls button:hover{transform:translateY(-1px)}
+.api-sim-status{font-size:13px;color:#a5f3fc;margin-left:auto;white-space:nowrap}
+.api-sim-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px}
+.api-sim-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:12px 16px;text-align:left}
+.api-sim-label{font-size:12px;color:#cbd5f5;margin-top:4px}
+.api-sim-value{font-size:28px;font-weight:700;color:#34d399}
+.api-sim-response-wrapper{background:#020b16;border-radius:12px;padding:10px;border:1px solid rgba(255,255,255,.15)}
+.api-sim-response-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+.api-sim-response{background:#020b16;color:#e2e8f0;border:none;border-radius:8px;padding:10px;font-size:12px;max-height:220px;overflow:auto;font-family:monospace;white-space:pre-wrap}
+.api-sim-copy{padding:6px 10px;border-radius:999px;border:1px solid rgba(255,255,255,.2);background:transparent;color:#cbd5f5;font-size:11px;cursor:pointer}
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:15px}
+.toast{position:fixed;top:20px;right:20px;background:#10b981;color:#fff;padding:15px 20px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,.2);animation:slideIn 0.3s;z-index:1000}
+.toast.error{background:#dc2626}
+.toast.warning{background:#f59e0b}
+.homepage-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px}
+.homepage-summary .stat-card{background:#f8fafc;color:#0f172a;border:1px solid #e5e7eb;box-shadow:none}
+.announcement-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:10px}
+.announcement-summary-card{background:#fff;padding:14px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.08);text-align:center}
+.announcement-breakdown{margin-top:14px;background:#fff;border-radius:8px;padding:12px;border:1px solid #e5e7eb;box-shadow:0 2px 6px rgba(0,0,0,.08)}
+.announcement-breakdown-item{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #f1f5f9}
+.announcement-breakdown-item:last-child{border-bottom:none}
+.announcement-breakdown-label{font-size:14px;color:#0f172a}
+.announcement-breakdown-value{font-weight:600;color:#0f62fe}
+.homepage-section-controls{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.homepage-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:10px}
+.homepage-panel{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:16px;box-shadow:0 6px 16px rgba(15,23,42,.06)}
+.homepage-panel h3{margin:0 0 8px;font-size:16px;color:#0f62fe}
+.homepage-item,.homepage-card{border:1px solid rgba(15,23,42,.08);border-radius:10px;padding:12px;margin-bottom:10px;background:#fafbff;display:flex;flex-direction:column;gap:4px}
+.homepage-item strong{font-size:14px;color:#111827}
+.homepage-item p,.homepage-card p{margin:0;font-size:13px;color:#475569;line-height:1.4}
+.homepage-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.homepage-tag{background:#eff6ff;color:#0f62fe;border-radius:999px;padding:2px 10px;font-size:11px;font-weight:600}
+.homepage-card span{font-size:12px;color:#94a3b8}
+.homepage-panel .empty{margin:0}
+.homepage-timestamp{font-size:12px;color:#475569;margin-bottom:12px}
+.announcement-table-wrapper{overflow-x:auto;margin-top:10px}
+.announcement-table{width:100%;border-collapse:collapse;font-size:13px}
+.announcement-table th,.announcement-table td{border-bottom:1px solid #e5e7eb;padding:8px;text-align:left}
+.announcement-table th{font-size:12px;text-transform:uppercase;color:#6b7280}
+.announcement-table td{color:#111827}
+.announcement-table .announcement-status{font-weight:600}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+.order-info{font-size:13px;line-height:1.6}
+.order-info strong{color:#0f62fe}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🔔 Admin - Notifications Dashboard</h1>
+
+<!-- Login Section -->
+<div class="section">
+<h2>🔐 Admin Login</h2>
+<input id="admin_email" type="email" placeholder="Email" value="admin1@example.com">
+<input id="admin_password" type="password" placeholder="Password" value="password123">
+<button onclick="adminLogin()">Login as Admin</button>
+<div id="login_status" class="status-badge" style="display:none;margin-top:10px"></div>
+</div>
+
+<!-- Statistics -->
+<div class="stats" id="stats_section" style="display:none">
+<div class="stat-card">
+<div class="stat-value" id="stat_total">0</div>
+<div class="stat-label">Total Notifications</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" id="stat_unread">0</div>
+<div class="stat-label">Unread</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" id="stat_pending">0</div>
+<div class="stat-label">Pending Action</div>
+</div>
+<div class="stat-card">
+<div class="stat-value" id="stat_resolved">0</div>
+<div class="stat-label">Resolved</div>
+</div>
+</div>
+
+<div class="section" id="announcement_summary_section" style="display:none">
+<h2>📰 Announcements</h2>
+<div class="announcement-summary">
+<div class="announcement-summary-card">
+<div class="stat-value" id="stat_announcements_total">0</div>
+<div class="stat-label">Total announcements</div>
+</div>
+<div class="announcement-summary-card">
+<div class="stat-value" id="stat_announcements_active">0</div>
+<div class="stat-label">Active now</div>
+</div>
+</div>
+<div id="announcement_breakdown_list" class="announcement-breakdown">
+<div class="empty">Aucune annonce associée pour l'instant.</div>
+</div>
+</div>
+
+<div class="section" id="announcement_management_section" style="display:none">
+<h2>🛠️ Announcement management</h2>
+<div class="announcement-table-wrapper">
+<table class="announcement-table">
+<thead>
+<tr>
+<th>Title</th>
+<th>Restaurant</th>
+<th>Period</th>
+<th>Status</th>
+<th>Type</th>
+</tr>
+</thead>
+<tbody id="announcement_management_body">
+<!-- rows inserted here -->
+</tbody>
+<tfoot id="announcement_management_empty" class="empty" style="display:none">
+<tr><td colspan="5">No announcements yet.</td></tr>
+</tfoot>
+</table>
+</div>
+</div>
+
+<!-- Simulation API Section -->
+<div class="section api-sim-section" id="api_sim_section" style="display:none">
+<h2>Simulation API en direct</h2>
+<p class="api-sim-description">Choisissez un endpoint administrateur et lancez une requête sécurisée : la réponse s'affiche en direct et les principaux indicateurs se mettent à jour en temps réel.</p>
+<div class="api-sim-controls">
+<select id="api_sim_endpoint">
+<option value="monitoring">/admin/monitoring (instantané)</option>
+<option value="statistics">/admin/statistics (indicateurs globaux)</option>
+</select>
+<button type="button" onclick="runApiSimulation(true)">Lancer la simulation</button>
+<span id="api_sim_status" class="api-sim-status">Prêt à simuler</span>
+</div>
+<div class="api-sim-summary">
+<div class="api-sim-card">
+<div class="api-sim-value" id="api_sim_value_active_orders">0</div>
+<div class="api-sim-label">Commandes actives</div>
+</div>
+<div class="api-sim-card">
+<div class="api-sim-value" id="api_sim_value_total_orders">0</div>
+<div class="api-sim-label">Commandes totales</div>
+</div>
+<div class="api-sim-card">
+<div class="api-sim-value" id="api_sim_value_online_drivers">0</div>
+<div class="api-sim-label">Livreurs connectés</div>
+</div>
+<div class="api-sim-card">
+<div class="api-sim-value" id="api_sim_value_revenue">0 DA</div>
+<div class="api-sim-label">Revenu estimé</div>
+</div>
+</div>
+<div class="api-sim-response-wrapper">
+<div class="api-sim-response-header">
+<span>Réponse brute</span>
+<button type="button" class="api-sim-copy" onclick="copyApiResponse()">Copier</button>
+</div>
+<pre id="api_sim_response" class="api-sim-response">Aucune réponse</pre>
+</div>
+</div>
+
+<!-- Filters -->
+<div class="section" id="filter_section" style="display:none">
+<h2>🔍 Filters</h2>
+<div class="filters">
+<select id="filter_read">
+<option value="">All Read Status</option>
+<option value="false">Unread Only</option>
+<option value="true">Read Only</option>
+</select>
+<select id="filter_resolved">
+<option value="">All Resolved Status</option>
+<option value="false">Pending Only</option>
+<option value="true">Resolved Only</option>
+</select>
+<select id="filter_type">
+<option value="">All Types</option>
+<option value="pending_order_timeout">Pending Order Timeout</option>
+<option value="restaurant_unresponsive">Restaurant Unresponsive</option>
+<option value="driver_unresponsive">Driver Unresponsive</option>
+<option value="driver_excessive_cancellations">Driver Excessive Cancellations</option>
+
+</select>
+</div>
+<button onclick="loadNotifications()">🔄 Apply Filters</button>
+</div>
+
+<!-- Notifications List -->
+<div class="section" id="notifications_section" style="display:none">
+<h2>📬 Notifications</h2>
+<div id="notifications_list">
+<div class="empty">No notifications yet</div>
+</div>
+</div>
+
+<!-- Activity Log -->
+<div class="section" id="log_section" style="display:none">
+<h2>📊 Activity Log</h2>
+<pre id="admin_log" class="log">Waiting for connection...</pre>
+</div>
+<div class="section" id="public_homepage_section" style="display:none">
+  <h2>Public homepage feed (client view)</h2>
+  <p class="homepage-timestamp" id="public_homepage_timestamp">Data will appear after loading the public feed.</p>
+  <div class="homepage-section-controls">
+    <button type="button" onclick="loadPublicHomepage()">Refresh public feed</button>
+  </div>
+  <div class="homepage-summary">
+    <div class="stat-card">
+      <div class="stat-value" id="stat_public_home_categories">0</div>
+      <div class="stat-label">Home categories</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="stat_public_promotions">0</div>
+      <div class="stat-label">Promotions</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="stat_public_nearby">0</div>
+      <div class="stat-label">Nearby restaurants</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="stat_public_restaurants">0</div>
+      <div class="stat-label">Restaurants returned</div>
+    </div>
+  </div>
+  <div class="homepage-grid">
+    <div class="homepage-panel">
+      <h3>Home categories</h3>
+      <div id="public_home_categories_list"></div>
+    </div>
+    <div class="homepage-panel">
+      <h3>Promotions</h3>
+      <div id="public_promotions_list"></div>
+    </div>
+    <div class="homepage-panel">
+      <h3>Daily deals</h3>
+      <div id="public_daily_deals_list"></div>
+    </div>
+    <div class="homepage-panel">
+      <h3>Announcements</h3>
+      <div id="public_announcements_list"></div>
+    </div>
+    <div class="homepage-panel">
+      <h3>Recommended dishes</h3>
+      <div id="public_recommended_list"></div>
+    </div>
+    <div class="homepage-panel">
+      <h3>Nearby restaurants</h3>
+      <div id="public_homepage_nearby"></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+let socket = null;
+let auth = {role: null, token: null, user: null, profile: null};
+let notifications = [];
+let apiSimulationTimer = null;
+let apiSimulationBusy = false;
+let apiSimulationLastEndpoint = 'monitoring';
+
+function normalizeAdminNotification(raw = {}) {
+  const orderDetails =
+    raw.order_details ||
+    raw.orderDetails ||
+    raw.order_info ||
+    raw.orderInfo ||
+    raw.order ||
+    {};
+  const restaurantInfo =
+    raw.restaurant_info ||
+    raw.restaurantInfo ||
+    raw.restaurant ||
+    orderDetails.restaurant ||
+    raw.order?.restaurant ||
+    {};
+  const driverInfo =
+    raw.driver_info ||
+    raw.driverInfo ||
+    raw.driver ||
+    orderDetails.driver_info ||
+    orderDetails.driver ||
+    raw.driver ||
+    {};
+  const createdAt =
+    raw.created_at ||
+    raw.createdAt ||
+    raw.timestamp ||
+    raw.time ||
+    null;
+
+  return {
+    ...raw,
+    id: raw.id || raw.notification_id || raw.notificationId,
+    type: raw.type || raw.notification_type || raw.event || raw.kind || 'notification',
+    message: raw.message || raw.body || raw.title || '',
+    created_at: createdAt || new Date().toISOString(),
+    order_details: orderDetails,
+    restaurant_info: restaurantInfo,
+    driver_info: driverInfo,
+    is_read: raw.is_read ?? raw.read ?? raw.isRead ?? false,
+    is_resolved: raw.is_resolved ?? raw.resolved ?? raw.isResolved ?? false
+  };
+}
+
+function normalizeAdminNotifications(list = []) {
+  return (list || []).map(normalizeAdminNotification);
+}
+
+function resolveOrderNumber(order = {}, fallback = {}) {
+  return (
+    order.order_number ||
+    order.orderNumber ||
+    fallback.order_number ||
+    fallback.orderNumber ||
+    order.id ||
+    fallback.order_id ||
+    fallback.orderId ||
+    'N/A'
+  );
+}
+
+function resolveOrderAmount(order = {}) {
+  return order.total_amount ?? order.total ?? order.totalAmount ?? order.amount ?? 0;
+}
+
+function resolveOrderAddress(order = {}) {
+  return order.delivery_address || order.deliveryAddress || order.address || 'N/A';
+}
+
+function resolveRestaurantName(restaurant = {}, order = {}) {
+  return restaurant.name || restaurant.nom || order.restaurant?.name || 'N/A';
+}
+
+function resolveRestaurantPhone(restaurant = {}, order = {}) {
+  return (
+    restaurant.phone ||
+    restaurant.phone_number ||
+    restaurant.telephone ||
+    order.restaurant?.phone ||
+    order.restaurant?.phone_number ||
+    'N/A'
+  );
+}
+
+function log(...msg) {
+const e = document.getElementById('admin_log');
+if (e) {
+e.textContent = `[${new Date().toLocaleTimeString()}] ${msg.join(' ')}\n` + e.textContent;
+}
+}
+
+function showToast(message, type = 'success') {
+const toast = document.createElement('div');
+toast.className = `toast ${type}`;
+toast.textContent = message;
+document.body.appendChild(toast);
+setTimeout(() => toast.remove(), 3000);
+}
+
+async function apiFetch(url, options = {}) {
+const token = auth.token || '';
+const headers = {
+'Content-Type': 'application/json',
+...(options.headers || {}),
+...(token ? { Authorization: `Bearer ${token}` } : {})
+};
+const response = await fetch(url, { ...options, headers });
+return response;
+}
+
+function initSocket() {
+if (socket) {
+log('⚠️ Socket already exists');
+return;
+}
+
+log('🔌 Connecting socket as admin...');
+
+socket = io(location.origin, {
+auth: {token: auth.token}
+});
+
+socket.on('connect', () => {
+log('✅ Socket connected! ID:', socket.id);
+log('👤 Admin Profile ID:', auth.profile?.id);
+
+// Join admin room
+socket.emit('join', 'admin');
+socket.emit('join', 'admins');
+log('📍 Joined admin rooms');
+});
+
+socket.on('connect_error', (error) => {
+log('❌ Connection error:', error.message);
+});
+
+// Listen for new notifications
+socket.on('new_notification', data => {
+log('🔔 NEW NOTIFICATION RECEIVED!');
+log('Data:', JSON.stringify(data));
+
+showToast('New notification received!', 'warning');
+
+// Add to list
+addNotificationToUI(data);
+
+// Play sound
+playNotificationSound();
+
+// Browser notification
+if (Notification.permission === 'granted') {
+new Notification('Admin Alert! 🚨', {
+body: data.message || 'New notification received',
+icon: '🔔',
+requireInteraction: true
+});
+}
+});
+socket.on('driver_alert', data => {
+  log('🚨 DRIVER ALERT RECEIVED!');
+  log('Data:', JSON.stringify(data));
+
+  showToast('Driver alert: Excessive cancellations!', 'error');
+
+  // Add to list
+  addNotificationToUI(data);
+
+  // Play sound
+  playNotificationSound();
+
+  // Browser notification
+  if (Notification.permission === 'granted') {
+    new Notification('Driver Alert! 🚨', {
+      body: data.message || 'Driver has excessive cancellations',
+      icon: '⚠️',
+      requireInteraction: true
+    });
+  }
+});
+socket.on('disconnect', () => {
+log('❌ Disconnected from server');
+});
+
+// Debug: log ALL events
+socket.onAny((event, ...args) => {
+log(`🔔 Event: ${event}`, JSON.stringify(args));
+});
+}
+
+async function adminLogin() {
+const email = document.getElementById('admin_email').value;
+const password = document.getElementById('admin_password').value;
+
+if (!email || !password) {
+alert('Please enter email and password');
+return;
+}
+
+log('🔐 Logging in as admin...');
+
+try {
+const r = await fetch('/api/auth/login', {
+method: 'POST',
+headers: {'Content-Type': 'application/json'},
+body: JSON.stringify({email, password, type:'admin'})
+});
+
+const j = await r.json();
+
+if (r.ok) {
+auth = {role: 'admin', token: j.access_token, user: j.user, profile: j.profile};
+
+document.getElementById('login_status').style.display = 'inline-block';
+document.getElementById('login_status').textContent = '✅ Logged in as ' + j.user.email;
+
+log('✅ ADMIN LOGGED IN');
+log('Admin Profile:', j.profile);
+
+// Show sections
+document.getElementById('stats_section').style.display = 'grid';
+document.getElementById('filter_section').style.display = 'block';
+document.getElementById('notifications_section').style.display = 'block';
+document.getElementById('log_section').style.display = 'block';
+document.getElementById('api_sim_section').style.display = 'block';
+
+// Initialize socket
+initSocket();
+
+  // Kick off API simulation
+  runApiSimulation(true);
+  startApiSimulationAutoRefresh();
+  loadAnnouncementManagement();
+
+// Request browser notifications
+if ('Notification' in window && Notification.permission === 'default') {
+Notification.requestPermission();
+}
+
+// Load notifications
+await loadNotifications();
+
+// Load homepage snapshot data
+// Load the public homepage feed
+await loadPublicHomepage();
+
+showToast('Admin logged in successfully!');
+} else {
+alert('Login failed: ' + (j.message || 'Unknown'));
+log('❌ Failed:', j.message);
+}
+} catch (e) {
+alert('Error: ' + e.message);
+log('❌ Error:', e.message);
+}
+}
+
+async function loadNotifications() {
+if (!auth.token) return;
+
+log('📡 Loading notifications...');
+
+try {
+const params = new URLSearchParams();
+const read = document.getElementById('filter_read').value;
+const resolved = document.getElementById('filter_resolved').value;
+const type = document.getElementById('filter_type').value;
+
+if (read) params.append('is_read', read);
+if (resolved) params.append('is_resolved', resolved);
+if (type) params.append('type', type);
+
+const r = await apiFetch(`/api/admin/notifications?${params}`);
+const j = await r.json();
+
+if (r.ok) {
+notifications = normalizeAdminNotifications(j.data || []);
+renderNotifications();
+updateStats();
+log(`✅ Loaded ${notifications.length} notifications`);
+showToast(`Loaded ${notifications.length} notifications`);
+} else {
+alert('Error: ' + (j.message || 'Failed to load'));
+log('❌ Failed:', j.message);
+}
+} catch (e) {
+alert('Error: ' + e.message);
+log('❌ Error:', e.message);
+}
+}
+
+function renderNotifications() {
+  const box = document.getElementById('notifications_list');
+  box.innerHTML = '';
+
+  if (notifications.length === 0) {
+    box.innerHTML = '<div class="empty">No notifications found</div>';
+    return;
+  }
+
+  notifications.forEach(n => {
+    const normalized = normalizeAdminNotification(n);
+    const div = document.createElement('div');
+    div.className = `card ${!normalized.is_read ? 'unread' : ''} ${!normalized.is_resolved ? 'pending' : ''}`;
+    div.id = `notif-${normalized.id}`;
+
+    const order = normalized.order_details || {};
+    const restaurant = normalized.restaurant_info || {};
+    const driver = normalized.driver_info || {};
+    const orderNumber = resolveOrderNumber(order, normalized);
+    const totalAmount = resolveOrderAmount(order);
+    const deliveryAddress = resolveOrderAddress(order);
+    const restaurantName = resolveRestaurantName(restaurant, order);
+    const restaurantPhone = resolveRestaurantPhone(restaurant, order);
+    const driverName = driver.name || driver.full_name || `${driver.first_name || ''} ${driver.last_name || ''}`.trim() || 'N/A';
+    const driverCode = driver.driver_code || driver.code || driver.driverCode || 'N/A';
+    const driverPhone = driver.phone || driver.phone_number || 'N/A';
+    const driverEmail = driver.email || 'N/A';
+    const driverCancellations = driver.cancellation_count ?? order.cancellation_count ?? normalized.cancellation_count ?? 0;
+    const driverDeliveries = driver.total_deliveries ?? 0;
+    const driverRating = driver.rating ?? 'N/A';
+    const driverStatus = driver.status || 'N/A';
+
+    // ✅ Different rendering based on notification type
+    let detailsHtml = '';
+    
+    if (normalized.type === 'driver_excessive_cancellations') {
+      // ✅ Driver cancellation notification
+      detailsHtml = `
+        <div class="order-info">
+          <strong>👤 Driver:</strong> ${driverName} (${driverCode})<br>
+          <strong>📞 Phone:</strong> ${driverPhone}<br>
+          <strong>📧 Email:</strong> ${driverEmail}<br>
+          <strong>🚫 Total Cancellations:</strong> ${driverCancellations}<br>
+          <strong>✅ Total Deliveries:</strong> ${driverDeliveries}<br>
+          <strong>⭐ Rating:</strong> ${driverRating}<br>
+          <strong>📊 Status:</strong> ${driverStatus}
+        </div>
+      `;
+    } else {
+      // ✅ Order-related notification (existing code)
+      detailsHtml = `
+        <div class="order-info">
+          <strong>📦 Order:</strong> #${orderNumber}<br>
+          <strong>💰 Amount:</strong> ${totalAmount || 0} DA<br>
+          <strong>📍 Address:</strong> ${deliveryAddress}<br>
+          <strong>🍴 Restaurant:</strong> ${restaurantName}<br>
+          <strong>📞 Contact:</strong> ${restaurantPhone}
+        </div>
+      `;
+    }
+
+    div.innerHTML = `
+      <div class="notification-header">
+        <div>
+          <strong style="font-size:16px">${(normalized.type || 'notification').replace(/_/g, ' ').toUpperCase()}</strong><br>
+          <span class="status-badge ${!normalized.is_read ? 'unread' : ''}">${normalized.is_read ? 'Read' : 'Unread'}</span>
+          <span class="status-badge ${!normalized.is_resolved ? 'unread' : 'resolved'}">${normalized.is_resolved ? 'Resolved' : 'Pending'}</span>
+        </div>
+        <div style="text-align:right;font-size:12px;color:#666">
+          ${normalized.created_at ? new Date(normalized.created_at).toLocaleString() : ''}
+        </div>
+      </div>
+
+      <div class="notification-details">
+        <p style="white-space:pre-wrap;margin:0">${normalized.message}</p>
+      </div>
+
+      ${detailsHtml}
+
+      <div class="action-buttons">
+        ${!normalized.is_read ? `<button class="success" onclick="markAsRead('${normalized.id}')">✓ Mark Read</button>` : ''}
+        ${!normalized.is_resolved && normalized.type === 'driver_excessive_cancellations' ? `
+          <button class="danger" onclick="resolveNotification('${normalized.id}', 'suspend_driver')">🚫 Suspend Driver</button>
+          <button class="warning" onclick="resolveNotification('${normalized.id}', 'reset_cancellations')">🔄 Reset Count</button>
+          <button onclick="resolveNotification('${normalized.id}', 'warned_driver')">⚠️ Warning Sent</button>
+        ` : ''}
+        ${!normalized.is_resolved && normalized.type !== 'driver_excessive_cancellations' ? `
+          <button onclick="resolveNotification('${normalized.id}', 'force_accept')">✅ Force Accept</button>
+          <button class="danger" onclick="resolveNotification('${normalized.id}', 'cancel_order')">❌ Cancel Order</button>
+          <button onclick="resolveNotification('${normalized.id}', 'contacted_restaurant')">📞 Called Restaurant</button>
+        ` : ''}
+        ${normalized.is_resolved ? `<div style="color:#10b981;font-size:13px">✓ Resolved by admin</div>` : ''}
+      </div>
+    `;
+
+    box.appendChild(div);
+  });
+}
+function addNotificationToUI(data) {
+// Add to array
+const notification = normalizeAdminNotification({
+  ...data,
+  is_read: false,
+  is_resolved: false,
+  order_details: data.order_details || data.order,
+  restaurant_info: data.restaurant_info || data.restaurant,
+  driver_info: data.driver_info || data.driver
+});
+
+notifications.unshift(notification);
+
+// Re-render
+renderNotifications();
+updateStats();
+}
+
+function updateStats() {
+const total = notifications.length;
+const unread = notifications.filter(n => !n.is_read).length;
+const pending = notifications.filter(n => !n.is_resolved).length;
+const resolved = notifications.filter(n => n.is_resolved).length;
+
+document.getElementById('stat_total').textContent = total;
+document.getElementById('stat_unread').textContent = unread;
+document.getElementById('stat_pending').textContent = pending;
+document.getElementById('stat_resolved').textContent = resolved;
+}
+
+function createTagList(items = []) {
+const filtered = (items || []).filter(Boolean);
+if (!filtered.length) return null;
+const wrapper = document.createElement('div');
+wrapper.className = 'homepage-tags';
+filtered.forEach(value => {
+const tag = document.createElement('span');
+tag.className = 'homepage-tag';
+tag.textContent = value;
+wrapper.appendChild(tag);
+});
+return wrapper;
+}
+
+function renderList(containerId, items, builder, emptyMessage = 'No data to show') {
+const container = document.getElementById(containerId);
+if (!container) return;
+container.innerHTML = '';
+if (!items || !items.length) {
+container.innerHTML = `<div class="empty">${emptyMessage}</div>`;
+return;
+}
+items.forEach(item => {
+const element = builder(item);
+if (element) {
+container.appendChild(element);
+}
+});
+}
+
+function formatDistance(meters) {
+if (meters === undefined || meters === null) return null;
+const value = Number(meters);
+if (Number.isNaN(value)) return null;
+if (value >= 1000) {
+return `${(value / 1000).toFixed(1)} km`;
+}
+return `${Math.round(value)} m`;
+}
+
+function formatDateRange(start, end) {
+const parts = [];
+if (start) parts.push(new Date(start).toLocaleDateString());
+if (end) parts.push(new Date(end).toLocaleDateString());
+if (!parts.length) return null;
+return parts.join(' → ');
+}
+
+function createModuleCard(title, description, tags = []) {
+const card = document.createElement('div');
+card.className = 'homepage-item';
+const header = document.createElement('strong');
+header.textContent = title || 'Untitled';
+card.appendChild(header);
+if (description) {
+const desc = document.createElement('p');
+desc.textContent = description;
+card.appendChild(desc);
+}
+const tagList = createTagList(tags);
+if (tagList) card.appendChild(tagList);
+return card;
+}
+
+function createDetailedCard(title, description, tags = []) {
+const card = document.createElement('div');
+card.className = 'homepage-card';
+const header = document.createElement('strong');
+header.textContent = title || 'Untitled';
+card.appendChild(header);
+if (description) {
+const desc = document.createElement('p');
+desc.textContent = description;
+card.appendChild(desc);
+}
+const tagList = createTagList(tags);
+if (tagList) card.appendChild(tagList);
+return card;
+}
+
+function buildHomeCategoryCard(item) {
+return createModuleCard(item.name, item.description, [
+item.is_active ? 'Active' : 'Inactive',
+item.slug,
+item.display_order ? `Order ${item.display_order}` : null
+]);
+}
+
+function buildThematicCard(item) {
+return createModuleCard(item.name, item.description, [
+item.is_active ? 'Active' : 'Inactive',
+item.home_category_id ? `Category ${item.home_category_id}` : null
+]);
+}
+
+function buildPromotionCard(item) {
+return createModuleCard(
+item.title,
+item.description || item.custom_message,
+[
+item.badge_text,
+item.type,
+formatDateRange(item.start_date, item.end_date),
+item.is_active ? 'Active' : 'Inactive'
+]
+);
+}
+
+function buildDailyDealCard(item) {
+const promo = item.promotion || {};
+return createModuleCard(
+promo.title || 'Daily deal',
+promo.description,
+[
+promo.restaurant?.name ? `Restaurant: ${promo.restaurant.name}` : null,
+formatDateRange(item.start_date, item.end_date),
+item.is_active ? 'Active' : 'Inactive'
+]
+);
+}
+
+function buildAnnouncementCard(item) {
+  const tags = [
+    item.restaurant?.name ? `Restaurant: ${item.restaurant.name}` : null,
+    item.type ? `Type: ${item.type}` : null,
+    formatDateRange(item.start_date, item.end_date),
+    item.is_active ? "Active" : "Inactive"
+  ].filter(Boolean);
+  return createModuleCard(item.title, item.content, tags);
+}
+
+function buildRecommendedDishCard(item) {
+const menu = item.menu_item || {};
+const restaurantName = item.restaurant?.name;
+return createModuleCard(
+menu.nom || 'Recommended dish',
+item.reason || menu.description,
+[
+menu.prix ? `${menu.prix} DA` : null,
+restaurantName ? `Restaurant: ${restaurantName}` : null,
+item.is_active ? 'Active' : 'Inactive'
+]
+);
+}
+
+function buildRestaurantCard(item) {
+const categoryNames = (item.home_categories || [])
+  .map((category) => category.name || category.slug)
+  .filter(Boolean);
+const categoryLabel = categoryNames.length ? categoryNames.slice(0, 3).join(', ') : null;
+const meta = [
+item.is_premium ? 'Premium' : null,
+item.rating ? `⭐ ${item.rating}` : null,
+item.status,
+item.is_open === true ? 'Open' : item.is_open === false ? 'Closed' : null,
+categoryLabel,
+formatDistance(item.distance),
+item.delivery_time_min && item.delivery_time_max ? `ETA ${item.delivery_time_min}-${item.delivery_time_max} min` : null
+].filter(Boolean);
+return createDetailedCard(
+item.name || 'Restaurant',
+item.description || item.address,
+meta
+);
+}
+
+function buildNearbyCard(item) {
+const meta = [
+item.is_premium ? 'Premium' : null,
+item.status,
+item.is_open === true ? 'Open now' : item.is_open === false ? 'Closed' : null,
+formatDistance(item.distance),
+item.delivery_time_min && item.delivery_time_max ? `ETA ${item.delivery_time_min}-${item.delivery_time_max} min` : null
+].filter(Boolean);
+return createDetailedCard(
+item.name || 'Nearby restaurant',
+item.address,
+meta
+);
+}
+
+function buildMenuItemCard(item) {
+return createModuleCard(
+item.nom || 'Menu item',
+item.description,
+[
+item.prix ? `${item.prix} DA` : null,
+item.category?.nom ? `Category: ${item.category.nom}` : null,
+item.restaurant?.name ? `Restaurant: ${item.restaurant.name}` : null,
+item.is_available === false ? 'Unavailable' : 'Available'
+]
+);
+}
+
+function updatePublicHomepageSummary(data) {
+  const categories = (data.homeCategories || []).length;
+  const promotions = (data.promotions || []).length;
+  const nearby = (data.nearby?.formatted || []).length;
+  const restaurants = (data.restaurants || []).length;
+  document.getElementById('stat_public_home_categories').textContent = categories;
+  document.getElementById('stat_public_promotions').textContent = promotions;
+  document.getElementById('stat_public_nearby').textContent = nearby;
+  document.getElementById('stat_public_restaurants').textContent = restaurants;
+  const ts = document.getElementById('public_homepage_timestamp');
+  if (ts) {
+    ts.textContent = `Updated at ${new Date().toLocaleTimeString()}`;
+  }
+}
+
+function renderPublicHomepage(data) {
+  renderList(
+    'public_home_categories_list',
+    data.homeCategories,
+    buildHomeCategoryCard,
+    'No home categories yet'
+  );
+  renderList(
+    'public_promotions_list',
+    data.promotions,
+    buildPromotionCard,
+    'No promotions visible to clients'
+  );
+  renderList(
+    'public_daily_deals_list',
+    data.dailyDeals,
+    buildDailyDealCard,
+    'No daily deals active'
+  );
+  renderList(
+    'public_announcements_list',
+    data.announcements,
+    buildAnnouncementCard,
+    'No announcements configured'
+  );
+  renderList(
+    'public_recommended_list',
+    data.recommendedDishes,
+    buildRecommendedDishCard,
+    'No recommended dishes'
+  );
+  renderList(
+    'public_homepage_nearby',
+    data.nearby?.formatted,
+    buildNearbyCard,
+    'No nearby restaurants returned'
+  );
+  updatePublicHomepageSummary(data);
+  const section = document.getElementById('public_homepage_section');
+  if (section) section.style.display = 'block';
+}
+
+async function loadPublicHomepage() {
+  const statusEl = document.getElementById('public_homepage_timestamp');
+  if (statusEl) {
+    statusEl.textContent = 'Loading public homepage...';
+  }
+  try {
+    const payload = {
+      lat: 36.747385,
+      lng: 6.27404,
+      radius: 5000,
+      page: 1,
+      pageSize: 20
+    };
+    const r = await apiFetch('/api/homepage', { method: 'POST', body: JSON.stringify(payload) });
+    const res = await r.json();
+    if (!r.ok) {
+      throw new Error(res.message || 'Failed to load public homepage');
+    }
+    const data = res.data || {};
+    renderPublicHomepage(data);
+    showToast('Public homepage loaded');
+  } catch (error) {
+    if (statusEl) {
+      statusEl.textContent = 'Failed to load public homepage';
+    }
+    console.error('Public homepage error:', error);
+    showToast('Unable to load public homepage', 'error');
+  }
+}
+
+async function markAsRead(notificationId) {
+log('📖 Marking notification as read:', notificationId);
+
+try {
+const r = await apiFetch(`/api/admin/notifications/${notificationId}/read`, {
+method: 'PATCH'
+});
+
+const j = await r.json();
+
+if (r.ok) {
+log('✅ Marked as read');
+showToast('Marked as read');
+
+// Update in array
+const n = notifications.find(x => x.id === notificationId);
+if (n) n.is_read = true;
+
+// Re-render
+renderNotifications();
+updateStats();
+} else {
+alert('Error: ' + (j.message || 'Failed'));
+log('❌ Failed:', j.message);
+}
+} catch (e) {
+alert('Error: ' + e.message);
+log('❌ Error:', e.message);
+}
+}
+
+async function resolveNotification(notificationId, action) {
+const notes = prompt(`Action: ${action}\nAdd notes (optional):`);
+
+log(`✅ Resolving notification ${notificationId} with action: ${action}`);
+
+try {
+const r = await apiFetch(`/api/admin/notifications/${notificationId}/resolve`, {
+method: 'POST',
+body: JSON.stringify({ action, notes })
+});
+
+const j = await r.json();
+
+if (r.ok) {
+log('✅ Notification resolved');
+showToast(`Resolved with action: ${action}`);
+
+// Update in array
+const n = notifications.find(x => x.id === notificationId);
+if (n) {
+n.is_resolved = true;
+n.is_read = true;
+}
+
+// Re-render
+renderNotifications();
+updateStats();
+} else {
+alert('Error: ' + (j.message || 'Failed'));
+log('❌ Failed:', j.message);
+}
+} catch (e) {
+alert('Error: ' + e.message);
+log('❌ Error:', e.message);
+}
+}
+
+function initApiSimulationUI() {
+const endpointSelect = document.getElementById('api_sim_endpoint');
+if (!endpointSelect) {
+return;
+}
+endpointSelect.value = apiSimulationLastEndpoint;
+endpointSelect.addEventListener('change', () => {
+apiSimulationLastEndpoint = endpointSelect.value;
+runApiSimulation(true);
+});
+}
+
+async function runApiSimulation(force = false) {
+if (!auth.token) {
+return;
+}
+if (apiSimulationBusy && !force) {
+return;
+}
+const endpointSelect = document.getElementById('api_sim_endpoint');
+const endpoint = endpointSelect?.value || apiSimulationLastEndpoint;
+apiSimulationLastEndpoint = endpoint;
+const statusEl = document.getElementById('api_sim_status');
+const responseEl = document.getElementById('api_sim_response');
+if (statusEl) {
+statusEl.textContent = `Simulation /admin/${endpoint} en cours...`;
+}
+apiSimulationBusy = true;
+try {
+const response = await apiFetch(`/api/admin/${endpoint}`);
+const json = await response.json();
+if (!response.ok) {
+throw new Error(json.message || 'Simulation échouée');
+}
+const payload = json.data || {};
+updateApiSummaryCards(payload);
+if (responseEl) {
+responseEl.textContent = JSON.stringify(payload, null, 2);
+}
+if (statusEl) {
+statusEl.textContent = `Dernière réponse /admin/${endpoint} (${new Date().toLocaleTimeString()})`;
+}
+} catch (error) {
+if (responseEl) {
+responseEl.textContent = error.message;
+}
+if (statusEl) {
+statusEl.textContent = `Erreur: ${error.message}`;
+}
+log('Simulation API failed:', error);
+showToast('Simulation API échouée', 'error');
+} finally {
+apiSimulationBusy = false;
+}
+}
+
+function updateApiSummaryCards(payload) {
+  const realtime = payload.realtimeStats || {};
+  const ordersStats = payload.orders || {};
+const revenueValue = payload.revenue?.total ?? ordersStats.revenue ?? realtime.revenue ?? 0;
+const activeOrders = realtime.activeOrders ?? realtime.active_orders ?? ordersStats.inProgress ?? 0;
+const totalOrders = ordersStats.total ?? realtime.total ?? payload.totalOrders ?? 0;
+const onlineDrivers = realtime.onlineDrivers ?? payload.onlineDrivers ?? payload.drivers?.total ?? 0;
+const activeEl = document.getElementById('api_sim_value_active_orders');
+const totalEl = document.getElementById('api_sim_value_total_orders');
+const driversEl = document.getElementById('api_sim_value_online_drivers');
+const revenueEl = document.getElementById('api_sim_value_revenue');
+if (activeEl) {
+activeEl.textContent = activeOrders;
+}
+if (totalEl) {
+totalEl.textContent = totalOrders;
+}
+if (driversEl) {
+driversEl.textContent = onlineDrivers;
+}
+  if (revenueEl) {
+    if (typeof revenueValue === 'number' && Number.isFinite(revenueValue)) {
+      revenueEl.textContent = `${Math.round(revenueValue)} DA`;
+    } else {
+      revenueEl.textContent = String(revenueValue || '0 DA');
+    }
+  }
+  updateAnnouncementSummary(payload.announcement_summary || null);
+}
+
+function updateAnnouncementSummary(summary) {
+  const section = document.getElementById('announcement_summary_section');
+  if (!section) {
+    return;
+  }
+  if (!summary) {
+    section.style.display = 'none';
+    return;
+  }
+  const totalEl = document.getElementById('stat_announcements_total');
+  const activeEl = document.getElementById('stat_announcements_active');
+  if (totalEl) {
+    totalEl.textContent = summary.total ?? 0;
+  }
+  if (activeEl) {
+    activeEl.textContent = summary.active ?? 0;
+  }
+  const breakdownEl = document.getElementById('announcement_breakdown_list');
+  if (breakdownEl) {
+    breakdownEl.innerHTML = '';
+    const breakdownList = summary.breakdown || [];
+    if (breakdownList.length === 0) {
+      breakdownEl.innerHTML = '<div class="empty">Aucune annonce associée pour l\'instant.</div>';
+    } else {
+      breakdownList.forEach((bucket) => {
+        const item = document.createElement('div');
+        item.className = 'announcement-breakdown-item';
+        const label = document.createElement('span');
+        label.className = 'announcement-breakdown-label';
+        label.textContent = bucket.restaurant?.name || 'Global';
+        const value = document.createElement('span');
+        value.className = 'announcement-breakdown-value';
+        value.textContent = `${bucket.active}/${bucket.total} actives`;
+        item.appendChild(label);
+        item.appendChild(value);
+        breakdownEl.appendChild(item);
+      });
+    }
+  }
+  section.style.display = 'block';
+}
+
+async function loadAnnouncementManagement() {
+  const section = document.getElementById('announcement_management_section');
+  if (!section || !auth.token) return;
+  try {
+    const response = await apiFetch('/api/announcement/getall');
+    const payload = await response.json();
+    if (!response.ok) {
+      throw new Error(payload.message || 'Impossible de charger les annonces');
+    }
+    updateAnnouncementManagementTable(payload.data || []);
+  } catch (error) {
+    showToast(error.message || 'Failed to load announcement list', 'error');
+    section.style.display = 'none';
+  }
+}
+
+function updateAnnouncementManagementTable(items = []) {
+  const section = document.getElementById('announcement_management_section');
+  if (!section) return;
+  const tbody = document.getElementById('announcement_management_body');
+  const emptyFoot = document.getElementById('announcement_management_empty');
+  if (!tbody || !emptyFoot) return;
+  tbody.innerHTML = '';
+  if (!items.length) {
+    emptyFoot.style.display = '';
+    section.style.display = 'none';
+    return;
+  }
+  emptyFoot.style.display = 'none';
+  section.style.display = 'block';
+  items.forEach((announcement) => {
+    const row = document.createElement('tr');
+    const restaurantName = announcement.restaurant?.name || 'Global';
+    const labelNode = document.createElement('td');
+    labelNode.textContent = announcement.title || 'Untitled';
+    const restaurantNode = document.createElement('td');
+    restaurantNode.textContent = restaurantName;
+    const periodNode = document.createElement('td');
+    periodNode.textContent = formatDateRange(announcement.start_date, announcement.end_date) || '—';
+    const statusNode = document.createElement('td');
+    statusNode.textContent = announcement.is_active ? 'Active' : 'Inactive';
+    statusNode.className = 'announcement-status';
+    const typeNode = document.createElement('td');
+    typeNode.textContent = announcement.type || 'info';
+    row.appendChild(labelNode);
+    row.appendChild(restaurantNode);
+    row.appendChild(periodNode);
+    row.appendChild(statusNode);
+    row.appendChild(typeNode);
+    tbody.appendChild(row);
+  });
+}
+
+function startApiSimulationAutoRefresh() {
+if (apiSimulationTimer) {
+clearInterval(apiSimulationTimer);
+}
+apiSimulationTimer = setInterval(() => runApiSimulation(), 20000);
+}
+
+function copyApiResponse() {
+const responseEl = document.getElementById('api_sim_response');
+if (!responseEl) {
+return;
+}
+const text = responseEl.textContent || '';
+if (!text) {
+return;
+}
+if (navigator.clipboard?.writeText) {
+navigator.clipboard.writeText(text).then(() => showToast('Réponse copiée'));
+return;
+}
+const textarea = document.createElement('textarea');
+textarea.value = text;
+document.body.appendChild(textarea);
+textarea.select();
+document.execCommand('copy');
+textarea.remove();
+showToast('Réponse copiée');
+}
+
+initApiSimulationUI();
+
+function playNotificationSound() {
+try {
+const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSqGzvLRfzMGH2S77eeXQAoRVq/n7bJiGgU+lNrywn0pBSh+zPDajEULFlqx6P+oUxMJS6Hh8LdgGgU7k9r0xnktBSV7zPDajUMLFlqx6PCkWBMKTaPi8LJeGgU6ktjzx3ktBSR6y+/fjEULFlqw5/CmWhMKTqPl8bhgGQU8k9j0x3ktBSR6y+/fjEQLFVqx6O+pWxMKT6Pm8rxfGgU9lNr0xnksBS17y+/fjEQKFVmw6PCmWhMKT6Pl8bdgGQU9lNn0xnktBSV7y+/gjEQLFVmw6PKlWhIKTqPl8bdgGQU9lNn0xnktBSV7yu/gjEQLFVmw6O+oWxMKTqPi8LZgGgU7k9n0xngtBSV8y+/gjEURFViv6PCmWhMKTaPh8LZhGgU7k9j0xnktBSZ8yu/fjEURFViv5/CmWhMKTqLi8LdeGgU7k9j0xnktBSZ7yu/fjEQRFVmv5+6nWRMKT6Lk8bdeGgU+k9j0xnktBSZ7yu/fjEQRFViv5+6mWhMKT6Lk8bdeGgU+k9j0xnktBSZ7yu/fjEQRFVmv5+6lWhMKTqHj8rdcGQU9k9j0xnktBSZ8y+/gjEQRFViv5+6lWhMKTqDk8bdeGgU9k9n0xngtBSZ7yu/fjEQRFVmw5+6nWhMKT6Hj8rdcGQU9k9j0xngtBSZ7yu/gjEQQFVmv5+6nWhMKT6Hj8rdcGQU9k9j0xnktBSZ7yu/gjEQRFVmv5+6mWhMKTqHi8bdcGgU9k9j0xnktBSZ7yu/fjEQRFViv6O6mWhMKTqHi8bdcGgU9k9j0xnktBSR7yu/fjEQRFVmv6O6nWhMKTqHi8bdeGgU9k9j0xnktBSZ7yu/fjEQRFVmv5+6mWhMKTqHi8bdeGgU9k9j0xnktBSZ7yu/fjEQRFVmv5+6mWhMKTqHi8bdeGgU9k9j0xnktBSZ7yu/fjEQRFVmv5+6mWhMKTqHi8bdeGgU9k9j0xnktBSZ7yu/fjEQRFVmv5+6mWhMKTqHi8bdeGgU9k9j0xnktBSZ7yu/fjEQRFVmv5+6mWhMKTqHi8bdeGgU9k9j0xnktBSZ7yu/fjEQRFVmv5+6mWhMKTqHi8bdeGgU9k9j0xnktBSZ7yu/f');
+audio.volume = 0.3;
+audio.play().catch(e => console.log('Audio play failed:', e));
+} catch (e) {
+console.log('Audio notification failed:', e);
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Client - Realtime Delivery</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+  function loadFirebaseFallback() {
+    if (window.__firebaseFallbackLoading) return;
+    window.__firebaseFallbackLoading = true;
+    const app = document.createElement('script');
+    app.src = '/firebase/firebase-app-compat.js';
+    app.defer = true;
+    const msg = document.createElement('script');
+    msg.src = '/firebase/firebase-messaging-compat.js';
+    msg.defer = true;
+    document.head.appendChild(app);
+    document.head.appendChild(msg);
+  }
+</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js" onerror="loadFirebaseFallback()"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-messaging-compat.js" onerror="loadFirebaseFallback()"></script>
+<style>
+    :root {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f1f5f9;
+      color: #0f172a;
+      --primary: #10b981;
+      --primary-deep: #047857;
+      --surface: #ffffff;
+      --surface-strong: #e2e8f0;
+      --muted: #6b7280;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top right, rgba(16,185,129,0.08), transparent 55%), #f1f5f9;
+      color: #0f172a;
+    }
+    .pos-shell {
+      display: grid;
+      grid-template-columns: 220px minmax(0, 1fr) 320px;
+      gap: 1rem;
+      padding: 1.5rem;
+      min-height: 100vh;
+    }
+    .pos-sidebar {
+      background: #05111f;
+      border-radius: 30px;
+      padding: 1.5rem;
+      color: #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 25px 40px rgba(5,17,31,0.7);
+    }
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .logo-mark {
+      width: 50px;
+      height: 30px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #0b9746, #0e6c2c);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.2em;
+      font-size: 1.1rem;
+    }
+    .logo-name {
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+    .logo-subtitle {
+      font-size: 0.75rem;
+      color: rgba(226,232,240,0.85);
+      margin-top: 0.2rem;
+    }
+    .sidebar-label {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: #94a3b8;
+    }
+    .sidebar-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .sidebar-list button {
+      border: none;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+      padding: 0.85rem 1rem;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+    .sidebar-list button.active {
+      background: rgba(16,185,129,0.12);
+      box-shadow: 0 12px 25px rgba(16,185,129,0.3);
+      transform: translateY(-1px);
+    }
+    .sidebar-note {
+      margin-top: auto;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      line-height: 1.4;
+    }
+    .pos-main {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    header.pos-header {
+      background: linear-gradient(135deg, #0f172a, #11283c);
+      border-radius: 28px;
+      padding: 1.25rem 1.5rem;
+      color: #f8fafc;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 20px 30px rgba(8,16,34,0.5);
+    }
+    .pos-header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+    .app-label {
+      letter-spacing: 0.35em;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      margin: 0;
+    }
+    .timestamp {
+      font-size: 0.9rem;
+      color: rgba(248,250,252,0.7);
+      margin-top: 0.4rem;
+      display: block;
+    }
+    .dine-tabs {
+      display: flex;
+      gap: 0.55rem;
+      background: rgba(255,255,255,0.1);
+      padding: 0.35rem;
+      border-radius: 999px;
+    }
+    .tab {
+      border: none;
+      background: transparent;
+      color: #f8fafc;
+      padding: 0.55rem 1rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .tab.active {
+      background: #f8fafc;
+      color: #0f172a;
+    }
+    .section {
+      background: var(--surface);
+      border-radius: 28px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 12px 30px rgba(15,23,42,0.08);
+      border: 1px solid rgba(15,23,42,0.08);
+    }
+    .section h2 {
+      margin: 0;
+      font-size: 1.3rem;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+      gap: 1rem;
+    }
+    .badge {
+      padding: 0.25rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      border: 1px solid transparent;
+    }
+    .badge.accent {
+      background: rgba(16,185,129,0.15);
+      color: var(--primary);
+    }
+    .row {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    .row > * {
+      flex: 1;
+    }
+    input, select, textarea, button {
+      font-family: inherit;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border-radius: 16px;
+      border: 1px solid rgba(15,23,42,0.1);
+      background: #f8fafc;
+      color: #0f172a;
+      font-size: 0.95rem;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(16,185,129,0.15);
+    }
+    .primary-btn {
+      background: var(--primary);
+      border: none;
+      border-radius: 16px;
+      padding: 0.9rem 1.5rem;
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      transition: transform 0.2s ease;
+    }
+    .primary-btn:hover {
+      transform: translateY(-1px);
+    }
+    .ghost-btn {
+      border: 1px solid rgba(15,23,42,0.2);
+      border-radius: 16px;
+      padding: 0.85rem 1.2rem;
+      background: transparent;
+      cursor: pointer;
+      font-weight: 600;
+      color: #0f172a;
+    }
+    .actions-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    .search-area {
+      display: flex;
+      flex: 1;
+      gap: 0.45rem;
+    }
+    .menu-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .menu-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 12px 26px rgba(15,23,42,0.08);
+    }
+    .menu-table thead {
+      background: #f8fafc;
+    }
+    .menu-table th,
+    .menu-table td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(15,23,42,0.08);
+    }
+    .menu-table th {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #4b5563;
+    }
+    .menu-table td:last-child {
+      text-align: right;
+    }
+    .menu-item-info {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+    .menu-thumbnail {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+    .menu-item-details {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+    .menu-item-details strong {
+      font-size: 1rem;
+    }
+    .menu-item-desc {
+      color: #6b7280;
+      font-size: 0.85rem;
+      max-width: 420px;
+    }
+    .menu-price {
+      font-weight: 700;
+      color: var(--primary);
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.4rem;
+      justify-content: flex-end;
+      min-width: 120px;
+    }
+    .menu-price .old {
+      font-weight: 500;
+      font-size: 0.8rem;
+      color: #9ca3af;
+      text-decoration: line-through;
+    }
+    .promo-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.2rem 0.65rem;
+      border-radius: 999px;
+      background: #fef3c7;
+      color: #92400e;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-top: 0.35rem;
+    }
+    .promotions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 0.9rem;
+      margin-bottom: 1rem;
+    }
+    .promotion-card {
+      border-radius: 20px;
+      padding: 1rem;
+      border: 1px solid rgba(15,23,42,0.08);
+      background: #fff;
+      box-shadow: 0 12px 30px rgba(15,23,42,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      min-height: 190px;
+    }
+    .promotion-card img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 14px;
+    }
+    .promotion-card h3 {
+      margin: 0;
+      font-size: 1.1rem;
+      color: #0f172a;
+    }
+    .promotion-card .meta {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .promotion-card .description {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+    .promotion-price-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+    .badge.price-old {
+      background: rgba(248,113,113,0.12);
+      border-color: rgba(248,113,113,0.4);
+      color: #991b1b;
+      text-decoration: line-through;
+    }
+    .badge.price-new {
+      background: rgba(16,185,129,0.2);
+      border-color: rgba(16,185,129,0.4);
+      color: #065f46;
+    }
+    .trend-card {
+      border-radius: 20px;
+      padding: 0.9rem;
+      background: #f8fafc;
+      border: 1px solid rgba(15,23,42,0.08);
+      box-shadow: 0 10px 20px rgba(15,23,42,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .trend-card .price {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 1.1rem;
+    }
+    .cart-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      min-height: 150px;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.85rem 1rem;
+      border-radius: 16px;
+      background: #f8fafc;
+      border: 1px solid rgba(15,23,42,0.08);
+    }
+    .cart-item:last-child {
+      border-bottom: none;
+    }
+    #cart_total {
+      margin-top: 0.5rem;
+      font-weight: 600;
+      display: none;
+      text-align: right;
+      font-size: 1rem;
+    }
+    textarea {
+      min-height: 88px;
+      resize: vertical;
+    }
+    .pos-cart-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    #order_btn {
+      width: 100%;
+      margin-top: 0.8rem;
+      border-radius: 18px;
+      border: none;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 700;
+      padding: 0.95rem;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .timeline {
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 0.3rem;
+    }
+    .timeline div {
+      padding: 0.5rem 0.55rem;
+      border-radius: 12px;
+      background: #eff6ff;
+      border: 1px solid rgba(56,189,248,0.2);
+      font-size: 0.9rem;
+    }
+    .timeline .notification {
+      background: rgba(16,185,129,0.12);
+      border-color: rgba(16,185,129,0.3);
+    }
+    .cart-panel {
+      position: sticky;
+      top: 1.5rem;
+      align-self: flex-start;
+    }
+    @media (max-width: 1100px) {
+      .pos-shell {
+        grid-template-columns: 1fr;
+      }
+      .pos-cart-panel {
+        order: 2;
+      }
+      .pos-sidebar {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+      }
+      .sidebar-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+        width: 100%;
+      }
+      .sidebar-list button {
+        flex: 1 1 calc(50% - 0.5rem);
+      }
+    }
+    @media (max-width: 768px) {
+      .pos-shell {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 0.75rem;
+      }
+      .pos-sidebar {
+        border-radius: 16px;
+        padding: 1rem;
+      }
+      header.pos-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+      .pos-cart-panel {
+        position: static;
+        width: 100%;
+        order: 2;
+      }
+      .menu-entry {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .menu-entry button {
+        width: 100%;
+      }
+      .pos-main {
+        gap: 0.75rem;
+      }
+      .section {
+        border-radius: 18px;
+      }
+    }
+</style>
+</head>
+<body>
+<div class="pos-shell">
+    <aside class="pos-sidebar">
+      <div class="sidebar-logo">
+        <span class="logo-mark">>>></span>
+        <div>
+          <p class="logo-name">Tawsil</p>
+          <p class="logo-subtitle">Client POS</p>
+        </div>
+      </div>
+      <div class="sidebar-label">Catégories globales</div>
+      <div class="sidebar-list">
+        <button class="active" type="button">Burgers</button>
+        <button type="button">Pizza</button>
+        <button type="button">Tacos</button>
+        <button type="button">Desserts</button>
+        <button type="button">Boissons</button>
+      </div>
+      <p class="sidebar-note">
+        Laissez les clients naviguer entre les catégories premium et standards. Les changements s'appliquent en temps réel.
+      </p>
+    </aside>
+
+    <main class="pos-main">
+      <header class="pos-header">
+        <div>
+          <p class="app-label">TAWSSIL</p>
+          <h1>Client Workspace</h1>
+          <span class="timestamp">Tue, 12 Dec · 11:59</span>
+        </div>
+        <div class="dine-tabs">
+          <button class="tab active" type="button">Dine In</button>
+          <button class="tab" type="button">Takeout</button>
+          <button class="tab" type="button">Delivery</button>
+        </div>
+      </header>
+
+      <section class="section login-panel">
+        <div class="section-header">
+          <h2>Connexion client</h2>
+          <span class="badge accent">OTP</span>
+        </div>
+        <input id="c_phone" placeholder="Téléphone (ex : 0600000000)" value="0656751443">
+        <div class="row">
+          <input id="c_otp" placeholder="Code OTP">
+          <button onclick="clientLogin()" class="primary-btn" type="button">Se connecter</button>
+        </div>
+        <div id="login_status" class="status" style="display:none;margin-top:10px"></div>
+      </section>
+
+      <section class="section browse-panel">
+        <div class="section-header">
+          <div>
+            <h2>Restaurants & cartes</h2>
+            <p class="timestamp" style="color: var(--muted); margin: 0;">Catégories premium en tête</p>
+          </div>
+          <span class="badge accent">Premium only</span>
+        </div>
+        <div class="actions-row">
+          <div class="search-area">
+            <input type="text" placeholder="Rechercher un restaurant..." aria-label="Search restaurants">
+            <button type="button" class="primary-btn" style="flex: none;">Search</button>
+          </div>
+          <button class="ghost-btn" type="button" onclick="loadRestaurants()">Charger les restaurants</button>
+        </div>
+        <select id="c_restaurants" onchange="loadMenu()">
+          <option value="">-- Sélectionnez --</option>
+        </select>
+        <div class="card-grid">
+          <div class="trend-card">
+            <strong>Burgers Retour</strong>
+            <span class="price">$8.99</span>
+            <small style="color: var(--muted);">Garniture maison</small>
+          </div>
+          <div class="trend-card">
+            <strong>Classic Pizza</strong>
+            <span class="price">$10.49</span>
+            <small style="color: var(--muted);">Four bois</small>
+          </div>
+          <div class="trend-card">
+            <strong>Tacos Sharp</strong>
+            <span class="price">$7.99</span>
+            <small style="color: var(--muted);">Sauce smoky</small>
+          </div>
+        </div>
+        <section class="section promotions-panel">
+          <div class="section-header">
+            <h2>Promotions en cours</h2>
+            <button class="ghost-btn" type="button" onclick="loadPromotions()">Actualiser les promos</button>
+          </div>
+          <div id="c_promotions" class="promotions-grid">
+            <div class="empty">Chargement des promotions...</div>
+          </div>
+        </section>
+        <div id="c_menu" class="menu-wrapper"></div>
+      </section>
+
+      <section class="section timeline-panel">
+        <div class="section-header">
+          <h2>Order Status Timeline</h2>
+        </div>
+        <div id="c_timeline" class="timeline">
+          <div class="empty">No orders yet</div>
+        </div>
+      </section>
+
+      <section class="section rating-panel">
+        <div class="section-header">
+          <h2>Rate Your Order</h2>
+        </div>
+        <div id="rating_hint" class="status" style="margin-bottom:10px;display:none"></div>
+        <input id="rating_order_id" placeholder="Order ID (auto-filled after placing)" />
+        <div class="row">
+          <select id="rating_restaurant">
+            <option value="">Restaurant: select 1-5</option>
+            <option value="5">5 stars</option>
+            <option value="4">4 stars</option>
+            <option value="3">3 stars</option>
+            <option value="2">2 stars</option>
+            <option value="1">1 star</option>
+          </select>
+          <select id="rating_driver">
+            <option value="">Driver: select 1-5</option>
+            <option value="5">5 stars</option>
+            <option value="4">4 stars</option>
+            <option value="3">3 stars</option>
+            <option value="2">2 stars</option>
+            <option value="1">1 star</option>
+          </select>
+        </div>
+        <div class="row" style="gap: 1rem;">
+          <textarea id="rating_restaurant_comment" placeholder="Restaurant comment (optional)"></textarea>
+          <textarea id="rating_driver_comment" placeholder="Driver comment (optional)"></textarea>
+        </div>
+        <div class="row">
+          <button type="button" onclick="skipRating()" class="ghost-btn">Passer</button>
+          <button type="button" onclick="submitRating()" class="primary-btn">Envoyer</button>
+        </div>
+      </section>
+    </main>
+
+    <aside class="pos-cart-panel">
+      <section class="section cart-panel">
+        <div class="section-header">
+          <h2>Votre panier</h2>
+          <span class="badge accent">Live</span>
+        </div>
+        <div id="c_cart" class="cart-body">
+          <div class="empty">Votre panier est vide</div>
+        </div>
+        <div id="cart_total" style="text-align:right;font-weight:bold;margin-top:10px;display:none"></div>
+        <textarea id="delivery_instructions" placeholder="Delivery instructions (optional)"></textarea>
+        <button onclick="placeOrder()" id="order_btn" disabled>Place Order</button>
+      </section>
+    </aside>
+  </div>
+<script>
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyDuWuOT_PzhonVC8jIZn9OqxSHruOrDobc",
+  authDomain: "tawssi.firebaseapp.com",
+  projectId: "tawssi",
+  storageBucket: "tawssi.firebasestorage.app",
+  messagingSenderId: "746654963305",
+  appId: "1:746654963305:web:a9858d9e05dc50b84bb4f8"
+};
+const FIREBASE_VAPID_KEY = "BEf8u4HbFK1KyTnYqhFGFnrvY9QFjMdTaktOiP60T1NrLov7odAhqtvMqmouPW_DkyVRNH5LkW94OAGUNULmoUw";
+
+let messaging = null;
+let fcmToken = null;
+let swRegistration = null;
+let firebaseInitPromise = null;
+let auth = { role: null, token: null, user: null, profile: null };
+let state = {
+  cart: [],
+  restaurants: [],
+  menu: [],
+  promotions: [],
+  currentOrder: null,
+  ratingEnabled: false,
+  menuContext: { categories: [], restaurantName: '', totalItems: 0 }
+};
+
+function timeline(s, isNotification = false) {
+  const e = document.getElementById('c_timeline');
+  if (e.querySelector('.empty')) e.innerHTML = '';
+  const d = document.createElement('div');
+  if (isNotification) d.className = 'notification';
+  d.textContent = `[${new Date().toLocaleTimeString()}] ${s}`;
+  e.prepend(d);
+}
+
+function resolveOrderId(data = {}) {
+  return data.orderId || data.order_id || data.order?.id || data.id || null;
+}
+
+function resolveOrderNumber(data = {}) {
+  return data.orderNumber || data.order_number || data.order?.order_number || resolveOrderId(data) || 'N/A';
+}
+
+function formatEta(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return date.toLocaleTimeString();
+}
+
+function normalizeClientNotification(data = {}) {
+  const type = data.type || data.event || data.notification_type || null;
+  const orderId = resolveOrderId(data);
+  const orderNumber = resolveOrderNumber(data);
+  const driver = data.driver || {};
+  const restaurantName =
+    typeof data.restaurant === 'string'
+      ? data.restaurant
+      : data.restaurant?.name || data.restaurant_name || data.restaurantName || '';
+  const eta = formatEta(data.estimated_delivery_time || data.estimatedDeliveryTime);
+  const message = data.message || data.body || data.title || '';
+
+  let text = message;
+  if (!text) {
+    switch (type) {
+      case 'order_created':
+        text = `Order #${orderNumber} created (status: ${data.status || 'pending'})`;
+        break;
+      case 'order_accepted':
+        text = `Order #${orderNumber} accepted${restaurantName ? ` by ${restaurantName}` : ''}${eta ? ` (ETA ${eta})` : ''}`;
+        break;
+      case 'order_preparing':
+        text = `Order #${orderNumber} is being prepared`;
+        break;
+      case 'driver_assigned':
+        text = `Driver assigned for order #${orderNumber}: ${driver.name || 'Driver'}${driver.phone ? ` (${driver.phone})` : ''}`;
+        break;
+      case 'delivery_started':
+        text = `Order #${orderNumber} is on the way`;
+        break;
+      case 'order_location':
+        text = `Order #${orderNumber} is ${data.distance_km ?? '?'} km away (${data.eta_min ?? '?'}-${data.eta_max ?? '?'} min)`;
+        break;
+      case 'order_ready':
+        text = `Order #${orderNumber} is ready for pickup`;
+        break;
+      case 'delivery_cancelled':
+        text = `Delivery cancelled for order #${orderNumber}${data.reason ? `: ${data.reason}` : ''}`;
+        break;
+      case 'order_declined':
+        text = `Order #${orderNumber} declined${data.reason ? `: ${data.reason}` : ''}`;
+        break;
+      case 'order_delivered':
+        text = `Order #${orderNumber} delivered`;
+        break;
+      default:
+        text = orderNumber ? `Update for order #${orderNumber}` : 'New notification';
+    }
+  }
+
+  return { type, orderId, orderNumber, message, text };
+}
+
+async function apiFetch(url, options = {}) {
+  const token = auth.token || '';
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {}),
+    ...(token ? { Authorization: `Bearer ${token}` } : {})
+  };
+  const response = await fetch(url, { ...options, headers });
+  return response;
+}
+
+function waitForFirebaseReady(timeoutMs = 6000) {
+  if (firebaseInitPromise) return firebaseInitPromise;
+  firebaseInitPromise = new Promise((resolve) => {
+    const start = Date.now();
+    const timer = setInterval(() => {
+      if (window.firebase && firebase.messaging) {
+        clearInterval(timer);
+        resolve(true);
+        return;
+      }
+      if (Date.now() - start > timeoutMs) {
+        clearInterval(timer);
+        resolve(false);
+      }
+    }, 120);
+  });
+  return firebaseInitPromise;
+}
+
+function parseFirebasePayload(payload = {}) {
+  const data = {};
+  const raw = payload.data || {};
+  Object.entries(raw).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+    if (typeof value !== 'string') {
+      data[key] = value;
+      return;
+    }
+    const trimmed = value.trim();
+    if (
+      (trimmed.startsWith('{') && trimmed.endsWith('}')) ||
+      (trimmed.startsWith('[') && trimmed.endsWith(']'))
+    ) {
+      try {
+        data[key] = JSON.parse(trimmed);
+        return;
+      } catch (_err) {
+        // fall through to raw string
+      }
+    }
+    data[key] = value;
+  });
+
+  if (payload.notification) {
+    if (!data.title && payload.notification.title) data.title = payload.notification.title;
+    if (!data.body && payload.notification.body) data.body = payload.notification.body;
+  }
+
+  if (data.body && !data.message) data.message = data.body;
+  return data;
+}
+
+async function registerDeviceToken(token) {
+  if (!auth.token || !token) return;
+  const deviceId = `web-${auth.role || 'client'}-${auth.user?.id || auth.profile?.id || 'guest'}`;
+
+  try {
+    const r = await apiFetch('/notifications/token', {
+      method: 'POST',
+      body: JSON.stringify({
+        token,
+        platform: 'web',
+        device_id: deviceId
+      })
+    });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) {
+      timeline('⚠️ Token registration failed: ' + (j.message || r.status));
+      return;
+    }
+    timeline('✅ Firebase token registered');
+  } catch (err) {
+    timeline('⚠️ Token registration error: ' + err.message);
+  }
+}
+
+function handleFirebaseMessage(payload = {}) {
+  const data = parseFirebasePayload(payload);
+  const event = data.event || data.type || data.notification_type || null;
+
+  if (event === 'order_update') {
+    const orderNumber = resolveOrderNumber(data);
+    const status = data.status || data.state || '';
+    timeline(`🔄 Order ${orderNumber} → ${status}`, true);
+    const orderId = resolveOrderId(data);
+    if (state.currentOrder && orderId === state.currentOrder && status === 'delivered') {
+      setRatingEnabled(true, orderId);
+    }
+    return;
+  }
+
+  const notif = normalizeClientNotification(data);
+  timeline(`🔔 ${notif.text}`, true);
+  if (notif.type === 'order_delivered') {
+    setRatingEnabled(true, notif.orderId || state.currentOrder);
+  }
+  if (Notification.permission === 'granted') {
+    new Notification('Order Update', { body: notif.text, icon: '🍔' });
+  }
+}
+
+async function initFirebaseMessaging() {
+  if (messaging) return;
+
+  const ready = await waitForFirebaseReady();
+  if (!ready) {
+    timeline('⚠️ Firebase SDK not loaded');
+    return;
+  }
+
+  if (!firebase.apps?.length) {
+    firebase.initializeApp(FIREBASE_CONFIG);
+  }
+
+  if (!('serviceWorker' in navigator)) {
+    timeline('⚠️ Service worker not supported in this browser');
+    return;
+  }
+
+  try {
+    swRegistration = await navigator.serviceWorker.register('/api/firebase-messaging-sw.js');
+    await navigator.serviceWorker.ready;
+  } catch (err) {
+    timeline('⚠️ Service worker registration failed: ' + err.message);
+    return;
+  }
+
+  messaging = firebase.messaging();
+
+  if (!('Notification' in window)) {
+    timeline('⚠️ Notifications not supported in this browser');
+    return;
+  }
+
+  if (Notification.permission === 'default') {
+    await Notification.requestPermission();
+  }
+
+  if (Notification.permission !== 'granted') {
+    timeline('⚠️ Notifications permission denied');
+  } else {
+    try {
+      fcmToken = await messaging.getToken({
+        vapidKey: FIREBASE_VAPID_KEY,
+        serviceWorkerRegistration: swRegistration
+      });
+      if (fcmToken) {
+        localStorage.setItem('fcm_token', fcmToken);
+        await registerDeviceToken(fcmToken);
+      } else {
+        timeline('⚠️ Unable to get Firebase token');
+      }
+    } catch (err) {
+      timeline('⚠️ Firebase token error: ' + err.message);
+    }
+  }
+
+  messaging.onMessage((payload) => {
+    handleFirebaseMessage(payload);
+  });
+
+  timeline('✅ Firebase messaging initialized');
+}
+
+async function clientLogin() {
+  const phone = document.getElementById('c_phone').value;
+  const otp = document.getElementById('c_otp').value;
+  const step = otp ? '/api/auth/otp/verify' : '/api/auth/otp/request';
+  const body = otp ? { phone_number: phone, otp } : { phone_number: phone };
+
+  try {
+    const r = await apiFetch(step, { method: 'POST', body: JSON.stringify(body) });
+    const j = await r.json();
+
+    if (!r.ok) return alert('Error: ' + (j.message || 'Unknown error'));
+
+    if (otp) {
+      auth = { role: 'client', token: j.access_token, user: j.user, profile: j.profile };
+      document.getElementById('login_status').style.display = 'inline-block';
+      document.getElementById('login_status').textContent = '✅ Logged in as ' + (j.profile?.phone_number || j.user.email);
+      timeline('✅ Client logged in successfully');
+      initFirebaseMessaging();
+    } else {
+      alert('OTP sent to your phone!\nDev OTP: ' + (j.dev_otp || 'check server log'));
+    }
+  } catch (e) {
+    console.error('Login error:', e);
+    alert('Error: ' + e.message);
+  }
+}
+
+async function loadRestaurants() {
+  try {
+    const r = await apiFetch('/api/restaurant/getall');
+    const j = await r.json();
+    const restaurants = Array.isArray(j) ? j : (j.data || []);
+    state.restaurants = restaurants;
+    const s = document.getElementById('c_restaurants');
+    s.innerHTML = '<option value="">-- Select Restaurant --</option>';
+    if (restaurants.length === 0) return timeline('⚠️ No restaurants found');
+    restaurants.forEach((x, i) => s.innerHTML += `<option value="${i}">${x.name || ('Restaurant #' + x.id)}</option>`);
+    timeline(`📍 Loaded ${restaurants.length} restaurants`);
+  } catch (e) {
+    alert('Error loading restaurants: ' + e.message);
+  }
+}
+
+async function loadMenu() {
+  const idx = document.getElementById('c_restaurants').value;
+  if (!idx) return;
+  try {
+    const rest = state.restaurants[idx];
+    const r = await apiFetch(`/api/restaurant/details/${rest.id}`);
+    const j = await r.json();
+    const data = j.data || {};
+    const categories = data.categories || [];
+    state.menu = categories;
+    const restaurantLabel = data.restaurant_name || rest.name || 'restaurant';
+    const totalItems = Number.isFinite(data.total_items)
+      ? data.total_items
+      : categories.reduce((sum, cat) => sum + ((cat.items || []).length || 0), 0);
+    state.menuContext = {
+      categories,
+      restaurantName: restaurantLabel,
+      totalItems
+    };
+    const box = document.getElementById('c_menu');
+    if (box) box.innerHTML = '';
+
+    renderMenuFromState();
+
+    if (categories.length === 0) {
+      return timeline(`⚠️ No menu for ${restaurantLabel}`);
+    }
+
+    timeline(`📋 Loaded ${totalItems} items from ${restaurantLabel}`);
+  } catch (e) {
+    alert('Error loading menu: ' + e.message);
+  }
+}
+function formatCurrency(value, currency = 'DZD') {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return '';
+  const hasDecimals = Math.abs(parsed % 1) > Number.EPSILON;
+  return parsed.toLocaleString('fr-DZ', {
+    style: 'currency',
+    currency,
+    minimumFractionDigits: hasDecimals ? 2 : 0,
+    maximumFractionDigits: 2
+  });
+}
+
+function calculateDiscountedPrice(promotion, basePrice) {
+  const price = Number(basePrice);
+  if (!Number.isFinite(price)) return null;
+  const discountValue = Number(promotion.discount_value);
+  if (promotion.type === 'percentage' && Number.isFinite(discountValue)) {
+    return Math.max(price * (1 - discountValue / 100), 0);
+  }
+  if (promotion.type === 'amount' && Number.isFinite(discountValue)) {
+    return Math.max(price - discountValue, 0);
+  }
+  return null;
+}
+
+function resolvePromotionItem(promotion) {
+  if (promotion.menu_item) return promotion.menu_item;
+  if (Array.isArray(promotion.menu_items) && promotion.menu_items.length) {
+    return promotion.menu_items[0];
+  }
+  return null;
+}
+
+function matchesPromotionForItem(promotion, itemId) {
+  if (!promotion || !itemId) return false;
+  const normalizedId = itemId.toString();
+  if (promotion.menu_item_id && promotion.menu_item_id.toString() === normalizedId) return true;
+  if (promotion.menu_item?.id && promotion.menu_item.id.toString() === normalizedId) return true;
+  if (Array.isArray(promotion.menu_items)) {
+    return promotion.menu_items.some((menuItem) => {
+      const candidateId = (menuItem?.id ?? menuItem?.menu_item_id ?? menuItem);
+      return candidateId && candidateId.toString() === normalizedId;
+    });
+  }
+  return false;
+}
+
+function findPromotionForMenuItem(itemId) {
+  return state.promotions.find((promotion) => matchesPromotionForItem(promotion, itemId)) || null;
+}
+
+function getPromotionBadgeLabel(promotion) {
+  if (!promotion) return '';
+  if (promotion.badge_text) return promotion.badge_text;
+  const discountValue = Number(promotion.discount_value);
+  if (promotion.type === 'percentage' && Number.isFinite(discountValue)) {
+    return `-${discountValue}%`;
+  }
+  if (promotion.type === 'amount' && Number.isFinite(discountValue)) {
+    return `-${formatCurrency(discountValue, promotion.currency || 'DZD')}`;
+  }
+  return 'Promo';
+}
+
+function renderMenuFromState() {
+  const box = document.getElementById('c_menu');
+  if (!box) return;
+  const categories = Array.isArray(state.menuContext.categories) ? state.menuContext.categories : [];
+  box.innerHTML = '';
+
+  if (!categories.length) {
+    box.innerHTML = '<div class="empty">No menu available</div>';
+    return;
+  }
+
+  categories.forEach((cat) => {
+    const catDiv = document.createElement('div');
+    catDiv.className = 'category';
+    const heading = document.createElement('h3');
+    heading.textContent = cat.nom || 'Catégorie';
+    catDiv.appendChild(heading);
+    if (cat.description) {
+      const desc = document.createElement('div');
+      desc.className = 'category-desc';
+      desc.textContent = cat.description;
+      catDiv.appendChild(desc);
+    }
+
+    const table = document.createElement('table');
+    table.className = 'menu-table';
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th>Article</th>
+          <th>Description</th>
+          <th>Prix</th>
+          <th></th>
+        </tr>
+      </thead>
+    `;
+
+    const tbody = document.createElement('tbody');
+    const items = Array.isArray(cat.items) ? cat.items : [];
+
+    items.forEach((m) => {
+      const promotion = findPromotionForMenuItem(m.id);
+      const normalizedBasePrice = Number.isFinite(Number(m.prix)) ? Number(m.prix) : 0;
+      const discountedPrice = promotion ? calculateDiscountedPrice(promotion, normalizedBasePrice) : null;
+      const currency = promotion?.currency || 'DZD';
+
+      const row = document.createElement('tr');
+
+      const itemCell = document.createElement('td');
+      const itemInfo = document.createElement('div');
+      itemInfo.className = 'menu-item-info';
+      const thumb = document.createElement('img');
+      thumb.className = 'menu-thumbnail';
+      thumb.src = m.photo_url || '';
+      thumb.alt = m.nom || 'Menu item';
+      itemInfo.appendChild(thumb);
+      const details = document.createElement('div');
+      details.className = 'menu-item-details';
+      const title = document.createElement('strong');
+      title.textContent = m.nom || 'Article';
+      details.appendChild(title);
+      if (m.description) {
+        const descSpan = document.createElement('span');
+        descSpan.className = 'menu-item-desc';
+        descSpan.textContent = m.description;
+        details.appendChild(descSpan);
+      }
+      if (promotion) {
+        const promoBadge = document.createElement('span');
+        promoBadge.className = 'promo-pill';
+        promoBadge.textContent = getPromotionBadgeLabel(promotion);
+        details.appendChild(promoBadge);
+      }
+      itemInfo.appendChild(details);
+      itemCell.appendChild(itemInfo);
+      row.appendChild(itemCell);
+
+      const descCell = document.createElement('td');
+      descCell.className = 'menu-item-desc';
+      descCell.textContent = m.description || '—';
+      row.appendChild(descCell);
+
+      const priceCell = document.createElement('td');
+      const priceWrapper = document.createElement('div');
+      priceWrapper.className = 'menu-price';
+      if (Number.isFinite(discountedPrice)) {
+        const current = document.createElement('span');
+        current.textContent = formatCurrency(discountedPrice, currency);
+        priceWrapper.appendChild(current);
+        const oldBadge = document.createElement('span');
+        oldBadge.className = 'old';
+        oldBadge.textContent = formatCurrency(normalizedBasePrice, currency);
+        priceWrapper.appendChild(oldBadge);
+      } else {
+        priceWrapper.textContent = formatCurrency(normalizedBasePrice, currency) || `${normalizedBasePrice} DA`;
+      }
+      priceCell.appendChild(priceWrapper);
+      row.appendChild(priceCell);
+
+      const actionCell = document.createElement('td');
+      const actionBtn = document.createElement('button');
+      actionBtn.type = 'button';
+      actionBtn.textContent = '+ Add';
+      actionBtn.className = 'primary-btn';
+      const cartPrice = Number.isFinite(discountedPrice) ? discountedPrice : normalizedBasePrice;
+      actionBtn.addEventListener('click', () => addCart(m.id, m.nom || 'Article', Number.isFinite(cartPrice) ? cartPrice : 0));
+      actionCell.appendChild(actionBtn);
+      row.appendChild(actionCell);
+
+      tbody.appendChild(row);
+    });
+
+    table.appendChild(tbody);
+    catDiv.appendChild(table);
+    box.appendChild(catDiv);
+  });
+}
+
+function renderPromotions(promotions = []) {
+  const container = document.getElementById('c_promotions');
+  if (!container) return;
+  container.innerHTML = '';
+  if (!promotions.length) {
+    container.innerHTML = '<div class="empty">Aucune promotion disponible pour le moment</div>';
+    return;
+  }
+
+  promotions.forEach((promotion) => {
+    const card = document.createElement('article');
+    card.className = 'promotion-card';
+    const item = resolvePromotionItem(promotion);
+
+    if (item?.photo_url) {
+      const thumb = document.createElement('img');
+      thumb.src = item.photo_url;
+      thumb.alt = item.nom || 'Menu item';
+      card.appendChild(thumb);
+    }
+
+    const title = document.createElement('h3');
+    title.textContent = item?.nom || promotion.title || 'Promotion';
+    card.appendChild(title);
+
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    const restaurantName = document.createElement('span');
+    restaurantName.textContent = promotion.restaurant?.name || 'Tawsil';
+    meta.appendChild(restaurantName);
+    if (promotion.badge_text) {
+      const badge = document.createElement('span');
+      badge.className = 'badge accent';
+      badge.textContent = promotion.badge_text;
+      meta.appendChild(badge);
+    }
+    card.appendChild(meta);
+
+    if (promotion.description) {
+      const description = document.createElement('p');
+      description.className = 'description';
+      description.textContent = promotion.description;
+      card.appendChild(description);
+    }
+
+    const priceRow = document.createElement('div');
+    priceRow.className = 'promotion-price-row';
+    const basePrice = item ? Number(item.prix) : NaN;
+    const discountedPrice = calculateDiscountedPrice(promotion, basePrice);
+
+    if (Number.isFinite(basePrice)) {
+      const oldBadge = document.createElement('span');
+      oldBadge.className = 'badge price-old';
+      oldBadge.textContent = `Avant: ${formatCurrency(basePrice, promotion.currency || 'DZD')}`;
+      priceRow.appendChild(oldBadge);
+      if (Number.isFinite(discountedPrice)) {
+        const newBadge = document.createElement('span');
+        newBadge.className = 'badge price-new';
+        newBadge.textContent = `Maintenant: ${formatCurrency(discountedPrice, promotion.currency || 'DZD')}`;
+        priceRow.appendChild(newBadge);
+      }
+    } else if (promotion.badge_text) {
+      const fallbackBadge = document.createElement('span');
+      fallbackBadge.className = 'badge accent';
+      fallbackBadge.textContent = promotion.badge_text;
+      priceRow.appendChild(fallbackBadge);
+    }
+
+    if (priceRow.children.length) {
+      card.appendChild(priceRow);
+    }
+
+    container.appendChild(card);
+  });
+  if (state.menuContext.categories.length) {
+    renderMenuFromState();
+  }
+}
+
+async function loadPromotions() {
+  const container = document.getElementById('c_promotions');
+  if (container) {
+    container.innerHTML = '<div class="empty">Chargement des promotions...</div>';
+  }
+  try {
+    const coords = { lat: 36.747385, lng: 6.27404 };
+    const response = await apiFetch('/api/homepage', {
+      method: 'POST',
+      body: JSON.stringify({
+        lat: coords.lat,
+        lng: coords.lng,
+        radius: 5000
+      })
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data?.message || 'Impossible de charger les promotions');
+    }
+    const promotions = Array.isArray(data?.data?.promotions) ? data.data.promotions : [];
+    state.promotions = promotions;
+    renderPromotions(promotions);
+    timeline(`Promotions chargées (${promotions.length})`);
+  } catch (err) {
+    console.error('Failed to load promotions', err);
+    if (container) {
+      container.innerHTML = '<div class="empty">Impossible de charger les promotions</div>';
+    }
+    timeline('Erreur promotions : ' + (err.message || 'Une erreur est survenue'));
+  }
+}
+
+function addCart(id, n, p) {
+  const e = state.cart.find(x => x.id === id);
+  if (e) e.qty++;
+  else state.cart.push({ id, n, p, qty: 1 });
+  renderCart();
+  timeline(`➕ Added ${n} to cart`);
+}
+
+function renderCart() {
+  const box = document.getElementById('c_cart');
+  if (state.cart.length === 0) {
+    box.innerHTML = '<div class="empty">Your cart is empty</div>';
+    document.getElementById('order_btn').disabled = true;
+    document.getElementById('cart_total').style.display = 'none';
+    return;
+  }
+  box.innerHTML = '';
+  let total = 0;
+  state.cart.forEach(i => {
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    const subtotal = i.p * i.qty;
+    total += subtotal;
+    div.innerHTML = `<span><strong>${i.n}</strong> x${i.qty}</span><span>${subtotal} DA</span>`;
+    box.append(div);
+  });
+  document.getElementById('cart_total').style.display = 'block';
+  document.getElementById('cart_total').textContent = `Total: ${total} DA`;
+  document.getElementById('order_btn').disabled = false;
+}
+
+async function placeOrder() {
+  if (!auth.token) return alert('Please login first');
+  const idx = document.getElementById('c_restaurants').value;
+  if (!idx) return alert('Please select a restaurant');
+  const rest = state.restaurants[idx];
+  const instructions = document.getElementById('delivery_instructions').value;
+
+  const payload = {
+    client_id: auth.profile?.id || '',
+    restaurant_id: rest.id,
+    order_type: 'delivery',
+    delivery_address: '123 Main Street, Algiers',
+    lat: '36.7594001',
+    lng: '2.84287187',
+    delivery_fee: 200,
+    payment_method: 'cash_on_delivery',
+    delivery_instructions: instructions || '',
+    items: state.cart.map(i => ({
+      menu_item_id: i.id,
+      quantity: i.qty,
+      special_instructions: ''
+    }))
+  };
+
+  try {
+    const r = await apiFetch('/api/order', { method: 'POST', body: JSON.stringify(payload) });
+    const j = await r.json();
+    if (r.ok) {
+      const orderId = j.data?.id || j.id || 'unknown';
+      const orderNumber = j.data?.order_number || j.order_number || orderId;
+      timeline(`✅ Order #${orderNumber} placed successfully!`, true);
+      state.currentOrder = orderId;
+      setRatingEnabled(false, orderId); // rating only after delivery
+      state.cart = [];
+      renderCart();
+      alert(`Order placed successfully!\nOrder #${orderNumber}\nYou'll receive live updates.`);
+    } else {
+      alert('Error: ' + (j.message || 'Unknown error'));
+    }
+  } catch (e) {
+    alert('Error placing order: ' + e.message);
+  }
+}
+
+function setRatingOrderId(orderId) {
+  const input = document.getElementById('rating_order_id');
+  if (orderId && input) {
+    input.value = orderId;
+    const hint = document.getElementById('rating_hint');
+    if (hint) {
+      hint.style.display = 'inline-block';
+      hint.textContent = `Order ready to rate: ${orderId}`;
+    }
+  }
+}
+
+function setRatingEnabled(enabled, orderId) {
+  const restaurantSelect = document.getElementById('rating_restaurant');
+  const driverSelect = document.getElementById('rating_driver');
+  const restaurantComment = document.getElementById('rating_restaurant_comment');
+  const driverComment = document.getElementById('rating_driver_comment');
+  const sendBtn = document.querySelector('button[onclick=\"submitRating()\"]');
+  const skipBtn = document.querySelector('button[onclick=\"skipRating()\"]');
+  const hint = document.getElementById('rating_hint');
+
+  if (orderId) setRatingOrderId(orderId);
+
+  [restaurantSelect, driverSelect, restaurantComment, driverComment, sendBtn, skipBtn].forEach(el => {
+    if (el) el.disabled = !enabled;
+  });
+
+  if (hint) {
+    hint.style.display = 'inline-block';
+    hint.textContent = enabled
+      ? `Order delivered. You can rate now (ID: ${document.getElementById('rating_order_id').value || ''})`
+      : 'Rating will be available once the order is delivered.';
+  }
+
+  state.ratingEnabled = enabled;
+}
+
+async function submitRating() {
+  if (!auth.token) return alert('Please login first');
+  if (!state.ratingEnabled) return alert('You can rate only after the order is delivered.');
+  const orderId = document.getElementById('rating_order_id').value || state.currentOrder;
+  if (!orderId) return alert('Provide an order ID to rate');
+
+  const restaurantRating = document.getElementById('rating_restaurant').value;
+  const driverRating = document.getElementById('rating_driver').value;
+  const restaurantComment = document.getElementById('rating_restaurant_comment').value;
+  const driverComment = document.getElementById('rating_driver_comment').value;
+
+  if (!restaurantRating && !driverRating) {
+    return alert('Select at least one rating (restaurant or driver).');
+  }
+
+  const sendRating = async (path, payload) => {
+    const response = await apiFetch(path, { method: 'POST', body: JSON.stringify(payload) });
+    const json = await response.json();
+    if (!response.ok) {
+      throw new Error(json.message || 'Unknown error');
+    }
+  };
+
+  try {
+    if (restaurantRating) {
+      await sendRating(`/api/order/${orderId}/restaurant-rating`, {
+        restaurant_rating: parseFloat(restaurantRating),
+        ...(restaurantComment ? { restaurant_review_comment: restaurantComment } : {})
+      });
+    }
+    if (driverRating) {
+      await sendRating(`/api/order/${orderId}/driver-rating`, {
+        driver_rating: parseFloat(driverRating),
+        ...(driverComment ? { driver_review_comment: driverComment } : {})
+      });
+    }
+    timeline(`Rating sent for order ${orderId}`, true);
+    alert('Thank you for your feedback!');
+    document.getElementById('rating_restaurant').value = '';
+    document.getElementById('rating_driver').value = '';
+    document.getElementById('rating_restaurant_comment').value = '';
+    document.getElementById('rating_driver_comment').value = '';
+  } catch (e) {
+    alert('Error sending rating: ' + e.message);
+  }
+}
+
+function skipRating() {
+  document.getElementById('rating_restaurant').value = '';
+  document.getElementById('rating_driver').value = '';
+  document.getElementById('rating_restaurant_comment').value = '';
+  document.getElementById('rating_driver_comment').value = '';
+  timeline('Rating skipped');
+}
+loadPromotions();
+</script>
+</body>
+</html>
+
