@@ -1,7 +1,7 @@
 import { Op } from "sequelize";
 import FavoriteAddress from "../models/FavoriteAddress.js";
 
-const MAX_FAVORITE_ADDRESSES = 5;
+const MAX_FAVORITE_ADDRESSES = 8;
 
 export async function listFavoriteAddresses(clientId) {
   return FavoriteAddress.findAll({
@@ -17,7 +17,9 @@ export async function createFavoriteAddress(clientId, payload) {
     where: { client_id: clientId },
   });
   if (existingCount >= MAX_FAVORITE_ADDRESSES) {
-    const error = new Error("Maximum 5 adresses favorites autorisees");
+    const error = new Error(
+      `Maximum ${MAX_FAVORITE_ADDRESSES} adresses favorites autorisees`
+    );
     error.status = 400;
     throw error;
   }
