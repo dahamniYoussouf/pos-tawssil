@@ -1,0 +1,584 @@
+{
+  "generated_at": "2026-04-12T11:05:13.644Z",
+  "mode": "external vps/domain stress test",
+  "notes": [
+    "Targets are intentionally limited to stay below the public rate limit budget.",
+    "Direct origin requests use the VPS IP over HTTPS with TLS verification disabled for this measurement."
+  ],
+  "results": [
+    {
+      "name": "Sequential cf_health",
+      "url": "https://tawsilapp.com/api/health",
+      "total_requests": 8,
+      "concurrency": 1,
+      "duration_ms": 684.68,
+      "requests_per_second": 11.68,
+      "success_count": 8,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 29.34,
+        "avg": 82.37,
+        "p50": 33.22,
+        "p95": 428.15,
+        "max": 428.15
+      },
+      "status_counts": {
+        "200": 8
+      },
+      "header_snapshots": [
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "296",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "295",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "294",
+          "cfCacheStatus": "DYNAMIC"
+        }
+      ],
+      "error_samples": []
+    },
+    {
+      "name": "Sequential cf_announcement_active",
+      "url": "https://tawsilapp.com/api/announcement/getactive",
+      "total_requests": 8,
+      "concurrency": 1,
+      "duration_ms": 330.27,
+      "requests_per_second": 24.22,
+      "success_count": 8,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 28.26,
+        "avg": 40.63,
+        "p50": 35.03,
+        "p95": 80.06,
+        "max": 80.06
+      },
+      "status_counts": {
+        "200": 8
+      },
+      "header_snapshots": [
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "288",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "287",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "286",
+          "cfCacheStatus": "DYNAMIC"
+        }
+      ],
+      "error_samples": []
+    },
+    {
+      "name": "Sequential cf_restaurant_getall",
+      "url": "https://tawsilapp.com/api/restaurant/getall",
+      "total_requests": 8,
+      "concurrency": 1,
+      "duration_ms": 647.46,
+      "requests_per_second": 12.36,
+      "success_count": 8,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 42.12,
+        "avg": 61.8,
+        "p50": 61.17,
+        "p95": 78.07,
+        "max": 78.07
+      },
+      "status_counts": {
+        "200": 8
+      },
+      "header_snapshots": [
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "280",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "279",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "278",
+          "cfCacheStatus": "DYNAMIC"
+        }
+      ],
+      "error_samples": []
+    },
+    {
+      "name": "Sequential cf_orderitem_getall",
+      "url": "https://tawsilapp.com/api/orderitem/getall",
+      "total_requests": 8,
+      "concurrency": 1,
+      "duration_ms": 1153.07,
+      "requests_per_second": 6.94,
+      "success_count": 8,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 53.88,
+        "avg": 67.86,
+        "p50": 64.16,
+        "p95": 95.64,
+        "max": 95.64
+      },
+      "status_counts": {
+        "200": 8
+      },
+      "header_snapshots": [
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "272",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "271",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "270",
+          "cfCacheStatus": "DYNAMIC"
+        }
+      ],
+      "error_samples": []
+    },
+    {
+      "name": "Sequential cf_order_noauth",
+      "url": "https://tawsilapp.com/api/order",
+      "total_requests": 8,
+      "concurrency": 1,
+      "duration_ms": 309.79,
+      "requests_per_second": 25.82,
+      "success_count": 8,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 23.41,
+        "avg": 38.3,
+        "p50": 27.89,
+        "p95": 70.69,
+        "max": 70.69
+      },
+      "status_counts": {
+        "401": 8
+      },
+      "header_snapshots": [
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "264",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "263",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "262",
+          "cfCacheStatus": "DYNAMIC"
+        }
+      ],
+      "error_samples": []
+    },
+    {
+      "name": "Sequential origin_health",
+      "url": "https://197.140.29.107/api/health",
+      "total_requests": 8,
+      "concurrency": 1,
+      "duration_ms": 310.81,
+      "requests_per_second": 25.74,
+      "success_count": 8,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 17.42,
+        "avg": 38.45,
+        "p50": 20.89,
+        "p95": 97.52,
+        "max": 97.52
+      },
+      "status_counts": {
+        "200": 8
+      },
+      "header_snapshots": [
+        {
+          "server": "nginx/1.24.0 (Ubuntu)",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "298",
+          "cfCacheStatus": null
+        },
+        {
+          "server": "nginx/1.24.0 (Ubuntu)",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "297",
+          "cfCacheStatus": null
+        },
+        {
+          "server": "nginx/1.24.0 (Ubuntu)",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "296",
+          "cfCacheStatus": null
+        }
+      ],
+      "error_samples": []
+    },
+    {
+      "name": "Sequential origin_orderitem_getall",
+      "url": "https://197.140.29.107/api/orderitem/getall",
+      "total_requests": 8,
+      "concurrency": 1,
+      "duration_ms": 1739.23,
+      "requests_per_second": 4.6,
+      "success_count": 8,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 33.71,
+        "avg": 70.14,
+        "p50": 49.04,
+        "p95": 167.24,
+        "max": 167.24
+      },
+      "status_counts": {
+        "200": 8
+      },
+      "header_snapshots": [
+        {
+          "server": "nginx/1.24.0 (Ubuntu)",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "290",
+          "cfCacheStatus": null
+        },
+        {
+          "server": "nginx/1.24.0 (Ubuntu)",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "289",
+          "cfCacheStatus": null
+        },
+        {
+          "server": "nginx/1.24.0 (Ubuntu)",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "288",
+          "cfCacheStatus": null
+        }
+      ],
+      "error_samples": []
+    },
+    {
+      "name": "Concurrent cf_health",
+      "url": "https://tawsilapp.com/api/health",
+      "total_requests": 20,
+      "concurrency": 5,
+      "duration_ms": 247.42,
+      "requests_per_second": 80.84,
+      "success_count": 20,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 27.18,
+        "avg": 54.22,
+        "p50": 51.2,
+        "p95": 85.09,
+        "max": 113.74
+      },
+      "status_counts": {
+        "200": 20
+      },
+      "header_snapshots": [
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "256",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "296",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "255",
+          "cfCacheStatus": "DYNAMIC"
+        }
+      ],
+      "error_samples": []
+    },
+    {
+      "name": "Concurrent cf_announcement_active",
+      "url": "https://tawsilapp.com/api/announcement/getactive",
+      "total_requests": 20,
+      "concurrency": 5,
+      "duration_ms": 177.22,
+      "requests_per_second": 112.85,
+      "success_count": 20,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 24.51,
+        "avg": 41.26,
+        "p50": 37.79,
+        "p95": 81.58,
+        "max": 88.95
+      },
+      "status_counts": {
+        "200": 20
+      },
+      "header_snapshots": [
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "284",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "283",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "248",
+          "cfCacheStatus": "DYNAMIC"
+        }
+      ],
+      "error_samples": []
+    },
+    {
+      "name": "Concurrent cf_restaurant_getall",
+      "url": "https://tawsilapp.com/api/restaurant/getall",
+      "total_requests": 15,
+      "concurrency": 5,
+      "duration_ms": 274.99,
+      "requests_per_second": 54.55,
+      "success_count": 15,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 48.37,
+        "avg": 78.16,
+        "p50": 64.76,
+        "p95": 135.79,
+        "max": 135.79
+      },
+      "status_counts": {
+        "200": 15
+      },
+      "header_snapshots": [
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "271",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "239",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "240",
+          "cfCacheStatus": "DYNAMIC"
+        }
+      ],
+      "error_samples": []
+    },
+    {
+      "name": "Concurrent cf_orderitem_getall",
+      "url": "https://tawsilapp.com/api/orderitem/getall",
+      "total_requests": 15,
+      "concurrency": 5,
+      "duration_ms": 651.45,
+      "requests_per_second": 23.03,
+      "success_count": 15,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 57.02,
+        "avg": 84.67,
+        "p50": 80.51,
+        "p95": 141.89,
+        "max": 141.89
+      },
+      "status_counts": {
+        "200": 15
+      },
+      "header_snapshots": [
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "263",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "262",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "261",
+          "cfCacheStatus": "DYNAMIC"
+        }
+      ],
+      "error_samples": []
+    },
+    {
+      "name": "Concurrent cf_order_noauth",
+      "url": "https://tawsilapp.com/api/order",
+      "total_requests": 20,
+      "concurrency": 5,
+      "duration_ms": 164.77,
+      "requests_per_second": 121.38,
+      "success_count": 20,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 20.38,
+        "avg": 31.6,
+        "p50": 28.15,
+        "p95": 49.5,
+        "max": 62.38
+      },
+      "status_counts": {
+        "401": 20
+      },
+      "header_snapshots": [
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "254",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "253",
+          "cfCacheStatus": "DYNAMIC"
+        },
+        {
+          "server": "cloudflare",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "228",
+          "cfCacheStatus": "DYNAMIC"
+        }
+      ],
+      "error_samples": []
+    },
+    {
+      "name": "Concurrent origin_health",
+      "url": "https://197.140.29.107/api/health",
+      "total_requests": 20,
+      "concurrency": 5,
+      "duration_ms": 156.15,
+      "requests_per_second": 128.08,
+      "success_count": 20,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 15.08,
+        "avg": 36.71,
+        "p50": 20.06,
+        "p95": 85.37,
+        "max": 111.85
+      },
+      "status_counts": {
+        "200": 20
+      },
+      "header_snapshots": [
+        {
+          "server": "nginx/1.24.0 (Ubuntu)",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "282",
+          "cfCacheStatus": null
+        },
+        {
+          "server": "nginx/1.24.0 (Ubuntu)",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "281",
+          "cfCacheStatus": null
+        },
+        {
+          "server": "nginx/1.24.0 (Ubuntu)",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "280",
+          "cfCacheStatus": null
+        }
+      ],
+      "error_samples": []
+    },
+    {
+      "name": "Concurrent origin_orderitem_getall",
+      "url": "https://197.140.29.107/api/orderitem/getall",
+      "total_requests": 15,
+      "concurrency": 5,
+      "duration_ms": 746.88,
+      "requests_per_second": 20.08,
+      "success_count": 15,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 48.64,
+        "avg": 67.65,
+        "p50": 67.53,
+        "p95": 93.37,
+        "max": 93.37
+      },
+      "status_counts": {
+        "200": 15
+      },
+      "header_snapshots": [
+        {
+          "server": "nginx/1.24.0 (Ubuntu)",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "262",
+          "cfCacheStatus": null
+        },
+        {
+          "server": "nginx/1.24.0 (Ubuntu)",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "260",
+          "cfCacheStatus": null
+        },
+        {
+          "server": "nginx/1.24.0 (Ubuntu)",
+          "rateLimitLimit": "300",
+          "rateLimitRemaining": "259",
+          "cfCacheStatus": null
+        }
+      ],
+      "error_samples": []
+    }
+  ]
+}

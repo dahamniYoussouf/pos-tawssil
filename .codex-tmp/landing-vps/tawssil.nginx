@@ -1,0 +1,184 @@
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
+server {
+    if ($host = www.tawsilapp.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = tawsilapp.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    listen 80;
+    server_name vps5dahg6.oct-xpd1.xyz tawsilapp.com www.tawsilapp.com;
+    location /.well-known/acme-challenge/ {
+        root /var/www/html;
+    }
+    location = /pos {
+        return 301 /pos/;
+    }
+
+    location /pos/ {
+        root /var/www/myapp;
+        index index.html;
+        try_files $uri $uri/ /pos/index.html;
+    }
+
+    location / {
+        return 301 https://$host$request_uri;
+    }
+
+
+
+
+}
+
+server {
+    listen 443 ssl;
+    server_name vps5dahg6.oct-xpd1.xyz tawsilapp.com www.tawsilapp.com;
+
+    client_max_body_size 50M;
+    ssl_certificate /etc/letsencrypt/live/tawsilapp.com/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/tawsilapp.com/privkey.pem; # managed by Certbot
+
+
+    location = /pos {
+        return 301 /pos/;
+    }
+
+    location /pos/ {
+        root /var/www/myapp;
+        index index.html;
+        try_files $uri $uri/ /pos/index.html;
+    }
+
+    location /admin {
+        proxy_pass http://localhost:3100;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /login {
+        proxy_pass http://localhost:3100;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /_next {
+        proxy_pass http://localhost:3100;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /firebase-messaging-sw.js {
+        proxy_pass http://localhost:3100;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /manifest.webmanifest {
+        proxy_pass http://localhost:3100;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /icon.png {
+        proxy_pass http://localhost:3100;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /terms {
+        proxy_pass http://localhost:8100;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location /privacy-policy {
+        proxy_pass http://localhost:8100;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+
+    location /uploads/ {
+        alias /var/www/myapp/backend/public/uploads/;
+        expires 30d;
+        add_header Cache-Control "public";
+    }
+
+    location /socket.io/ {
+        proxy_pass http://localhost:8100/socket.io/;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 3600s;
+        proxy_send_timeout 3600s;
+        proxy_buffering off;
+    }
+
+    location /api/ {
+        proxy_pass http://localhost:8100/;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    location = /robots.txt {
+        root /var/www/myapp/landing;
+        default_type text/plain;
+        try_files /robots.txt =404;
+        expires -1;
+        add_header Cache-Control "no-store, no-cache, must-revalidate, max-age=0";
+    }
+
+    location ~* ^/(styles\.css|script\.js|assets/.+\.(?:css|js|png|jpg|jpeg|webp|svg|ico))$ {
+        root /var/www/myapp/landing;
+        try_files $uri =404;
+        expires 30d;
+        add_header Cache-Control "public, max-age=2592000, immutable";
+    }
+
+    location / {
+        root /var/www/myapp/landing;
+        index index.html;
+        try_files $uri $uri/ /index.html;
+    }
+
+
+}

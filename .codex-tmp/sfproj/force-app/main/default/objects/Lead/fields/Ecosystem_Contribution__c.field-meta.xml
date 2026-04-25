@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Ecosystem_Contribution__c</fullName>
+    <label>Ecosystem Contribution</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Enterprise - Supply chain user</fullName>
+                <default>false</default>
+                <label>Startup (high-growth tech business)</label>
+            </value>
+            <value>
+                <fullName>Service Provider - Transport, logistics or supply chain</fullName>
+                <default>false</default>
+                <label>AI or technology solution provider</label>
+            </value>
+            <value>
+                <fullName>Service Provider - AI or digital technologies</fullName>
+                <default>false</default>
+                <label>AI Adopter</label>
+            </value>
+            <value>
+                <fullName>Service Provider - Other professional services</fullName>
+                <default>false</default>
+                <label>Investor - VC Fund</label>
+            </value>
+            <value>
+                <fullName>Academic - University, research center or other institution</fullName>
+                <default>false</default>
+                <label>Public or political organization</label>
+            </value>
+            <value>
+                <fullName>Investor, Bank or VC</fullName>
+                <default>false</default>
+                <label>Researcher / Academic</label>
+            </value>
+            <value>
+                <fullName>Business incubator or accelerator</fullName>
+                <default>false</default>
+                <label>Non-profit, association, or incubator</label>
+            </value>
+            <value>
+                <fullName>Public sector or governmental organization</fullName>
+                <default>false</default>
+                <label>International delegation</label>
+            </value>
+            <value>
+                <fullName>Professional association or other non governmental organization</fullName>
+                <default>false</default>
+                <label>Other</label>
+            </value>
+            <value>
+                <fullName>Public organization (Government, professional association, cluster)</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Public organization (Government, professional association, cluster)</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

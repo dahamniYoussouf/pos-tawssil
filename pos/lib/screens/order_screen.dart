@@ -1108,12 +1108,33 @@ class _OrderScreenState extends State<OrderScreen> {
         w > 1500 ? 292.0 : (w > 1200 ? 272.0 : (w > 900 ? 248.0 : 300.0));
     final desktopContentWidth =
         w - 96 - desktopPanelWidth - (TawsilSpacing.md * 2);
-    final columnCount = isPhone ? (w < 430 ? 1 : 2) : 4;
+    final forceTabletFourColumns = w >= 1024 && w < 1400;
+    final desktopColumnCount = w <= 900
+        ? 2
+        : (w <= 1200
+            ? 3
+            : (forceTabletFourColumns
+                ? 4
+                : ((desktopContentWidth + 6) / 240).floor().clamp(3, 5).toInt()));
+    final columnCount = isPhone ? (w < 430 ? 1 : 2) : desktopColumnCount;
+    final desktopCardWidth = isPhone
+        ? 0.0
+        : ((desktopContentWidth - ((columnCount - 1) * 6)) / columnCount);
+    final isMidTabletWindow = !isPhone && w >= 716 && w <= 1200;
+    final isFourColumnRegularDesktop =
+        !isPhone &&
+        columnCount == 4 &&
+        desktopCardWidth >= 250 &&
+        desktopCardWidth < 285;
     final mainAxisExtent = isPhone
         ? (w < 430 ? 248.0 : 228.0)
-        : (desktopContentWidth >= 1180
-            ? 164.0
-            : (desktopContentWidth >= 980 ? 156.0 : 148.0));
+        : (isMidTabletWindow
+            ? (desktopCardWidth >= 210 ? 146.0 : 138.0)
+            : (isFourColumnRegularDesktop
+            ? 150.0
+            : (desktopCardWidth >= 285
+                ? 172.0
+                : (desktopCardWidth >= 245 ? 160.0 : 152.0))));
 
     return ListView.builder(
       padding: const EdgeInsets.all(10),
@@ -1311,10 +1332,51 @@ class _MenuItemCard extends StatelessWidget {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final isCompact = constraints.maxWidth < 225;
-        final imageHeight = isCompact ? 78.0 : 84.0;
-        final horizontalPadding = isCompact ? 6.0 : 7.0;
-        final verticalPadding = 5.0;
+        final screenWidth = MediaQuery.of(context).size.width;
+        final isPhoneLayout = screenWidth < 700;
+        final isTabletLayout = screenWidth >= 700 && screenWidth < 1400;
+        final isMidTabletWindow =
+            !isPhoneLayout && screenWidth >= 716 && screenWidth <= 1200;
+        final cardWidth = constraints.maxWidth;
+        final isCompact = !isPhoneLayout && cardWidth < 225;
+        final isWide = !isPhoneLayout && cardWidth >= 285;
+        final isRegular = !isPhoneLayout && !isCompact && !isWide;
+        final imageHeight = isPhoneLayout
+            ? (cardWidth >= 340 ? 132.0 : 118.0)
+            : (isMidTabletWindow
+                ? (isCompact ? 66.0 : (isWide ? 114.0 : 104.0))
+                : (isCompact
+                    ? (isTabletLayout ? 54.0 : 44.0)
+                    : (isWide
+                        ? (isTabletLayout ? 116.0 : 108.0)
+                        : (isTabletLayout ? 96.0 : 88.0))));
+        final horizontalPadding =
+            isPhoneLayout ? 10.0 : (isCompact ? 6.0 : (isWide ? 10.0 : 8.0));
+        final verticalPadding =
+            isPhoneLayout
+                ? 8.0
+                : (isMidTabletWindow
+                    ? (isCompact ? 1.5 : (isWide ? 4.0 : 2.5))
+                    : (isCompact ? 2.0 : (isWide ? 6.0 : 3.5)));
+        final titleFontSize = isPhoneLayout
+            ? 14.0
+            : (isCompact ? 10.0 : (isWide ? 13.4 : (isRegular ? 12.0 : 10.6)));
+        final priceFontSize = isPhoneLayout
+            ? 15.0
+            : (isCompact ? 10.6 : (isWide ? 15.0 : (isRegular ? 13.0 : 11.2)));
+        final strikeFontSize = isPhoneLayout
+            ? 11.0
+            : (isCompact ? 7.6 : (isWide ? 10.8 : (isRegular ? 9.4 : 8.0)));
+        final actionSize = isPhoneLayout
+            ? 34.0
+            : (isCompact
+                ? 22.0
+                : (isWide ? 34.0 : (isRegular ? 28.0 : 24.0)));
+        final actionIconSize = isPhoneLayout
+            ? 20.0
+            : (isCompact
+                ? 14.0
+                : (isWide ? 18.0 : (isRegular ? 17.0 : 16.0)));
 
         return Card(
           elevation: 1,
@@ -1397,15 +1459,18 @@ class _MenuItemCard extends StatelessWidget {
                     children: [
                       Text(
                         menuItem.nom,
-                        maxLines: 1,
+                        maxLines: isPhoneLayout ? 2 : 1,
                         overflow: TextOverflow.ellipsis,
                         style: TawsilTextStyles.bodyMedium.copyWith(
                           fontWeight: FontWeight.w700,
-                          fontSize: isCompact ? 10 : 10.4,
-                          height: 1,
+                          fontSize: titleFontSize,
+                          height: isPhoneLayout ? 1.15 : 1,
                         ),
                       ),
-                      const SizedBox(height: 3),
+                      SizedBox(
+                        height:
+                            isPhoneLayout ? 8 : (isWide ? 4 : (isRegular ? 2 : 1.5)),
+                      ),
                       Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -1421,13 +1486,17 @@ class _MenuItemCard extends StatelessWidget {
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TawsilTextStyles.priceMedium.copyWith(
-                                    fontSize: isCompact ? 11.2 : 11.6,
+                                    fontSize: priceFontSize,
                                     height: 1,
                                   ),
                                 ),
                                 if (hasPromotion)
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 1.5),
+                                    padding: EdgeInsets.only(
+                                      top: isPhoneLayout
+                                          ? 3
+                                          : (isWide ? 2 : (isRegular ? 1.5 : 1)),
+                                    ),
                                     child: Text(
                                       '${_formatMoney(menuItem.prix)} DA',
                                       maxLines: 1,
@@ -1436,7 +1505,7 @@ class _MenuItemCard extends StatelessWidget {
                                           TawsilTextStyles.bodySmall.copyWith(
                                         color: TawsilColors.textSecondary,
                                         decoration: TextDecoration.lineThrough,
-                                        fontSize: isCompact ? 7.8 : 8.2,
+                                        fontSize: strikeFontSize,
                                         height: 1,
                                       ),
                                     ),
@@ -1446,8 +1515,8 @@ class _MenuItemCard extends StatelessWidget {
                           ),
                           const SizedBox(width: 3),
                           Container(
-                            width: isCompact ? 26 : 28,
-                            height: isCompact ? 26 : 28,
+                            width: actionSize,
+                            height: actionSize,
                             decoration: BoxDecoration(
                               color: TawsilColors.primaryLight,
                               borderRadius: BorderRadius.circular(10),
@@ -1465,7 +1534,7 @@ class _MenuItemCard extends StatelessWidget {
                                 ),
                                 child: Icon(
                                   Icons.add_rounded,
-                                  size: isCompact ? 16 : 18,
+                                  size: actionIconSize,
                                   color: TawsilColors.primary,
                                 ),
                               ),
@@ -4641,94 +4710,82 @@ class _AdditionsSheetDialogState extends State<_AdditionsSheetDialog> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 70,
-              height: 70,
-              decoration: BoxDecoration(
-                color: const Color(0xFFF3F4F7),
-                borderRadius: BorderRadius.circular(18),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: _hasImage
-                  ? Image.network(
-                      widget.menuItem.photoUrl!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _additionPlaceholder(),
-                    )
-                  : _additionPlaceholder(),
-            ),
-            const SizedBox(width: TawsilSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.menuItem.nom,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: TawsilTextStyles.headingMedium.copyWith(
-                      fontWeight: FontWeight.w800,
-                      fontSize: 17,
-                    ),
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final tight = constraints.maxWidth < 360;
+            final imageSize = 52.0;
+            final spacing = 10.0;
+            final qtyWidth = tight ? 96.0 : 110.0;
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: imageSize,
+                  height: imageSize,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF3F4F7),
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  if (widget.menuItem.description != null &&
-                      widget.menuItem.description!.trim().isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        widget.menuItem.description!,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TawsilTextStyles.bodyMedium.copyWith(
-                          color: TawsilColors.textSecondary,
-                        ),
-                      ),
-                    ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                  clipBehavior: Clip.antiAlias,
+                  child: _hasImage
+                      ? Image.network(
+                          widget.menuItem.photoUrl!,
+                          fit: BoxFit.cover,
+                          errorBuilder: (_, __, ___) => _additionPlaceholder(),
+                        )
+                      : _additionPlaceholder(),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        '${_formatMoney(_promoUnitPrice)} DA',
-                        style: TawsilTextStyles.priceMedium.copyWith(
-                          color: TawsilColors.primary,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      if (_hasPromotion)
-                        Text(
-                          '${_formatMoney(widget.menuItem.prix)} DA',
-                          style: TawsilTextStyles.bodySmall.copyWith(
-                            color: TawsilColors.textSecondary,
-                            decoration: TextDecoration.lineThrough,
+                      const SizedBox(height: 2),
+                      Row(
+                        children: [
+                          Flexible(
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                '${_formatMoney(_promoUnitPrice)} DA',
+                                style: TawsilTextStyles.priceMedium.copyWith(
+                                  color: TawsilColors.primary,
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: tight ? 12 : 12.5,
+                                ),
+                                maxLines: 1,
+                                softWrap: false,
+                              ),
+                            ),
                           ),
-                        ),
-                      if (widget.menuItem.tempsPreparation > 0)
-                        _buildHeaderChip(
-                          '${widget.menuItem.tempsPreparation} min',
-                          icon: Icons.timer_outlined,
-                        ),
+                          if (_hasPromotion && !tight) ...[
+                            const SizedBox(width: 6),
+                            Text(
+                              '${_formatMoney(widget.menuItem.prix)} DA',
+                              maxLines: 1,
+                              softWrap: false,
+                              overflow: TextOverflow.ellipsis,
+                              style: TawsilTextStyles.bodySmall.copyWith(
+                                color: TawsilColors.textSecondary,
+                                decoration: TextDecoration.lineThrough,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
                     ],
                   ),
-                ],
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 14),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-          decoration: BoxDecoration(
-            color: const Color(0xFFF8FAF8),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: TawsilColors.border),
-          ),
-          child: _buildQuantitySection(compact: true),
+                ),
+                SizedBox(width: spacing),
+                SizedBox(
+                  width: qtyWidth,
+                  child: _buildQuantitySection(compact: true),
+                ),
+              ],
+            );
+          },
         ),
       ],
     );
@@ -4814,64 +4871,90 @@ class _AdditionsSheetDialogState extends State<_AdditionsSheetDialog> {
                 ),
               ],
             )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'TOTAL',
-                  style: TawsilTextStyles.bodySmall.copyWith(
-                    color: TawsilColors.textSecondary,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 0.8,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  '${_formatMoney(_total)} DA',
-                  style: TawsilTextStyles.displayMedium.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: TawsilColors.primaryDark,
-                    fontSize: 19,
-                  ),
-                ),
-                if (_hasPromotion)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Text(
-                      'Avant promo: ${_formatMoney(_baseTotal)} DA',
-                      style: TawsilTextStyles.bodySmall.copyWith(
-                        color: TawsilColors.textSecondary,
-                        decoration: TextDecoration.lineThrough,
-                        fontSize: 11,
-                        height: 1.05,
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                final tight = constraints.maxWidth < 420;
+                final ultraTight = constraints.maxWidth < 340;
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'TOTAL',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TawsilTextStyles.bodySmall.copyWith(
+                              color: TawsilColors.textSecondary,
+                              fontWeight: FontWeight.w800,
+                              letterSpacing: 0.8,
+                              fontSize: 10,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              '${_formatMoney(_total)} DA',
+                              style: TawsilTextStyles.displayMedium.copyWith(
+                                fontWeight: FontWeight.w800,
+                                color: TawsilColors.primaryDark,
+                                fontSize: ultraTight ? 16 : 18,
+                              ),
+                            ),
+                          ),
+                          if (_hasPromotion && !ultraTight)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 1),
+                              child: Text(
+                                'Avant promo: ${_formatMoney(_baseTotal)} DA',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TawsilTextStyles.bodySmall.copyWith(
+                                  color: TawsilColors.textSecondary,
+                                  decoration: TextDecoration.lineThrough,
+                                  fontSize: 9,
+                                  height: 1.05,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ),
-                  ),
-                const SizedBox(height: 10),
-                SizedBox(
-                  height: 48,
-                  child: ElevatedButton.icon(
-                    onPressed: _canSubmit ? _submit : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: TawsilColors.primary,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      textStyle: TawsilTextStyles.buttonLarge.copyWith(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w800,
+                    SizedBox(width: tight ? 6 : 10),
+                    SizedBox(
+                      width: ultraTight ? 56 : (tight ? 130 : 180),
+                      height: tight ? 38 : 44,
+                      child: ElevatedButton.icon(
+                        onPressed: _canSubmit ? _submit : null,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: TawsilColors.primary,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          textStyle: TawsilTextStyles.buttonLarge.copyWith(
+                            fontSize: tight ? 12.0 : 14,
+                            fontWeight: FontWeight.w800,
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: ultraTight ? 0 : 12,
+                          ),
+                        ),
+                        icon: Icon(
+                          Icons.shopping_cart_outlined,
+                          size: tight ? 16 : 18,
+                        ),
+                        label: Text(ultraTight ? '' : widget.submitLabel),
                       ),
                     ),
-                    icon: const Icon(
-                      Icons.shopping_cart_outlined,
-                      size: 20,
-                    ),
-                    label: Text(widget.submitLabel),
-                  ),
-                ),
-              ],
+                  ],
+                );
+              },
             ),
     );
   }

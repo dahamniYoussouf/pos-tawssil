@@ -1,0 +1,4230 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import apiClient from '@/lib/api/auth';
+import { LOCALE_OPTIONS, normalizeLocale } from '@/lib/locale';
+import ModalErrorNotice from '@/components/admin/ModalErrorNotice';
+import { getApiErrorMessage } from '@/lib/api/error';
+import {
+  Plus,
+  Search,
+  MapPin,
+  Star,
+  CheckCircle,
+  PauseCircle,
+  XCircle,
+  Eye,
+  Edit,
+  Trash2,
+  X,
+  Save,
+  AlertCircle,
+  RefreshCw,
+  ChevronLeft,
+  ChevronRight,
+  Phone,
+  UtensilsCrossed
+} from 'lucide-react';
+
+// =========================
+// TYPES
+// =========================
+
+type CategoryValue = string;
+
+type StatusColor = 'yellow' | 'green' | 'red' | 'gray';
+
+type RestaurantStatus = 'pending' | 'approved' | 'suspended' | 'archived' | string;
+
+type ActiveTab =
+  | 'all'
+  | 'suspended'
+  | 'rejected'
+  | 'requests'
+  | 'email-unconfirmed'
+  | 'warnings';
+
+type NotificationType = 'success' | 'error';
+
+interface StatusOption {
+  value: RestaurantStatus;
+  label: string;
+  color: StatusColor;
+}
+
+type DayKey = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun';
+
+interface OpeningHour {
+  open?: number;
+  close?: number;
+}
+
+type OpeningHours = Partial<Record<DayKey, OpeningHour>>;
+
+interface Restaurant {
+  id: string;
+  name: string;
+  email?: string;
+  email_verified_at?: string | null;
+  description?: string;
+  address?: string;
+  phone_number?: string;
+  commune_id?: string | null;
+
+  lat?: string;
+  lng?: string;
+  rating?: number | string;
+  image_url?: string;
+  is_active: boolean;
+  is_premium: boolean;
+  categories?: CategoryValue[];
+  status?: RestaurantStatus;
+  availability_note?: string | null;
+  created_at?: string;
+  opening_hours?: Partial<OpeningHours>;
+  locale?: string | null;
+}
+
+interface WilayaOption {
+  code: string;
+  name: string;
+  name_ar?: string | null;
+}
+
+interface CommuneOption {
+  id: string;
+  name: string;
+  name_ar?: string | null;
+  wilaya_code: string;
+  wilaya_name?: string | null;
+}
+
+interface RestaurantWarning {
+  restaurant_id: string;
+  restaurant?: Restaurant;
+  warnings_total: number;
+  warnings_delay: number;
+  warnings_unresolved?: number;
+  last_warning_at?: string | null;
+}
+
+interface OptionGroup {
+  id: string;
+  nom: string;
+  description?: string | null;
+  is_required: boolean;
+  ordre_affichage?: number | null;
+  additions?: Addition[];
+  options?: Addition[];
+}
+
+interface Addition {
+  id: string;
+  nom: string;
+  description?: string | null;
+  prix: number;
+  is_available?: boolean;
+  option_group_id?: string | null;
+}
+
+interface MenuItem {
+  id: string;
+  nom: string;
+  description?: string | null;
+  prix: number;
+  display_price?: number;
+  photo_url?: string | null;
+  temps_preparation?: number | null;
+  is_available?: boolean;
+  additions?: Addition[];
+  option_groups?: OptionGroup[];
+}
+
+interface MenuCategory {
+  id: string;
+  nom: string;
+  description?: string | null;
+  items?: MenuItem[];
+  items_count?: number;
+}
+
+interface RestaurantMenuDetails {
+  restaurant_id: string;
+  restaurant?: Restaurant;
+  categories?: MenuCategory[];
+}
+
+interface RestaurantFilters {
+  categories?: CategoryValue[];
+  address?: string;
+  status?: RestaurantStatus;
+  is_active?: string;
+  is_premium?: string;
+  page?: number;
+  pageSize?: number;
+  q?: string;
+  home_categories?: string[];
+}
+
+interface GlobalHomeCategory {
+  id: string;
+  name: string;
+  slug: string;
+  image_url?: string | null;
+}
+
+interface NotificationState {
+  message: string;
+  type: NotificationType;
+}
+
+interface CreateRestaurantForm {
+  email: string;
+  password: string;
+  name: string;
+  categories: CategoryValue[];
+  description: string;
+  address: string;
+  phone_number : string;
+  wilaya_code?: string;
+  commune_id?: string | null;
+  lat: string;
+  lng: string;
+  rating: number;
+  image_url: string;
+  is_active: boolean;
+  is_premium: boolean;
+  opening_hours: OpeningHours;
+  locale: string;
+}
+
+interface EditRestaurantForm {
+  name: string;
+  address: string;
+  phone_number: string;
+  description: string;
+  is_active: boolean;
+  is_premium: boolean;
+  categories: CategoryValue[];
+  email?: string;
+  password?: string;
+  wilaya_code?: string;
+  commune_id?: string | null;
+  lat?: string;
+  lng?: string;
+  rating?: number;
+  image_url?: string;
+  opening_hours?: Partial<OpeningHours>;
+  status?: RestaurantStatus;
+  locale?: string;
+}
+
+// =========================
+// API configuration
+// =========================
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const REJECTION_NOTE_PATTERN = /rejet[eé]\s*:/i;
+
+const sanitizeOpeningHours = (openingHours?: OpeningHours | null): OpeningHours | null => {
+  if (!openingHours) return null;
+
+  const normalizedEntries = Object.entries(openingHours).reduce((acc, [day, hours]) => {
+    const open = typeof hours?.open === 'number' && Number.isFinite(hours.open) ? hours.open : null;
+    const close = typeof hours?.close === 'number' && Number.isFinite(hours.close) ? hours.close : null;
+
+    if (open === null || close === null) {
+      return acc;
+    }
+
+    acc[day as DayKey] = { open, close };
+    return acc;
+  }, {} as OpeningHours);
+
+  return Object.keys(normalizedEntries).length > 0 ? normalizedEntries : null;
+};
+
+const updateOpeningHoursDraft = (
+  openingHours: OpeningHours | undefined,
+  day: DayKey,
+  field: keyof OpeningHour,
+  rawValue: string
+): OpeningHours => {
+  const next: OpeningHours = { ...(openingHours || {}) };
+  const currentDay: OpeningHour = { ...(next[day] || {}) };
+  const trimmedValue = rawValue.trim();
+
+  if (!trimmedValue) {
+    delete currentDay[field];
+  } else {
+    const parsedValue = Number.parseInt(trimmedValue, 10);
+    if (Number.isFinite(parsedValue)) {
+      currentDay[field] = parsedValue;
+    }
+  }
+
+  if (currentDay.open === undefined && currentDay.close === undefined) {
+    delete next[day];
+  } else {
+    next[day] = currentDay;
+  }
+
+  return next;
+};
+
+const formatOpeningHoursInputValue = (value?: number) =>
+  value === undefined || value === null ? '' : String(value);
+
+// Get token from localStorage
+const getAuthToken = () => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('access_token') || '';
+  }
+  return '';
+};
+
+// API functions
+const api = {
+  getRestaurants: async (
+    filters: RestaurantFilters = {}
+  ): Promise<{ data: Restaurant[]; count: number; totalPages: number; page: number }> => {
+    try {
+      const token = getAuthToken();
+
+      const requestBody: RestaurantFilters = {
+        categories: filters.categories || undefined,
+        address: filters.address || undefined,
+        status: filters.status || undefined,
+        is_active: filters.is_active || undefined,
+        is_premium: filters.is_premium || undefined,
+        page: filters.page || 1,
+        pageSize: filters.pageSize || 20,
+        q: filters.q || undefined,
+        home_categories: filters.home_categories || undefined
+      };
+
+      const response = await fetch(`${API_BASE_URL}/restaurant/filter`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Restaurant filter error response:', errorText);
+        throw new Error(`Failed to fetch restaurants: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      return {
+        data: (result.data || []) as Restaurant[],
+        count: result.count || 0,
+        totalPages: result.totalPages || 1,
+        page: result.page || 1
+      };
+    } catch (error: unknown) {
+      console.error('Error fetching restaurants:', error);
+      if (error instanceof Error) {
+        if (error.message) console.error('Error message:', error.message);
+        if (error.stack) console.error('Error stack:', error.stack);
+      }
+      return { data: [], count: 0, totalPages: 1, page: 1 };
+    }
+  },
+
+  getPendingRequests: async (): Promise<{ data: Restaurant[]; count: number }> => {
+    try {
+      const token = getAuthToken();
+
+      const requestBody: RestaurantFilters = {
+        page: 1,
+        pageSize: 100,
+        status: 'pending'
+      };
+
+      const response = await fetch(`${API_BASE_URL}/restaurant/filter`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Pending requests error response:', errorText);
+        throw new Error(`Failed to fetch pending requests: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      return {
+        data: (result.data || []) as Restaurant[],
+        count: (result.data || []).length
+      };
+    } catch (error: unknown) {
+      console.error('Error fetching pending requests:', error);
+      if (error instanceof Error && error.message) {
+        console.error('Error message:', error.message);
+      }
+      return { data: [], count: 0 };
+    }
+  },
+
+  approveRestaurant: async (id: string) => {
+    try {
+      const token = getAuthToken();
+      const response = await fetch(`${API_BASE_URL}/restaurant/update/${id}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          status: 'approved',
+          is_active: true
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(getApiErrorMessage(errorData, 'Failed to approve restaurant'));
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error approving restaurant:', error);
+      throw error;
+    }
+  },
+
+  rejectRestaurant: async (id: string, reason: string) => {
+    try {
+      const token = getAuthToken();
+      const response = await fetch(`${API_BASE_URL}/restaurant/update/${id}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          status: 'suspended',
+          is_active: false,
+          availability_note: `Rejete: ${reason}`
+        })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(getApiErrorMessage(errorData, 'Failed to reject restaurant'));
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error rejecting restaurant:', error);
+      throw error;
+    }
+  },
+
+  updateRestaurant: async (
+    id: string,
+    data: Partial<Restaurant> & { wilaya_code?: string; password?: string }
+  ) => {
+    try {
+      const token = getAuthToken();
+      const { wilaya_code, ...payload } = data || {};
+      const normalizedOpeningHours = sanitizeOpeningHours(
+        (payload as Partial<Restaurant> & { opening_hours?: OpeningHours }).opening_hours
+      );
+      const response = await fetch(`${API_BASE_URL}/restaurant/update/${id}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...payload,
+          opening_hours: normalizedOpeningHours,
+          commune_id:
+            payload && 'commune_id' in payload && payload.commune_id === ''
+              ? null
+              : payload?.commune_id
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        const err: any = new Error(getApiErrorMessage(error, 'Failed to update restaurant'));
+        err.errors = error?.errors;
+        throw err;
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error updating restaurant:', error);
+      throw error;
+    }
+  },
+
+  permanentDeleteRestaurant: async (id: string) => {
+    try {
+      const token = getAuthToken();
+      const response = await fetch(`${API_BASE_URL}/restaurant/permanent-delete/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(getApiErrorMessage(errorData, 'Failed to permanently delete restaurant'));
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error permanently deleting restaurant:', error);
+      throw error;
+    }
+  },
+
+  createRestaurant: async (data: CreateRestaurantForm) => {
+    try {
+      const { wilaya_code, commune_id, ...payload } = data;
+      const normalizedOpeningHours = sanitizeOpeningHours(payload.opening_hours);
+      const response = await fetch(`${API_BASE_URL}/auth/register`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...payload,
+          opening_hours: normalizedOpeningHours,
+          commune_id: commune_id || null,
+          type: 'restaurant'
+        })
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({}));
+        const err: any = new Error(getApiErrorMessage(error, 'Failed to create restaurant'));
+        err.errors = error.errors;
+        throw err;
+      }
+
+      return await response.json();
+    } catch (error: unknown) {
+      console.error('Error creating restaurant:', error);
+      throw error;
+    }
+  },
+
+  getRestaurantWarnings: async (): Promise<{ data: RestaurantWarning[]; count: number }> => {
+    try {
+      const token = getAuthToken();
+      const response = await fetch(`${API_BASE_URL}/admin/warnings/restaurants`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Restaurant warnings error response:', errorText);
+        throw new Error(`Failed to fetch restaurant warnings: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      return {
+        data: (result.data || []) as RestaurantWarning[],
+        count: result.count || 0
+      };
+    } catch (error: unknown) {
+      console.error('Error fetching restaurant warnings:', error);
+      if (error instanceof Error) {
+        if (error.message) console.error('Error message:', error.message);
+        if (error.stack) console.error('Error stack:', error.stack);
+      }
+      return { data: [], count: 0 };
+    }
+  }
+};
+
+// Category options
+const CATEGORY_OPTIONS: { value: CategoryValue; label: string }[] = [
+  { value: 'pizza', label: 'Pizza' },
+  { value: 'burger', label: 'Burger' },
+  { value: 'tacos', label: 'Tacos' },
+  { value: 'sandwish', label: 'Sandwich' }
+];
+
+const DEFAULT_CATEGORY_IMAGE_URL =
+  'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&q=80&auto=format&fit=crop';
+
+const CATEGORY_IMAGE_FALLBACKS: Record<string, string> = {
+  pizza: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600&q=80&auto=format&fit=crop',
+  burger: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&q=80&auto=format&fit=crop',
+  tacos: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=600&q=80&auto=format&fit=crop',
+  sandwish: 'https://images.unsplash.com/photo-1539252554453-80ab65ce3586?w=600&q=80&auto=format&fit=crop',
+  sandwich: 'https://images.unsplash.com/photo-1539252554453-80ab65ce3586?w=600&q=80&auto=format&fit=crop',
+  dessert: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=600&q=80&auto=format&fit=crop',
+  desserts: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=600&q=80&auto=format&fit=crop',
+  cafe: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=600&q=80&auto=format&fit=crop',
+  coffee: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=600&q=80&auto=format&fit=crop',
+  salade: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&q=80&auto=format&fit=crop',
+  salad: 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&q=80&auto=format&fit=crop'
+};
+
+const resolveCategoryImageUrl = (slug: string, imageUrl?: string | null) => {
+  const trimmed = (imageUrl ?? '').trim();
+  if (trimmed) return trimmed;
+  return CATEGORY_IMAGE_FALLBACKS[slug] ?? DEFAULT_CATEGORY_IMAGE_URL;
+};
+
+const STATUS_OPTIONS: StatusOption[] = [
+  { value: 'pending', label: 'En attente', color: 'yellow' },
+  { value: 'approved', label: 'Approuve', color: 'green' },
+  { value: 'suspended', label: 'Suspendu', color: 'red' },
+  { value: 'archived', label: 'Archive', color: 'gray' }
+];
+
+const DAYS_OF_WEEK: { value: DayKey; label: string }[] = [
+  { value: 'mon', label: 'Lundi' },
+  { value: 'tue', label: 'Mardi' },
+  { value: 'wed', label: 'Mercredi' },
+  { value: 'thu', label: 'Jeudi' },
+  { value: 'fri', label: 'Vendredi' },
+  { value: 'sat', label: 'Samedi' },
+  { value: 'sun', label: 'Dimanche' }
+];
+
+const formatDA = (value?: number | string | null) => {
+  const parsed =
+    typeof value === 'number' ? value : value != null ? Number(value) : NaN;
+  if (!Number.isFinite(parsed)) return 'N/A';
+  return `${new Intl.NumberFormat('fr-FR').format(parsed)} DA`;
+};
+
+const formatDateTime = (value?: string | null) => {
+  if (!value) return 'a"';
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return 'a"';
+  return date.toLocaleString('fr-FR');
+};
+
+const coerceBoolean = (value: unknown): boolean => {
+  if (value === true || value === 'true' || value === 1 || value === '1') return true;
+  return false;
+};
+
+const normalizeRestaurantFlags = (restaurant: Restaurant): Restaurant => ({
+  ...restaurant,
+  is_active: coerceBoolean(restaurant.is_active),
+  is_premium: coerceBoolean(restaurant.is_premium)
+});
+
+const hasVerifiedEmail = (emailVerifiedAt?: string | null) =>
+  Boolean(emailVerifiedAt && String(emailVerifiedAt).trim());
+
+const filterPendingRestaurantsWithVerifiedEmail = (restaurants: Restaurant[]) =>
+  restaurants.filter((restaurant) => hasVerifiedEmail(restaurant.email_verified_at));
+
+const filterPendingRestaurantsWithoutVerifiedEmail = (restaurants: Restaurant[]) =>
+  restaurants.filter((restaurant) => !hasVerifiedEmail(restaurant.email_verified_at));
+
+const isRejectedRestaurant = (restaurant: Restaurant) =>
+  REJECTION_NOTE_PATTERN.test(restaurant.availability_note || '');
+
+const resolveGroupOptions = (item: MenuItem, group: OptionGroup) => {
+  const direct = (group.additions && group.additions.length ? group.additions : group.options) || [];
+  const itemAdditions = item.additions || [];
+  if (itemAdditions.length === 0) {
+    return direct;
+  }
+  if (direct.length === 0) {
+    return itemAdditions.filter((addition) => addition.option_group_id === group.id);
+  }
+  const merged = [...direct];
+  const ids = new Set(direct.map((option) => option.id));
+  itemAdditions.forEach((addition) => {
+    if (addition.option_group_id === group.id && !ids.has(addition.id)) {
+      merged.push(addition);
+      ids.add(addition.id);
+    }
+  });
+  return merged;
+};
+
+export default function AdminRestaurantManagement() {
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<ActiveTab>('all');
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  const [filteredRestaurants, setFilteredRestaurants] = useState<Restaurant[]>([]);
+  const [suspendedRestaurants, setSuspendedRestaurants] = useState<Restaurant[]>([]);
+  const [filteredSuspendedRestaurants, setFilteredSuspendedRestaurants] = useState<Restaurant[]>([]);
+  const [rejectedRestaurants, setRejectedRestaurants] = useState<Restaurant[]>([]);
+  const [filteredRejectedRestaurants, setFilteredRejectedRestaurants] = useState<Restaurant[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<Restaurant[]>([]);
+  const [filteredPendingRequests, setFilteredPendingRequests] = useState<Restaurant[]>([]);
+  const [pendingUnconfirmedEmailRequests, setPendingUnconfirmedEmailRequests] = useState<
+    Restaurant[]
+  >([]);
+  const [filteredPendingUnconfirmedEmailRequests, setFilteredPendingUnconfirmedEmailRequests] =
+    useState<Restaurant[]>([]);
+  const [warningRestaurants, setWarningRestaurants] = useState<RestaurantWarning[]>([]);
+  const [filteredWarningRestaurants, setFilteredWarningRestaurants] = useState<RestaurantWarning[]>([]);
+  const [warningSearchQuery, setWarningSearchQuery] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
+  const [updatingRestaurants, setUpdatingRestaurants] = useState<Record<string, boolean>>({});
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>('');
+  const [pendingSearchQuery, setPendingSearchQuery] = useState<string>('');
+
+  const [globalCategories, setGlobalCategories] = useState<GlobalHomeCategory[]>([]);
+  const [globalCategoryFilter, setGlobalCategoryFilter] = useState<string>('all');
+
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalCount, setTotalCount] = useState<number>(0);
+  const [pageSize, setPageSize] = useState<number>(100);
+
+  const [showDetailsModal, setShowDetailsModal] = useState<boolean>(false);
+  const [showEditModal, setShowEditModal] = useState<boolean>(false);
+  const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
+  const [selectedRestaurant, setSelectedRestaurant] = useState<Restaurant | null>(null);
+  const [detailsMenu, setDetailsMenu] = useState<RestaurantMenuDetails | null>(null);
+  const [detailsLoading, setDetailsLoading] = useState<boolean>(false);
+  const [detailsError, setDetailsError] = useState<string | null>(null);
+  const [detailsCommune, setDetailsCommune] = useState<CommuneOption | null>(null);
+  const [detailsCommuneError, setDetailsCommuneError] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<EditRestaurantForm>({
+    name: '',
+    address: '',
+    description: '',
+    is_active: true,
+    is_premium: false,
+    phone_number: '',
+    categories: [],
+    locale: 'fr',
+    email: '',
+    wilaya_code: '',
+    commune_id: '',
+    lat: '',
+    lng: '',
+    rating: 0,
+    image_url: '',
+    opening_hours: {},
+    status: 'pending'
+  });
+  const [notification, setNotification] = useState<NotificationState | null>(null);
+  const [modalError, setModalError] = useState<string>('');
+
+  const [createForm, setCreateForm] = useState<CreateRestaurantForm>({
+    email: '',
+    password: '',
+    name: '',
+    categories: [],
+    description: '',
+    address: '',
+    wilaya_code: '',
+    commune_id: '',
+    lat: '',
+    lng: '',
+    rating: 0,
+    image_url: '',
+    is_active: true,
+    is_premium: false,
+    phone_number: '',
+    locale: 'fr',
+    opening_hours: {}
+  });
+
+  const [wilayas, setWilayas] = useState<WilayaOption[]>([]);
+  const [wilayasLoading, setWilayasLoading] = useState<boolean>(false);
+  const [wilayasError, setWilayasError] = useState<string>('');
+
+  const [createCommunes, setCreateCommunes] = useState<CommuneOption[]>([]);
+  const [createCommunesLoading, setCreateCommunesLoading] = useState<boolean>(false);
+  const [createCommunesError, setCreateCommunesError] = useState<string>('');
+
+  const [editCommunes, setEditCommunes] = useState<CommuneOption[]>([]);
+  const [editCommunesLoading, setEditCommunesLoading] = useState<boolean>(false);
+  const [editCommunesError, setEditCommunesError] = useState<string>('');
+
+  const [uploadingImage, setUploadingImage] = useState<boolean>(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [editUploadingImage, setEditUploadingImage] = useState<boolean>(false);
+  const [editImagePreview, setEditImagePreview] = useState<string | null>(null);
+
+  // Validation states
+  const [createFormErrors, setCreateFormErrors] = useState<Record<string, string>>({});
+  const [editFormErrors, setEditFormErrors] = useState<Record<string, string>>({});
+
+  const patchRestaurantInState = (id: string, patch: Partial<Restaurant>) => {
+    setRestaurants((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+    setFilteredRestaurants((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+    setSuspendedRestaurants((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+    setFilteredSuspendedRestaurants((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+    setRejectedRestaurants((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+    setFilteredRejectedRestaurants((prev) => prev.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+  };
+
+  const setRestaurantUpdating = (id: string, isUpdating: boolean) => {
+    setUpdatingRestaurants((prev) => {
+      if (isUpdating) return { ...prev, [id]: true };
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+  };
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [globalCategoryFilter]);
+
+  // Load data when page or filters change
+  useEffect(() => {
+    if (activeTab !== 'all') return;
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, pageSize, activeTab, globalCategoryFilter, debouncedSearchQuery]);
+
+  useEffect(() => {
+    if (activeTab === 'all') return;
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
+
+  // Debounce search query (2 seconds)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Apply search filter
+  useEffect(() => {
+    applySearchFilter();
+  }, [restaurants, debouncedSearchQuery]);
+
+  // Apply search filter for pending requests
+  useEffect(() => {
+    applyPendingSearchFilter();
+  }, [pendingRequests, pendingSearchQuery]);
+
+  useEffect(() => {
+    applyPendingUnconfirmedSearchFilter();
+  }, [pendingUnconfirmedEmailRequests, pendingSearchQuery]);
+
+  // Apply search filter for warnings
+  useEffect(() => {
+    applyWarningSearchFilter();
+  }, [warningRestaurants, warningSearchQuery]);
+
+  useEffect(() => {
+    applySuspendedSearchFilter();
+  }, [suspendedRestaurants, debouncedSearchQuery]);
+
+  useEffect(() => {
+    applyRejectedSearchFilter();
+  }, [rejectedRestaurants, debouncedSearchQuery]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchGlobalCategories = async () => {
+      try {
+        const response = await apiClient.get('/admin/homepage/categories');
+        if (isMounted) {
+          setGlobalCategories(response.data?.data || []);
+        }
+      } catch (err) {
+        console.warn('Unable to load global categories', err);
+      }
+    };
+    fetchGlobalCategories();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const loadWilayas = async () => {
+    setWilayasLoading(true);
+    setWilayasError('');
+    try {
+      const token = getAuthToken();
+      const response = await fetch(`${API_BASE_URL}/admin/geo/wilayas`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Impossible de charger la liste des wilayas');
+      }
+
+      const result = await response.json();
+      const list = Array.isArray(result.data) ? result.data : [];
+      setWilayas(list);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Erreur de chargement des wilayas';
+      setWilayasError(message);
+      setWilayas([]);
+    } finally {
+      setWilayasLoading(false);
+    }
+  };
+
+  const loadCommunesByWilaya = async (
+    wilayaCode: string,
+    target: 'create' | 'edit'
+  ) => {
+    if (!wilayaCode) {
+      if (target === 'create') {
+        setCreateCommunes([]);
+        setCreateCommunesError('');
+      } else {
+        setEditCommunes([]);
+        setEditCommunesError('');
+      }
+      return;
+    }
+
+    const setLoading = target === 'create' ? setCreateCommunesLoading : setEditCommunesLoading;
+    const setList = target === 'create' ? setCreateCommunes : setEditCommunes;
+    const setError = target === 'create' ? setCreateCommunesError : setEditCommunesError;
+
+    setLoading(true);
+    setError('');
+    try {
+      const token = getAuthToken();
+      const response = await fetch(
+        `${API_BASE_URL}/admin/geo/communes?wilaya_code=${encodeURIComponent(wilayaCode)}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Impossible de charger la liste des communes');
+      }
+
+      const result = await response.json();
+      const list = Array.isArray(result.data) ? result.data : [];
+      setList(list);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Erreur de chargement des communes';
+      setError(message);
+      setList([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCommuneById = async (communeId: string): Promise<CommuneOption | null> => {
+    if (!communeId) return null;
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}/admin/geo/communes/${communeId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error('Impossible de charger la commune');
+    }
+
+    const result = await response.json();
+    return (result.data || null) as CommuneOption | null;
+  };
+
+  useEffect(() => {
+    loadWilayas();
+  }, []);
+
+  useEffect(() => {
+    prefetchTabLists();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const matchesRestaurantSearch = (restaurant: Restaurant, rawQuery: string) => {
+    const query = rawQuery.toLowerCase();
+    return (
+      restaurant.name?.toLowerCase().includes(query) ||
+      restaurant.address?.toLowerCase().includes(query) ||
+      restaurant.email?.toLowerCase().includes(query) ||
+      restaurant.phone_number?.toLowerCase().includes(query) ||
+      restaurant.categories?.some((cat) => cat.toLowerCase().includes(query))
+    );
+  };
+
+  const fetchRestaurantsAllPages = async (filters: RestaurantFilters, pageSize = 100) => {
+    const firstPage = await api.getRestaurants({
+      ...filters,
+      page: 1,
+      pageSize
+    });
+
+    const allRestaurants = [...firstPage.data.map(normalizeRestaurantFlags)];
+    const totalPages = firstPage.totalPages || 1;
+
+    for (let page = 2; page <= totalPages; page++) {
+      const nextPage = await api.getRestaurants({
+        ...filters,
+        page,
+        pageSize
+      });
+      allRestaurants.push(...nextPage.data.map(normalizeRestaurantFlags));
+    }
+
+    return allRestaurants;
+  };
+
+  const fetchSuspendedRestaurantsAll = async () =>
+    fetchRestaurantsAllPages({
+      status: 'suspended',
+      is_active: 'true'
+    });
+
+  const fetchInactiveRestaurantsAll = async () =>
+    fetchRestaurantsAllPages({
+      is_active: 'false'
+    });
+
+  const prefetchTabLists = async () => {
+    try {
+      const [suspendedAll, inactiveAll, warningsResult, pendingResult] = await Promise.all([
+        fetchSuspendedRestaurantsAll(),
+        fetchInactiveRestaurantsAll(),
+        api.getRestaurantWarnings(),
+        api.getPendingRequests()
+      ]);
+
+      setSuspendedRestaurants(suspendedAll);
+      setFilteredSuspendedRestaurants(suspendedAll);
+      setRejectedRestaurants(inactiveAll);
+      setFilteredRejectedRestaurants(inactiveAll);
+
+      setWarningRestaurants(warningsResult.data);
+      setFilteredWarningRestaurants(warningsResult.data);
+
+      const pendingNormalized = pendingResult.data.map(normalizeRestaurantFlags);
+      const pendingConfirmed = filterPendingRestaurantsWithVerifiedEmail(pendingNormalized);
+      const pendingUnconfirmed = filterPendingRestaurantsWithoutVerifiedEmail(pendingNormalized);
+      setPendingRequests(pendingConfirmed);
+      setFilteredPendingRequests(pendingConfirmed);
+      setPendingUnconfirmedEmailRequests(pendingUnconfirmed);
+      setFilteredPendingUnconfirmedEmailRequests(pendingUnconfirmed);
+    } catch (err) {
+      console.warn('prefetchTabLists failed:', err);
+    }
+  };
+
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      if (activeTab === 'all') {
+        const apiFilters: RestaurantFilters = {
+          q: debouncedSearchQuery.trim() || undefined,
+          page: currentPage,
+          pageSize: pageSize
+        };
+
+        if (globalCategoryFilter !== 'all') {
+          apiFilters.categories = [globalCategoryFilter];
+        }
+        apiFilters.status = 'approved';
+        apiFilters.is_active = 'true';
+
+        const result = await api.getRestaurants(apiFilters);
+
+        setRestaurants(result.data.map(normalizeRestaurantFlags));
+        const calculatedTotalPages = result.totalPages || (result.count > 0 
+          ? Math.ceil(result.count / pageSize) 
+          : 1);
+
+setTotalPages(calculatedTotalPages);
+        setTotalCount(result.count);
+      } else if (activeTab === 'suspended') {
+        const result = await fetchSuspendedRestaurantsAll();
+        setSuspendedRestaurants(result);
+        setFilteredSuspendedRestaurants(result);
+      } else if (activeTab === 'rejected') {
+        const result = await fetchInactiveRestaurantsAll();
+        setRejectedRestaurants(result);
+        setFilteredRejectedRestaurants(result);
+      } else if (activeTab === 'warnings') {
+        const result = await api.getRestaurantWarnings();
+        setWarningRestaurants(result.data);
+        setFilteredWarningRestaurants(result.data);
+      } else {
+        const result = await api.getPendingRequests();
+        const pendingNormalized = result.data.map(normalizeRestaurantFlags);
+        const pendingConfirmed = filterPendingRestaurantsWithVerifiedEmail(pendingNormalized);
+        const pendingUnconfirmed = filterPendingRestaurantsWithoutVerifiedEmail(pendingNormalized);
+        setPendingRequests(pendingConfirmed);
+        setFilteredPendingRequests(pendingConfirmed);
+        setPendingUnconfirmedEmailRequests(pendingUnconfirmed);
+        setFilteredPendingUnconfirmedEmailRequests(pendingUnconfirmed);
+      }
+    } catch (error) {
+      console.error('aOE Error:', error);
+      showNotification('Erreur lors du chargement des donnees', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    await Promise.all([loadData(), prefetchTabLists()]);
+  };
+
+  const applySearchFilter = () => {
+    let filtered = [...restaurants];
+    if (debouncedSearchQuery.trim()) {
+      filtered = filtered.filter((restaurant) =>
+        matchesRestaurantSearch(restaurant, debouncedSearchQuery)
+      );
+    }
+    setFilteredRestaurants(filtered);
+  };
+
+  const applyPendingSearchFilter = () => {
+    let filtered = [...pendingRequests];
+    if (pendingSearchQuery.trim()) {
+      filtered = filtered.filter((restaurant) =>
+        matchesRestaurantSearch(restaurant, pendingSearchQuery)
+      );
+    }
+    setFilteredPendingRequests(filtered);
+  };
+
+  const applyPendingUnconfirmedSearchFilter = () => {
+    let filtered = [...pendingUnconfirmedEmailRequests];
+    if (pendingSearchQuery.trim()) {
+      filtered = filtered.filter((restaurant) =>
+        matchesRestaurantSearch(restaurant, pendingSearchQuery)
+      );
+    }
+    setFilteredPendingUnconfirmedEmailRequests(filtered);
+  };
+
+  const applyWarningSearchFilter = () => {
+    let filtered = [...warningRestaurants];
+    if (warningSearchQuery.trim()) {
+      const query = warningSearchQuery.toLowerCase();
+      filtered = filtered.filter((entry) => {
+        const restaurant = entry.restaurant;
+        return (
+          restaurant?.name?.toLowerCase().includes(query) ||
+          restaurant?.address?.toLowerCase().includes(query) ||
+          restaurant?.email?.toLowerCase().includes(query) ||
+          restaurant?.phone_number?.toLowerCase().includes(query)
+        );
+      });
+    }
+    setFilteredWarningRestaurants(filtered);
+  };
+
+  const applySuspendedSearchFilter = () => {
+    let filtered = [...suspendedRestaurants];
+    if (debouncedSearchQuery.trim()) {
+      filtered = filtered.filter((restaurant) =>
+        matchesRestaurantSearch(restaurant, debouncedSearchQuery)
+      );
+    }
+    setFilteredSuspendedRestaurants(filtered);
+  };
+
+  const applyRejectedSearchFilter = () => {
+    let filtered = [...rejectedRestaurants];
+    if (debouncedSearchQuery.trim()) {
+      filtered = filtered.filter((restaurant) =>
+        matchesRestaurantSearch(restaurant, debouncedSearchQuery)
+      );
+    }
+    setFilteredRejectedRestaurants(filtered);
+  };
+
+  const showNotification = (message: string, type: NotificationType = 'success') => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
+
+  useEffect(() => {
+    if (showCreateModal || showEditModal) {
+      setModalError('');
+    }
+  }, [showCreateModal, showEditModal]);
+
+  // Validation functions
+  const validateEmail = (email: string | undefined): string => {
+    if (!email || !email.trim()) return 'L\'email est obligatoire';
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) return 'Format d\'email invalide';
+    return '';
+  };
+
+  const validatePassword = (password: string | undefined): string => {
+    if (!password) return 'Le mot de passe est obligatoire';
+    if (password.length < 6) return 'Le mot de passe doit contenir au moins 6 caracteres';
+    return '';
+  };
+
+  const validateName = (name: string | undefined): string => {
+    if (!name || !name.trim()) return 'Le nom est obligatoire';
+    if (name.trim().length < 2) return 'Le nom doit contenir au moins 2 caracteres';
+    return '';
+  };
+
+  const validateAddress = (address: string | undefined): string => {
+    if (!address || !address.trim()) return 'L\'adresse est obligatoire';
+    if (address.trim().length < 5) return 'L\'adresse doit contenir au moins 5 caracteres';
+    return '';
+  };
+
+  const validatePhone = (phone: string | undefined): string => {
+    if (!phone || !phone.trim()) return 'Le telephone est obligatoire';
+    const phoneRegex = /^[\+]?[0-9\s\-\(\)]{8,}$/;
+    if (!phoneRegex.test(phone.trim())) return 'Format de telephone invalide';
+    return '';
+  };
+
+  const validateCoordinate = (coord: string | undefined, type: 'latitude' | 'longitude'): string => {
+    if (!coord || !coord.trim()) return `${type === 'latitude' ? 'La latitude' : 'La longitude'} est obligatoire`;
+    const num = parseFloat(coord);
+    if (isNaN(num)) return `${type === 'latitude' ? 'La latitude' : 'La longitude'} doit etre un nombre`;
+    if (type === 'latitude' && (num < -90 || num > 90)) return 'La latitude doit etre entre -90 et 90';
+    if (type === 'longitude' && (num < -180 || num > 180)) return 'La longitude doit etre entre -180 et 180';
+    return '';
+  };
+
+  const validateCreateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    errors.email = validateEmail(createForm.email);
+    errors.password = validatePassword(createForm.password);
+    errors.name = validateName(createForm.name);
+    errors.address = validateAddress(createForm.address);
+    errors.phone_number = validatePhone(createForm.phone_number);
+    errors.lat = validateCoordinate(createForm.lat, 'latitude');
+    errors.lng = validateCoordinate(createForm.lng, 'longitude');
+    if (!createForm.locale) {
+      errors.locale = 'La langue est obligatoire';
+    }
+
+    if (createForm.categories.length === 0) {
+      errors.categories = 'Veuillez selectionner au moins une categorie';
+    }
+
+    if (!createForm.wilaya_code) {
+      errors.wilaya_code = 'Veuillez selectionner une wilaya';
+    }
+
+    if (!createForm.commune_id) {
+      errors.commune_id = 'Veuillez selectionner une commune';
+    }
+
+    // Remove empty errors
+    Object.keys(errors).forEach(key => {
+      if (!errors[key]) delete errors[key];
+    });
+
+    setCreateFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const validateEditForm = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    if (typeof editForm.email === 'string' && editForm.email.trim()) {
+      errors.email = validateEmail(editForm.email);
+    }
+    if (typeof editForm.password === 'string' && editForm.password.trim()) {
+      errors.password = validatePassword(editForm.password);
+    }
+    if (typeof editForm.name === 'string' && editForm.name.trim()) {
+      errors.name = validateName(editForm.name);
+    }
+    if (typeof editForm.address === 'string' && editForm.address.trim()) {
+      errors.address = validateAddress(editForm.address);
+    }
+    if (typeof editForm.phone_number === 'string' && editForm.phone_number.trim()) {
+      errors.phone_number = validatePhone(editForm.phone_number);
+    }
+    if (typeof editForm.lat === 'string' && editForm.lat.trim()) {
+      errors.lat = validateCoordinate(editForm.lat, 'latitude');
+    }
+    if (typeof editForm.lng === 'string' && editForm.lng.trim()) {
+      errors.lng = validateCoordinate(editForm.lng, 'longitude');
+    }
+    if (editForm.locale !== undefined && !editForm.locale) {
+      errors.locale = 'La langue est obligatoire';
+    }
+
+    if (editForm.wilaya_code && !editForm.commune_id) {
+      errors.commune_id = 'Veuillez selectionner une commune';
+    }
+
+    if (editForm.commune_id && !editForm.wilaya_code) {
+      errors.wilaya_code = 'Veuillez selectionner une wilaya';
+    }
+
+    // Remove empty errors
+    Object.keys(errors).forEach(key => {
+      if (!errors[key]) delete errors[key];
+    });
+
+    setEditFormErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  // Helper functions to handle form changes with error clearing
+  const handleCreateFormChange = <K extends keyof CreateRestaurantForm,>(
+    field: K,
+    value: CreateRestaurantForm[K]
+  ) => {
+    setCreateForm(prev => ({ ...prev, [field]: value }));
+    
+    // Clear field error when user starts typing
+    if (createFormErrors[field]) {
+      setCreateFormErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+  };
+
+  const handleCategoryToggle = (value: CategoryValue, checked: boolean) => {
+    setCreateForm(prev => {
+      const exists = prev.categories.includes(value);
+      let newCategories = prev.categories;
+      if (checked && !exists) {
+        newCategories = [...prev.categories, value];
+      } else if (!checked && exists) {
+        newCategories = prev.categories.filter((cat) => cat !== value);
+      }
+      return { ...prev, categories: newCategories };
+    });
+
+    if (checked && createFormErrors.categories) {
+      setCreateFormErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors.categories;
+        return newErrors;
+      });
+    }
+  };
+
+  const handleEditFormChange = <K extends keyof EditRestaurantForm,>(
+    field: K,
+    value: EditRestaurantForm[K]
+  ) => {
+    setEditForm(prev => ({ ...prev, [field]: value }));
+    
+    // Clear field error when user starts typing
+    if (editFormErrors[field]) {
+      setEditFormErrors(prev => {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      });
+    }
+  };
+
+  const handleCreateWilayaChange = (wilayaCode: string) => {
+    handleCreateFormChange('wilaya_code', wilayaCode);
+    handleCreateFormChange('commune_id', '');
+    void loadCommunesByWilaya(wilayaCode, 'create');
+  };
+
+  const handleEditWilayaChange = (wilayaCode: string) => {
+    handleEditFormChange('wilaya_code', wilayaCode);
+    handleEditFormChange('commune_id', '');
+    void loadCommunesByWilaya(wilayaCode, 'edit');
+  };
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages && !loading) {
+      setCurrentPage(newPage);
+      if (typeof window !== 'undefined') {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  };
+
+  const handlePageSizeChange = (newSize: number) => {
+    setPageSize(newSize);
+    setCurrentPage(1);
+  };
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showNotification('Veuillez selectionner une image valide', 'error');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      showNotification("L'image ne doit pas depasser 5 MB", 'error');
+      return;
+    }
+
+    setUploadingImage(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const token = getAuthToken();
+      const response = await fetch(`${API_BASE_URL}/api/upload`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error("Achec de l'upload de l'image");
+      }
+
+      const data = await response.json();
+
+      setCreateForm((prev) => ({ ...prev, image_url: data.url }));
+      setImagePreview(URL.createObjectURL(file));
+      showNotification('Image uploadee avec succes');
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      showNotification("Erreur lors de l'upload de l'image", 'error');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const removeImage = () => {
+    setCreateForm((prev) => ({ ...prev, image_url: '' }));
+    setImagePreview(null);
+  };
+
+  const handleEditImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      showNotification('Veuillez selectionner une image valide', 'error');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      showNotification("L'image ne doit pas depasser 5 MB", 'error');
+      return;
+    }
+
+    setEditUploadingImage(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const token = getAuthToken();
+      const response = await fetch(`${API_BASE_URL}/api/upload`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error("Achec de l'upload de l'image");
+      }
+
+      const data = await response.json();
+
+      setEditForm((prev) => ({ ...prev, image_url: data.url }));
+      setEditImagePreview(URL.createObjectURL(file));
+      showNotification('Image uploadee avec succes');
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      showNotification("Erreur lors de l'upload de l'image", 'error');
+    } finally {
+      setEditUploadingImage(false);
+    }
+  };
+
+  const removeEditImage = () => {
+    setEditForm((prev) => ({ ...prev, image_url: '' }));
+    setEditImagePreview(null);
+  };
+
+  const handleCreateRestaurant = async () => {
+    if (!validateCreateForm()) {
+      setModalError('Veuillez corriger les erreurs dans le formulaire');
+      return;
+    }
+
+    try {
+      setModalError('');
+      setCreateFormErrors({});
+      await api.createRestaurant(createForm);
+      showNotification('Restaurant cree avec succes');
+      setShowCreateModal(false);
+
+      setCreateForm({
+        email: '',
+        password: '',
+        name: '',
+        categories: [],
+        description: '',
+        phone_number: '',
+        address: '',
+        wilaya_code: '',
+        commune_id: '',
+        lat: '',
+        lng: '',
+        rating: 0,
+        image_url: '',
+        is_active: true,
+        is_premium: false,
+        locale: 'fr',
+        opening_hours: {}
+      });
+
+      setCreateCommunes([]);
+      setImagePreview(null);
+      setCurrentPage(1);
+      loadData();
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : undefined;
+      const maybeErrors = error && typeof error === 'object' ? (error as any).errors : null;
+      if (Array.isArray(maybeErrors) && maybeErrors.length > 0) {
+        const fieldErrors: Record<string, string> = {};
+        maybeErrors.forEach((err: any) => {
+          const field = err?.field || err?.path || err?.param;
+          if (field && !fieldErrors[field]) {
+            fieldErrors[field] = err.message || err.msg || 'Erreur de validation';
+          }
+        });
+        if (Object.keys(fieldErrors).length > 0) {
+          setCreateFormErrors(fieldErrors);
+        }
+      }
+      setModalError(message || 'Erreur lors de la creation');
+    }
+  };
+
+  const handleApprove = async (id: string) => {
+    if (confirm('Approuver ce restaurant ?')) {
+      try {
+        await api.approveRestaurant(id);
+        showNotification('Restaurant approuve avec succes');
+        loadData();
+      } catch {
+        showNotification("Erreur lors de l'approbation", 'error');
+      }
+    }
+  };
+
+  const handleReject = async (id: string) => {
+    const reason = prompt('Raison du rejet :');
+    if (reason) {
+      try {
+        await api.rejectRestaurant(id, reason);
+        showNotification('Restaurant rejete');
+        loadData();
+      } catch {
+        showNotification('Erreur lors du rejet', 'error');
+      }
+    }
+  };
+
+  const handleViewDetails = async (restaurant: Restaurant) => {
+    setSelectedRestaurant(restaurant);
+    setShowDetailsModal(true);
+    setDetailsLoading(true);
+    setDetailsError(null);
+    setDetailsMenu(null);
+    setDetailsCommune(null);
+    setDetailsCommuneError(null);
+    try {
+      const menuPromise = apiClient.get(`/restaurant/admin/details/${restaurant.id}`);
+      const communePromise = restaurant.commune_id
+        ? fetchCommuneById(restaurant.commune_id)
+        : Promise.resolve(null);
+      const [menuResult, communeResult] = await Promise.allSettled([menuPromise, communePromise]);
+
+      if (menuResult.status === 'fulfilled') {
+        setDetailsMenu(menuResult.value.data?.data || null);
+      } else {
+        console.error('Error fetching restaurant menu details:', menuResult.reason);
+        setDetailsError('Impossible de charger le menu du restaurant.');
+      }
+
+      if (communeResult.status === 'fulfilled') {
+        setDetailsCommune(communeResult.value);
+      } else {
+        console.warn('Erreur chargement commune:', communeResult.reason);
+        setDetailsCommuneError('Impossible de charger la commune.');
+      }
+    } catch (err) {
+      console.error('Error fetching restaurant menu details:', err);
+      setDetailsError("Impossible de charger le menu du restaurant.");
+    } finally {
+      setDetailsLoading(false);
+    }
+  };
+
+  const handleEdit = async (restaurant: Restaurant) => {
+    setSelectedRestaurant(restaurant);
+      setEditForm({
+        name: restaurant.name || '',
+        address: restaurant.address || '',
+        phone_number: restaurant.phone_number || '',
+        description: restaurant.description || '',
+        is_active: restaurant.is_active ?? true,
+        is_premium: restaurant.is_premium ?? false,
+        categories: restaurant.categories || [],
+        locale: normalizeLocale(restaurant.locale),
+        email: restaurant.email || '',
+        password: '',
+        wilaya_code: '',
+        commune_id: restaurant.commune_id || '',
+        lat: restaurant.lat || '',
+        lng: restaurant.lng || '',
+      rating:
+        typeof restaurant.rating === 'number'
+          ? restaurant.rating
+          : restaurant.rating
+          ? parseFloat(String(restaurant.rating))
+          : 0,
+      image_url: restaurant.image_url || '',
+      opening_hours: restaurant.opening_hours || {},
+      status: restaurant.status || 'pending'
+    });
+    setEditImagePreview(restaurant.image_url || null);
+    setShowEditModal(true);
+
+    if (restaurant.commune_id) {
+      try {
+        const commune = await fetchCommuneById(restaurant.commune_id);
+        const wilayaCode = commune?.wilaya_code || '';
+        setEditForm((prev) => ({
+          ...prev,
+          wilaya_code: wilayaCode,
+          commune_id: commune?.id || restaurant.commune_id || ''
+        }));
+        if (wilayaCode) {
+          await loadCommunesByWilaya(wilayaCode, 'edit');
+        } else {
+          setEditCommunes([]);
+        }
+      } catch (error: unknown) {
+        const message =
+          error instanceof Error ? error.message : 'Erreur de chargement de la commune';
+        setEditCommunesError(message);
+      }
+    } else {
+      setEditCommunes([]);
+      setEditCommunesError('');
+    }
+  };
+
+  const handleSaveEdit = async () => {
+    if (!selectedRestaurant) return;
+
+    if (!validateEditForm()) {
+      setModalError('Veuillez corriger les erreurs dans le formulaire');
+      return;
+    }
+
+    try {
+      setModalError('');
+      const payload = { ...editForm };
+      if (!payload.password || !payload.password.trim()) {
+        delete payload.password;
+      } else {
+        payload.password = payload.password.trim();
+      }
+      await api.updateRestaurant(selectedRestaurant.id, payload);
+      showNotification('Restaurant mis A  jour avec succes');
+      setShowEditModal(false);
+      loadData();
+    } catch (error: unknown) {
+      setModalError(getApiErrorMessage(error, 'Erreur lors de la mise A  jour'));
+    }
+  };
+
+  const handleDisableRestaurant = async (restaurant: Restaurant) => {
+    if (updatingRestaurants[restaurant.id]) return;
+
+    const name = restaurant.name || 'ce restaurant';
+    const confirmation = confirm(`Supprimer (desactiver) ${name} ?`);
+    if (!confirmation) return;
+
+    const previousIsActive = coerceBoolean(restaurant.is_active);
+    patchRestaurantInState(restaurant.id, { is_active: false });
+    setRestaurantUpdating(restaurant.id, true);
+
+    try {
+      await api.updateRestaurant(restaurant.id, { is_active: false });
+      showNotification('Restaurant desactive avec succes');
+
+      if (activeTab === 'all' && filteredRestaurants.length === 1 && currentPage > 1) {
+        setCurrentPage((prev) => prev - 1);
+      } else {
+        await loadData();
+      }
+
+      prefetchTabLists();
+    } catch {
+      patchRestaurantInState(restaurant.id, { is_active: previousIsActive });
+      showNotification('Erreur lors de la desactivation', 'error');
+    } finally {
+      setRestaurantUpdating(restaurant.id, false);
+    }
+  };
+
+  const handlePermanentDelete = async (restaurant: Restaurant) => {
+    const name = restaurant.name || 'ce restaurant';
+    const confirmation = prompt(
+      `Suppression DEFINITIVE (compte + restaurant) de ${name}.\nTapez SUPPRIMER pour confirmer :`
+    );
+
+    if (confirmation !== 'SUPPRIMER') return;
+
+    try {
+      await api.permanentDeleteRestaurant(restaurant.id);
+      showNotification('Restaurant supprime definitivement');
+
+      if (activeTab === 'rejected' && filteredRejectedRestaurants.length === 1 && currentPage > 1) {
+        setCurrentPage((prev) => prev - 1);
+      } else {
+        loadData();
+      }
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error && error.message ? error.message : 'Erreur lors de la suppression definitive';
+      showNotification(message, 'error');
+    }
+  };
+
+  const handleTogglePremium = async (restaurant: Restaurant) => {
+    if (updatingRestaurants[restaurant.id]) return;
+    const currentIsPremium = coerceBoolean(restaurant.is_premium);
+    const nextIsPremium = !currentIsPremium;
+    patchRestaurantInState(restaurant.id, { is_premium: nextIsPremium });
+    setRestaurantUpdating(restaurant.id, true);
+    try {
+      await api.updateRestaurant(restaurant.id, { is_premium: nextIsPremium });
+    } catch {
+      patchRestaurantInState(restaurant.id, { is_premium: currentIsPremium });
+      showNotification('Erreur lors de la mise A  jour', 'error');
+    } finally {
+      setRestaurantUpdating(restaurant.id, false);
+    }
+  };
+
+  const handleSuspendRestaurant = async (restaurant: Restaurant) => {
+    if (updatingRestaurants[restaurant.id]) return;
+    if (!coerceBoolean(restaurant.is_active)) {
+      showNotification('Impossible de suspendre un restaurant inactif', 'error');
+      return;
+    }
+
+    const name = restaurant.name || 'ce restaurant';
+    const confirmation = confirm(`Suspendre ${name} ?`);
+    if (!confirmation) return;
+
+    const previousStatus = restaurant.status;
+    patchRestaurantInState(restaurant.id, { status: 'suspended' as RestaurantStatus });
+    setRestaurantUpdating(restaurant.id, true);
+
+    try {
+      await api.updateRestaurant(restaurant.id, { status: 'suspended' as RestaurantStatus });
+      showNotification('Restaurant suspendu avec succes');
+
+      if (activeTab === 'all' && filteredRestaurants.length === 1 && currentPage > 1) {
+        setCurrentPage((prev) => prev - 1);
+      } else {
+        await loadData();
+      }
+
+      prefetchTabLists();
+    } catch {
+      patchRestaurantInState(restaurant.id, { status: previousStatus });
+      showNotification('Erreur lors de la suspension', 'error');
+    } finally {
+      setRestaurantUpdating(restaurant.id, false);
+    }
+  };
+
+  const handleReactivateRestaurant = async (restaurant: Restaurant) => {
+    if (updatingRestaurants[restaurant.id]) return;
+
+    const isInactive = !coerceBoolean(restaurant.is_active);
+    const isSuspended = restaurant.status === 'suspended';
+    if (!isInactive && !isSuspended) return;
+
+    const name = restaurant.name || 'ce restaurant';
+    const confirmation = confirm(`Reactiver ${name} ?`);
+    if (!confirmation) return;
+
+    const previousSnapshot = {
+      status: restaurant.status,
+      is_active: coerceBoolean(restaurant.is_active),
+      availability_note: restaurant.availability_note
+    };
+
+    const patch: Partial<Restaurant> = {
+      ...(isInactive ? { is_active: true } : {}),
+      ...(isSuspended ? { status: 'approved' as RestaurantStatus } : {}),
+      ...(isRejectedRestaurant(restaurant) ? { availability_note: null } : {})
+    };
+
+    patchRestaurantInState(restaurant.id, patch);
+    setRestaurantUpdating(restaurant.id, true);
+
+    try {
+      await api.updateRestaurant(restaurant.id, patch);
+      showNotification('Restaurant reactive avec succes');
+      await loadData();
+      prefetchTabLists();
+    } catch {
+      patchRestaurantInState(restaurant.id, previousSnapshot);
+      showNotification('Erreur lors de la reactivation', 'error');
+    } finally {
+      setRestaurantUpdating(restaurant.id, false);
+    }
+  };
+
+  const resetFilters = () => {
+    setSearchQuery('');
+    setGlobalCategoryFilter('all');
+    setCurrentPage(1);
+  };
+
+  const StatusBadge: React.FC<{ status?: RestaurantStatus }> = ({ status }) => {
+    const statusConfig =
+      STATUS_OPTIONS.find((s) => s.value === status) || ({
+        color: 'gray',
+        label: status || 'Inconnu'
+      } as StatusOption);
+
+    const colorClasses: Record<StatusColor, string> = {
+      yellow: 'bg-yellow-100 text-yellow-800',
+      green: 'bg-green-100 text-green-800',
+      red: 'bg-red-100 text-red-800',
+      gray: 'bg-gray-100 text-gray-800'
+    };
+
+    return (
+      <span
+        className={`px-2 py-1 rounded-full text-xs font-medium ${
+          colorClasses[statusConfig.color]
+        }`}
+      >
+        {statusConfig.label}
+      </span>
+    );
+  };
+
+  const Pagination: React.FC = () => {
+    const getPageNumbers = () => {
+      const pages: number[] = [];
+      const maxVisiblePages = 5;
+
+      let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+      const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+      if (endPage - startPage < maxVisiblePages - 1) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i);
+      }
+
+      return pages;
+    };
+
+    const pageNumbers = getPageNumbers();
+
+    return (
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 bg-white border border-gray-200 rounded-lg mt-6">
+        <div className="flex flex-col sm:flex-row items-center gap-4">
+          <div className="text-sm text-gray-700">
+            Affichage de{' '}
+            <span className="font-medium">
+              {totalCount === 0 ? 0 : (currentPage - 1) * pageSize + 1}
+            </span>{' '}
+            A {' '}
+            <span className="font-medium">
+              {Math.min(currentPage * pageSize, totalCount)}
+            </span>{' '}
+            sur <span className="font-medium">{totalCount}</span> resultats
+          </div>
+
+          <select
+            value={pageSize}
+            onChange={(e) => handlePageSizeChange(Number(e.target.value))}
+            className="px-3 py-1 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-green-500 focus:outline-none"
+          >
+            <option value={5}>5 par page</option>
+            <option value={10}>10 par page</option>
+            <option value={20}>20 par page</option>
+            <option value={50}>50 par page</option>
+            <option value={100}>100 par page</option>
+          </select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1 || loading}
+            className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 transition-colors"
+          >
+            <ChevronLeft className="w-4 h-4" />
+            <span className="hidden sm:inline">Precedent</span>
+          </button>
+
+          {pageNumbers[0] > 1 && (
+            <>
+              <button
+                onClick={() => handlePageChange(1)}
+                disabled={loading}
+                className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                1
+              </button>
+              {pageNumbers[0] > 2 && (
+                <span className="px-2 text-gray-500">...</span>
+              )}
+            </>
+          )}
+
+          {pageNumbers.map((page) => (
+            <button
+              key={page}
+              onClick={() => handlePageChange(page)}
+              disabled={loading}
+              className={`px-3 py-2 border rounded-lg transition-colors ${
+                currentPage === page
+                  ? 'bg-green-600 text-white border-green-600 font-medium'
+                  : 'border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+
+          {pageNumbers[pageNumbers.length - 1] < totalPages && (
+            <>
+              {pageNumbers[pageNumbers.length - 1] < totalPages - 1 && (
+                <span className="px-2 text-gray-500">...</span>
+              )}
+              <button
+                onClick={() => handlePageChange(totalPages)}
+                disabled={loading}
+                className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                {totalPages}
+              </button>
+            </>
+          )}
+
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages || loading}
+            className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1 transition-colors"
+          >
+            <span className="hidden sm:inline">Suivant</span>
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // Composant pour afficher une image avec placeholder en cas d'erreur
+  const ImageWithPlaceholder: React.FC<{
+    src: string;
+    alt: string;
+    className?: string;
+    placeholderClassName?: string;
+    iconSize?: string;
+  }> = ({ src, alt, className = '', placeholderClassName = '', iconSize = 'w-10 h-10' }) => {
+    const [imageError, setImageError] = React.useState(false);
+
+    if (imageError) {
+      return (
+        <div className={`${placeholderClassName} rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center`}>
+          <UtensilsCrossed className={`${iconSize} text-gray-400 dark:text-gray-500`} />
+        </div>
+      );
+    }
+
+    return (
+      <img
+        src={src}
+        alt={alt}
+        className={className}
+        onError={() => setImageError(true)}
+      />
+    );
+  };
+
+  const RestaurantListItem: React.FC<{ restaurant: Restaurant }> = ({ restaurant }) => (
+    <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow border border-gray-100 p-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        {/* Image */}
+        <div className="relative flex-shrink-0">
+          {restaurant.image_url ? (
+            <ImageWithPlaceholder
+              src={restaurant.image_url}
+              alt={restaurant.name}
+              className="w-20 h-20 rounded-lg object-cover"
+              placeholderClassName="w-20 h-20"
+              iconSize="w-10 h-10"
+            />
+          ) : (
+            <div className="w-20 h-20 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+              <UtensilsCrossed className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+            </div>
+          )}
+          {restaurant.is_premium && (
+            <div className="absolute -top-1 -right-1 bg-yellow-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5">
+              <Star className="w-2.5 h-2.5 fill-white" />
+            </div>
+          )}
+        </div>
+
+        {/* Info principale */}
+        <div className="flex-1 min-w-0 w-full">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 mb-1">
+                <h3 className="font-semibold text-gray-900 truncate text-lg">
+                  {restaurant.name}
+                </h3>
+                <StatusBadge status={restaurant.status} />
+                {!restaurant.is_active && (
+                  <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-50 text-red-700">
+                    Inactif
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center sm:gap-4 gap-2 text-sm text-gray-600 mb-2">
+                <div className="flex items-center gap-1">
+                  <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                  <span className="font-medium">
+                    {restaurant.rating
+                      ? parseFloat(String(restaurant.rating)).toFixed(1)
+                      : '0.0'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <MapPin className="w-4 h-4 text-gray-400" />
+                  <span className="truncate max-w-xs">
+                    {restaurant.address || 'Adresse non renseignee'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Phone className="w-4 h-4 text-gray-400" />
+                  <span>
+                    {restaurant.phone_number || 'N/A'}
+                  </span>
+                </div>
+              </div>
+              {restaurant.categories && restaurant.categories.length > 0 && (
+                <div className="flex flex-wrap gap-1.5 mb-2">
+                  {restaurant.categories.map((cat, idx) => (
+                    <span
+                      key={`${cat}-${idx}`}
+                      className="px-2 py-0.5 bg-blue-50 text-blue-700 text-xs font-medium rounded-md border border-blue-100"
+                    >
+                      {cat}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Toggles et actions */}
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
+              {/* Toggles */}
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="bg-yellow-100 p-1.5 rounded-lg">
+                    <Star className={`w-4 h-4 ${restaurant.is_premium ? 'text-yellow-600 fill-yellow-600' : 'text-gray-400'}`} />
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={restaurant.is_premium}
+                      disabled={Boolean(updatingRestaurants[restaurant.id])}
+                      onChange={() => handleTogglePremium(restaurant)}
+                      className="sr-only"
+                    />
+                    <div className={`w-10 h-5 rounded-full transition-colors duration-200 ${
+                      restaurant.is_premium ? 'bg-yellow-500' : 'bg-gray-300'
+                    }`}>
+                      <div className={`w-4 h-4 bg-white rounded-full shadow-sm transform transition-transform duration-200 mt-0.5 ${
+                        restaurant.is_premium ? 'translate-x-5' : 'translate-x-0.5'
+                      }`} />
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+                {/* Boutons d'action */}
+                <div className="flex flex-wrap items-center gap-2">
+                {(restaurant.status === 'suspended' || !restaurant.is_active) && (
+                  <button
+                    onClick={() => handleReactivateRestaurant(restaurant)}
+                    disabled={Boolean(updatingRestaurants[restaurant.id])}
+                    className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold bg-green-50 text-green-700 hover:bg-green-100 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                    title="Reactiver"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    Reactiver
+                  </button>
+                )}
+
+                {activeTab !== 'rejected' && restaurant.is_active && restaurant.status !== 'suspended' && (
+                  <button
+                    onClick={() => handleSuspendRestaurant(restaurant)}
+                    disabled={Boolean(updatingRestaurants[restaurant.id])}
+                    className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                    title="Suspendre"
+                  >
+                    <PauseCircle className="w-4 h-4" />
+                    Suspendre
+                  </button>
+                )}
+
+                {restaurant.is_active && (
+                  <button
+                    onClick={() => handleDisableRestaurant(restaurant)}
+                    disabled={Boolean(updatingRestaurants[restaurant.id])}
+                    className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold bg-red-50 text-red-700 hover:bg-red-100 transition-colors disabled:cursor-not-allowed disabled:opacity-60"
+                    title="Supprimer"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Supprimer
+                  </button>
+                )}
+                <button
+                  onClick={() => router.push(`/admin/restaurants/${restaurant.id}`)}
+                  className="text-emerald-600 hover:text-emerald-900 p-1.5 rounded-lg hover:bg-emerald-50 transition-colors"
+                  title="Voir le menu"
+                >
+                  <UtensilsCrossed className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => handleViewDetails(restaurant)}
+                  className="text-gray-600 hover:text-gray-900 p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                  title="Voir les details"
+                >
+                  <Eye className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => handleEdit(restaurant)}
+                  className="text-blue-600 hover:text-blue-900 p-1.5 rounded-lg hover:bg-blue-50 transition-colors"
+                  title="Modifier"
+                >
+                  <Edit className="w-4 h-4" />
+                </button>
+                {activeTab === 'rejected' ? (
+                  <button
+                    onClick={() => handlePermanentDelete(restaurant)}
+                    className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold bg-red-50 text-red-700 hover:bg-red-100 transition-colors"
+                    title="Suppression definitive"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Suppression definitive
+                  </button>
+                ) : null}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const PendingRequestCard: React.FC<{ request: Restaurant; emailConfirmed: boolean }> = ({
+    request,
+    emailConfirmed
+  }) => (
+    <div className="bg-white rounded-lg shadow p-4">
+      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-gray-900 truncate">{request.name}</h3>
+          <p className="text-sm text-gray-500 mt-1 line-clamp-2">
+            {request.categories?.join(', ')}
+          </p>
+        </div>
+        <span className="text-xs text-gray-500 whitespace-nowrap flex-shrink-0">
+          {request.created_at
+            ? new Date(request.created_at).toLocaleDateString('fr-FR')
+            : ''}
+        </span>
+      </div>
+
+      {request.image_url ? (
+        <ImageWithPlaceholder
+          src={request.image_url}
+          alt={request.name}
+          className="w-full h-32 sm:h-40 object-cover rounded-lg mb-3"
+          placeholderClassName="w-full h-32 sm:h-40 mb-3"
+          iconSize="w-16 h-16"
+        />
+      ) : (
+        <div className="w-full h-32 sm:h-40 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center mb-3">
+          <UtensilsCrossed className="w-16 h-16 text-gray-400 dark:text-gray-500" />
+        </div>
+      )}
+
+      <div className="space-y-2 text-sm text-gray-600 mb-4">
+        <div className="flex items-start gap-2">
+          <MapPin className="w-4 h-4 text-gray-400 flex-shrink-0 mt-0.5" />
+          <span className="break-words">{request.address || 'Adresse non renseignee'}</span>
+        </div>
+        {request.description && (
+          <p className="text-sm text-gray-600 line-clamp-2">
+            {request.description}
+          </p>
+        )}
+      </div>
+
+      <div className="flex flex-col sm:flex-row gap-2">
+        <button
+          onClick={() => handleViewDetails(request)}
+          className="flex-1 px-3 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 flex items-center justify-center gap-2 text-sm"
+        >
+          <Eye className="w-4 h-4" />
+          <span className="whitespace-nowrap">Details</span>
+        </button>
+        {emailConfirmed ? (
+          <button
+            onClick={() => handleApprove(request.id)}
+            className="flex-1 px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center gap-2 text-sm"
+          >
+            <CheckCircle className="w-4 h-4" />
+            <span className="whitespace-nowrap">Accepter</span>
+          </button>
+        ) : null}
+        <button
+          onClick={() => handleReject(request.id)}
+          className="flex-1 px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center justify-center gap-2 text-sm"
+        >
+          <XCircle className="w-4 h-4" />
+          <span className="whitespace-nowrap">Rejeter</span>
+        </button>
+      </div>
+    </div>
+  );
+
+  const isRestaurantListTab =
+    activeTab === 'all' || activeTab === 'suspended' || activeTab === 'rejected';
+  const currentRestaurantRows =
+    activeTab === 'suspended'
+      ? filteredSuspendedRestaurants
+      : activeTab === 'rejected'
+        ? filteredRejectedRestaurants
+        : filteredRestaurants;
+  const restaurantSearchPlaceholder =
+    activeTab === 'rejected'
+      ? 'Rechercher un restaurant inactif...'
+      : activeTab === 'suspended'
+        ? 'Rechercher un restaurant suspendu...'
+        : 'Rechercher un restaurant...';
+  const restaurantEmptyMessage =
+    activeTab === 'rejected'
+      ? debouncedSearchQuery.trim()
+        ? 'Aucun restaurant inactif ne correspond a cette recherche'
+        : 'Aucun restaurant inactif'
+      : activeTab === 'suspended'
+        ? debouncedSearchQuery.trim()
+          ? 'Aucun restaurant suspendu ne correspond a cette recherche'
+          : 'Aucun restaurant suspendu'
+        : 'Aucun restaurant trouve';
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Notification */}
+      {notification && (
+        <div
+          className={`fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg z-50 flex items-center gap-2 ${
+            notification.type === 'error' ? 'bg-red-500 dark:bg-red-600' : 'bg-green-500 dark:bg-green-600'
+          } text-white`}
+        >
+          {notification.type === 'error' ? (
+            <AlertCircle className="w-5 h-5" />
+          ) : (
+            <CheckCircle className="w-5 h-5" />
+          )}
+          {notification.message}
+        </div>
+      )}
+
+      {/* Header */}
+      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <div className="max-w-none mx-auto px-4 py-4">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-4">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+              Gestion des Restaurants
+            </h1>
+            <div className="flex flex-wrap gap-2 md:gap-3 justify-end">
+              <button
+                onClick={() => setShowCreateModal(true)}
+                className="w-full sm:w-auto px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center gap-2"
+              >
+                <Plus className="w-5 h-5" />
+                Nouveau Restaurant
+              </button>
+              <button
+                onClick={handleRefresh}
+                className="w-full sm:w-auto px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 flex items-center justify-center gap-2"
+              >
+                <RefreshCw className="w-5 h-5" />
+                Actualiser
+              </button>
+            </div>
+          </div>
+
+          <div className="flex gap-4 border-b overflow-x-auto">
+            <button
+              onClick={() => setActiveTab('requests')}
+              className={`pb-3 px-1 font-medium transition-colors relative ${
+                activeTab === 'requests'
+                  ? 'border-green-600 text-green-600 border-b-2'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Demandes en attente
+              {pendingRequests.length > 0 && (
+                <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full">
+                  {pendingRequests.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('email-unconfirmed')}
+              className={`pb-3 px-1 font-medium transition-colors relative ${
+                activeTab === 'email-unconfirmed'
+                  ? 'border-green-600 text-green-600 border-b-2'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Emails non confirmes
+              {pendingUnconfirmedEmailRequests.length > 0 && (
+                <span className="ml-2 px-2 py-0.5 bg-amber-500 text-white text-xs rounded-full">
+                  {pendingUnconfirmedEmailRequests.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('all')}
+              className={`pb-3 px-1 font-medium transition-colors ${
+                activeTab === 'all'
+                  ? 'border-green-600 text-green-600 border-b-2'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Tous les restaurants ({totalCount})
+            </button>
+            <button
+              onClick={() => setActiveTab('warnings')}
+              className={`pb-3 px-1 font-medium transition-colors relative ${
+                activeTab === 'warnings'
+                  ? 'border-green-600 text-green-600 border-b-2'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Avertissements
+              {warningRestaurants.length > 0 && (
+                <span className="ml-2 px-2 py-0.5 bg-amber-500 text-white text-xs rounded-full">
+                  {warningRestaurants.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('suspended')}
+              className={`pb-3 px-1 font-medium transition-colors relative ${
+                activeTab === 'suspended'
+                  ? 'border-green-600 text-green-600 border-b-2'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Suspendus
+              {suspendedRestaurants.length > 0 && (
+                <span className="ml-2 px-2 py-0.5 bg-amber-500 text-white text-xs rounded-full">
+                  {suspendedRestaurants.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setActiveTab('rejected')}
+              className={`pb-3 px-1 font-medium transition-colors relative ${
+                activeTab === 'rejected'
+                  ? 'border-green-600 text-green-600 border-b-2'
+                  : 'border-transparent text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Rejetes
+              {rejectedRestaurants.length > 0 && (
+                <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full">
+                  {rejectedRestaurants.length}
+                </span>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters Section */}
+      {activeTab === 'all' && (
+        <div className="bg-white border-b">
+          <div className="max-w-none mx-auto px-4 py-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Rechercher un restaurant..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+              </div>
+
+              {/* Category Filter */}
+              <select
+                value={globalCategoryFilter}
+                onChange={(e) => setGlobalCategoryFilter(e.target.value)}
+                className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+              >
+                <option value="all">Toutes les categories</option>
+                {globalCategories.map((cat) => (
+                  <option key={cat.id} value={cat.slug}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Reset Button */}
+            <div className="mt-4">
+              <button
+                onClick={resetFilters}
+                className="px-4 py-2 text-gray-600 hover:text-gray-900 flex items-center gap-2"
+              >
+                <X className="w-4 h-4" />
+                Reinitialiser tous les filtres
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {(activeTab === 'suspended' || activeTab === 'rejected') && (
+        <div className="bg-white border-b">
+          <div className="max-w-none mx-auto px-4 py-4">
+            <div className="relative max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder={restaurantSearchPlaceholder}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'warnings' && (
+        <div className="bg-white border-b">
+          <div className="max-w-none mx-auto px-4 py-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">Restaurants avertis</h2>
+                <p className="text-sm text-gray-600">
+                  Restaurants notifies pour retards ou absence de reponse.
+                </p>
+              </div>
+              <div className="relative w-full sm:w-80">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Rechercher un restaurant..."
+                  value={warningSearchQuery}
+                  onChange={(e) => setWarningSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Content */}
+      <div className="max-w-none mx-auto px-4 py-6">
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-gray-200 border-t-green-600"></div>
+            <p className="mt-4 text-gray-600">Chargement...</p>
+          </div>
+        ) : isRestaurantListTab ? (
+          <>
+            <div className="space-y-3">
+              {currentRestaurantRows.map((restaurant) => (
+                <RestaurantListItem key={restaurant.id} restaurant={restaurant} />
+              ))}
+            </div>
+            {currentRestaurantRows.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-500">{restaurantEmptyMessage}</p>
+              </div>
+            )}
+            {activeTab === 'all' && <Pagination />}
+          </>
+        ) : activeTab === 'warnings' ? (
+          <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Restaurant
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Contact
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Statut
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Avertissements
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Derniere alerte
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredWarningRestaurants.map((entry) => {
+                    const restaurant = entry.restaurant;
+                    return (
+                      <tr key={entry.restaurant_id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-semibold text-gray-900">
+                            {restaurant?.name || 'Restaurant inconnu'}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {restaurant?.address || 'Adresse non renseignee'}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm text-gray-700">
+                            {restaurant?.phone_number || 'Telephone non renseigne'}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {restaurant?.email || 'Email non renseigne'}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <StatusBadge status={restaurant?.status} />
+                          <div className="text-xs text-gray-500 mt-1">
+                            {restaurant?.is_active ? 'Actif' : 'Inactif'}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="text-sm font-semibold text-amber-700">
+                            {entry.warnings_total}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            Non resolues: {entry.warnings_unresolved || 0}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-gray-700">
+                          {formatDateTime(entry.last_warning_at)}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+            {filteredWarningRestaurants.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-gray-500">
+                  {warningSearchQuery.trim()
+                    ? 'Aucun restaurant trouve pour cette recherche'
+                    : 'Aucun restaurant n\'a ete averti'}
+                </p>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div>
+            {activeTab !== 'email-unconfirmed' && (
+              <>
+                <h2 className="text-lg font-semibold text-gray-900 mb-2">
+                  Demandes en attente
+                </h2>
+                <p className="text-gray-600 mb-4">
+                  Consultez et gerez les demandes d&apos;inscription des nouveaux restaurants.
+                </p>
+              </>
+            )}
+            
+            {/* Search bar for pending requests */}
+            <div className="mb-6">
+              <div className="relative w-full max-w-md">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Rechercher par nom, adresse, email, telephone..."
+                  value={pendingSearchQuery}
+                  onChange={(e) => setPendingSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
+                />
+              </div>
+            </div>
+
+            {(activeTab === 'email-unconfirmed'
+              ? filteredPendingUnconfirmedEmailRequests
+              : filteredPendingRequests
+            ).length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {(activeTab === 'email-unconfirmed'
+                  ? filteredPendingUnconfirmedEmailRequests
+                  : filteredPendingRequests
+                ).map((request) => (
+                  <PendingRequestCard
+                    key={request.id}
+                    request={request}
+                    emailConfirmed={hasVerifiedEmail(request.email_verified_at)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12 bg-white rounded-lg">
+                <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-3" />
+                <p className="text-gray-500">
+                  {pendingSearchQuery.trim()
+                    ? 'Aucune demande trouvee pour cette recherche'
+                    : activeTab === 'email-unconfirmed'
+                      ? 'Aucun restaurant en attente de confirmation email'
+                      : 'Aucune demande en attente'}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Details Modal */}
+      {showDetailsModal && selectedRestaurant && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-start justify-between mb-4">
+                <h2 className="text-2xl font-bold">{selectedRestaurant.name}</h2>
+                <button
+                  onClick={() => setShowDetailsModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              {selectedRestaurant.image_url ? (
+                <ImageWithPlaceholder
+                  src={selectedRestaurant.image_url}
+                  alt={selectedRestaurant.name}
+                  className="w-full h-48 object-cover rounded-lg mb-4"
+                  placeholderClassName="w-full h-48 mb-4"
+                  iconSize="w-20 h-20"
+                />
+              ) : (
+                <div className="w-full h-48 rounded-lg bg-gray-200 dark:bg-gray-700 flex items-center justify-center mb-4">
+                  <UtensilsCrossed className="w-20 h-20 text-gray-400 dark:text-gray-500" />
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Statut
+                  </label>
+                  <div className="mt-1">
+                    <StatusBadge status={selectedRestaurant.status} />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Categories globales
+                  </label>
+                  <div className="flex flex-wrap gap-2 mt-1">
+                    {selectedRestaurant.categories?.map((cat, idx) => (
+                      <span
+                        key={`${cat}-${idx}`}
+                        className="px-2 py-1 bg-blue-50 text-blue-700 text-sm rounded"
+                      >
+                        {globalCategories.find((entry) => entry.slug === cat)?.name ||
+                          CATEGORY_OPTIONS.find((entry) => entry.value === cat)?.label ||
+                          cat}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {selectedRestaurant.description && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">
+                      Description
+                    </label>
+                    <p className="text-gray-900 mt-1">
+                      {selectedRestaurant.description}
+                    </p>
+                  </div>
+                )}
+
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">
+                      Adresse
+                    </label>
+                    <p className="text-gray-900 mt-1">
+                      {selectedRestaurant.address || 'Non renseignee'}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Wilaya
+                      </label>
+                      <p className="text-gray-900 mt-1">
+                        {detailsCommune
+                          ? `${detailsCommune.wilaya_code}${detailsCommune.wilaya_name ? ` - ${detailsCommune.wilaya_name}` : ''}`
+                          : 'Non renseignee'}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-700">
+                        Commune
+                      </label>
+                      <p className="text-gray-900 mt-1">
+                        {detailsCommune?.name || 'Non renseignee'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {detailsCommuneError && (
+                    <p className="text-xs text-red-500">{detailsCommuneError}</p>
+                  )}
+  
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Numero de telephone
+                  </label>
+                <p className="text-gray-900 mt-1">
+                  {selectedRestaurant.phone_number || 'Non renseigne'}
+                </p>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700">
+                  Email
+                </label>
+                <p className="text-gray-900 mt-1">
+                  {selectedRestaurant.email || 'Non renseigne'}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Latitude
+                  </label>
+                  <p className="text-gray-900 mt-1">
+                    {selectedRestaurant.lat || 'Non renseignee'}
+                  </p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Longitude
+                  </label>
+                  <p className="text-gray-900 mt-1">
+                    {selectedRestaurant.lng || 'Non renseignee'}
+                  </p>
+                </div>
+              </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">
+                      Note
+                    </label>
+                    <div className="flex items-center mt-1">
+                      <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+                      <span className="ml-1 text-gray-900">
+                        {selectedRestaurant.rating
+                          ? parseFloat(
+                              String(selectedRestaurant.rating)
+                            ).toFixed(1)
+                          : '0.0'}
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">
+                      Type
+                    </label>
+                    <p className="text-gray-900 mt-1">
+                      {selectedRestaurant.is_premium ? 'Premium' : 'Standard'}
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Atat
+                  </label>
+                  <p className="text-gray-900 mt-1">
+                    {selectedRestaurant.is_active ? 'Actif' : 'Inactif'}
+                  </p>
+                </div>
+
+                {selectedRestaurant.opening_hours && Object.keys(selectedRestaurant.opening_hours).length > 0 && (
+                  <div>
+                    <label className="text-sm font-medium text-gray-700">
+                      Horaires d&apos;ouverture
+                    </label>
+                    <div className="mt-2 space-y-1">
+                      {DAYS_OF_WEEK.map((day) => {
+                        const hours = selectedRestaurant.opening_hours?.[day.value];
+                        if (!hours || hours.open === undefined || hours.close === undefined) return null;
+                        const formatTime = (time: number) => {
+                          const hourValue = Math.floor(time / 100);
+                          const minutes = time % 100;
+                          return `${hourValue.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                        };
+                        return (
+                          <div key={day.value} className="flex items-center gap-2 text-sm">
+                            <span className="w-24 font-medium text-gray-700">{day.label}:</span>
+                            <span className="text-gray-900">
+                              {formatTime(hours.open)} - {formatTime(hours.close)}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                <div>
+                  <label className="text-sm font-medium text-gray-700">
+                    Menu et options
+                  </label>
+                  {detailsLoading ? (
+                    <p className="mt-2 text-sm text-gray-500">Chargement du menu...</p>
+                  ) : detailsError ? (
+                    <p className="mt-2 text-sm text-red-600">{detailsError}</p>
+                  ) : detailsMenu?.categories && detailsMenu.categories.length > 0 ? (
+                    <div className="mt-2 space-y-2">
+                      {detailsMenu.categories.map((category) => (
+                        <details
+                          key={category.id}
+                          className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2"
+                        >
+                          <summary className="cursor-pointer text-sm font-semibold text-gray-700">
+                            {category.nom} ({category.items?.length ?? 0})
+                          </summary>
+                          <div className="mt-3 space-y-3">
+                            {category.items && category.items.length > 0 ? (
+                              category.items.map((item) => {
+                                const ungroupedAdditions = (item.additions || []).filter(
+                                  (addition) => !addition.option_group_id
+                                );
+                                return (
+                                  <div
+                                    key={item.id}
+                                    className="rounded-lg border border-gray-200 bg-white p-3 text-sm"
+                                  >
+                                    <div className="flex flex-wrap items-start justify-between gap-2">
+                                      <div>
+                                        <div className="font-semibold text-gray-900">
+                                          {item.nom}
+                                        </div>
+                                        {item.description ? (
+                                          <div className="mt-1 text-xs text-gray-500">
+                                            {item.description}
+                                          </div>
+                                        ) : null}
+                                        <div className="mt-1 flex flex-wrap gap-3 text-xs text-gray-600">
+                                          <span>
+                                            Prix: {formatDA(item.display_price ?? item.prix)}
+                                          </span>
+                                          {item.temps_preparation != null ? (
+                                            <span>Preparation: {item.temps_preparation} min</span>
+                                          ) : null}
+                                        </div>
+                                      </div>
+                                      <span
+                                        className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                                          item.is_available
+                                            ? 'bg-emerald-100 text-emerald-700'
+                                            : 'bg-gray-100 text-gray-600'
+                                        }`}
+                                      >
+                                        {item.is_available ? 'Disponible' : 'Indisponible'}
+                                      </span>
+                                    </div>
+
+                                    <div className="mt-3">
+                                      <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                        Groupes d&apos;options ({item.option_groups?.length ?? 0})
+                                      </div>
+                                      {item.option_groups && item.option_groups.length > 0 ? (
+                                        <div className="mt-2 space-y-2">
+                                          {item.option_groups.map((group) => {
+                                            const groupOptions = resolveGroupOptions(item, group);
+                                            return (
+                                              <div
+                                                key={group.id}
+                                                className="rounded-lg border border-dashed border-gray-200 bg-white/60 p-2 text-xs"
+                                              >
+                                                <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-gray-900">
+                                                  <span>{group.nom}</span>
+                                                  <span
+                                                    className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                                                      group.is_required
+                                                        ? 'bg-rose-100 text-rose-700'
+                                                        : 'bg-slate-100 text-slate-600'
+                                                    }`}
+                                                  >
+                                                    {group.is_required ? 'Obligatoire' : 'Optionnel'}
+                                                  </span>
+                                                  <span className="text-xs text-gray-500">
+                                                    {groupOptions.length} option(s)
+                                                  </span>
+                                                </div>
+                                                {group.description ? (
+                                                  <div className="mt-1 text-xs text-gray-500">
+                                                    {group.description}
+                                                  </div>
+                                                ) : null}
+                                                {groupOptions.length > 0 ? (
+                                                  <div className="mt-2 flex flex-wrap gap-2 text-xs text-gray-600">
+                                                    {groupOptions.map((option) => (
+                                                      <span
+                                                        key={option.id}
+                                                        className="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5"
+                                                      >
+                                                        {option.nom} ({formatDA(option.prix)})
+                                                      </span>
+                                                    ))}
+                                                  </div>
+                                                ) : (
+                                                  <div className="mt-2 text-xs italic text-gray-500">
+                                                    Aucune option dans ce groupe.
+                                                  </div>
+                                                )}
+                                              </div>
+                                            );
+                                          })}
+                                        </div>
+                                      ) : (
+                                        <div className="mt-2 text-xs italic text-gray-500">
+                                          Aucun groupe pour ce plat.
+                                        </div>
+                                      )}
+                                    </div>
+
+                                    {ungroupedAdditions.length > 0 ? (
+                                      <div className="mt-3">
+                                        <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+                                          Additions sans groupe ({ungroupedAdditions.length})
+                                        </div>
+                                        <div className="mt-2 flex flex-wrap gap-2 text-xs text-gray-600">
+                                          {ungroupedAdditions.map((addition) => (
+                                            <span
+                                              key={addition.id}
+                                              className="rounded-full border border-gray-200 bg-gray-50 px-2 py-0.5"
+                                            >
+                                              {addition.nom} ({formatDA(addition.prix)})
+                                            </span>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    ) : null}
+                                  </div>
+                                );
+                              })
+                            ) : (
+                              <div className="text-xs italic text-gray-500">
+                                Aucun plat dans cette categorie.
+                              </div>
+                            )}
+                          </div>
+                        </details>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="mt-2 text-sm text-gray-500">Aucun menu disponible.</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="mt-6 flex gap-3">
+                {selectedRestaurant.status === 'pending' && (
+                  <>
+                    <button
+                      onClick={() => {
+                        handleApprove(selectedRestaurant.id);
+                        setShowDetailsModal(false);
+                      }}
+                      className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center gap-2"
+                    >
+                      <CheckCircle className="w-4 h-4" />
+                      Accepter
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleReject(selectedRestaurant.id);
+                        setShowDetailsModal(false);
+                      }}
+                      className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center justify-center gap-2"
+                    >
+                      <XCircle className="w-4 h-4" />
+                      Rejeter
+                    </button>
+                  </>
+                )}
+                {selectedRestaurant.status !== 'pending' && (
+                  <button
+                    onClick={() => {
+                      setShowDetailsModal(false);
+                      handleEdit(selectedRestaurant);
+                    }}
+                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center gap-2"
+                  >
+                    <Edit className="w-4 h-4" />
+                    Modifier
+                  </button>
+                )}
+                <button
+                  onClick={() => setShowDetailsModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                >
+                  Fermer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {showEditModal && selectedRestaurant && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-start justify-between mb-6">
+                <h2 className="text-2xl font-bold">Modifier le restaurant</h2>
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <ModalErrorNotice message={modalError} onClose={() => setModalError('')} />
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Nom du restaurant *
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.name}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, name: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="Nom du restaurant"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={editForm.email || ''}
+                    onChange={(e) => {
+                      setEditForm({ ...editForm, email: e.target.value });
+                      if (editFormErrors.email) {
+                        setEditFormErrors(prev => {
+                          const newErrors = { ...prev };
+                          delete newErrors.email;
+                          return newErrors;
+                        });
+                      }
+                    }}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                      editFormErrors.email ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="restaurant@example.com"
+                  />
+                  {editFormErrors.email && (
+                    <p className="text-red-500 text-xs mt-1">{editFormErrors.email}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Mot de passe
+                  </label>
+                  <input
+                    type="password"
+                    value={editForm.password || ''}
+                    onChange={(e) => handleEditFormChange('password', e.target.value)}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                      editFormErrors.password ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="Laisser vide pour ne pas changer"
+                  />
+                  {editFormErrors.password ? (
+                    <p className="text-red-500 text-xs mt-1">{editFormErrors.password}</p>
+                  ) : (
+                    <p className="text-xs text-gray-500 mt-1">Optionnel, minimum 6 caracteres</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Langue
+                  </label>
+                  <select
+                    value={editForm.locale || 'fr'}
+                    onChange={(e) => {
+                      setEditForm({ ...editForm, locale: e.target.value });
+                      if (editFormErrors.locale) {
+                        setEditFormErrors(prev => {
+                          const newErrors = { ...prev };
+                          delete newErrors.locale;
+                          return newErrors;
+                        });
+                      }
+                    }}
+                    className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent ${
+                      editFormErrors.locale ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                  >
+                    {LOCALE_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                  {editFormErrors.locale && (
+                    <p className="text-red-500 text-xs mt-1">{editFormErrors.locale}</p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Statut
+                  </label>
+                  <select
+                    value={editForm.status || 'pending'}
+                    onChange={(e) =>
+                      handleEditFormChange('status', e.target.value as RestaurantStatus)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                  >
+                    {STATUS_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Description
+                  </label>
+                  <textarea
+                    value={editForm.description}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, description: e.target.value })
+                    }
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="Description du restaurant"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Image du restaurant
+                  </label>
+                  <div className="space-y-4">
+                    {(editImagePreview || editForm.image_url) && (
+                      <div className="relative w-full h-48 rounded-lg overflow-hidden bg-gray-100 border-2 border-gray-200">
+                        <img
+                          src={editImagePreview || editForm.image_url || ''}
+                          alt="Preview"
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={removeEditImage}
+                          className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+
+                    <div className="flex gap-3">
+                      <label className="flex-1 cursor-pointer">
+                        <div className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors">
+                          {editUploadingImage ? (
+                            <>
+                              <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-300 border-t-green-600"></div>
+                              <span className="text-sm text-gray-600">
+                                Upload en cours...
+                              </span>
+                            </>
+                          ) : (
+                            <>
+                              <svg
+                                className="w-5 h-5 text-gray-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth="2"
+                                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                />
+                              </svg>
+                              <span className="text-sm font-medium text-gray-700">
+                                Telecharger une image
+                              </span>
+                            </>
+                          )}
+                        </div>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleEditImageUpload}
+                          className="hidden"
+                          disabled={editUploadingImage}
+                        />
+                      </label>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const url = prompt("Entrez l'URL de l'image:");
+                          if (url) {
+                            setEditForm({ ...editForm, image_url: url });
+                            setEditImagePreview(null);
+                          }
+                        }}
+                        className="px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                        title="Entrer une URL manuellement"
+                      >
+                        <svg
+                          className="w-5 h-5 text-gray-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <p className="text-xs text-gray-500">
+                      Formats acceptes: JPG, PNG, GIF. Taille max: 5 MB
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Adresse
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.address}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, address: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="Adresse complete"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Wilaya
+                    </label>
+                    <select
+                      value={editForm.wilaya_code || ''}
+                      onChange={(e) => handleEditWilayaChange(e.target.value)}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent ${
+                        editFormErrors.wilaya_code
+                          ? 'border-red-300 focus:ring-red-500'
+                          : 'border-gray-300 focus:ring-green-500'
+                      }`}
+                    >
+                      <option value="">
+                        {wilayasLoading ? 'Chargement des wilayas...' : 'Selectionner une wilaya'}
+                      </option>
+                      {wilayas.map((wilaya) => (
+                        <option key={wilaya.code} value={wilaya.code}>
+                          {wilaya.code} - {wilaya.name}
+                        </option>
+                      ))}
+                    </select>
+                    {wilayasError && (
+                      <p className="text-red-500 text-xs mt-1">{wilayasError}</p>
+                    )}
+                    {editFormErrors.wilaya_code && (
+                      <p className="text-red-500 text-xs mt-1">{editFormErrors.wilaya_code}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Commune
+                    </label>
+                    <select
+                      value={editForm.commune_id || ''}
+                      onChange={(e) => handleEditFormChange('commune_id', e.target.value)}
+                      disabled={!editForm.wilaya_code || editCommunesLoading}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent ${
+                        editFormErrors.commune_id
+                          ? 'border-red-300 focus:ring-red-500'
+                          : 'border-gray-300 focus:ring-green-500'
+                      } ${!editForm.wilaya_code ? 'bg-gray-100 text-gray-500' : ''}`}
+                    >
+                      <option value="">
+                        {!editForm.wilaya_code
+                          ? 'Selectionnez une wilaya d\'abord'
+                          : editCommunesLoading
+                          ? 'Chargement des communes...'
+                          : 'Selectionner une commune'}
+                      </option>
+                      {editCommunes.map((commune) => (
+                        <option key={commune.id} value={commune.id}>
+                          {commune.name}
+                        </option>
+                      ))}
+                    </select>
+                    {editCommunesError && (
+                      <p className="text-red-500 text-xs mt-1">{editCommunesError}</p>
+                    )}
+                    {editFormErrors.commune_id && (
+                      <p className="text-red-500 text-xs mt-1">{editFormErrors.commune_id}</p>
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Numero de telephone
+                  </label>
+                  <input
+                    type="tel"
+                    value={editForm.phone_number || ''}
+                    onChange={(e) =>
+                      setEditForm({ ...editForm, phone_number: e.target.value })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="+213 555 123 456"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Note (0-5)
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    max="5"
+                    step="0.1"
+                    value={editForm.rating ?? 0}
+                    onChange={(e) =>
+                      setEditForm({
+                        ...editForm,
+                        rating: parseFloat(e.target.value) || 0
+                      })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                    placeholder="4.5"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Latitude
+                    </label>
+                    <input
+                      type="text"
+                      value={editForm.lat || ''}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, lat: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      placeholder="36.7309715"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Longitude
+                    </label>
+                    <input
+                      type="text"
+                      value={editForm.lng || ''}
+                      onChange={(e) =>
+                        setEditForm({ ...editForm, lng: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                      placeholder="3.1670642"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Categories globales *
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    {(globalCategories.length > 0 ? globalCategories : CATEGORY_OPTIONS).map(
+                      (cat) => {
+                        const slug = 'slug' in cat ? cat.slug : cat.value;
+                        const label = 'slug' in cat ? cat.name : cat.label;
+                        const imageUrl =
+                          'slug' in cat
+                            ? resolveCategoryImageUrl(cat.slug, cat.image_url)
+                            : resolveCategoryImageUrl(cat.value, null);
+                        const isSelected = editForm.categories.includes(slug);
+                        return (
+                          <label
+                            key={'slug' in cat ? cat.id : cat.value}
+                            className={`relative flex flex-col gap-2 cursor-pointer p-3 border-2 rounded-xl transition-all duration-200 ${
+                              isSelected
+                                ? 'border-green-500 ring-2 ring-green-500 ring-offset-2 bg-green-50'
+                                : 'border-gray-200 hover:border-green-400 bg-white'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={(e) => {
+                                const newCategories = e.target.checked
+                                  ? [...editForm.categories, slug]
+                                  : editForm.categories.filter(
+                                      (c) => c !== slug
+                                    );
+                                setEditForm({
+                                  ...editForm,
+                                  categories: newCategories
+                                });
+                              }}
+                              className="absolute top-2 right-2 w-5 h-5 text-green-600 rounded-full focus:ring-2 focus:ring-green-500"
+                            />
+                            <ImageWithPlaceholder
+                              src={imageUrl}
+                              alt={label}
+                              className="w-full h-20 object-cover rounded-lg"
+                              placeholderClassName="w-full h-20"
+                              iconSize="w-8 h-8"
+                            />
+                            <span className="text-sm font-semibold text-gray-800 text-center">
+                              {label}
+                            </span>
+                          </label>
+                        );
+                      }
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <label className="flex items-center gap-2 cursor-pointer p-3 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    <input
+                      type="checkbox"
+                      checked={editForm.is_active}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          is_active: e.target.checked
+                        })
+                      }
+                      className="w-4 h-4 text-green-600 rounded focus:ring-2 focus:ring-green-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                      Restaurant actif
+                    </span>
+                  </label>
+
+                  <label className="flex items-center gap-2 cursor-pointer p-3 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    <input
+                      type="checkbox"
+                      checked={editForm.is_premium}
+                      onChange={(e) =>
+                        setEditForm({
+                          ...editForm,
+                          is_premium: e.target.checked
+                        })
+                      }
+                      className="w-4 h-4 text-yellow-600 rounded focus:ring-2 focus:ring-yellow-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                      Compte Premium
+                    </span>
+                  </label>
+
+                  <details className="col-span-2 bg-gray-50 p-3 rounded-lg">
+                    <summary className="text-sm font-semibold cursor-pointer">
+                      Horaires d&apos;ouverture (optionnel)
+                    </summary>
+                    <div className="mt-3 space-y-2">
+                      {DAYS_OF_WEEK.map((day) => (
+                        <div
+                          key={day.value}
+                          className="flex items-center gap-3 text-sm"
+                        >
+                          <span className="w-24 font-medium text-gray-700">
+                            {day.label}
+                          </span>
+                          <input
+                            type="number"
+                            min="0"
+                            max="2359"
+                            value={formatOpeningHoursInputValue(editForm.opening_hours?.[day.value]?.open)}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                opening_hours: updateOpeningHoursDraft(
+                                  editForm.opening_hours,
+                                  day.value,
+                                  'open',
+                                  e.target.value
+                                )
+                              })
+                            }
+                            className="w-24 px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                            placeholder="900"
+                          />
+                          <span className="text-gray-600">A </span>
+                          <input
+                            type="number"
+                            min="0"
+                            max="2359"
+                            value={formatOpeningHoursInputValue(editForm.opening_hours?.[day.value]?.close)}
+                            onChange={(e) =>
+                              setEditForm({
+                                ...editForm,
+                                opening_hours: updateOpeningHoursDraft(
+                                  editForm.opening_hours,
+                                  day.value,
+                                  'close',
+                                  e.target.value
+                                )
+                              })
+                            }
+                            className="w-24 px-3 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                            placeholder="1800"
+                          />
+                          <span className="text-xs text-gray-500">
+                            (HHMM, ex: 900 = 9h00)
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </details>
+                </div>
+              </div>
+
+              <div className="mt-6 flex gap-3">
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={handleSaveEdit}
+                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center gap-2"
+                >
+                  <Save className="w-4 h-4" />
+                  Enregistrer
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Create Restaurant Modal */}
+      {showCreateModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-start justify-between mb-6">
+                <h2 className="text-2xl font-bold">Creer un nouveau restaurant</h2>
+                <button
+                  onClick={() => setShowCreateModal(false)}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <ModalErrorNotice message={modalError} onClose={() => setModalError('')} />
+
+              <div className="space-y-6">
+                {/* Account Information */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-4">
+                    Informations du compte
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Email <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        value={createForm.email}
+                        onChange={(e) => handleCreateFormChange('email', e.target.value)}
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent ${
+                          createFormErrors.email 
+                            ? 'border-red-300 focus:ring-red-500' 
+                            : 'border-gray-300 focus:ring-green-500'
+                        }`}
+                        placeholder="restaurant@example.com"
+                        required
+                      />
+                      {createFormErrors.email && (
+                        <p className="text-red-500 text-xs mt-1">{createFormErrors.email}</p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Mot de passe <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="password"
+                        value={createForm.password}
+                        onChange={(e) => handleCreateFormChange('password', e.target.value)}
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent ${
+                          createFormErrors.password 
+                            ? 'border-red-300 focus:ring-red-500' 
+                            : 'border-gray-300 focus:ring-green-500'
+                        }`}
+                        placeholder="aaaaaaaa"
+                        required
+                      />
+                      {createFormErrors.password ? (
+                        <p className="text-red-500 text-xs mt-1">{createFormErrors.password}</p>
+                      ) : (
+                        <p className="text-xs text-gray-500 mt-1">Minimum 6 caracteres</p>
+                      )}
+                    </div>
+                    
+                    <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Numero de telephone <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      value={createForm.phone_number || ''}
+                      onChange={(e) => handleCreateFormChange('phone_number', e.target.value)}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent ${
+                        createFormErrors.phone_number
+                          ? 'border-red-300 focus:ring-red-500'
+                          : 'border-gray-300 focus:ring-green-500'
+                      }`}
+                      placeholder="+213 555 123 456"
+                      required
+                    />
+                    {createFormErrors.phone_number && (
+                      <p className="text-red-500 text-xs mt-1">{createFormErrors.phone_number}</p>
+                    )}
+                  </div>
+
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Langue <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      value={createForm.locale}
+                      onChange={(e) => handleCreateFormChange('locale', e.target.value)}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent ${
+                        createFormErrors.locale
+                          ? 'border-red-300 focus:ring-red-500'
+                          : 'border-gray-300 focus:ring-green-500'
+                      }`}
+                    >
+                      {LOCALE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    {createFormErrors.locale && (
+                      <p className="text-red-500 text-xs mt-1">{createFormErrors.locale}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+                {/* Restaurant Information */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-4">
+                    Informations du restaurant
+                  </h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Nom du restaurant <span className="text-red-500">*</span>
+                      </label>
+                    <input
+                      type="text"
+                      value={createForm.name}
+                      onChange={(e) => handleCreateFormChange('name', e.target.value)}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent ${
+                        createFormErrors.name
+                          ? 'border-red-300 focus:ring-red-500'
+                          : 'border-gray-300 focus:ring-green-500'
+                      }`}
+                      placeholder="Nom du restaurant"
+                      required
+                    />
+                    {createFormErrors.name && (
+                      <p className="text-red-500 text-xs mt-1">{createFormErrors.name}</p>
+                    )}
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Description
+                      </label>
+                      <textarea
+                        value={createForm.description}
+                        onChange={(e) =>
+                          setCreateForm({
+                            ...createForm,
+                            description: e.target.value
+                          })
+                        }
+                        rows={3}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        placeholder="Description du restaurant..."
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        Categories <span className="text-red-500">*</span>
+                      </label>
+                      <div className="grid grid-cols-2 gap-3">
+                        {globalCategories.length > 0
+                          ? globalCategories.map((cat) => {
+                              const isSelected = createForm.categories.includes(cat.slug);
+                              const imageUrl = resolveCategoryImageUrl(cat.slug, cat.image_url);
+                              return (
+                                <label
+                                  key={cat.id}
+                                  className={`relative flex flex-col gap-2 cursor-pointer p-3 border-2 rounded-xl transition-all duration-200 ${
+                                    isSelected
+                                      ? 'border-green-500 ring-2 ring-green-500 ring-offset-2 bg-green-50'
+                                      : 'border-gray-200 hover:border-green-400 bg-white'
+                                  }`}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={isSelected}
+                                    onChange={(e) =>
+                                      handleCategoryToggle(cat.slug, e.target.checked)
+                                    }
+                                    className="absolute top-2 right-2 w-5 h-5 text-green-600 rounded-full focus:ring-2 focus:ring-green-500"
+                                  />
+                                  <ImageWithPlaceholder
+                                    src={imageUrl}
+                                    alt={cat.name}
+                                    className="w-full h-20 object-cover rounded-lg"
+                                    placeholderClassName="w-full h-20"
+                                    iconSize="w-8 h-8"
+                                  />
+                                  <span className="text-sm font-semibold text-gray-800 text-center">
+                                    {cat.name}
+                                  </span>
+                                </label>
+                              );
+                            })
+                          : CATEGORY_OPTIONS.map((cat) => {
+                              const isSelected =
+                                createForm.categories.includes(cat.value);
+                              const icons: Record<CategoryValue, string> = {
+                                pizza: 'P',
+                                burger: 'B',
+                                tacos: 'T',
+                                sandwish: 'S'
+                              };
+                              const colors: Record<CategoryValue, string> = {
+                                pizza:
+                                  'from-red-50 to-orange-50 border-red-200 hover:border-red-400',
+                                burger:
+                                  'from-yellow-50 to-amber-50 border-yellow-200 hover:border-yellow-400',
+                                tacos:
+                                  'from-orange-50 to-yellow-50 border-orange-200 hover:border-orange-400',
+                                sandwish:
+                                  'from-green-50 to-emerald-50 border-green-200 hover:border-green-400'
+                              };
+                              const selectedColors: Record<CategoryValue, string> =
+                                {
+                                  pizza:
+                                    'from-red-100 to-orange-100 border-red-500 ring-2 ring-red-500 ring-offset-2',
+                                  burger:
+                                    'from-yellow-100 to-amber-100 border-yellow-500 ring-2 ring-yellow-500 ring-offset-2',
+                                  tacos:
+                                    'from-orange-100 to-yellow-100 border-orange-500 ring-2 ring-orange-500 ring-offset-2',
+                                  sandwish:
+                                    'from-green-100 to-emerald-100 border-green-500 ring-2 ring-green-500 ring-offset-2'
+                                };
+
+                              return (
+                                <label
+                                  key={cat.value}
+                                  className={`relative flex flex-col items-center justify-center cursor-pointer p-4 border-2 rounded-xl transition-all duration-200 bg-gradient-to-br ${
+                                    isSelected
+                                      ? selectedColors[cat.value]
+                                      : colors[cat.value]
+                                  } ${
+                                    isSelected
+                                      ? 'transform scale-105'
+                                      : 'hover:scale-102'
+                                  }`}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={isSelected}
+                                    onChange={(e) =>
+                                      handleCategoryToggle(cat.value, e.target.checked)
+                                    }
+                                    className="absolute top-2 right-2 w-5 h-5 text-green-600 rounded-full focus:ring-2 focus:ring-green-500"
+                                  />
+                                  <span className="text-4xl mb-2">
+                                    {icons[cat.value]}
+                                  </span>
+                                  <span
+                                    className={`text-sm font-semibold ${
+                                      isSelected
+                                        ? 'text-gray-900'
+                                        : 'text-gray-700'
+                                    }`}
+                                  >
+                                    {cat.label}
+                                  </span>
+                                </label>
+                              );
+                            })}
+                      </div>
+                      {createForm.categories.length === 0 && (
+                        <p className="text-xs text-red-600 mt-2">
+                          Veuillez selectionner au moins une categorie
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Image Upload Section */}
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-3">
+                        Image du restaurant
+                      </label>
+
+                      <div className="space-y-4">
+                        {(imagePreview || createForm.image_url) && (
+                          <div className="relative w-full h-48 rounded-lg overflow-hidden bg-gray-100 border-2 border-gray-200">
+                            <img
+                              src={imagePreview || createForm.image_url}
+                              alt="Preview"
+                              className="w-full h-full object-cover"
+                            />
+                            <button
+                              type="button"
+                              onClick={removeImage}
+                              className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        )}
+
+                        <div className="flex gap-3">
+                          <label className="flex-1 cursor-pointer">
+                            <div className="flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 hover:bg-green-50 transition-colors">
+                              {uploadingImage ? (
+                                <>
+                                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-300 border-t-green-600"></div>
+                                  <span className="text-sm text-gray-600">
+                                    Upload en cours...
+                                  </span>
+                                </>
+                              ) : (
+                                <>
+                                  <svg
+                                    className="w-5 h-5 text-gray-600"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                    />
+                                  </svg>
+                                  <span className="text-sm font-medium text-gray-700">
+                                    Telecharger une image
+                                  </span>
+                                </>
+                              )}
+                            </div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleImageUpload}
+                              className="hidden"
+                              disabled={uploadingImage}
+                            />
+                          </label>
+
+                          {/* Manual URL Input */}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const url = prompt('Entrez l\'URL de l\'image:');
+                              if (url) {
+                                setCreateForm({...createForm, image_url: url});
+                                setImagePreview(null);
+                              }
+                            }}
+                            className="px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                            title="Entrer une URL manuellement"
+                          >
+                            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                            </svg>
+                          </button>
+                        </div>
+
+                        <p className="text-xs text-gray-500">
+                          Formats acceptes: JPG, PNG, GIF. Taille max: 5 MB
+                        </p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Note (0-5)
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="5"
+                        step="0.1"
+                        value={createForm.rating}
+                        onChange={(e) => setCreateForm({...createForm, rating: parseFloat(e.target.value) || 0})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                        placeholder="4.5"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Location Information */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-4">Localisation</h3>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Adresse <span className="text-red-500">*</span>
+                      </label>
+                    <input
+                      type="text"
+                      value={createForm.address}
+                      onChange={(e) => handleCreateFormChange('address', e.target.value)}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent ${
+                        createFormErrors.address
+                          ? 'border-red-300 focus:ring-red-500'
+                          : 'border-gray-300 focus:ring-green-500'
+                      }`}
+                      placeholder="123 Rue Example, Ville"
+                      required
+                    />
+                    {createFormErrors.address && (
+                      <p className="text-red-500 text-xs mt-1">{createFormErrors.address}</p>
+                    )}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Wilaya <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          value={createForm.wilaya_code || ''}
+                          onChange={(e) => handleCreateWilayaChange(e.target.value)}
+                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent ${
+                            createFormErrors.wilaya_code
+                              ? 'border-red-300 focus:ring-red-500'
+                              : 'border-gray-300 focus:ring-green-500'
+                          }`}
+                        >
+                          <option value="">
+                            {wilayasLoading ? 'Chargement des wilayas...' : 'Selectionner une wilaya'}
+                          </option>
+                          {wilayas.map((wilaya) => (
+                            <option key={wilaya.code} value={wilaya.code}>
+                              {wilaya.code} - {wilaya.name}
+                            </option>
+                          ))}
+                        </select>
+                        {wilayasError && (
+                          <p className="text-red-500 text-xs mt-1">{wilayasError}</p>
+                        )}
+                        {createFormErrors.wilaya_code && (
+                          <p className="text-red-500 text-xs mt-1">{createFormErrors.wilaya_code}</p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Commune <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                          value={createForm.commune_id || ''}
+                          onChange={(e) => handleCreateFormChange('commune_id', e.target.value)}
+                          disabled={!createForm.wilaya_code || createCommunesLoading}
+                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent ${
+                            createFormErrors.commune_id
+                              ? 'border-red-300 focus:ring-red-500'
+                              : 'border-gray-300 focus:ring-green-500'
+                          } ${!createForm.wilaya_code ? 'bg-gray-100 text-gray-500' : ''}`}
+                        >
+                          <option value="">
+                            {!createForm.wilaya_code
+                              ? 'Selectionnez une wilaya d\'abord'
+                              : createCommunesLoading
+                              ? 'Chargement des communes...'
+                              : 'Selectionner une commune'}
+                          </option>
+                          {createCommunes.map((commune) => (
+                            <option key={commune.id} value={commune.id}>
+                              {commune.name}
+                            </option>
+                          ))}
+                        </select>
+                        {createCommunesError && (
+                          <p className="text-red-500 text-xs mt-1">{createCommunesError}</p>
+                        )}
+                        {createFormErrors.commune_id && (
+                          <p className="text-red-500 text-xs mt-1">{createFormErrors.commune_id}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Latitude <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={createForm.lat}
+                          onChange={(e) => handleCreateFormChange('lat', e.target.value)}
+                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent ${
+                            createFormErrors.lat
+                              ? 'border-red-300 focus:ring-red-500'
+                              : 'border-gray-300 focus:ring-green-500'
+                          }`}
+                          placeholder="36.7309715"
+                          required
+                        />
+                        {createFormErrors.lat && (
+                          <p className="text-red-500 text-xs mt-1">{createFormErrors.lat}</p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Longitude <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          value={createForm.lng}
+                          onChange={(e) => handleCreateFormChange('lng', e.target.value)}
+                          className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:border-transparent ${
+                            createFormErrors.lng
+                              ? 'border-red-300 focus:ring-red-500'
+                              : 'border-gray-300 focus:ring-green-500'
+                          }`}
+                          placeholder="3.1670642"
+                          required
+                        />
+                        {createFormErrors.lng && (
+                          <p className="text-red-500 text-xs mt-1">{createFormErrors.lng}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status Options */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <h3 className="text-lg font-semibold mb-4">Options</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <label className="flex items-center gap-2 cursor-pointer p-3 border border-gray-300 rounded-lg hover:bg-white">
+                      <input
+                        type="checkbox"
+                        checked={createForm.is_active}
+                        onChange={(e) => setCreateForm({...createForm, is_active: e.target.checked})}
+                        className="w-4 h-4 text-green-600 rounded focus:ring-2 focus:ring-green-500"
+                      />
+                      <span className="text-sm font-medium text-gray-700">Restaurant actif</span>
+                    </label>
+
+                    <label className="flex items-center gap-2 cursor-pointer p-3 border border-gray-300 rounded-lg hover:bg-white">
+                      <input
+                        type="checkbox"
+                        checked={createForm.is_premium}
+                        onChange={(e) => setCreateForm({...createForm, is_premium: e.target.checked})}
+                        className="w-4 h-4 text-yellow-600 rounded focus:ring-2 focus:ring-yellow-500"
+                      />
+                      <span className="text-sm font-medium text-gray-700">Compte Premium</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Opening Hours */}
+                <details className="bg-gray-50 p-4 rounded-lg">
+                  <summary className="text-lg font-semibold cursor-pointer">
+                    Horaires d&apos;ouverture (optionnel)
+                  </summary>
+                  <div className="mt-4 space-y-3">
+                    {DAYS_OF_WEEK.map(day => (
+                      <div key={day.value} className="flex items-center gap-4">
+                        <span className="w-24 text-sm font-medium text-gray-700">{day.label}</span>
+                        <input
+                          type="number"
+                          min="0"
+                          max="2359"
+                          value={formatOpeningHoursInputValue(createForm.opening_hours[day.value]?.open)}
+                          onChange={(e) => setCreateForm({
+                            ...createForm,
+                            opening_hours: updateOpeningHoursDraft(
+                              createForm.opening_hours,
+                              day.value,
+                              'open',
+                              e.target.value
+                            )
+                          })}
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                          placeholder="900"
+                        />
+                        <span className="text-sm text-gray-600">A </span>
+                        <input
+                          type="number"
+                          min="0"
+                          max="2359"
+                          value={formatOpeningHoursInputValue(createForm.opening_hours[day.value]?.close)}
+                          onChange={(e) => setCreateForm({
+                            ...createForm,
+                            opening_hours: updateOpeningHoursDraft(
+                              createForm.opening_hours,
+                              day.value,
+                              'close',
+                              e.target.value
+                            )
+                          })}
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
+                          placeholder="1800"
+                        />
+                        <span className="text-xs text-gray-500">(Format: HHMM, ex: 900 = 9h00)</span>
+                      </div>
+                    ))}
+                  </div>
+                </details>
+              </div>
+
+              <div className="mt-6 flex gap-3">
+                <button
+                  onClick={() => setShowCreateModal(false)}
+                  className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={handleCreateRestaurant}
+                  className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center gap-2"
+                  disabled={uploadingImage}
+                >
+                  <Plus className="w-4 h-4" />
+                  Creer le restaurant
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

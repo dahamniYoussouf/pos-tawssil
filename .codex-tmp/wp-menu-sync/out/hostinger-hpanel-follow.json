@@ -1,0 +1,19 @@
+{
+  "checkedAt": "2026-04-12T20:10:53.113Z",
+  "trigger": {
+    "tag": "A",
+    "text": "Aller dans le hPanel",
+    "id": "",
+    "className": "",
+    "href": "https://hpanel.hostinger.com/websites/gamaoutillage.net",
+    "outerHTML": "<a href=\"https://hpanel.hostinger.com/websites/gamaoutillage.net\" target=\"_blank\" rel=\"noopener\">\n                            Aller dans le hPanel                        </a>"
+  },
+  "result": {
+    "mode": "popup",
+    "page": {
+      "url": "https://hpanel.hostinger.com/websites/gamaoutillage.net",
+      "title": "Just a moment...",
+      "bodyText": "hpanel.hostinger.com\nPerforming security verification\n\nThis website uses a security service to protect against malicious bots. This page is displayed while the website verifies you are not a bot.\n\nRay ID: 9eb4df0b8cf3d959\nPerformance and Security by Cloudflare\nPrivacy"
+    }
+  }
+}

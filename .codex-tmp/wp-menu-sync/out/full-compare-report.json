@@ -1,0 +1,237 @@
+{
+  "counts": {
+    "productCategories": 98,
+    "menuProductCategoryItems": 89,
+    "missingCategories": 13,
+    "actionableMissing": 12
+  },
+  "missingCategories": [
+    {
+      "id": 11983,
+      "name": "Detecteur",
+      "level": 1,
+      "parentId": 599,
+      "path": "Instruments de mesure & controle > Detecteur",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19021
+    },
+    {
+      "id": 8331,
+      "name": "Extracteur",
+      "level": 1,
+      "parentId": 602,
+      "path": "Outillage à main > Extracteur",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19031
+    },
+    {
+      "id": 8889,
+      "name": "Lsseuses",
+      "level": 1,
+      "parentId": 602,
+      "path": "Outillage à main > Lsseuses",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19031
+    },
+    {
+      "id": 8490,
+      "name": "Outillage Spécifique Auto",
+      "level": 1,
+      "parentId": 602,
+      "path": "Outillage à main > Outillage Spécifique Auto",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19031
+    },
+    {
+      "id": 8241,
+      "name": "Ventouses",
+      "level": 1,
+      "parentId": 602,
+      "path": "Outillage à main > Ventouses",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19031
+    },
+    {
+      "id": 11882,
+      "name": "Malaxeurs & tiges",
+      "level": 1,
+      "parentId": 597,
+      "path": "Outillage électroportatif > Malaxeurs & tiges",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19079
+    },
+    {
+      "id": 11884,
+      "name": "Levage & manutention",
+      "level": 1,
+      "parentId": 603,
+      "path": "Outillage mécanique > Levage & manutention",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19049
+    },
+    {
+      "id": 12033,
+      "name": "accessoirs",
+      "level": 1,
+      "parentId": 604,
+      "path": "Outillage soudure > accessoirs",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19044
+    },
+    {
+      "id": 4823,
+      "name": "Système de Nivellement",
+      "level": 1,
+      "parentId": 607,
+      "path": "Outils de chantier & maçonnerie > Système de Nivellement",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19062
+    },
+    {
+      "id": 8875,
+      "name": "Règles De Dressage",
+      "level": 1,
+      "parentId": 607,
+      "path": "Outils de chantier & maçonnerie > Règles De Dressage",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19062
+    },
+    {
+      "id": 8860,
+      "name": "Truelles ET Talauches",
+      "level": 1,
+      "parentId": 607,
+      "path": "Outils de chantier & maçonnerie > Truelles ET Talauches",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19062
+    },
+    {
+      "id": 12037,
+      "name": "Accessoires menuiserie",
+      "level": 1,
+      "parentId": 5420,
+      "path": "Outillage Menuiserie > Accessoires menuiserie",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 330021
+    },
+    {
+      "id": 0,
+      "name": "Uncategorized",
+      "level": 0,
+      "parentId": 0,
+      "path": "Uncategorized",
+      "hasParentInMenu": false,
+      "parentMenuItemDbId": 0
+    }
+  ],
+  "actionableMissing": [
+    {
+      "id": 11983,
+      "name": "Detecteur",
+      "level": 1,
+      "parentId": 599,
+      "path": "Instruments de mesure & controle > Detecteur",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19021
+    },
+    {
+      "id": 8331,
+      "name": "Extracteur",
+      "level": 1,
+      "parentId": 602,
+      "path": "Outillage à main > Extracteur",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19031
+    },
+    {
+      "id": 8889,
+      "name": "Lsseuses",
+      "level": 1,
+      "parentId": 602,
+      "path": "Outillage à main > Lsseuses",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19031
+    },
+    {
+      "id": 8490,
+      "name": "Outillage Spécifique Auto",
+      "level": 1,
+      "parentId": 602,
+      "path": "Outillage à main > Outillage Spécifique Auto",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19031
+    },
+    {
+      "id": 8241,
+      "name": "Ventouses",
+      "level": 1,
+      "parentId": 602,
+      "path": "Outillage à main > Ventouses",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19031
+    },
+    {
+      "id": 11882,
+      "name": "Malaxeurs & tiges",
+      "level": 1,
+      "parentId": 597,
+      "path": "Outillage électroportatif > Malaxeurs & tiges",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19079
+    },
+    {
+      "id": 11884,
+      "name": "Levage & manutention",
+      "level": 1,
+      "parentId": 603,
+      "path": "Outillage mécanique > Levage & manutention",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19049
+    },
+    {
+      "id": 12033,
+      "name": "accessoirs",
+      "level": 1,
+      "parentId": 604,
+      "path": "Outillage soudure > accessoirs",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19044
+    },
+    {
+      "id": 4823,
+      "name": "Système de Nivellement",
+      "level": 1,
+      "parentId": 607,
+      "path": "Outils de chantier & maçonnerie > Système de Nivellement",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19062
+    },
+    {
+      "id": 8875,
+      "name": "Règles De Dressage",
+      "level": 1,
+      "parentId": 607,
+      "path": "Outils de chantier & maçonnerie > Règles De Dressage",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19062
+    },
+    {
+      "id": 8860,
+      "name": "Truelles ET Talauches",
+      "level": 1,
+      "parentId": 607,
+      "path": "Outils de chantier & maçonnerie > Truelles ET Talauches",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 19062
+    },
+    {
+      "id": 12037,
+      "name": "Accessoires menuiserie",
+      "level": 1,
+      "parentId": 5420,
+      "path": "Outillage Menuiserie > Accessoires menuiserie",
+      "hasParentInMenu": true,
+      "parentMenuItemDbId": 330021
+    }
+  ]
+}

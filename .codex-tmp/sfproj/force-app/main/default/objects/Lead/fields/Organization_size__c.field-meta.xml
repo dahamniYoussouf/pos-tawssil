@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Organization_size__c</fullName>
+    <label>Organization size</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>&lt; 50</fullName>
+                <default>false</default>
+                <label>&lt; 50</label>
+            </value>
+            <value>
+                <fullName>50 - 200</fullName>
+                <default>false</default>
+                <label>50 - 200</label>
+            </value>
+            <value>
+                <fullName>201 - 500</fullName>
+                <default>false</default>
+                <label>201 - 500</label>
+            </value>
+            <value>
+                <fullName>501 - 3,000</fullName>
+                <default>false</default>
+                <label>501 - 3,000</label>
+            </value>
+            <value>
+                <fullName>3,001 - 20,000</fullName>
+                <default>false</default>
+                <label>3,001 - 20,000</label>
+            </value>
+            <value>
+                <fullName>&gt; 20,000</fullName>
+                <default>false</default>
+                <label>&gt; 20,000</label>
+            </value>
+            <value>
+                <fullName>Micro enterprise: 1–10 employees</fullName>
+                <default>false</default>
+                <label>Micro enterprise: 1–10 employees</label>
+            </value>
+            <value>
+                <fullName>Small enterprise: 11–99 employees</fullName>
+                <default>false</default>
+                <label>Small enterprise: 11–99 employees</label>
+            </value>
+            <value>
+                <fullName>Medium enterprise: 100–499 employees</fullName>
+                <default>false</default>
+                <label>Medium enterprise: 100–499 employees</label>
+            </value>
+            <value>
+                <fullName>Large enterprise: 500+ employees</fullName>
+                <default>false</default>
+                <label>Large enterprise: 500+ employees</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

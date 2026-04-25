@@ -1,0 +1,291 @@
+import express from 'express';
+import { protect, authorize } from '../middlewares/auth.js';
+import { cacheMiddleware, invalidateCache } from '../middlewares/cache.middleware.js';
+import * as adminCtrl from '../controllers/admin.controller.js';
+import { 
+  getDeliveryConfig, 
+  updateMaxOrders, 
+  updateMaxDistance 
+} from '../controllers/admin.controller.js';
+import { 
+  updateMaxOrdersValidator, 
+  updateMaxDistanceValidator 
+} from '../validators/configValidator.js';
+import { validate } from '../middlewares/validate.js';
+import { notifyAllDrivers, broadcastNotification } from '../controllers/admin.controller.js';
+import * as homeCategoryCtrl from '../controllers/homeCategory.controller.js';
+import * as thematicSelectionCtrl from '../controllers/thematicSelection.controller.js';
+import * as promotionCtrl from '../controllers/promotion.controller.js';
+import * as dailyDealCtrl from '../controllers/dailyDeal.controller.js';
+import * as recommendedDishCtrl from '../controllers/recommendedDish.controller.js';
+import * as backupCtrl from '../controllers/backup.controller.js';
+import * as geoCtrl from '../controllers/geo.controller.js';
+import * as adminReviewCtrl from '../controllers/adminReview.controller.js';
+import { getTermsAdmin, updateTermsAdmin } from '../controllers/terms.controller.js';
+import { getPrivacyPolicyAdmin, updatePrivacyPolicyAdmin } from '../controllers/privacy.controller.js';
+import {
+  createWilayaValidator,
+  updateWilayaValidator,
+  deleteWilayaValidator,
+  createCommuneValidator,
+  updateCommuneValidator,
+  deleteCommuneValidator
+} from '../validators/geoValidator.js';
+import {
+  createHomeCategoryValidator,
+  deleteHomeCategoryValidator,
+  updateHomeCategoryValidator
+} from '../validators/homeCategoryValidator.js';
+import {
+  createThematicSelectionValidator,
+  deleteThematicSelectionValidator,
+  updateThematicSelectionValidator
+} from '../validators/thematicSelectionValidator.js';
+import {
+  createPromotionValidator,
+  deletePromotionValidator,
+  updatePromotionValidator
+} from '../validators/promotionValidator.js';
+import {
+  createDailyDealValidator,
+  deleteDailyDealValidator,
+  updateDailyDealValidator
+} from '../validators/dailyDealValidator.js';
+import {
+  createRecommendedDishValidator,
+  deleteRecommendedDishValidator,
+  updateRecommendedDishValidator
+} from '../validators/recommendedDishValidator.js';
+
+
+
+const router = express.Router();
+
+// Toutes les routes admin nÃ©cessitent authentification + rÃ´le admin
+router.use(protect, authorize('admin'));
+router.use(
+  cacheMiddleware({
+    ttl: 60,
+    shouldCache: (req) => {
+      const path = req.path || '';
+      if (path.startsWith('/cache')) return false;
+      if (path.startsWith('/warnings')) return false;
+      if (path.startsWith('/notifications')) return false;
+      if (path.startsWith('/orders/review')) return false;
+      if (path === '/statistics') return false;
+      if (path === '/monitoring') return false;
+      if (path.startsWith('/config')) return false;
+      if (path.startsWith('/backups')) return false;
+      if (path.startsWith('/top/')) return false;
+      return true;
+    }
+  })
+);
+
+router.use(
+  invalidateCache([
+    'cache:GET:/admin*',
+    'cache:GET:/api/v1/admin*'
+  ])
+);
+
+// Profil
+router.get('/profile/me', adminCtrl.getProfile);
+router.put('/profile/me', adminCtrl.updateProfile);
+
+// ==================== GEO DATA ====================
+router.get('/geo/wilayas', geoCtrl.getWilayas);
+router.get('/geo/communes', geoCtrl.getCommunes);
+router.get('/geo/communes/:id', geoCtrl.getCommune);
+router.post('/geo/wilayas', createWilayaValidator, validate, geoCtrl.createWilaya);
+router.put('/geo/wilayas/:code', updateWilayaValidator, validate, geoCtrl.updateWilaya);
+router.delete('/geo/wilayas/:code', deleteWilayaValidator, validate, geoCtrl.deleteWilaya);
+router.post('/geo/communes', createCommuneValidator, validate, geoCtrl.createCommune);
+router.put('/geo/communes/:id', updateCommuneValidator, validate, geoCtrl.updateCommune);
+router.delete('/geo/communes/:id', deleteCommuneValidator, validate, geoCtrl.deleteCommune);
+
+// Notifications
+router.get('/notifications', adminCtrl.getNotifications);
+router.patch('/notifications/:id/read', adminCtrl.markAsRead);
+router.post('/notifications/:id/resolve', adminCtrl.resolveNotification);
+router.get('/warnings/restaurants', adminCtrl.getRestaurantWarnings);
+router.get('/warnings/drivers', adminCtrl.getDriverWarnings);
+
+// Actions sur les commandes
+router.post('/orders/:id/force-accept', adminCtrl.forceAcceptOrder);
+router.post('/orders/:id/force-cancel', adminCtrl.forceCancelOrder);
+router.get('/orders/review-queue', adminReviewCtrl.getReviewQueue);
+router.post('/orders/:id/review/claim', adminReviewCtrl.claimReviewOrder);
+router.post('/orders/:id/review/release', adminReviewCtrl.releaseReviewOrder);
+router.post('/orders/:id/review/approve', adminReviewCtrl.approveReviewOrder);
+router.post('/orders/:id/review/reject', adminReviewCtrl.rejectReviewOrder);
+router.get('/drivers/:id/cancellations', adminCtrl.getDriverCancellations);
+router.post('/drivers/:id/reset-cancellations', adminCtrl.resetDriverCancellations);
+router.post('/drivers/:id/suspend', adminCtrl.suspendDriver);
+
+// Configuration de livraison
+router.get('/config/delivery', getDeliveryConfig);
+router.put('/config/delivery/max-orders', updateMaxOrdersValidator, validate, updateMaxOrders);
+router.put('/config/delivery/max-distance', updateMaxDistanceValidator, validate, updateMaxDistance);
+
+// Add these routes to src/routes/admin.routes.js
+
+// Get all admins (super_admin only)
+router.get('/getall', protect, authorize('admin'), adminCtrl.getAllAdmins);
+router.put('/update/:id', protect, authorize('admin'), adminCtrl.updateAdmin);
+router.delete('/delete/:id', protect, authorize('admin'), adminCtrl.deleteAdmin);
+router.post('/create', protect, authorize('admin'), adminCtrl.createAdmin);
+
+// Dans src/routes/admin.routes.js
+
+// ==================== FAVORIS ====================
+router.get('/favorites/restaurants', adminCtrl.getAllFavoriteRestaurants);
+router.get('/favorites/meals', adminCtrl.getAllFavoriteMeals);
+router.get('/favorites/stats', adminCtrl.getFavoritesStats);
+
+// ==================== STATISTICS ====================
+router.get('/statistics', adminCtrl.getStatistics);
+router.get('/monitoring', adminCtrl.getMonitoringSnapshot);
+
+// ==================== TERMS OF USE ====================
+router.get('/terms', getTermsAdmin);
+router.put('/terms', updateTermsAdmin);
+
+// ==================== PRIVACY POLICY ====================
+router.get('/privacy-policy', getPrivacyPolicyAdmin);
+router.put('/privacy-policy', updatePrivacyPolicyAdmin);
+
+// ==================== CONFIGURATIONS ====================
+router.get('/config/all', adminCtrl.getAllConfigs);
+router.put('/config/:key', adminCtrl.updateConfig);
+
+// ==================== TOP RATED ====================
+router.get('/top/meals', adminCtrl.getTop10Meals);
+router.get('/top/restaurants', adminCtrl.getTop10Restaurants);
+router.get('/top/drivers', adminCtrl.getTop10Drivers);
+
+// ==================== MAP DATA ====================
+router.get('/map/restaurants', adminCtrl.getMapRestaurants);
+router.get('/map/drivers', adminCtrl.getMapDrivers);
+
+router.post('/notify/drivers', protect, authorize('admin'), notifyAllDrivers);
+router.post('/notify/broadcast', protect, authorize('admin'), broadcastNotification);
+
+// ==================== CACHE MANAGEMENT ====================
+router.get('/cache/stats', adminCtrl.getCacheStats);
+router.post('/cache/clear', adminCtrl.clearCache);
+router.post('/cache/invalidate/:pattern', adminCtrl.invalidateCachePattern);
+
+// ==================== DATABASE BACKUPS ====================
+router.get('/backups', backupCtrl.listBackups);
+router.post('/backups', backupCtrl.createBackup);
+router.post('/backups/:id/restore', backupCtrl.restoreBackup);
+router.delete('/backups/:id', backupCtrl.deleteBackup);
+
+// ==================== HOMEPAGE CATEGORIES ====================
+router.get('/homepage/categories', homeCategoryCtrl.getCategories);
+router.get('/homepage/overview', adminCtrl.getHomepageSnapshot);
+router.post(
+  '/homepage/categories',
+  createHomeCategoryValidator,
+  validate,
+  homeCategoryCtrl.createCategory
+);
+router.put(
+  '/homepage/categories/:id',
+  updateHomeCategoryValidator,
+  validate,
+  homeCategoryCtrl.updateCategory
+);
+router.delete(
+  '/homepage/categories/:id',
+  deleteHomeCategoryValidator,
+  validate,
+  homeCategoryCtrl.removeCategory
+);
+
+// ==================== HOMEPAGE THEMATIC SELECTIONS ====================
+router.get('/homepage/thematic-selections', thematicSelectionCtrl.getSelections);
+router.post(
+  '/homepage/thematic-selections',
+  createThematicSelectionValidator,
+  validate,
+  thematicSelectionCtrl.createSelection
+);
+router.put(
+  '/homepage/thematic-selections/:id',
+  updateThematicSelectionValidator,
+  validate,
+  thematicSelectionCtrl.updateSelection
+);
+router.delete(
+  '/homepage/thematic-selections/:id',
+  deleteThematicSelectionValidator,
+  validate,
+  thematicSelectionCtrl.removeSelection
+);
+
+// ==================== HOMEPAGE RECOMMENDED DISHES ====================
+router.get('/homepage/recommended-dishes', recommendedDishCtrl.getRecommendedDishes);
+router.post(
+  '/homepage/recommended-dishes',
+  createRecommendedDishValidator,
+  validate,
+  recommendedDishCtrl.create
+);
+router.put(
+  '/homepage/recommended-dishes/:id',
+  updateRecommendedDishValidator,
+  validate,
+  recommendedDishCtrl.update
+);
+router.delete(
+  '/homepage/recommended-dishes/:id',
+  deleteRecommendedDishValidator,
+  validate,
+  recommendedDishCtrl.remove
+);
+
+// ==================== HOMEPAGE DAILY DEALS ====================
+router.get('/homepage/daily-deals', dailyDealCtrl.getDailyDeals);
+router.post(
+  '/homepage/daily-deals',
+  createDailyDealValidator,
+  validate,
+  dailyDealCtrl.create
+);
+router.put(
+  '/homepage/daily-deals/:id',
+  updateDailyDealValidator,
+  validate,
+  dailyDealCtrl.update
+);
+router.delete(
+  '/homepage/daily-deals/:id',
+  deleteDailyDealValidator,
+  validate,
+  dailyDealCtrl.remove
+);
+
+// ==================== PROMOTIONS ====================
+router.get('/promotions', promotionCtrl.getPromotions);
+router.post(
+  '/promotions',
+  createPromotionValidator,
+  validate,
+  promotionCtrl.create
+);
+router.put(
+  '/promotions/:id',
+  updatePromotionValidator,
+  validate,
+  promotionCtrl.update
+);
+router.delete(
+  '/promotions/:id',
+  deletePromotionValidator,
+  validate,
+  promotionCtrl.remove
+);
+
+export default router;

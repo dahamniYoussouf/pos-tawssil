@@ -1,0 +1,93 @@
+{
+  "menuId": 529,
+  "addedIds": [
+    11983,
+    8331,
+    8889,
+    8490,
+    8241,
+    11882,
+    11884,
+    12033,
+    4823,
+    8875,
+    8860,
+    12037
+  ],
+  "verification": [
+    {
+      "id": 11983,
+      "expectedParentMenuItemDbId": 19021,
+      "actualParentMenuItemDbId": 19021,
+      "exists": true
+    },
+    {
+      "id": 8331,
+      "expectedParentMenuItemDbId": 19031,
+      "actualParentMenuItemDbId": 19031,
+      "exists": true
+    },
+    {
+      "id": 8889,
+      "expectedParentMenuItemDbId": 19031,
+      "actualParentMenuItemDbId": 19031,
+      "exists": true
+    },
+    {
+      "id": 8490,
+      "expectedParentMenuItemDbId": 19031,
+      "actualParentMenuItemDbId": 19031,
+      "exists": true
+    },
+    {
+      "id": 8241,
+      "expectedParentMenuItemDbId": 19031,
+      "actualParentMenuItemDbId": 19031,
+      "exists": true
+    },
+    {
+      "id": 11882,
+      "expectedParentMenuItemDbId": 19079,
+      "actualParentMenuItemDbId": 19079,
+      "exists": true
+    },
+    {
+      "id": 11884,
+      "expectedParentMenuItemDbId": 19049,
+      "actualParentMenuItemDbId": 19049,
+      "exists": true
+    },
+    {
+      "id": 12033,
+      "expectedParentMenuItemDbId": 19044,
+      "actualParentMenuItemDbId": 19044,
+      "exists": true
+    },
+    {
+      "id": 4823,
+      "expectedParentMenuItemDbId": 19062,
+      "actualParentMenuItemDbId": 19062,
+      "exists": true
+    },
+    {
+      "id": 8875,
+      "expectedParentMenuItemDbId": 19062,
+      "actualParentMenuItemDbId": 19062,
+      "exists": true
+    },
+    {
+      "id": 8860,
+      "expectedParentMenuItemDbId": 19062,
+      "actualParentMenuItemDbId": 19062,
+      "exists": true
+    },
+    {
+      "id": 12037,
+      "expectedParentMenuItemDbId": 330021,
+      "actualParentMenuItemDbId": 330021,
+      "exists": true
+    }
+  ],
+  "failedVerification": [],
+  "finalCount": 97
+}

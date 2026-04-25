@@ -10,6 +10,17 @@ Ce guide explique comment lancer le POS Tawsil avec différents scénarios pour 
 ```
 Lance l'application en mode web (Chrome) sur le port 8081.
 
+## Deploiement VPS (chemin /pos)
+
+Si le site est servi sur `https://votre-domaine/pos/`, le build web doit
+utiliser un base href `"/pos/"`. Sinon les assets chargent en `"/"` et la
+page reste blanche.
+
+Commande:
+```powershell
+flutter build web --release --base-href /pos/
+```
+
 ### Mode Debug
 ```powershell
 .\run_pos.ps1 debug

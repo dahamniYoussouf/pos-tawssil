@@ -1,0 +1,162 @@
+{
+  "loginUrl": "https://gamaoutillage.net/wp-admin/nav-menus.php?action=edit&menu=529",
+  "categories": [
+    {
+      "id": "tag-681",
+      "classes": "level-0",
+      "name": "Accessoires & consommables"
+    },
+    {
+      "id": "tag-688",
+      "classes": "level-1",
+      "name": "— Brosse"
+    },
+    {
+      "id": "tag-683",
+      "classes": "level-1",
+      "name": "— Disques abrasifs & de coupe"
+    },
+    {
+      "id": "tag-684",
+      "classes": "level-1",
+      "name": "— Embout"
+    },
+    {
+      "id": "tag-685",
+      "classes": "level-1",
+      "name": "— Lames"
+    },
+    {
+      "id": "tag-687",
+      "classes": "level-1",
+      "name": "— Taraud et Filière"
+    },
+    {
+      "id": "tag-682",
+      "classes": "level-1",
+      "name": "— Trépand et Adaptateur"
+    },
+    {
+      "id": "tag-11717",
+      "classes": "level-1",
+      "name": "— Batteries"
+    },
+    {
+      "id": "tag-8664",
+      "classes": "level-1",
+      "name": "— Batteries & Chargeurs"
+    },
+    {
+      "id": "tag-8311",
+      "classes": "level-1",
+      "name": "— Scie Cloche"
+    },
+    {
+      "id": "tag-598",
+      "classes": "level-0",
+      "name": "Carottage béton"
+    },
+    {
+      "id": "tag-610",
+      "classes": "level-0",
+      "name": "Équipements de protection"
+    },
+    {
+      "id": "tag-676",
+      "classes": "level-0",
+      "name": "Groupes électrogènes"
+    },
+    {
+      "id": "tag-599",
+      "classes": "level-0",
+      "name": "Instruments de mesure & controle"
+    },
+    {
+      "id": "tag-636",
+      "classes": "level-1",
+      "name": "— Multimètre et détecteur"
+    },
+    {
+      "id": "tag-633",
+      "classes": "level-1",
+      "name": "— Niveau à Bulle"
+    },
+    {
+      "id": "tag-634",
+      "classes": "level-1",
+      "name": "— Niveau Laser"
+    },
+    {
+      "id": "tag-631",
+      "classes": "level-1",
+      "name": "— Trépieds"
+    },
+    {
+      "id": "tag-11983",
+      "classes": "level-1",
+      "name": "— Detecteur"
+    },
+    {
+      "id": "tag-11986",
+      "classes": "level-1",
+      "name": "— Mètre ruban"
+    }
+  ],
+  "menuOptions": [
+    {
+      "value": "154",
+      "label": "Catégories de produits Mobile (Main Menu)",
+      "selected": false
+    },
+    {
+      "value": "529",
+      "label": "Catégories Desktop",
+      "selected": true
+    },
+    {
+      "value": "44",
+      "label": "Main navigation",
+      "selected": false
+    },
+    {
+      "value": "61",
+      "label": "Menu left",
+      "selected": false
+    },
+    {
+      "value": "5418",
+      "label": "menu metier",
+      "selected": false
+    },
+    {
+      "value": "62",
+      "label": "Menu right",
+      "selected": false
+    },
+    {
+      "value": "45",
+      "label": "Mobile navigation (Mobile Side Menu)",
+      "selected": false
+    },
+    {
+      "value": "63",
+      "label": "Primary",
+      "selected": false
+    },
+    {
+      "value": "11889",
+      "label": "test",
+      "selected": false
+    },
+    {
+      "value": "46",
+      "label": "Top Bar Right",
+      "selected": false
+    }
+  ],
+  "targetMenu": {
+    "value": "529",
+    "label": "Catégories Desktop",
+    "selected": true
+  }
+}

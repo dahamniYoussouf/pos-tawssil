@@ -1,0 +1,692 @@
+{
+  "totalPages": 5,
+  "totalItems": 98,
+  "items": [
+    {
+      "id": 681,
+      "name": "Accessoires & consommables",
+      "slug": "accessoires",
+      "parentId": 0,
+      "level": 0
+    },
+    {
+      "id": 688,
+      "name": "Brosse",
+      "slug": "brosse",
+      "parentId": 681,
+      "level": 1
+    },
+    {
+      "id": 683,
+      "name": "Disques abrasifs & de coupe",
+      "slug": "disques",
+      "parentId": 681,
+      "level": 1
+    },
+    {
+      "id": 684,
+      "name": "Embout",
+      "slug": "embouts",
+      "parentId": 681,
+      "level": 1
+    },
+    {
+      "id": 685,
+      "name": "Lames",
+      "slug": "lames",
+      "parentId": 681,
+      "level": 1
+    },
+    {
+      "id": 687,
+      "name": "Taraud et Filière",
+      "slug": "taraud-et-filiere",
+      "parentId": 681,
+      "level": 1
+    },
+    {
+      "id": 682,
+      "name": "Trépand et Adaptateur",
+      "slug": "trepan-et-adaptateur",
+      "parentId": 681,
+      "level": 1
+    },
+    {
+      "id": 11717,
+      "name": "Batteries",
+      "slug": "batteries-gama-outillage",
+      "parentId": 681,
+      "level": 1
+    },
+    {
+      "id": 8664,
+      "name": "Batteries & Chargeurs",
+      "slug": "batteries-chargeurs",
+      "parentId": 681,
+      "level": 1
+    },
+    {
+      "id": 8311,
+      "name": "Scie Cloche",
+      "slug": "scie-cloche",
+      "parentId": 681,
+      "level": 1
+    },
+    {
+      "id": 598,
+      "name": "Carottage béton",
+      "slug": "carottage",
+      "parentId": 0,
+      "level": 0
+    },
+    {
+      "id": 610,
+      "name": "Équipements de protection",
+      "slug": "securite",
+      "parentId": 0,
+      "level": 0
+    },
+    {
+      "id": 676,
+      "name": "Groupes électrogènes",
+      "slug": "groupe-electrogene",
+      "parentId": 0,
+      "level": 0
+    },
+    {
+      "id": 599,
+      "name": "Instruments de mesure & controle",
+      "slug": "mesure-et-controle",
+      "parentId": 0,
+      "level": 0
+    },
+    {
+      "id": 636,
+      "name": "Multimètre et détecteur",
+      "slug": "multimetre-et-detecteur",
+      "parentId": 599,
+      "level": 1
+    },
+    {
+      "id": 633,
+      "name": "Niveau à Bulle",
+      "slug": "niveau-a-bulle",
+      "parentId": 599,
+      "level": 1
+    },
+    {
+      "id": 634,
+      "name": "Niveau Laser",
+      "slug": "niveau-laser",
+      "parentId": 599,
+      "level": 1
+    },
+    {
+      "id": 631,
+      "name": "Trépieds",
+      "slug": "trepieds",
+      "parentId": 599,
+      "level": 1
+    },
+    {
+      "id": 11983,
+      "name": "Detecteur",
+      "slug": "detecteur",
+      "parentId": 599,
+      "level": 1
+    },
+    {
+      "id": 11986,
+      "name": "Mètre ruban",
+      "slug": "ruban",
+      "parentId": 599,
+      "level": 1
+    },
+    {
+      "id": 606,
+      "name": "Machines stationnaires",
+      "slug": "outillage-stationnai",
+      "parentId": 0,
+      "level": 0
+    },
+    {
+      "id": 670,
+      "name": "Machine Aluminium",
+      "slug": "machine-aluminium",
+      "parentId": 606,
+      "level": 1
+    },
+    {
+      "id": 637,
+      "name": "Nettoyeur & aspirateur",
+      "slug": "nettoyeur",
+      "parentId": 0,
+      "level": 0
+    },
+    {
+      "id": 8846,
+      "name": "Nettoyeurs Haute Pression",
+      "slug": "nettoyeurs-haute-pression",
+      "parentId": 637,
+      "level": 1
+    },
+    {
+      "id": 602,
+      "name": "Outillage à main",
+      "slug": "outillage-a-main",
+      "parentId": 0,
+      "level": 0
+    },
+    {
+      "id": 649,
+      "name": "CLÉ",
+      "slug": "cle",
+      "parentId": 602,
+      "level": 1
+    },
+    {
+      "id": 650,
+      "name": "Clé Dynamométrique",
+      "slug": "cle-dynamometrique",
+      "parentId": 602,
+      "level": 1
+    },
+    {
+      "id": 644,
+      "name": "Cliquet",
+      "slug": "cliquet",
+      "parentId": 602,
+      "level": 1
+    },
+    {
+      "id": 646,
+      "name": "Cutter",
+      "slug": "cutter",
+      "parentId": 602,
+      "level": 1
+    },
+    {
+      "id": 653,
+      "name": "Douilles",
+      "slug": "douilles",
+      "parentId": 602,
+      "level": 1
+    },
+    {
+      "id": 642,
+      "name": "Outillage Universell",
+      "slug": "outillage-universell",
+      "parentId": 602,
+      "level": 1
+    },
+    {
+      "id": 648,
+      "name": "Pince",
+      "slug": "pince",
+      "parentId": 602,
+      "level": 1
+    },
+    {
+      "id": 645,
+      "name": "Rallonge et Bras",
+      "slug": "rallonge-et-bras",
+      "parentId": 602,
+      "level": 1
+    },
+    {
+      "id": 652,
+      "name": "Riveteuse",
+      "slug": "riveteuse",
+      "parentId": 602,
+      "level": 1
+    },
+    {
+      "id": 651,
+      "name": "Torche",
+      "slug": "torche",
+      "parentId": 602,
+      "level": 1
+    },
+    {
+      "id": 647,
+      "name": "Tournevis",
+      "slug": "tournevis",
+      "parentId": 602,
+      "level": 1
+    },
+    {
+      "id": 8331,
+      "name": "Extracteur",
+      "slug": "extracteur",
+      "parentId": 602,
+      "level": 1
+    },
+    {
+      "id": 8889,
+      "name": "Lsseuses",
+      "slug": "lisseuses",
+      "parentId": 602,
+      "level": 1
+    },
+    {
+      "id": 8490,
+      "name": "Outillage Spécifique Auto",
+      "slug": "outillage-specifique-auto",
+      "parentId": 602,
+      "level": 1
+    },
+    {
+      "id": 8241,
+      "name": "Ventouses",
+      "slug": "ventouses",
+      "parentId": 602,
+      "level": 1
+    },
+    {
+      "id": 597,
+      "name": "Outillage électroportatif",
+      "slug": "outils-ele-portatif",
+      "parentId": 0,
+      "level": 0
+    },
+    {
+      "id": 612,
+      "name": "Filaire",
+      "slug": "filaire",
+      "parentId": 597,
+      "level": 1
+    },
+    {
+      "id": 620,
+      "name": "Boulonneuse",
+      "slug": "boulonneuse",
+      "parentId": 612,
+      "level": 2
+    },
+    {
+      "id": 621,
+      "name": "Décapeur Thermique",
+      "slug": "decapeur-thermique",
+      "parentId": 612,
+      "level": 2
+    },
+    {
+      "id": 624,
+      "name": "Marteau et Burineur",
+      "slug": "marteau-et-burineur",
+      "parentId": 612,
+      "level": 2
+    },
+    {
+      "id": 625,
+      "name": "Meuleuse Rainureuse",
+      "slug": "meuleuse-rainureuse",
+      "parentId": 612,
+      "level": 2
+    },
+    {
+      "id": 626,
+      "name": "Outils Multifonction",
+      "slug": "outils-multifonction",
+      "parentId": 612,
+      "level": 2
+    },
+    {
+      "id": 619,
+      "name": "Perceuses",
+      "slug": "perceuses",
+      "parentId": 612,
+      "level": 2
+    },
+    {
+      "id": 618,
+      "name": "Ponceuse Polisseuse",
+      "slug": "ponceuse-polisseuse",
+      "parentId": 612,
+      "level": 2
+    },
+    {
+      "id": 617,
+      "name": "Rabot Électrique",
+      "slug": "rabot-electrique",
+      "parentId": 612,
+      "level": 2
+    },
+    {
+      "id": 616,
+      "name": "Scie Électrique",
+      "slug": "scie-electrique",
+      "parentId": 612,
+      "level": 2
+    },
+    {
+      "id": 627,
+      "name": "Souffleurs",
+      "slug": "souffleurs",
+      "parentId": 612,
+      "level": 2
+    },
+    {
+      "id": 628,
+      "name": "Touret Meuler",
+      "slug": "touret-meuler",
+      "parentId": 612,
+      "level": 2
+    },
+    {
+      "id": 613,
+      "name": "Sans Fil",
+      "slug": "sans-fil",
+      "parentId": 597,
+      "level": 1
+    },
+    {
+      "id": 615,
+      "name": "Visseuse",
+      "slug": "visseuse",
+      "parentId": 613,
+      "level": 2
+    },
+    {
+      "id": 11882,
+      "name": "Malaxeurs & tiges",
+      "slug": "malaxeurs-tiges",
+      "parentId": 597,
+      "level": 1
+    },
+    {
+      "id": 603,
+      "name": "Outillage mécanique",
+      "slug": "outillage-mecanique",
+      "parentId": 0,
+      "level": 0
+    },
+    {
+      "id": 657,
+      "name": "Crick et Chandelle",
+      "slug": "crick-et-chandelle",
+      "parentId": 603,
+      "level": 1
+    },
+    {
+      "id": 5539,
+      "name": "Crics Chariots",
+      "slug": "crics-chariots",
+      "parentId": 657,
+      "level": 2
+    },
+    {
+      "id": 658,
+      "name": "Etaux",
+      "slug": "etaux",
+      "parentId": 603,
+      "level": 1
+    },
+    {
+      "id": 655,
+      "name": "Outil De Calage",
+      "slug": "outil-de-calage",
+      "parentId": 603,
+      "level": 1
+    },
+    {
+      "id": 643,
+      "name": "Rangement et Caisses",
+      "slug": "rangement",
+      "parentId": 603,
+      "level": 1
+    },
+    {
+      "id": 6490,
+      "name": "Clé Filtre",
+      "slug": "cle-filtre",
+      "parentId": 603,
+      "level": 1
+    },
+    {
+      "id": 11884,
+      "name": "Levage & manutention",
+      "slug": "levage",
+      "parentId": 603,
+      "level": 1
+    },
+    {
+      "id": 11883,
+      "name": "lubrifiant",
+      "slug": "lubrifiant",
+      "parentId": 603,
+      "level": 1
+    },
+    {
+      "id": 846,
+      "name": "Outillage plomberie",
+      "slug": "outillage-plomberie",
+      "parentId": 0,
+      "level": 0
+    },
+    {
+      "id": 605,
+      "name": "Outillage pneumatique",
+      "slug": "outillage-pneumatiqu",
+      "parentId": 0,
+      "level": 0
+    },
+    {
+      "id": 665,
+      "name": "Compresseurs",
+      "slug": "compresseurs",
+      "parentId": 605,
+      "level": 1
+    },
+    {
+      "id": 11987,
+      "name": "Outils pneumatiques et accessoires",
+      "slug": "outils-pneumatiques-et-accessoires",
+      "parentId": 605,
+      "level": 1
+    },
+    {
+      "id": 604,
+      "name": "Outillage soudure",
+      "slug": "outillage-de-soudure",
+      "parentId": 0,
+      "level": 0
+    },
+    {
+      "id": 664,
+      "name": "Charg Batterie Auto",
+      "slug": "charg-batterie-auto",
+      "parentId": 604,
+      "level": 1
+    },
+    {
+      "id": 663,
+      "name": "Consommable Soudure",
+      "slug": "consommable-soudure",
+      "parentId": 604,
+      "level": 1
+    },
+    {
+      "id": 671,
+      "name": "Machine Pour Métal",
+      "slug": "machine-pour-metal",
+      "parentId": 604,
+      "level": 1
+    },
+    {
+      "id": 662,
+      "name": "Poste Souder Casque",
+      "slug": "poste-souder-casque",
+      "parentId": 604,
+      "level": 1
+    },
+    {
+      "id": 12033,
+      "name": "accessoirs",
+      "slug": "accessoirs",
+      "parentId": 604,
+      "level": 1
+    },
+    {
+      "id": 8644,
+      "name": "Perceuses Magnétiques",
+      "slug": "perceuses-magnetiques",
+      "parentId": 604,
+      "level": 1
+    },
+    {
+      "id": 607,
+      "name": "Outils de chantier & maçonnerie",
+      "slug": "outils-de-chantier",
+      "parentId": 0,
+      "level": 0
+    },
+    {
+      "id": 672,
+      "name": "Accessoire Maçonnerie",
+      "slug": "accessoire-maconneri",
+      "parentId": 607,
+      "level": 1
+    },
+    {
+      "id": 673,
+      "name": "Coupe Carreau Élect",
+      "slug": "coupe-carreau-elect",
+      "parentId": 607,
+      "level": 1
+    },
+    {
+      "id": 674,
+      "name": "Coupe Carreau Manuel",
+      "slug": "coupe-carreau-manuel",
+      "parentId": 607,
+      "level": 1
+    },
+    {
+      "id": 4823,
+      "name": "Système de Nivellement",
+      "slug": "system-nivelement",
+      "parentId": 607,
+      "level": 1
+    },
+    {
+      "id": 8875,
+      "name": "Règles De Dressage",
+      "slug": "regles-de-dressage",
+      "parentId": 607,
+      "level": 1
+    },
+    {
+      "id": 8860,
+      "name": "Truelles ET Talauches",
+      "slug": "truelles-et-talauches",
+      "parentId": 607,
+      "level": 1
+    },
+    {
+      "id": 10189,
+      "name": "Pompes",
+      "slug": "jardinier-artisan",
+      "parentId": 0,
+      "level": 0
+    },
+    {
+      "id": 5422,
+      "name": "Outillage Électricité",
+      "slug": "electricien-batiment",
+      "parentId": 0,
+      "level": 0
+    },
+    {
+      "id": 5420,
+      "name": "Outillage Menuiserie",
+      "slug": "menuisier",
+      "parentId": 0,
+      "level": 0
+    },
+    {
+      "id": 622,
+      "name": "Défonceuse Lamelleu",
+      "slug": "defonceuse-lamelleu",
+      "parentId": 5420,
+      "level": 1
+    },
+    {
+      "id": 668,
+      "name": "Machine À Bois",
+      "slug": "machine-a-bois",
+      "parentId": 5420,
+      "level": 1
+    },
+    {
+      "id": 12037,
+      "name": "Accessoires menuiserie",
+      "slug": "accessoires-menuiserie",
+      "parentId": 5420,
+      "level": 1
+    },
+    {
+      "id": 5911,
+      "name": "scie a table",
+      "slug": "scie-a-table",
+      "parentId": 5420,
+      "level": 1
+    },
+    {
+      "id": 10051,
+      "name": "Scie Circulaire",
+      "slug": "scie-circulaire",
+      "parentId": 5420,
+      "level": 1
+    },
+    {
+      "id": 5425,
+      "name": "Outils de jardin",
+      "slug": "jardinier",
+      "parentId": 0,
+      "level": 0
+    },
+    {
+      "id": 680,
+      "name": "Accessoire Jardinage",
+      "slug": "accessoire-jardinage",
+      "parentId": 5425,
+      "level": 1
+    },
+    {
+      "id": 677,
+      "name": "Débroussailleuse",
+      "slug": "debroussailleuse",
+      "parentId": 5425,
+      "level": 1
+    },
+    {
+      "id": 679,
+      "name": "Scie A Chaine",
+      "slug": "scie-a-chaine",
+      "parentId": 5425,
+      "level": 1
+    },
+    {
+      "id": 10469,
+      "name": "tariere",
+      "slug": "tariere",
+      "parentId": 5425,
+      "level": 1
+    },
+    {
+      "id": 678,
+      "name": "Tondeuse",
+      "slug": "tondeuse",
+      "parentId": 5425,
+      "level": 1
+    },
+    {
+      "id": 0,
+      "name": "Uncategorized",
+      "slug": "",
+      "parentId": 0,
+      "level": 0
+    }
+  ]
+}

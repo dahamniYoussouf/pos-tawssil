@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AI_readiness__c</fullName>
+    <description>How would you best qualif﻿y your organization&apos;s AI readiness to get involved in AI projects?</description>
+    <label>AI readiness</label>
+    <required>false</required>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>High</fullName>
+                <default>false</default>
+                <label>Not yet using AI</label>
+            </value>
+            <value>
+                <fullName>Medium</fullName>
+                <default>false</default>
+                <label>Exploring opportunities</label>
+            </value>
+            <value>
+                <fullName>Low</fullName>
+                <default>false</default>
+                <label>Pilot project in progress</label>
+            </value>
+            <value>
+                <fullName>None</fullName>
+                <default>false</default>
+                <label>Partial deployment of AI solutions</label>
+            </value>
+            <value>
+                <fullName>Strategic AI adoption</fullName>
+                <default>false</default>
+                <label>Strategic AI adoption</label>
+            </value>
+            <value>
+                <fullName>AI is core to our business (AI product, service, or solution provider)</fullName>
+                <default>false</default>
+                <label>AI is core to our business (AI product, service, or solution provider)</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

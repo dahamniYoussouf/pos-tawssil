@@ -1,0 +1,977 @@
+{
+  "counts": {
+    "productCategories": 20,
+    "menuProductCategoryItems": 89,
+    "missingCategories": 1,
+    "actionableMissing": 1
+  },
+  "missingCategories": [
+    {
+      "id": 11983,
+      "level": 1,
+      "name": "Detecteur",
+      "slug": "detecteur",
+      "parentId": 599,
+      "path": "Instruments de mesure & controle > Detecteur",
+      "parentMenuItemDbId": 19021,
+      "hasParentInMenu": true
+    }
+  ],
+  "actionableMissing": [
+    {
+      "id": 11983,
+      "level": 1,
+      "name": "Detecteur",
+      "slug": "detecteur",
+      "parentId": 599,
+      "path": "Instruments de mesure & controle > Detecteur",
+      "parentMenuItemDbId": 19021,
+      "hasParentInMenu": true
+    }
+  ],
+  "menuCategoryItems": [
+    {
+      "menuItemDbId": 329957,
+      "depth": 0,
+      "title": "",
+      "objectId": 5425,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19077,
+      "depth": 1,
+      "title": "",
+      "objectId": 678,
+      "parentMenuItemId": 329957,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330679,
+      "depth": 1,
+      "title": "",
+      "objectId": 677,
+      "parentMenuItemId": 329957,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330680,
+      "depth": 1,
+      "title": "",
+      "objectId": 678,
+      "parentMenuItemId": 329957,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330681,
+      "depth": 1,
+      "title": "",
+      "objectId": 679,
+      "parentMenuItemId": 329957,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330682,
+      "depth": 1,
+      "title": "",
+      "objectId": 680,
+      "parentMenuItemId": 329957,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330683,
+      "depth": 1,
+      "title": "",
+      "objectId": 10469,
+      "parentMenuItemId": 329957,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19031,
+      "depth": 0,
+      "title": "",
+      "objectId": 602,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19032,
+      "depth": 1,
+      "title": "",
+      "objectId": 644,
+      "parentMenuItemId": 19031,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19033,
+      "depth": 1,
+      "title": "",
+      "objectId": 649,
+      "parentMenuItemId": 19031,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19034,
+      "depth": 1,
+      "title": "",
+      "objectId": 650,
+      "parentMenuItemId": 19031,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19035,
+      "depth": 1,
+      "title": "",
+      "objectId": 646,
+      "parentMenuItemId": 19031,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19036,
+      "depth": 1,
+      "title": "",
+      "objectId": 653,
+      "parentMenuItemId": 19031,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19037,
+      "depth": 1,
+      "title": "",
+      "objectId": 642,
+      "parentMenuItemId": 19031,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19038,
+      "depth": 1,
+      "title": "",
+      "objectId": 648,
+      "parentMenuItemId": 19031,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19039,
+      "depth": 1,
+      "title": "",
+      "objectId": 645,
+      "parentMenuItemId": 19031,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19041,
+      "depth": 1,
+      "title": "",
+      "objectId": 652,
+      "parentMenuItemId": 19031,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19042,
+      "depth": 1,
+      "title": "",
+      "objectId": 651,
+      "parentMenuItemId": 19031,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19043,
+      "depth": 1,
+      "title": "",
+      "objectId": 647,
+      "parentMenuItemId": 19031,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 18998,
+      "depth": 0,
+      "title": "",
+      "objectId": 681,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330702,
+      "depth": 1,
+      "title": "",
+      "objectId": 684,
+      "parentMenuItemId": 18998,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330703,
+      "depth": 1,
+      "title": "",
+      "objectId": 685,
+      "parentMenuItemId": 18998,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330704,
+      "depth": 1,
+      "title": "",
+      "objectId": 687,
+      "parentMenuItemId": 18998,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330705,
+      "depth": 1,
+      "title": "",
+      "objectId": 688,
+      "parentMenuItemId": 18998,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330701,
+      "depth": 1,
+      "title": "",
+      "objectId": 682,
+      "parentMenuItemId": 18998,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330687,
+      "depth": 1,
+      "title": "",
+      "objectId": 8311,
+      "parentMenuItemId": 18998,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330686,
+      "depth": 1,
+      "title": "",
+      "objectId": 11717,
+      "parentMenuItemId": 18998,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19049,
+      "depth": 0,
+      "title": "",
+      "objectId": 603,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330665,
+      "depth": 1,
+      "title": "",
+      "objectId": 11883,
+      "parentMenuItemId": 19049,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330012,
+      "depth": 1,
+      "title": "",
+      "objectId": 8664,
+      "parentMenuItemId": 19049,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 144590,
+      "depth": 1,
+      "title": "",
+      "objectId": 5539,
+      "parentMenuItemId": 19049,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19051,
+      "depth": 1,
+      "title": "",
+      "objectId": 657,
+      "parentMenuItemId": 19049,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19052,
+      "depth": 1,
+      "title": "",
+      "objectId": 658,
+      "parentMenuItemId": 19049,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19054,
+      "depth": 1,
+      "title": "",
+      "objectId": 655,
+      "parentMenuItemId": 19049,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 153063,
+      "depth": 1,
+      "title": "",
+      "objectId": 6490,
+      "parentMenuItemId": 19049,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19046,
+      "depth": 1,
+      "title": "",
+      "objectId": 664,
+      "parentMenuItemId": 19049,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330021,
+      "depth": 0,
+      "title": "",
+      "objectId": 5420,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19072,
+      "depth": 1,
+      "title": "",
+      "objectId": 668,
+      "parentMenuItemId": 330021,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330690,
+      "depth": 1,
+      "title": "",
+      "objectId": 5911,
+      "parentMenuItemId": 330021,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330691,
+      "depth": 1,
+      "title": "",
+      "objectId": 622,
+      "parentMenuItemId": 330021,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330689,
+      "depth": 1,
+      "title": "",
+      "objectId": 10051,
+      "parentMenuItemId": 330021,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19044,
+      "depth": 0,
+      "title": "",
+      "objectId": 604,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330693,
+      "depth": 1,
+      "title": "",
+      "objectId": 8644,
+      "parentMenuItemId": 19044,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19071,
+      "depth": 1,
+      "title": "",
+      "objectId": 671,
+      "parentMenuItemId": 19044,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19047,
+      "depth": 1,
+      "title": "",
+      "objectId": 663,
+      "parentMenuItemId": 19044,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19048,
+      "depth": 1,
+      "title": "",
+      "objectId": 662,
+      "parentMenuItemId": 19044,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330022,
+      "depth": 0,
+      "title": "",
+      "objectId": 5422,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19040,
+      "depth": 0,
+      "title": "",
+      "objectId": 643,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19058,
+      "depth": 0,
+      "title": "",
+      "objectId": 605,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19060,
+      "depth": 1,
+      "title": "",
+      "objectId": 665,
+      "parentMenuItemId": 19058,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 332065,
+      "depth": 1,
+      "title": "",
+      "objectId": 11987,
+      "parentMenuItemId": 19058,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 329964,
+      "depth": 0,
+      "title": "",
+      "objectId": 846,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 329956,
+      "depth": 0,
+      "title": "",
+      "objectId": 683,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19021,
+      "depth": 0,
+      "title": "",
+      "objectId": 599,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19022,
+      "depth": 1,
+      "title": "",
+      "objectId": 636,
+      "parentMenuItemId": 19021,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19024,
+      "depth": 1,
+      "title": "",
+      "objectId": 634,
+      "parentMenuItemId": 19021,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19025,
+      "depth": 1,
+      "title": "",
+      "objectId": 633,
+      "parentMenuItemId": 19021,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19027,
+      "depth": 1,
+      "title": "",
+      "objectId": 631,
+      "parentMenuItemId": 19021,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 332064,
+      "depth": 1,
+      "title": "",
+      "objectId": 11986,
+      "parentMenuItemId": 19021,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19062,
+      "depth": 0,
+      "title": "",
+      "objectId": 607,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19063,
+      "depth": 1,
+      "title": "",
+      "objectId": 672,
+      "parentMenuItemId": 19062,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19006,
+      "depth": 1,
+      "title": "",
+      "objectId": 598,
+      "parentMenuItemId": 19062,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19064,
+      "depth": 1,
+      "title": "",
+      "objectId": 674,
+      "parentMenuItemId": 19062,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19065,
+      "depth": 1,
+      "title": "",
+      "objectId": 673,
+      "parentMenuItemId": 19062,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19066,
+      "depth": 1,
+      "title": "",
+      "objectId": 676,
+      "parentMenuItemId": 19062,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 329953,
+      "depth": 0,
+      "title": "",
+      "objectId": 606,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19070,
+      "depth": 1,
+      "title": "",
+      "objectId": 670,
+      "parentMenuItemId": 329953,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19068,
+      "depth": 1,
+      "title": "",
+      "objectId": 606,
+      "parentMenuItemId": 329953,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19079,
+      "depth": 0,
+      "title": "",
+      "objectId": 597,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 339515,
+      "depth": 1,
+      "title": "",
+      "objectId": 613,
+      "parentMenuItemId": 19079,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19083,
+      "depth": 1,
+      "title": "",
+      "objectId": 620,
+      "parentMenuItemId": 19079,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19084,
+      "depth": 1,
+      "title": "",
+      "objectId": 621,
+      "parentMenuItemId": 19079,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19085,
+      "depth": 1,
+      "title": "",
+      "objectId": 622,
+      "parentMenuItemId": 19079,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330697,
+      "depth": 1,
+      "title": "",
+      "objectId": 612,
+      "parentMenuItemId": 19079,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19087,
+      "depth": 1,
+      "title": "",
+      "objectId": 624,
+      "parentMenuItemId": 19079,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19088,
+      "depth": 1,
+      "title": "",
+      "objectId": 625,
+      "parentMenuItemId": 19079,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19089,
+      "depth": 1,
+      "title": "",
+      "objectId": 626,
+      "parentMenuItemId": 19079,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19090,
+      "depth": 1,
+      "title": "",
+      "objectId": 619,
+      "parentMenuItemId": 19079,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19091,
+      "depth": 1,
+      "title": "",
+      "objectId": 618,
+      "parentMenuItemId": 19079,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19092,
+      "depth": 1,
+      "title": "",
+      "objectId": 617,
+      "parentMenuItemId": 19079,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19093,
+      "depth": 1,
+      "title": "",
+      "objectId": 616,
+      "parentMenuItemId": 19079,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19094,
+      "depth": 1,
+      "title": "",
+      "objectId": 627,
+      "parentMenuItemId": 19079,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19095,
+      "depth": 1,
+      "title": "",
+      "objectId": 628,
+      "parentMenuItemId": 19079,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19096,
+      "depth": 1,
+      "title": "",
+      "objectId": 615,
+      "parentMenuItemId": 19079,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19030,
+      "depth": 0,
+      "title": "",
+      "objectId": 637,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330695,
+      "depth": 1,
+      "title": "",
+      "objectId": 8846,
+      "parentMenuItemId": 19030,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 19097,
+      "depth": 0,
+      "title": "",
+      "objectId": 610,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 329960,
+      "depth": 0,
+      "title": "",
+      "objectId": 10189,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    },
+    {
+      "menuItemDbId": 330668,
+      "depth": 0,
+      "title": "",
+      "objectId": 676,
+      "parentMenuItemId": 0,
+      "itemType": "taxonomy",
+      "object": "product_cat"
+    }
+  ],
+  "categories": [
+    {
+      "id": 681,
+      "level": 0,
+      "name": "Accessoires & consommables",
+      "slug": "accessoires",
+      "parentId": 0
+    },
+    {
+      "id": 688,
+      "level": 1,
+      "name": "Brosse",
+      "slug": "brosse",
+      "parentId": 681
+    },
+    {
+      "id": 683,
+      "level": 1,
+      "name": "Disques abrasifs & de coupe",
+      "slug": "disques",
+      "parentId": 681
+    },
+    {
+      "id": 684,
+      "level": 1,
+      "name": "Embout",
+      "slug": "embouts",
+      "parentId": 681
+    },
+    {
+      "id": 685,
+      "level": 1,
+      "name": "Lames",
+      "slug": "lames",
+      "parentId": 681
+    },
+    {
+      "id": 687,
+      "level": 1,
+      "name": "Taraud et Filière",
+      "slug": "taraud-et-filiere",
+      "parentId": 681
+    },
+    {
+      "id": 682,
+      "level": 1,
+      "name": "Trépand et Adaptateur",
+      "slug": "trepan-et-adaptateur",
+      "parentId": 681
+    },
+    {
+      "id": 11717,
+      "level": 1,
+      "name": "Batteries",
+      "slug": "batteries-gama-outillage",
+      "parentId": 681
+    },
+    {
+      "id": 8664,
+      "level": 1,
+      "name": "Batteries & Chargeurs",
+      "slug": "batteries-chargeurs",
+      "parentId": 681
+    },
+    {
+      "id": 8311,
+      "level": 1,
+      "name": "Scie Cloche",
+      "slug": "scie-cloche",
+      "parentId": 681
+    },
+    {
+      "id": 598,
+      "level": 0,
+      "name": "Carottage béton",
+      "slug": "carottage",
+      "parentId": 0
+    },
+    {
+      "id": 610,
+      "level": 0,
+      "name": "Équipements de protection",
+      "slug": "securite",
+      "parentId": 0
+    },
+    {
+      "id": 676,
+      "level": 0,
+      "name": "Groupes électrogènes",
+      "slug": "groupe-electrogene",
+      "parentId": 0
+    },
+    {
+      "id": 599,
+      "level": 0,
+      "name": "Instruments de mesure & controle",
+      "slug": "mesure-et-controle",
+      "parentId": 0
+    },
+    {
+      "id": 636,
+      "level": 1,
+      "name": "Multimètre et détecteur",
+      "slug": "multimetre-et-detecteur",
+      "parentId": 599
+    },
+    {
+      "id": 633,
+      "level": 1,
+      "name": "Niveau à Bulle",
+      "slug": "niveau-a-bulle",
+      "parentId": 599
+    },
+    {
+      "id": 634,
+      "level": 1,
+      "name": "Niveau Laser",
+      "slug": "niveau-laser",
+      "parentId": 599
+    },
+    {
+      "id": 631,
+      "level": 1,
+      "name": "Trépieds",
+      "slug": "trepieds",
+      "parentId": 599
+    },
+    {
+      "id": 11983,
+      "level": 1,
+      "name": "Detecteur",
+      "slug": "detecteur",
+      "parentId": 599
+    },
+    {
+      "id": 11986,
+      "level": 1,
+      "name": "Mètre ruban",
+      "slug": "ruban",
+      "parentId": 599
+    }
+  ]
+}

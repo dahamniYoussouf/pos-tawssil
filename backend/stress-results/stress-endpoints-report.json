@@ -1,0 +1,322 @@
+{
+  "generated_at": "2026-04-12T09:17:49.359Z",
+  "mode": "application-level local stress test",
+  "environment": {
+    "node_env": "test",
+    "database": "sqlite-memory",
+    "routing_mode": "direct",
+    "rate_limits_overridden": true
+  },
+  "dataset": {
+    "orders": 54,
+    "driver_active_orders": 12,
+    "pickup_accept_orders": 24,
+    "menu_items": 6,
+    "announcements": 52
+  },
+  "cleanup": {
+    "uploads_removed": 25
+  },
+  "results": [
+    {
+      "name": "GET /health",
+      "total_requests": 120,
+      "concurrency": 24,
+      "duration_ms": 1713.1,
+      "requests_per_second": 70.05,
+      "success_count": 120,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 209.04,
+        "avg": 335.94,
+        "p50": 345.8,
+        "p95": 472.38,
+        "max": 490.11
+      },
+      "status_counts": {
+        "200": 120
+      },
+      "error_samples": []
+    },
+    {
+      "name": "POST /auth/login (restaurant)",
+      "total_requests": 60,
+      "concurrency": 12,
+      "duration_ms": 14293.39,
+      "requests_per_second": 4.2,
+      "success_count": 60,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 1740.62,
+        "avg": 2843.95,
+        "p50": 3068.48,
+        "p95": 3849.92,
+        "max": 3869.11
+      },
+      "status_counts": {
+        "200": 60
+      },
+      "error_samples": []
+    },
+    {
+      "name": "GET /auth/profile (restaurant)",
+      "total_requests": 120,
+      "concurrency": 24,
+      "duration_ms": 1340.04,
+      "requests_per_second": 89.55,
+      "success_count": 120,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 201.07,
+        "avg": 266.25,
+        "p50": 265.66,
+        "p95": 319.91,
+        "max": 337.51
+      },
+      "status_counts": {
+        "200": 120
+      },
+      "error_samples": []
+    },
+    {
+      "name": "GET /restaurant/details",
+      "total_requests": 120,
+      "concurrency": 24,
+      "duration_ms": 3214.14,
+      "requests_per_second": 37.33,
+      "success_count": 120,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 556.44,
+        "avg": 637.85,
+        "p50": 619,
+        "p95": 769.9,
+        "max": 803.61
+      },
+      "status_counts": {
+        "200": 120
+      },
+      "error_samples": []
+    },
+    {
+      "name": "GET /order (all orders)",
+      "total_requests": 100,
+      "concurrency": 20,
+      "duration_ms": 6215.43,
+      "requests_per_second": 16.09,
+      "success_count": 100,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 1103.89,
+        "avg": 1236.85,
+        "p50": 1241.29,
+        "p95": 1316.59,
+        "max": 1343.55
+      },
+      "status_counts": {
+        "200": 100
+      },
+      "error_samples": []
+    },
+    {
+      "name": "GET /order/restaurant/orders",
+      "total_requests": 100,
+      "concurrency": 20,
+      "duration_ms": 4880.41,
+      "requests_per_second": 20.49,
+      "success_count": 100,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 831.83,
+        "avg": 969.98,
+        "p50": 946.99,
+        "p95": 1104.74,
+        "max": 1113.67
+      },
+      "status_counts": {
+        "200": 100
+      },
+      "error_samples": []
+    },
+    {
+      "name": "GET /order/:id",
+      "total_requests": 100,
+      "concurrency": 20,
+      "duration_ms": 2969.57,
+      "requests_per_second": 33.67,
+      "success_count": 100,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 422.33,
+        "avg": 591.06,
+        "p50": 606.24,
+        "p95": 693.77,
+        "max": 746.65
+      },
+      "status_counts": {
+        "200": 100
+      },
+      "error_samples": []
+    },
+    {
+      "name": "GET /order/:id/tracking",
+      "total_requests": 100,
+      "concurrency": 20,
+      "duration_ms": 1337.94,
+      "requests_per_second": 74.74,
+      "success_count": 100,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 205.75,
+        "avg": 264.88,
+        "p50": 260.7,
+        "p95": 317.18,
+        "max": 345.59
+      },
+      "status_counts": {
+        "200": 100
+      },
+      "error_samples": []
+    },
+    {
+      "name": "GET /driver/active-orders",
+      "total_requests": 80,
+      "concurrency": 16,
+      "duration_ms": 2921.48,
+      "requests_per_second": 27.38,
+      "success_count": 80,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 499.11,
+        "avg": 581.91,
+        "p50": 581.42,
+        "p95": 622.51,
+        "max": 690.91
+      },
+      "status_counts": {
+        "200": 80
+      },
+      "error_samples": []
+    },
+    {
+      "name": "GET /order/:id/route-preview",
+      "total_requests": 80,
+      "concurrency": 16,
+      "duration_ms": 1109.89,
+      "requests_per_second": 72.08,
+      "success_count": 80,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 145.14,
+        "avg": 219.85,
+        "p50": 200.84,
+        "p95": 300.46,
+        "max": 310.65
+      },
+      "status_counts": {
+        "200": 80
+      },
+      "error_samples": []
+    },
+    {
+      "name": "POST /order/:id/accept (pickup unique orders)",
+      "total_requests": 24,
+      "concurrency": 8,
+      "duration_ms": 447.69,
+      "requests_per_second": 53.61,
+      "success_count": 24,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 88.94,
+        "avg": 144.91,
+        "p50": 141.13,
+        "p95": 229.38,
+        "max": 232.41
+      },
+      "status_counts": {
+        "200": 24
+      },
+      "error_samples": []
+    },
+    {
+      "name": "GET /orderitem/getall",
+      "total_requests": 120,
+      "concurrency": 24,
+      "duration_ms": 4260.41,
+      "requests_per_second": 28.17,
+      "success_count": 120,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 131.32,
+        "avg": 836.3,
+        "p50": 833.06,
+        "p95": 1015.25,
+        "max": 1502.26
+      },
+      "status_counts": {
+        "200": 120
+      },
+      "error_samples": []
+    },
+    {
+      "name": "GET /announcement/getactive",
+      "total_requests": 120,
+      "concurrency": 24,
+      "duration_ms": 1331.71,
+      "requests_per_second": 90.11,
+      "success_count": 120,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 186.69,
+        "avg": 258.5,
+        "p50": 226.74,
+        "p95": 365.4,
+        "max": 429.85
+      },
+      "status_counts": {
+        "200": 120
+      },
+      "error_samples": []
+    },
+    {
+      "name": "POST /announcement/create",
+      "total_requests": 40,
+      "concurrency": 10,
+      "duration_ms": 355.24,
+      "requests_per_second": 112.6,
+      "success_count": 40,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 45.24,
+        "avg": 85.14,
+        "p50": 75.09,
+        "p95": 150.4,
+        "max": 165.91
+      },
+      "status_counts": {
+        "201": 40
+      },
+      "error_samples": []
+    },
+    {
+      "name": "POST /api/upload",
+      "total_requests": 25,
+      "concurrency": 5,
+      "duration_ms": 394.62,
+      "requests_per_second": 63.35,
+      "success_count": 25,
+      "success_rate": 100,
+      "latency_ms": {
+        "min": 43.74,
+        "avg": 78,
+        "p50": 59.29,
+        "p95": 121.36,
+        "max": 130.68
+      },
+      "status_counts": {
+        "200": 25
+      },
+      "error_samples": []
+    }
+  ]
+}
