@@ -93,7 +93,7 @@ export const createRestaurantValidator = [
     .withMessage("availability_status must be one of: open, closed, vacation, saturated, other"),
 
   body("availability_note")
-    .optional()
+    .optional({ values: "null" })
     .isString()
     .isLength({ max: 500 })
     .withMessage("availability_note must be a string up to 500 characters"),
@@ -207,7 +207,7 @@ export const updateRestaurantValidator = [
     .withMessage("availability_status must be one of: open, closed, vacation, saturated, other"),
 
   body("availability_note")
-    .optional()
+    .optional({ values: "null" })
     .isString()
     .isLength({ max: 500 })
     .withMessage("availability_note must be a string up to 500 characters"),
@@ -497,7 +497,7 @@ export const updateRestaurantAvailabilityStatusValidator = [
     .withMessage("availability_status must be one of: open, closed, vacation, saturated, other"),
 
   body("availability_note")
-    .optional()
+    .optional({ values: "null" })
     .isString()
     .isLength({ max: 500 })
     .withMessage("availability_note must be a string up to 500 characters"),
